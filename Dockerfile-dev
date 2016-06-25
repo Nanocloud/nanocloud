@@ -1,0 +1,7 @@
+FROM nanocloud/nanocloud-backend
+MAINTAINER \
+  Olivier Berthonneau <olivier.berthonneau@nanocloud.com>
+
+RUN npm install -g forever
+
+CMD npm install && forever -w start app.js && forever logs app.js -f
