@@ -1,3 +1,5 @@
+var bcrypt = require("bcryptjs");
+
 /**
  * User.js
  *
@@ -14,7 +16,7 @@ module.exports = {
     lastName: {
       type: 'string'
     },
-    password: {
+    hashedPassword: {
       type: 'string'
     },
     email: {
@@ -34,16 +36,12 @@ module.exports = {
     }
   },
 
-  beforeCreate: function(user, cb) {
-    bcrypt.genSalt(10, function(err, salt) {
-      bcrypt.hash(user.password, salt, function(err, hash) {
-        if (err) {
-          cb(err);
-        } else {
-          user.password = hash;
-          cb();
-        }
-      });
-    });
+  beforeCreate: function(values, next){
+
+    var hash = bcrypt.hashSync(values.password, 10);
+
+    values.hashedPassword = hash;
+    delete values.password;
+    next();
   }
 };
