@@ -1,3 +1,5 @@
+var passport = require('passport');
+
 /*
  * If request concerns the API (a.k.a target /api/*), we shall find the user
  * associated with the given token (if any).
@@ -12,33 +14,15 @@ module.exports = function(req, res, next) {
     return next(null);
   }
 
-  if (typeof req.headers['authorization'] === "undefined") {
-    return next('No authorization token provided');
-  }
+  return passport.authenticate('bearer', function(err, user, info) {
 
-  var token = req.headers['authorization'].split(' ')[1];
+    if ((err) || (!user)) {
+      return res.send(401);
+    }
 
-  // TODO Link token an user together to have only one query
-  AccessToken.findOne({
-    token: token
-  }, function(err, token) {
+    delete req.query.access_token;
+    req.user = user;
 
-    if (err) next(err);
-
-    if (token === null) next('Invalid token');
-
-    var userId = token.userId;
-
-    User.findOne({
-      id: userId
-    }, function(err, user) {
-
-      if (err) next(err);
-
-      if (user === null) next('No user associated with this token');
-
-      req.user = user;
-      return next(null);
-    });
-  });
+    return next(null);
+  })(req, res);
 };
