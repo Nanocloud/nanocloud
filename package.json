@@ -29,7 +29,7 @@
     "rc": "1.0.1",
     "sails": "~0.12.3",
     "sails-disk": "~0.10.9",
-    "sails-json-api-blueprints": "^0.2.3",
+    "sails-json-api-blueprints": "^0.3.1",
     "sails-seed": "^0.4.5",
     "uuid": "^2.0.2"
   },
