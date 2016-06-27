@@ -1,0 +1,95 @@
+var oauth2orize         = require('oauth2orize'),
+    passport            = require('passport'),
+    bcrypt              = require('bcryptjs'),
+    trustedClientPolicy = require('../api/policies/isTrustedClient.js');
+
+// Create OAuth 2.0 server
+var server = oauth2orize.createServer();
+
+// Exchange username & password for access token.
+server.exchange(oauth2orize.exchange.password(function(user, username, password, scope, done) {
+
+  RefreshToken.create({
+    userId: user.id
+  }, function(err, refreshToken){
+
+    if (err) {
+      return done(err);
+    } else {
+      return AccessToken.create({ userId: user.id }, function(err, accessToken){
+        if(err) {
+          return done(err);
+        } else {
+          return done(null, accessToken.token, refreshToken.token, { 'expires_in': sails.config.oauth.tokenLife });
+        }
+      });
+    }
+  });
+}));
+
+// Exchange refreshToken for access token.
+server.exchange(oauth2orize.exchange.refreshToken(function(client, refreshToken, scope, done) {
+
+  RefreshToken.findOne({ token: refreshToken }, function(err, token) {
+
+    if (err) { return done(err); }
+    if (!token) { return done(null, false); }
+
+    User.findOne({id: token.userId}, function(err, user) {
+
+      if (err) { return done(err); }
+      if (!user) { return done(null, false); }
+
+      // Remove Refresh and Access tokens and create new ones
+      RefreshToken.destroy({ id: token.id }, function (err) {
+        if (err) {
+          return done(err);
+        } else {
+          RefreshToken.create({ userId: user.id }, function(err, refreshToken){
+            if(err){
+              return done(err);
+            } else {
+              AccessToken.create({ userId: user.id }, function(err, accessToken){
+                if(err) {
+                  return done(err);
+                } else {
+                  done(null, accessToken.token, refreshToken.token, { 'expires_in': sails.config.oauth.tokenLife });
+                }
+              });
+            }
+          });
+        }
+      });
+    });
+  });
+}));
+
+module.exports = {
+  http: {
+    customMiddleware: function(app){
+
+      // Initialize passport
+      app.use(passport.initialize());
+
+      app.post('/oauth/token',
+               trustedClientPolicy,
+               function(req, res, next) {
+
+                 // If request is a refresh_token renewal, let's fork the flow
+                 if (req.body.grant_type === "refresh_token") {
+                   var tokenFunction = server.token();
+
+                   return tokenFunction(req, res, function() {
+                   });
+                 }
+                 return next();
+
+               },
+               passport.authenticate(['local'], { session: false }),
+               server.token(),
+               server.errorHandler()
+              );
+
+    }
+  }
+};
