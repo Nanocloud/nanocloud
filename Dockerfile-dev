@@ -2,6 +2,9 @@ FROM nanocloud/nanocloud-backend
 MAINTAINER \
   Olivier Berthonneau <olivier.berthonneau@nanocloud.com>
 
-RUN npm install -g forever
+RUN npm install -g forever node-inspector
 
-CMD npm install && forever -w start app.js && forever logs app.js -f
+EXPOSE 5858
+EXPOSE 8081
+
+CMD (node-inspector --web-port=8081 &) ; forever -w -c 'node --debug' app.js
