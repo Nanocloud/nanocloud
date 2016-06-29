@@ -15,6 +15,7 @@ module.exports = {
 
     if (req.allParams()['me'] === "true") {
       Serializer.register('users', {
+        convertCase: 'kebab-case',
         id: 'id'
       });
 
