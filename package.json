@@ -34,6 +34,7 @@
     "uuid": "^2.0.2"
   },
   "scripts": {
+    "test": "make tests",
     "debug": "node debug app.js",
     "start": "node app.js"
   },
