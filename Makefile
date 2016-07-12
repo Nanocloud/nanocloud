@@ -8,6 +8,6 @@ test-api:
 	mocha tests/api/index.js
 
 test-jshint:
-	jshint api/ config/ tasks/
+	jshint api/ config/
 
 .PHONY: tests

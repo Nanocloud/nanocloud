@@ -8,6 +8,8 @@
  *
  */
 
+/* globals Client */
+
 module.exports = function(req, res, next) {
 
   var grantType = req.param('grant_type');
