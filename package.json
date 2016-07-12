@@ -44,5 +44,8 @@
     "url": "git://github.com/olivier/backend.git"
   },
   "author": "olivier",
-  "license": ""
+  "license": "",
+  "devDependencies": {
+    "jshint": "^2.9.2"
+  }
 }

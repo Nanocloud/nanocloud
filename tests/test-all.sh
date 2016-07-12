@@ -11,5 +11,6 @@ function check_command {
     fi
 }
 
+check_command make test-jshint
 check_command make test-api
 exit $EXIT_STATUS
