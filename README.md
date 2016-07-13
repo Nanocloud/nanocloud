@@ -1,3 +1,3 @@
-# backend
+# Nanocloud
 
-a [Sails](http://sailsjs.org) application
+**Next version of Nanocloud still in heavy develoment**
