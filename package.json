@@ -29,11 +29,12 @@
     "rc": "1.0.1",
     "sails": "~0.12.3",
     "sails-disk": "~0.10.9",
-    "sails-json-api-blueprints": "^0.5.0",
+    "sails-json-api-blueprints": "^0.7.0",
     "sails-seed": "^0.4.5",
     "uuid": "^2.0.2"
   },
   "scripts": {
+    "test": "make tests",
     "debug": "node debug app.js",
     "start": "node app.js"
   },
@@ -43,5 +44,10 @@
     "url": "git://github.com/olivier/backend.git"
   },
   "author": "olivier",
-  "license": ""
+  "license": "",
+  "devDependencies": {
+    "jshint": "^2.9.2",
+    "mocha": "2.4.5",
+    "supertest": "^1.2.0"
+  }
 }

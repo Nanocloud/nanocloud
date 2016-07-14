@@ -1,3 +1,5 @@
+/* globals User, AccessToken */
+
 var bcrypt = require('bcryptjs'),
     moment = require('moment'),
     passport = require('passport'),
@@ -33,7 +35,7 @@ passport.use(
             email: username
           }).exec(function (err, user) {
             if (err) {
-              return;
+              return done(err);
             }
 
             if (!user) {
@@ -54,7 +56,7 @@ passport.use(
                 }
               }
             });
-          })
+          });
         });
     }));
 
@@ -78,9 +80,12 @@ passport.use(new BearerStrategy(
 
       if( now - creationDate > sails.config.oauth.tokenLife ) {
         AccessToken.destroy({ token: accessToken }, function (err) {
-          if (err) return done(err);
+          if (err) {
+            return done(err);
+          }
+
+          return done(null, false, { message: 'Token expired' });
         });
-        return done(null, false, { message: 'Token expired' });
       }
 
       var info = {scope: '*'};

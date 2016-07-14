@@ -5,6 +5,8 @@
  * @help        :: See http://sailsjs.org/#!/documentation/concepts/Controllers
  */
 
+/* globals JsonApiService */
+
 module.exports = {
 
   find: function(req, res) {

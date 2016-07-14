@@ -1,6 +1,7 @@
+/* globals RefreshToken, AccessToken, User */
+
 var oauth2orize         = require('oauth2orize'),
     passport            = require('passport'),
-    bcrypt              = require('bcryptjs'),
     trustedClientPolicy = require('../api/policies/isTrustedClient.js');
 
 // Create OAuth 2.0 server

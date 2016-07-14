@@ -14,7 +14,7 @@ module.exports = function(req, res, next) {
     return next(null);
   }
 
-  return passport.authenticate('bearer', function(err, user, info) {
+  return passport.authenticate('bearer', function(err, user) {
 
     if ((err) || (!user)) {
       return res.send(401);
