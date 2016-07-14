@@ -41,10 +41,10 @@
   "main": "app.js",
   "repository": {
     "type": "git",
-    "url": "git://github.com/olivier/backend.git"
+    "url": "https://github.com/Nanocloud/nanocloud"
   },
-  "author": "olivier",
-  "license": "",
+  "author": "Olivier Berthonneau <olivier.berthonneau@nanocloud.com>",
+  "license": "AGPL-3.0",
   "devDependencies": {
     "jshint": "^2.9.2",
     "mocha": "2.4.5",
