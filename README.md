@@ -2,7 +2,7 @@
 
 [![Build Status](https://travis-ci.org/Nanocloud/nanocloud.svg?branch=master)](https://travis-ci.org/Nanocloud/nanocloud) [![Code Climate](https://codeclimate.com/github/Nanocloud/nanocloud/badges/gpa.svg)](https://codeclimate.com/github/Nanocloud/nanocloud)
 
-**Next version of Nanocloud still in heavy develoment**
+**Next version of Nanocloud is still in heavy develoment**
 
 # Tests
 
