@@ -6,6 +6,8 @@ engines:
     config:
       languages:
       - javascript
-
+ratings:
+  paths:
+  - "**.js"
 exclude_paths:
   - tasks/**
