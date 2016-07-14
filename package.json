@@ -46,6 +46,8 @@
   "author": "olivier",
   "license": "",
   "devDependencies": {
-    "jshint": "^2.9.2"
+    "jshint": "^2.9.2",
+    "mocha": "2.4.5",
+    "supertest": "^1.2.0"
   }
 }
