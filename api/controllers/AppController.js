@@ -6,6 +6,7 @@
  */
 
 var fs = require('fs');
+const url = require('url');
 
 module.exports = {
 
@@ -21,7 +22,7 @@ module.exports = {
    */
   serve: function (req, res) {
 
-    var file = (req.url === "/") ? "index.html" : req.url;
+    var file = (req.url === "/") ? "index.html" : url.parse(req.url).pathname;
 
     var emberApp = __dirname + '/../../assets/' + file;
     fs.exists(emberApp, function (exists) {
@@ -29,7 +30,7 @@ module.exports = {
         return res.notFound('The requested file does not exist.');
       }
 
-      fs.createReadStream(emberApp).pipe(res);
+      return fs.createReadStream(emberApp).pipe(res);
     });
   }
 };
