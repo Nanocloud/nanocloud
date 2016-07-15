@@ -46,6 +46,9 @@
   "author": "Olivier Berthonneau <olivier.berthonneau@nanocloud.com>",
   "license": "AGPL-3.0",
   "devDependencies": {
+    "ajv": "^4.1.7",
+    "clone": "^1.0.2",
+    "jsonapi-validator": "^2.1.0",
     "jshint": "^2.9.2",
     "mocha": "2.4.5",
     "supertest": "^1.2.0"

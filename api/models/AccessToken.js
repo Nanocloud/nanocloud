@@ -14,7 +14,11 @@ module.exports = {
   },
 
   beforeCreate: function(values, next){
-    values.token = uuid.v4();
+
+    if (!values.token) {
+      values.token = uuid.v4();
+    }
+
     next();
   }
 
