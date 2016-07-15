@@ -1,8 +1,11 @@
 // jshint mocha:true
 
+const testAuth = require('./auth.test');
+const testUsers = require('./users.test');
+
 var request = require('supertest');
 
-describe('nanocloud is Online', function() {
+describe('Nanocloud is Online', function() {
 
   it('Should return 200 on index', function (done) {
     request(sails.hooks.http.app)
@@ -11,3 +14,6 @@ describe('nanocloud is Online', function() {
       .end(done);
   });
 });
+
+testAuth();
+testUsers();

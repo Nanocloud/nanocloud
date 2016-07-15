@@ -6,11 +6,23 @@ before(function(done) {
   this.timeout(5000);
 
   sails.lift({
-    // configuration for testing purposes
+    models: {
+      migrate: 'drop'
+    }
   }, function(err, server) {
 
-    // here you can load fixtures, etc.
-    return done(err, sails);
+    // Here is loaded administrator token
+    AccessToken.create({
+      userId: 1,
+      token: "admintoken"
+    }, function(err, accessToken) {
+
+      if (err) {
+        return done(err);
+      }
+
+      return done(err, sails);
+    });
   });
 });
 
