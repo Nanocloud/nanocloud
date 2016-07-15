@@ -5,7 +5,7 @@
  * @help        :: See http://sailsjs.org/#!/documentation/concepts/Controllers
  */
 
-var fs = require('fs');
+const fs = require('fs');
 const url = require('url');
 
 module.exports = {
@@ -22,11 +22,18 @@ module.exports = {
    */
   serve: function (req, res) {
 
-    var file = (req.url === "/") ? "index.html" : url.parse(req.url).pathname;
+    var file = "";
+    if (req.url === "/") {
+      file = "index.html";
+      res.set('Content-Type', 'text/html; charset=utf-8');
+    } else {
+      file = url.parse(req.url).pathname;
+      res.set('Content-Type', 'application/octet-stream');
+    }
 
     var emberApp = __dirname + '/../../assets/' + file;
-    fs.exists(emberApp, function (exists) {
-      if (!exists) {
+    fs.stat(emberApp, function (err, stat) {
+      if (err) {
         return res.notFound('The requested file does not exist.');
       }
 
