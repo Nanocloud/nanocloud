@@ -32,7 +32,7 @@ module.exports = {
     }
 
     var emberApp = __dirname + '/../../assets/' + file;
-    fs.stat(emberApp, function (err, stat) {
+    fs.stat(emberApp, function (err) {
       if (err) {
         return res.notFound('The requested file does not exist.');
       }
