@@ -7,6 +7,7 @@
 
 const fs = require('fs');
 const url = require('url');
+const guessType = require("guess-content-type");
 
 module.exports = {
 
@@ -28,7 +29,7 @@ module.exports = {
       res.set('Content-Type', 'text/html; charset=utf-8');
     } else {
       file = url.parse(req.url).pathname;
-      res.set('Content-Type', 'application/octet-stream');
+      res.set('Content-Type', guessType(file));
     }
 
     var emberApp = __dirname + '/../../assets/' + file;
