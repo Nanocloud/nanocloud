@@ -39,6 +39,16 @@ module.exports = function() {
           .end(done);
       });
 
+      const expectedErrorSchema = {
+        type: 'object',
+        properties: {
+          error: {type: 'string'},
+          error_description: {type: 'string'}
+        },
+        required: ['error', 'error_description'],
+        additionalProperties: false
+      };
+
       it('Should reject login with invalid username/password', function(done) {
 
         nano.request(sails.hooks.http.app)
@@ -49,12 +59,8 @@ module.exports = function() {
             "grant_type": "password"
           })
           .set('Authorization', 'Basic ' + new Buffer('9405fb6b0e59d2997e3c777a22d8f0e617a9f5b36b6565c7579e5be6deb8f7ae:9050d67c2be0943f2c63507052ddedb3ae34a30e39bbbbdab241c93f8b5cf341').toString('base64'))
-          .expect(401)
-          .expect((res) => {
-            if (res.text !== 'Unauthorized') {
-              throw new Error("API should respond with 401 Unauthorized if someone try to access /api/* with no access token");
-            }
-          })
+          .expect(400)
+          .expect(nano.schema(expectedErrorSchema))
           .end(done);
       });
     });

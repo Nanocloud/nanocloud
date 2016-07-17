@@ -10,21 +10,30 @@ var server = oauth2orize.createServer();
 // Exchange username & password for access token.
 server.exchange(oauth2orize.exchange.password(function(user, username, password, scope, done) {
 
-  RefreshToken.create({
-    userId: user.id
-  }, function(err, refreshToken){
+  User.findOne({
+    email: username
+  }, function(err, user) {
 
     if (err) {
-      return done(err);
-    } else {
-      return AccessToken.create({ userId: user.id }, function(err, accessToken){
-        if(err) {
-          return done(err);
-        } else {
-          return done(null, accessToken.token, refreshToken.token, { 'expires_in': sails.config.oauth.tokenLife });
-        }
-      });
+      done(err);
     }
+
+    RefreshToken.create({
+      userId: user.id
+    }, function(err, refreshToken){
+
+      if (err) {
+        return done(err);
+      } else {
+        return AccessToken.create({ userId: user.id }, function(err, accessToken){
+          if(err) {
+            return done(err);
+          } else {
+            return done(null, accessToken.token, refreshToken.token, { 'expires_in': sails.config.oauth.tokenLife });
+          }
+        });
+      }
+    });
   });
 }));
 
@@ -74,7 +83,20 @@ module.exports = {
 
       app.post('/oauth/token',
                trustedClientPolicy,
+               function(req, res, next) { // If grant_type is invalid, return error
+
+                 if (req.body.grant_type !== 'password' && req.body.grant_type !== 'refresh_token') {
+                   return res.json({
+                       error: 'invalid_request',
+                       error_description: 'grant_type is missing'
+                   });
+                 }
+
+                 next();
+               },
                function(req, res, next) {
+
+                 res.set('Content-Type', 'application/json;charset=UTF-8');
 
                  // If request is a refresh_token renewal, let's fork the flow
                  if (req.body.grant_type === "refresh_token") {
@@ -86,7 +108,25 @@ module.exports = {
                  return next();
 
                },
-               passport.authenticate(['local'], { session: false }),
+               function(req, res, next) {
+                 passport.authenticate('local', function(err, user) {
+
+                   if (err) {
+                     return next(err);
+                   }
+
+                   if (!user) {
+
+                     res.status(400);
+                     return res.json({
+                       error: 'access_denied',
+                       error_description: 'Invalid User Credentials'
+                     });
+                   }
+
+                   next(null, user);
+                 })(req, res, next);
+               },
                server.token(),
                server.errorHandler()
               );
