@@ -21,15 +21,5 @@ module.exports = extend(baseDriver, {
       .catch((err) => {
         return done(err);
       });
-  },
-
-  find: function(done) {
-    Machine.find()
-      .then((machines) => {
-        return done(null, machines);
-      })
-      .catch((err) => {
-        return done(err);
-      });
   }
 });

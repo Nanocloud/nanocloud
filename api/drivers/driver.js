@@ -1,4 +1,5 @@
 /* jshint unused:vars */
+/* globals Machine */
 
 module.exports = {
 
@@ -14,13 +15,20 @@ module.exports = {
 
   /*
    * Return list of machines
+   * Default behavior is to return all stored machines
    *
    * @method find
    * @param {function} callback to call one find is done
    * @return {array} Array of model Machine
    */
   find: function(done) {
-    throw new Error("Driver's method 'find' not implemented");
+    Machine.find()
+      .then((machines) => {
+        return done(null, machines);
+      })
+      .catch((err) => {
+        return done(err);
+      });
   },
 
   /*
