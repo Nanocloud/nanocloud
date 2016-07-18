@@ -11,6 +11,10 @@ before(function(done) {
     }
   }, function(err, server) {
 
+    if (err) {
+      throw new Error(err);
+    }
+
     // Here is loaded administrator token
     AccessToken.create({
       userId: 1,
