@@ -1,5 +1,7 @@
 var sails = require('sails');
 
+process.env.IAAS = 'dummy';
+
 before(function(done) {
 
   // Increase the Mocha timeout so that Sails has enough time to lift.
