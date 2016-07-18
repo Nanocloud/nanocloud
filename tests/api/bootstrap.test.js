@@ -1,5 +1,7 @@
 var sails = require('sails');
 
+process.env.IAAS = 'dummy';
+
 before(function(done) {
 
   // Increase the Mocha timeout so that Sails has enough time to lift.
@@ -10,6 +12,10 @@ before(function(done) {
       migrate: 'drop'
     }
   }, function(err, server) {
+
+    if (err) {
+      throw new Error(err);
+    }
 
     // Here is loaded administrator token
     AccessToken.create({

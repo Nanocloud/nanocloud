@@ -4,6 +4,21 @@
 
 **Next version of Nanocloud is still in heavy develoment**
 
+# Run
+
+To run the backend:
+
+````
+sails lift
+````
+
+Some environment variable are expected to be set:
+- IAAS (mandatory) currently only "manual" in implemented
+
+Manual driver specific:
+- EXECUTION_SERVERS (mandatory) the IP of the execution server
+- WINDOWS_PASSWORD (mandatory) the Windows password for the *administrator* account
+
 # Tests
 
 To run all tests:

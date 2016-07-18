@@ -32,7 +32,7 @@ module.exports.routes = {
   *                                                                          *
   ***************************************************************************/
 
-  '/*': { controller: 'App', action: 'serve', skipAssets: false, skipRegex: /^\/api\/.*$/ }
+  '/*': { controller: 'App', action: 'serve', skipAssets: false, skipRegex: /^\/api\/.*$/ },
 
   /***************************************************************************
   *                                                                          *
@@ -43,5 +43,15 @@ module.exports.routes = {
   * for configuration options and examples.                                  *
   *                                                                          *
   ***************************************************************************/
+
+  'GET /machines/users': {
+    controller: 'Machine',
+    action: 'users'
+  },
+
+  'GET /apps/connections': {
+    controller: 'Apps',
+    action: 'connections'
+  }
 
 };
