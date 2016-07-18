@@ -9,11 +9,11 @@ module.exports = {
     return driver.init((err) => {
 
       if (err) {
-        callback(err);
+        return callback(err);
       }
 
       this._initialized = true;
-      callback();
+      return callback();
     });
   },
 
