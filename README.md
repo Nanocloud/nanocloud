@@ -23,6 +23,7 @@ AWS drive specific:
 - AWS_REGION (mandatory) AWS region
 - AWS_ACCESS_KEY_ID (mandatory) Amazon key ID
 - AWS_PRIVATE_KEY (mandatory) Amazon private key
+- AWS_PRIVATE_KEY_NAME (mandatory) Key name to look for in virtual machine list
 
 # Tests
 

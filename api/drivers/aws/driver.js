@@ -32,16 +32,18 @@ module.exports = extend(baseDriver, {
       let machineToCreate = [];
       servers.forEach((server) => {
 
-        machineToCreate.push(Machine.findOrCreate({
-          id: server.id
-        },{
-          id: server.id,
-          name: server.name || server.id,
-          status: 'up',
-          ip: server.amazon.PublicIpAddress,
-          adminPassword: '',
-          platform: 'aws'
-        }));
+        if (server.amazon.KeyName === process.env.AWS_PRIVATE_KEY_NAME) {
+          machineToCreate.push(Machine.findOrCreate({
+            id: server.id
+          },{
+            id: server.id,
+            name: server.name || server.id,
+            status: 'up',
+            ip: server.amazon.PublicIpAddress,
+            adminPassword: '',
+            platform: 'aws'
+          }));
+        }
       });
 
       return Promise.all(machineToCreate)
