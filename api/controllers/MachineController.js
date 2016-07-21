@@ -14,10 +14,10 @@ module.exports = {
     MachineService.find((err, machines) => {
 
       if (err) {
-        return res.negociate(err);
+        return res.negotiate(err);
       }
 
-      return res.ok(machines);
+      return res.send(machines); // TODO We will need to revert this back to res.ok
     });
   },
 
@@ -30,10 +30,10 @@ module.exports = {
     MachineService.find((err, machines) => {
 
       if (err) {
-        res.negociate(err);
+        res.negotiate(err);
       }
 
-      res.ok(machines);
+      res.send(machines);
     });
   }
 };

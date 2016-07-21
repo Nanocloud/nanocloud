@@ -13,11 +13,17 @@ sails lift
 ````
 
 Some environment variable are expected to be set:
-- IAAS (mandatory) currently only "manual" in implemented
+- IAAS (mandatory) choice between "manual" and "aws"
 
 Manual driver specific:
 - EXECUTION_SERVERS (mandatory) the IP of the execution server
 - WINDOWS_PASSWORD (mandatory) the Windows password for the *administrator* account
+
+AWS drive specific:
+- AWS_REGION (mandatory) AWS region
+- AWS_ACCESS_KEY_ID (mandatory) Amazon key ID
+- AWS_PRIVATE_KEY (mandatory) Amazon private key
+- AWS_PRIVATE_KEY_NAME (mandatory) Key name to look for in virtual machine list
 
 # Tests
 

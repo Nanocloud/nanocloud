@@ -22,6 +22,12 @@ module.exports = {
       type: 'boolean'
     },
 
+    machines: {
+      collection: 'Machine',
+      via: 'users',
+      through: 'usermachine'
+    },
+
     toJSON: function() {
       var obj = this.toObject();
       delete obj.password;
