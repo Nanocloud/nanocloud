@@ -22,6 +22,11 @@ module.exports = {
       type: 'boolean'
     },
 
+    machine: {
+      model: 'Machine',
+      unique: true
+    },
+
     toJSON: function() {
       var obj = this.toObject();
       delete obj.password;

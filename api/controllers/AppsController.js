@@ -11,13 +11,12 @@ module.exports = {
 
   connections: function(req, res) {
 
-    MachineService.find((err, machines) => {
+    MachineService.getUserMachine(req.user, (err, userMachine) => {
 
       if (err) {
-        return res.negociate(err);
+        return res.negotiate(err);
       }
 
-      const userMachine = machines[0];
       var connections = [];
 
       return Apps.find()
@@ -38,7 +37,7 @@ module.exports = {
           return res.ok(connections);
         })
         .catch((err) => {
-          return res.negociate(err);
+          return res.negotiate(err);
         });
     });
   }
