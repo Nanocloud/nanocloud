@@ -35,7 +35,7 @@ module.exports = extend(baseDriver, {
         if (server.amazon.KeyName === process.env.AWS_PRIVATE_KEY_NAME) {
           machineToCreate.push(Machine.findOrCreate({
             id: server.id
-          },{
+          }, {
             id: server.id,
             name: server.name || server.id,
             status: 'up',

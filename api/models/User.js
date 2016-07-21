@@ -22,9 +22,10 @@ module.exports = {
       type: 'boolean'
     },
 
-    machine: {
-      model: 'Machine',
-      unique: true
+    machines: {
+      collection: 'Machine',
+      via: 'users',
+      through: 'usermachine'
     },
 
     toJSON: function() {

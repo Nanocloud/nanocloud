@@ -17,7 +17,7 @@ module.exports = {
         return res.negotiate(err);
       }
 
-      return res.ok(machines);
+      return res.send(machines); // TODO We will need to revert this back to res.ok
     });
   },
 
@@ -33,7 +33,7 @@ module.exports = {
         res.negotiate(err);
       }
 
-      res.ok(machines);
+      res.send(machines);
     });
   }
 };

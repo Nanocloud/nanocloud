@@ -18,8 +18,10 @@ module.exports = {
       index: true
     },
 
-    user: {
-      model: 'User'
+    users: {
+      collection: 'User',
+      via: 'machines',
+      through: 'usermachine'
     }
   }
 };
