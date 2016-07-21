@@ -40,7 +40,7 @@ module.exports = {
             .exec((err, machines) => {
 
               if (err) {
-                callback(err);
+                return callback(err);
               }
 
               let userMachine = null;
