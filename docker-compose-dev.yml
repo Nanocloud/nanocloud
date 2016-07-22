@@ -12,3 +12,13 @@ services:
       - config.env
     network_mode: host
     container_name: "backend"
+
+  frontend:
+    build:
+      context: ./assets
+      dockerfile: Dockerfile-dev
+    image: nanocloud/frontend:dev
+    volumes:
+      - ./assets:/opt
+    network_mode: host
+    container_name: "frontend"
