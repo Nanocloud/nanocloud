@@ -12,6 +12,7 @@ services:
       - config.env
     networks:
       - nanocloud
+    restart: always
 
   frontend:
     build:
@@ -22,6 +23,18 @@ services:
       - static:/opt/dist
     networks:
       - nanocloud
+
+  proxy:
+    build: ./proxy
+    image: nanocloud/proxy
+    ports:
+      - 80:80
+      - 443:443
+    depends_on:
+      - backend
+    networks:
+      - nanocloud
+    restart: always
 
 networks:
   nanocloud:

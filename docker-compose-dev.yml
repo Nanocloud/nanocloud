@@ -22,3 +22,14 @@ services:
       - ./assets:/opt
     network_mode: host
     container_name: "frontend"
+
+  proxy:
+    image: nanocloud/proxy
+    volumes:
+      - ./proxy/nginx.dev.conf:/etc/nginx/conf.d/default.conf:ro
+      - ./proxy/certificates:/etc/nginx/ssl/:ro
+    depends_on:
+      - backend
+    network_mode: host
+    container_name: "proxy"
+    restart: always
