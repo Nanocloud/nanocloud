@@ -1,0 +1,14 @@
+version: '2'
+
+services:
+  backend:
+    build:
+      context: ./
+      dockerfile: Dockerfile-dev
+    image: nanocloud/backend:dev
+    volumes:
+      - ./:/opt/back
+    env_file:
+      - config.env
+    network_mode: host
+    container_name: "backend"

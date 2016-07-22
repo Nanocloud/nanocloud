@@ -1,0 +1,16 @@
+version: '2'
+
+services:
+  backend:
+    build:
+      context: ./
+      dockerfile: Dockerfile
+    image: nanocloud/backend
+    env_file:
+      - config.env
+    networks:
+      - nanocloud
+
+networks:
+  nanocloud:
+    driver: bridge

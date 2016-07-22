@@ -1,0 +1,11 @@
+.git
+.gitignore
+.codeclimate.yml
+.tmp
+node_modules
+Dockerfile
+Dockerfile-dev
+docker-compose.yml
+docker-compose-dev.yml
+LICENSE
+README.md
