@@ -1,0 +1,8 @@
+<span class='color-gray-light in-bl no-underline'>
+  {{#if displayCountdown}}
+    Shutdown in 
+    {{live-countdown class="in-bl" value=machine.countdownTimeleft isTime=true}}
+  {{else}}
+    {{machine.formattedTimeleft}}
+  {{/if}}
+</span>

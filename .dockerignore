@@ -2,6 +2,7 @@
 .gitignore
 .codeclimate.yml
 .tmp
+assets
 node_modules
 Dockerfile
 Dockerfile-dev

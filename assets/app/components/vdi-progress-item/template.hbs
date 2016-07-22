@@ -1,0 +1,19 @@
+<div class='vdi-progress-item'>
+  {{ file.name }} 
+
+  {{#if completed}}
+    Completed
+  {{else}}
+    {{ vdi-progress-formater progress }}
+    {{#if uploading }}
+      {{ fa-icon "spinner" spin=true}}
+    {{/if}}
+    <span class="link" {{ action "cancel" }}>
+      {{#if waitForCancel}}
+        {{ fa-icon "spinner" spin=true}}
+      {{else}}
+        Cancel
+      {{/if}}
+    </span>
+  {{/if}}
+</div>

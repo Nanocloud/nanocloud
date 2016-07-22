@@ -1,0 +1,24 @@
+<div class="m-t-2">
+  <h4>
+    {{#link-to 'protected.users.groups' }}
+      Groups
+    {{/link-to}} - Create a new group
+ </h4>
+  <div class="content-wrapper form user-new m-t-1">
+    <form {{action 'createGroup' on='submit'}}>
+      <fieldset class="form-group">
+        <label for="new-group-name">Give your group a name</label>
+        {{input class='form-control' id='new-group-name' placeholder='Name' value=groupName}}
+      </fieldset>
+    
+      {{#if loadState}}
+        <button class="btn btn-info">
+          {{ fa-icon "spinner" spin=true}}
+          <div class="in-bl">Creating</div>
+        </button>
+      {{else}}
+        <button type="submit" class="btn btn-primary btn-block text-uppercase" disabled={{preventCreation}}>Create</button>
+      {{/if}}
+    </form>
+  </div>
+</div>

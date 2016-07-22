@@ -1,0 +1,13 @@
+<div class='section'>
+  {{#if session.user.isAdmin}}
+      <ul class="nav nav-pills">
+        <li class="nav-item">
+          {{#link-to 'protected.users.index' class='nav-link' active=activeTab}}Users{{/link-to}}
+        </li>
+        <li class="nav-item">
+          {{#link-to 'protected.users.groups' class='nav-link'}}Groups{{/link-to}}
+        </li>
+      </ul>
+  {{/if}}
+  {{outlet}}
+</div>

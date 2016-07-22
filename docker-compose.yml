@@ -6,11 +6,27 @@ services:
       context: ./
       dockerfile: Dockerfile
     image: nanocloud/backend
+    volumes:
+      - static:/opt/back/assets/dist
     env_file:
       - config.env
+    networks:
+      - nanocloud
+
+  frontend:
+    build:
+      context: ./assets
+      dockerfile: Dockerfile
+    image: nanocloud/frontend
+    volumes:
+      - static:/opt/dist
     networks:
       - nanocloud
 
 networks:
   nanocloud:
     driver: bridge
+
+volumes:
+  static:
+    driver: local

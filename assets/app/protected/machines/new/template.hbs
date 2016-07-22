@@ -1,0 +1,37 @@
+<div class="section">
+ <h4> 
+    {{#link-to 'protected.machines' }}
+      Machines
+    {{/link-to}}
+   - New machine</h4>
+
+  <div class='content-wrapper form'>
+    <form {{action 'createMachine' on='submit'}}>
+      <fieldset class="form-group">
+        <label>Give a name to your machine</label>
+        {{input type="text" class='form-control' value=machineName placeholder="Machine Name"}}
+      </fieldset>
+
+      <div class="dropdown">
+        <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+          {{#if selectedItem}}
+            {{selectedItem}}
+          {{else}}
+            Instance Type
+          {{/if}}
+        </button>
+        <div class="dropdown-menu" aria-labelledby="dropdownMenu1">
+          {{#each drivers as |driver|}}
+            {{#each driver.types as |type|}}
+              <a {{ action "selectItem" type.id }} class="dropdown-item">
+                {{type.id}}
+              </a>
+            {{/each}}
+          {{/each}}
+        </div>
+      </div>
+
+      <button type="submit" class="btn btn-primary m-t-2">Create</button>
+    </form>
+  </div>
+</div>

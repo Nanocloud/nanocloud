@@ -1,0 +1,16 @@
+.edit{
+
+  th {
+    width: 30%;
+  }
+
+  .editText {
+    input {
+      font-size: $font-size-root;
+    }
+  }
+
+  .tooltip-component {
+    display: inline-block;
+  }
+}

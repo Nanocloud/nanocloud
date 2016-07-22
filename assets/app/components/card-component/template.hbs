@@ -1,0 +1,21 @@
+<div class='card'>
+  <div class="card-block">
+    <blockquote class="card-blockquote">
+      <h1>
+        {{#if (is-equal wait 0)}}
+          <span {{ action "clickOnContent" }} class='clickable link'>
+            {{ content }}
+          </span>
+        {{else}}
+          {{#if (is-equal wait 1)}}
+            {{ fa-icon "spinner" spin=true}}
+          {{else}}
+            {{ fa-icon "close"}}
+          {{/if}}
+        {{/if}}
+      </h1>
+    <footer>{{ title }}</footer>
+    <p>{{ yield }}</p>
+    </blockquote>
+  </div>
+</div>

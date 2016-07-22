@@ -1,0 +1,255 @@
+html, body {
+	width: 100%;
+	height: 100%;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-weight: 200;
+}
+
+h1 {
+  margin-bottom: 40px;
+}
+
+.ember-application > .ember-view {
+  width: 100%;
+  height: 100%;
+}
+
+.main-navbar {
+  position: fixed;
+  right: 0;
+  top: 0;
+  width: calc(100% - 250px);
+  z-index: 1;
+}
+
+@media (max-width: 991px) {
+  .main-navbar {
+    width: 100%;
+  }
+}
+
+.section {
+  position: relative;
+	background: $gray-lightest;
+  padding: 20px 20px 20px 20px;
+}
+
+.content-wrapper {
+  margin: 0px 0px 20px 0px;
+}
+
+.loading-page {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.transition-enabled {
+  -webkit-transition: all 0.5s ease-in-out;
+  -moz-transition: all 0.5s ease-in-out;
+  -o-transition: all 0.5s ease-in-out;
+  transition: all 0.5s ease-in-out;
+}
+
+.transition-enabled-1{
+  -webkit-transition: all 0.1s ease-in-out;
+  -moz-transition: all 0.1s ease-in-out;
+  -o-transition: all 0.1s ease-in-out;
+  transition: all 0.1s ease-in-out;
+}
+
+.transition-enabled-2 {
+  -webkit-transition: all 0.2s ease-in-out;
+  -moz-transition: all 0.2s ease-in-out;
+  -o-transition: all 0.2s ease-in-out;
+  transition: all 0.2s ease-in-out;
+}
+
+.opacity-0 {
+  opacity: 0;
+}
+
+.opacity-1 {
+  opacity: 1;
+}
+
+.color-primary {
+  color: $blue-default;
+}
+
+.error{
+  color: red;
+}
+
+.indication {
+  font-weight: 200;
+  padding: 10px;
+  background: $blue-lighter;
+  border: 1px solid #E1F3FF;
+  &.selected {
+    border: 1px solid $blue-default;
+    &:hover {
+      border: 1px solid $blue-default !important;
+    }
+  }
+  &.hover:hover{
+    border: 1px solid #C2E4FB;
+  }
+}
+
+.color-gray-dark {
+  color: $gray-darker;
+}
+
+.clickable.color-gray-dark:hover {
+  color: darken($gray-darker, 20%);
+}
+
+.link {
+  color: $blue-default;
+  cursor: pointer;
+  &:hover {
+    color: darken($blue-default, 20%);
+  }
+
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
+.icon_link {
+  color: $blue-default;
+
+  &:hover {
+    color: $blue-darken;
+  }
+}
+
+.close_icon {
+  color: $red;
+  &:hover {
+    color: darken($red, 20%);
+  }
+}
+
+.edit-input-text {
+  border: 0;
+  outline: 0;
+}
+
+.ta-center {
+  text-align: center;
+}
+
+.va-top {
+  vertical-align: top;
+}
+
+.va-bottom {
+  vertical-align: bottom;
+}
+
+.va-sub {
+  vertical-align: sub;
+}
+
+.va-sup {
+  vertical-align: super;
+}
+
+.va-mid {
+  vertical-align: middle;
+}
+
+.va-tb {
+  vertical-align: text-bottom;
+}
+
+.bl {
+  display: block;
+}
+
+.in-bl {
+  display: inline-block;
+}
+
+.fl {
+  display: flex;
+}
+
+.abs {
+  position: absolute;
+}
+
+.fright {
+  float: right;
+}
+
+.z-1 {
+  z-index: 1;
+}
+
+.px-l-5 {
+  padding-left: 5px;
+}
+
+.no-underline *:hover {
+  text-decoration: none;
+}
+
+.noselect {
+  -webkit-touch-callout: none; 
+  -webkit-user-select: none;   
+  -khtml-user-select: none;    
+  -moz-user-select: none;      
+  -ms-user-select: none;       
+  user-select: none;           
+}
+
+.clickable {
+  cursor: pointer;
+}
+
+.online {
+  color: $blue-default;
+}
+
+.offline {
+  color: $gray-light;
+}
+
+.centered {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.tooltipster-default {
+  display: block;
+  border: 0;
+  border-radius: 0;
+  background-color: $blue-default;
+  color: $white;
+}
+
+.btn-primary {
+  box-shadow: none;
+}
+
+.ember-modal-dialog {
+  padding: 0 !important;
+}
+
+@media (max-width: 991px) {
+  .ember-modal-dialog {
+    width: 95%;
+    left: auto !important;
+    margin-left: auto !important;
+  }
+}

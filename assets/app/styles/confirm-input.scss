@@ -1,0 +1,63 @@
+.confirm-input {
+
+  form {
+    display: flex;
+  }
+  button {
+    display: flex;
+    border: none;
+    background: none;
+    cursor: pointer;
+    padding: 0;
+    border: 0;
+  }
+  .controls-wrapper {
+    margin-right: 7px;
+    display: flex;
+  }
+  .done {
+    color: $blue-lighten;
+    &:hover,
+    &:focus {
+      color: $blue-default;
+      transition-duration: .3s;
+    }
+  }
+  .clear {
+    color: $red;
+    &:hover,
+    &:focus {
+      color: darken($red, 20%);
+      transition-duration: .3s;
+    }
+  }
+  .done {
+    color: $blue-lighten;
+
+    &:hover,
+    &:target {
+      color: $blue-default;
+      transition-duration: .3s;
+    }
+  }
+  .clear {
+    color: lighten($red, 30%);
+    &:hover,
+    &:target {
+      color: $red;
+      transition-duration: .3s;
+    }
+  }
+
+  input {
+    border: none;
+    background: none;
+    background-color: $blue-lighter;
+    padding: 5px 3px 3px 10px;
+    width: 100%;
+  }
+
+  .edit {
+    font-size: 17px;
+  }
+}

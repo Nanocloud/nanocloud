@@ -1,0 +1,5 @@
+{{#if targetObject.loadState}}
+  {{fa-icon "spinner" spin=true}}
+{{else}}
+  {{ user-is-connected userId=record.id sessions=targetObject.sessions }}
+{{/if}}

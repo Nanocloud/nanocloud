@@ -1,0 +1,37 @@
+.logout-btn {
+  display: flex;
+  align-items: center;
+}
+
+.logout-dropdown {
+
+  button {
+    border: 0;
+    box-shadow: none;
+  }
+
+  &:hover{
+    background-color: $gray-lighter;
+  }
+
+  > .dropdown-menu {
+    margin-top: 0;
+    min-width: 0;
+    text-align: center;
+    box-shadow: none;
+    right: 0px;
+    border: 0;
+    padding: 0;
+
+    > li button {
+      padding: 5px 0;
+      background-color: $blue-default;
+      color: $white;
+
+      &:hover {
+        background-color: $blue-light;
+      }
+    }
+  }
+}
+

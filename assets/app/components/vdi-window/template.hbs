@@ -1,0 +1,19 @@
+<div class='vdi-window noselect section {{ windowClass }} {{ if stateVisible "state-show" "state-hide" }}'>
+  <div class='head'>
+    <h4>
+      {{#if materialIcon}}
+        <i class="material-icons">{{ materialIcon }}</i>
+      {{/if}}
+      {{ title }}
+    </h4>
+    <div class='close-btn'>
+       {{ icon-component
+          materialIcon="close"
+          clickable=true
+          hover-enabled=true
+          click=toggleWindow
+        }}
+    </div>
+  </div>
+  {{ yield }}
+</div>

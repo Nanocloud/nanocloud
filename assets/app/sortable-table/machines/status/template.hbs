@@ -1,0 +1,6 @@
+{{#if record.displayCountdown}}
+  Shutdown in 
+  {{live-countdown class="in-bl" value=record.countdownTimeleft isTime=true}}
+{{else}}
+  {{record.formattedTimeleft}}
+{{/if}}

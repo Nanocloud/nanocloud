@@ -1,0 +1,15 @@
+<div class='direct-link centered'>
+  <i class='material-icons'>cloud_off</i>
+  <span class="disconnect-text m-l-1">Disconnected</span>
+</div>
+{{#single-tab
+  disconnectBtn=true
+  showState=true
+  homeBtn=false
+  isVisible=showSingleTab
+  connectionName=app
+  onClose="disconnectGuacamole"
+  as |singleTabContext|
+}}
+  {{remote-session autoload=true connectionName=app onError=singleTabContext.disconnectVDI}}
+{{/single-tab}}

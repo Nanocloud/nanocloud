@@ -1,0 +1,140 @@
+<div class="user-detail m-t-2">
+	<h4 class="name-row">
+		{{#if model.isAdmin }}
+			{{#link-to 'protected.users'}}Users{{/link-to}} -
+		{{/if}}
+		{{#edit-text
+			class='in-bl'
+			type="text"
+			confirmation=false
+			textInput=model.firstName
+			textInputPlaceholder="First name"
+			onClose="changeFirstName"
+		}}
+			{{model.firstName}}
+		{{/edit-text}}
+		{{#edit-text
+			class='in-bl px-l-5'
+			type="text"
+			confirmation=false
+			textInput=model.lastName
+			textInputPlaceholder="Last name"
+			onClose="changeLastName"
+		}}
+			{{model.lastName}}
+		{{/edit-text}}
+
+		{{#if model.isAdmin}}
+			<i class="material-icons va-bottom">verified_user</i>
+		{{/if}}
+	</h4>
+	<div class='content-wrapper'>
+		<table class="table user-table">
+			<tbody>
+				<tr>
+					<th scope="row">Email address</th>
+					<td>
+						{{#edit-text
+							type="email"
+							confirmation=false
+							textInput=model.email
+							textInputPlaceholder="Email"
+							onClose="changeEmail" }}
+							{{model.email}}
+						{{/edit-text}}
+					</td>
+				</tr>
+				<tr>
+					<th scope="row">Password</th>
+            <td>
+						{{#edit-text
+							type="password"
+							confirmation=true
+							textInput=model.password
+							textInputPlaceholder="Password"
+							confirmInput=passwordConfirmation
+							confirmInputPlaceholder="Confirmation"
+							onClose="changePassword" }}
+              <span class="va-bottom">
+							******
+              </span>
+						{{/edit-text}}
+					</td>
+				</tr>
+        <tr>
+          <th scope="row">
+            {{#if session.user.isAdmin}}
+              {{#link-to 'protected.users.groups.index'}}
+                Group(s)
+              {{/link-to}}
+            {{else}}
+                Group(s)
+            {{/if}}
+          </th>
+          <td>
+            {{#each model.groups as |group index|}}
+              {{#if index}},{{/if}}
+              {{#if session.user.isAdmin}}
+                <span class="in-bl">
+                  {{#link-to 'protected.users.groups.group' group.id}} {{group.name}} {{/link-to}}
+                </span>
+              {{else}}
+                  {{group.name}}
+              {{/if}}
+            {{else}}
+              No group
+            {{/each}}
+          </td>
+        </tr>
+		<tr>
+          <th scope="row">Expiration date</th>
+          <td>
+				{{#if session.user.isAdmin }}
+				{{#edit-text
+					type="number"
+					confirmation=false
+					textInput=model.expirationDays
+					textInputPlaceholder="Days left before expiration"
+					onClose="changeExpirationDays" }}
+						{{moment-calendar model.expirationDays}}
+						{{/edit-text}}
+				{{else}}
+						 {{moment-calendar model.expirationDays}}
+				{{/if}}
+          </td>
+		</tr>
+        <tr>
+          <th scope="row">Creation date</th>
+          <td>
+            {{moment-calendar model.signupDate}}
+          </td>
+        </tr>
+				{{#if session.user.isAdmin }}
+					<tr>
+						<th scope="row">UUID</th>
+            <td>
+              {{model.id}}
+              {{copy-clipboard class='in-bl' value=model.id title='UUID'}}
+            </td>
+					</tr>
+					<tr>
+						<th scope="row">Delete Account</th>
+						<td>
+							{{ remove-user action="removeDone" }}
+						</td>
+					</tr>
+          <tr>
+            <th scope="row">Is admin</th>
+            <td>
+              {{#if isMe }}
+                {{input type="checkbox" name="isAdmin" change=(action "updatePrivilege") checked=model.isAdmin disabled="isMe"}}
+              {{else}}
+                {{input type="checkbox" name="isAdmin" change=(action "updatePrivilege") checked=model.isAdmin}}
+              {{/if}}
+            </td>
+          </tr>
+				{{/if}}
+			</tbody>
+		</table>
+	</div>
+</div>

@@ -1,0 +1,78 @@
+<div id="file-page">
+{{#vdi-drag-n-drop
+  id="drag-n-drop"
+  assignBrowse="browse"
+  complete="refreshModel"
+  dragAndDropActive=dragAndDropActive
+  as |uploadData|}}
+
+  {{#ember-wormhole to="file-page"}}
+    <div class="section p-a-2">
+      <h4>Files</h4>
+      <p class="color-primary indication hover clickable">
+        <span class="browse link">Drag and drop any file right here to upload it</span>
+
+        {{#if uploadData.queue}}
+          <hr>
+          <p>
+          <span class="state">
+            {{ uploadData.state }}
+          </span>
+          {{#if uploadData.uploading }}
+            {{ uploadData.progress }}%
+            <span class="link" {{ action "uploadCallback" uploadData.stopUpload }}>Cancel All</span>
+          {{/if}}
+          </p>
+          <p>
+            {{#each uploadData.queue as |file|}}
+              <div class='item'>
+                <div class='vdi-progress-item'>
+                  {{ file.name }}
+
+                  {{#if file.completed}}
+                    Completed
+                  {{else}}
+                    {{#if file.uploading }}
+                      {{ file.progress }}%
+                      {{ fa-icon "spinner" spin=true}}
+                      <span class="link" {{ action "cancel" target=file }}>
+                        Cancel
+                      </span>
+                    {{/if}}
+                  {{/if}}
+                </div>
+              </div>
+            {{else}}
+              No items
+            {{/each}}
+          </p>
+
+          <button {{action "uploadCallback" uploadData.flushHistory }} type="button" class="btn btn-primary">Clear upload history</button>
+        {{/if}}
+      </p>
+      <div class='content-wrapper'>
+        <div class='drag-drop-wrapper'>
+        </div>
+        {{#if modelIsEmpty}}
+          There is no file
+        {{else}}
+          {{models-table
+            class="sortableTable"
+            data=data
+            filteringIgnoreCase=sortableTableConfig.filteringIgnoreCase
+            columns=columns
+            showColumnsDropdown=false
+            delete='downloadFile'
+            customMessages=sortableTableConfig.messageConfig
+            customIcons=sortableTableConfig.customIcons
+            customClasses=sortableTableConfig.customClasses
+            useNumericPagination=true
+            multipleColumnsSorting=false
+          }}
+        {{/if}}
+        <div class="clearfix"></div>
+      </div>
+    </div>
+  {{/ember-wormhole}}
+{{/vdi-drag-n-drop}}
+</div>

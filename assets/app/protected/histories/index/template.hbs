@@ -1,0 +1,44 @@
+<div class="histories section">
+  <h4>
+    History 
+  </h4>
+  <p class="color-primary indication">
+    History gives you information about your users' sessions. You can also download this table as a CSV file.
+    <p class="m-t-1 m-b-0"> 
+      <button class='btn btn-primary downloadcsv' {{ action 'downloadCSV' }}>Save as CSV file</button>
+      <button {{ action "refreshModel" }} class="btn btn-info">Reload</button> 
+    </p>
+  </p>
+  {{#if items.length}}
+    <ul class="history-info list-group color-primary">
+      {{#if avgSessionDuration}}
+        <li class="list-group-item in-bl">
+          Average session duration: {{format-duration avgSessionDuration}}
+        </li>
+      {{/if}}
+      <li class="list-group-item in-bl">
+        {{items.length}} {{formatSessionLabel}}
+      </li>
+    </ul>
+  {{/if}}
+  <div class='content-wrapper m-t-2'>
+    {{#if modelIsEmpty}}
+      No entries 
+    {{else}}
+      {{models-table
+        class="sortableTable"
+        data=data
+        columns=columns
+        showColumnsDropdown=false
+        filteringIgnoreCase=sortableTableConfig.filteringIgnoreCase
+        customMessages=sortableTableConfig.messageConfig
+        customIcons=sortableTableConfig.customIcons
+        customClasses=sortableTableConfig.customClasses
+        useNumericPagination=true
+        multipleColumnsSorting=false
+      }}
+    {{/if}}
+    <div class="clearfix"></div>
+  </div>
+
+</div>

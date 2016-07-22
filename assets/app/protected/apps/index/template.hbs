@@ -1,0 +1,46 @@
+<div class='content-wrapper'>
+  {{#if hasDesktop}}
+    {{#if isCheckingMachine}}
+      <div class='action-btn-wrapper'>
+        <button class="btn btn-info">
+          {{ fa-icon "spinner" spin=true}}
+          <div class="in-bl">Waiting for VM</div>
+        </button>
+      </div>
+    {{else}}
+      <div class='action-btn-wrapper'>
+        <button class="btn btn-primary" {{action "startDesktop"}}>Desktop</button>
+      </div>
+    {{/if}}
+  {{/if}}
+  {{models-table
+    class="sortableTable"
+    data=data
+    columns=columns
+    showColumnsDropdown=false
+    delete='downloadFile'
+    filteringIgnoreCase=sortableTableConfig.filteringIgnoreCase
+    customMessages=sortableTableConfig.messageConfig
+    customIcons=sortableTableConfig.customIcons
+    customClasses=sortableTableConfig.customClasses
+    useNumericPagination=true
+    multipleColumnsSorting=false
+  }}
+  <div class="clearfix"></div>
+</div>
+
+{{#single-tab 
+  togglable=true
+  disconnectBtn=true
+  homeBtn=(reverse configuration.autoLogoff)
+  isVisible=showSingleTab
+  onClose="handleVdiClose"
+  connectionName=connectionName
+  retryConnection="retryConnection"
+}}
+  {{remote-session connectionName=connectionName activator=activator}}
+{{/single-tab}}
+
+{{dim-background show=showFileExplorer preventAction=isPublishing action="toggleFileExplorer"}}
+{{#file-explorer isVisible=showFileExplorer isPublishing=isPublishing}}
+{{/file-explorer}}

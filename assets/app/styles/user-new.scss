@@ -1,0 +1,10 @@
+
+.user-new {
+  width: 300px;
+}
+
+@media (max-width: 991px) {
+  .user-new {
+    width: 100%;
+  }
+}

@@ -1,0 +1,23 @@
+<div class="configuration section p-a-2">
+  <ul class="nav nav-pills">
+    <li class="nav-item">
+      {{#link-to 'protected.configs.index' class='nav-link' }}Session{{/link-to}}
+    </li>
+    <li class="nav-item">
+      {{#link-to 'protected.configs.user-right' class='nav-link'}}User rights{{/link-to}}
+    </li>
+    <li class="nav-item">
+      {{#link-to 'protected.configs.email-configuration' class='nav-link'}}Email configuration{{/link-to}}
+    </li>
+    <li class="nav-item">
+      {{#link-to 'protected.configs.look-and-feel' class='nav-link'}}Look and feel{{/link-to}}
+    </li>
+    <li class="nav-item">
+      {{#link-to 'protected.configs.other-setting' class='nav-link'}}Other settings{{/link-to}}
+    </li>
+  </ul>
+  <p class="color-primary indication in-bl m-t-1">
+    <span class="text">You can configure application behavior in this page.</span>
+  </p>
+  {{outlet}}
+</div>
