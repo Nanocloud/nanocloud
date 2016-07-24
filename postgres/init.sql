@@ -631,8 +631,6 @@ SELECT pg_catalog.setval('history_id_seq', 1, false);
 -- Data for Name: machine; Type: TABLE DATA; Schema: public; Owner: nanocloud
 --
 
-COPY machine (name, type, ip, plazaport, platform, id, "createdAt", "updatedAt") FROM stdin;
-Manual static	\N	52.59.70.207	\N	manual	1	2016-07-24 16:55:02+00	2016-07-24 16:55:02+00
 \.
 
 
