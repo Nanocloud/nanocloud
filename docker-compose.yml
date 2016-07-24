@@ -36,6 +36,19 @@ services:
       - nanocloud
     restart: always
 
+  guacamole-client:
+    build: ./guacamole-client
+    image: nanocloud/guacamole-client
+    networks:
+      - nanocloud
+    restart: always
+
+  guacd:
+    image: glyptodon/guacd:0.9.9
+    networks:
+      - nanocloud
+    restart: always
+
 networks:
   nanocloud:
     driver: bridge

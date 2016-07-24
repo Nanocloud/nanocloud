@@ -1,0 +1,16 @@
+{
+
+    "guacamoleVersion" : "0.9.9",
+
+    "name"      : "Disabled Authentication with log",
+    "namespace" : "guac-noauthlogged",
+
+    "authProviders" : [
+	    "com.nanocloud.auth.noauthlogged.NoAuthLoggedProvider"
+    ],
+
+    "translations" : [
+        "translations/en.json"
+    ]
+
+}

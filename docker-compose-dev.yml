@@ -33,3 +33,16 @@ services:
     network_mode: host
     container_name: "proxy"
     restart: always
+
+  guacamole-client:
+    image: nanocloud/guacamole-client
+    volumes:
+      - ./guacamole-client/guac_home/guacamole.dev.properties:/etc/guacamole/guacamole.properties
+    network_mode: host
+    container_name: "guacamole-client"
+    restart: always
+
+  guacd:
+    image: glyptodon/guacd:0.9.9
+    network_mode: host
+    container_name: "guacd"
