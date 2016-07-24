@@ -6,18 +6,34 @@
 
 # Run
 
-To run the backend:
+Nanocloud relies on Docker containers to run its stack.
 
 ````
-sails lift
+docker-compose build
+docker-compose up
 ````
 
-Some environment variable are expected to be set:
+Some environment variable are expected to be set in `config.env`:
 - IAAS (mandatory) currently only "manual" in implemented
 
 Manual driver specific:
 - EXECUTION_SERVERS (mandatory) the IP of the execution server
 - WINDOWS_PASSWORD (mandatory) the Windows password for the *administrator* account
+
+Once loaded, Nanocloud will be accessible on **localhost**.
+
+# Run in developer mode
+
+Nanocloud also relies on Docker to run its development stack:
+
+````
+docker-compose build
+docker-compose -f docker-compose-dev.yml build
+docker-compose -f docker-compose-dev.yml up
+````
+
+Backend and frontend containers are automatically updated when source code changes in dev mode.
+All services are accessible on localhost.
 
 # Tests
 
@@ -34,6 +50,7 @@ Alternativelly, tests can be run individually:
 - `make test-api` to test the API
 - `make test-jshint` to analyse code for errors and warnings
 
+**API tests expects a postgres database up and running on localhost**
 
 ## Licence
 
