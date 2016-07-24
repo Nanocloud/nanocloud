@@ -11,3 +11,4 @@ ratings:
   - "**.js"
 exclude_paths:
   - tests/api/**
+  - assets/tests/**
