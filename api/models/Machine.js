@@ -17,9 +17,11 @@ module.exports = {
     ip: {
       type: 'string'
     },
-    plazaport: {
-      type: 'string',
-      defaultTo: '9090'
+    status: {
+      type: 'string'
+    },
+    adminPassword: {
+      type: 'string'
     },
     platform: {
       type: 'string'
