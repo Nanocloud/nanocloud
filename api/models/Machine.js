@@ -8,7 +8,21 @@
 module.exports = {
 
   attributes: {
-
+    name: {
+      type: 'string'
+    },
+    type: {
+      type: 'string'
+    },
+    ip: {
+      type: 'string'
+    },
+    plazaport: {
+      type: 'string',
+      defaultTo: '9090'
+    },
+    platform: {
+      type: 'string'
+    }
   }
 };
-

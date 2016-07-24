@@ -12,6 +12,8 @@ services:
       - config.env
     networks:
       - nanocloud
+    depends_on:
+      - postgres
     restart: always
 
   frontend:
@@ -45,6 +47,16 @@ services:
 
   guacd:
     image: glyptodon/guacd:0.9.9
+    networks:
+      - nanocloud
+    restart: always
+
+  postgres:
+    build: ./postgres
+    image: nanocloud/postgres
+    environment:
+      - PGDATA=/var/lib/postgresql/data/pgdata
+      - POSTGRES_USER=nanocloud
     networks:
       - nanocloud
     restart: always

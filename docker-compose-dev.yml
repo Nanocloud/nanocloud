@@ -46,3 +46,11 @@ services:
     image: glyptodon/guacd:0.9.9
     network_mode: host
     container_name: "guacd"
+
+  postgres:
+    image: postgres:9.5.3
+    environment:
+      - PGDATA=/var/lib/postgresql/data/pgdata
+      - POSTGRES_USER=nanocloud
+    network_mode: host
+    container_name: "postgres"
