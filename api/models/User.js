@@ -1,8 +1,19 @@
-var bcrypt = require("bcryptjs");
+const bcrypt = require("bcryptjs");
+const uuid = require('node-uuid');
 
 module.exports = {
 
+  autoPK: false,
+
   attributes: {
+    id: {
+      type: 'string',
+      primaryKey: true,
+      unique: true,
+      index: true,
+      uuidv4: true,
+      defaultsTo: function (){ return uuid.v4(); }
+    },
     firstName: {
       type: 'string'
     },

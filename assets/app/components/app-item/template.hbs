@@ -1,0 +1,32 @@
+{{#unless isUnpublished}}
+  <div class='app-item-block {{ unless isEditing "hover-enabled" }}' {{ action "toggleSingleTab" application.alias }}>
+    <div class='app-item part1'>
+      {{#if application.iconContent}}
+        <img class='applications-icon' src="data:image/png;base64, {{ application.iconContent}}">
+      {{else}}
+        <i class='material-icons'>video_label</i>
+      {{/if}}
+    </div>
+    <div class='app-item part2'>
+      {{#if session.user.isAdmin}}
+        {{#edit-text
+          textInput=application.displayName
+          editStateWatcher=isEditing
+          onClose="submitEditName" }}
+          <span class='link'>{{application.displayName}}</span>
+        {{/edit-text}}
+      {{else}}
+          <span class='link'>{{application.displayName}}</span>
+      {{/if}}
+    </div>
+    <div class='app-item part3' {{ action "unpublish" bubbles=false }}>
+      {{#if session.user.isAdmin}}
+        {{#if unpublishState}}
+          {{ fa-icon "spinner" spin=true}}
+        {{else}}
+          <span class='link'>Unpublish</span>
+        {{/if}}
+      {{/if}}
+    </div>
+  </div>
+{{/unless}}

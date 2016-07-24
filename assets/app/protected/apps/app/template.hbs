@@ -1,0 +1,82 @@
+<div class='content-wrapper m-t-2'>
+  <table class="table user-table">
+    <tbody>
+      <tr>
+        <th scope="row">Application name</th>
+        <td>
+          {{input-confirm class="application-name-input" value=model.displayName}}
+        </td>
+      </tr>
+      <tr>
+        <th scope="row">Publication date</th>
+        <td>{{publicationDate}}</td>
+      </tr>
+      <tr>
+        <th scope="row">
+          <span class="link in-bl">
+            {{#link-to 'protected.users.groups.index'}}
+              Group(s)
+            {{/link-to}}
+          </span>
+        </th>
+        <td>
+          {{#each model.groups as |group index|}}
+            {{#if index}},{{/if}}
+            <span class="link in-bl">
+              {{#link-to 'protected.users.groups.group' group}}
+                {{group.name}}
+              {{/link-to}}
+            </span>
+          {{else}}
+            No group
+          {{/each}}
+        </td>
+      </tr>
+      <tr>
+        <th scope="row">UUID</th>
+        <td>
+          {{model.id}}
+          {{copy-clipboard class='in-bl' value=model.id title='UUID'}}
+        </td>
+      </tr>
+      <tr>
+        <th class='p-t-2' scope="row">Delete application</th>
+        <td class='p-t-2'>
+          <button type="button" class="btn btn-danger" {{ action "toggleModal" }}>
+          Delete this application
+          </button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+{{#if showModal}}
+  {{#modal-dialog close="toggleModal"
+                  targetAttachment="center"
+                  containerClassNames="modal-dialog"
+                  translucentOverlay=true}}
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" {{action "toggleModal"}} aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+        <h4 class="modal-title text-xs-center">Delete application</h4>
+      </div>
+      <div class="modal-body">
+        Deleting an application is irreversible. Enter the application name
+        (<code>{{model.displayName}}</code>) below to confirm you want to permanently delete it:
+
+        <form class="m-y-1" {{ action "deleteApp" on="submit" }}>
+          <fieldset class="form-group">
+            {{input class="form-control" placeholder="Application name" value=appNameConfirm}}
+          </fieldset>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" {{action "toggleModal"}}>Cancel</button>
+        <button type="button" class="btn btn-primary" {{action "deleteApp"}} disabled={{preventDeletion}}>Delete application</button>
+      </div>
+    </div>
+  {{/modal-dialog}}
+{{/if}}

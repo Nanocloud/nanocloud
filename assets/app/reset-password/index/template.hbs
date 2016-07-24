@@ -1,0 +1,19 @@
+<div class="login-container">
+  <div class="login-form">
+  <div class="login-logo"></div>
+		<div class="section">
+		  <div class="content-wrapper form">
+		    <form {{action 'add' on='submit'}}>
+				<h4>Forgot your password ?</h4>
+		        	{{nano-input type="email" placeholder='Email address' model=model valuePath="email"}}
+            <button {{ action "submitForm" }} type="submit" class="btn btn-primary btn-block text-uppercase {{ if loadState 'loadState' }}">
+              <span class='text'>Send me a link</span>
+              {{#if (is-equal loadState 1) }}
+                 {{icon-component fontAwesome="spinner" fontAwesomeSpin=true}}
+              {{/if}}
+            </button>
+		    </form>
+		  </div>
+		</div>
+	</div>
+</div>

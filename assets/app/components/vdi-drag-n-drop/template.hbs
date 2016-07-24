@@ -1,0 +1,14 @@
+{{yield (hash
+    state=state
+    stopUpload=(action 'cancelUpload')
+    progress=progress
+    uploading=uploading
+    queue=queue
+    flushHistory=(action 'flushHistory'))
+}}
+<div class='drag-n-drop-area transition-enabled-2
+  {{ if show "state-show" "state-hide" }}'>
+  <div class='element-active-state message'>
+    <span class='text transition-enabled-2'>Drop your file</span>
+  </div>
+</div>

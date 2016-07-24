@@ -116,3 +116,6 @@ npm-debug.log
 nbproject
 .idea
 .node_history
+
+guacamole-client/noauth-logged/target
+guacamole-client/noauth-logged/.idea

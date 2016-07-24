@@ -1,0 +1,70 @@
+version: '2'
+
+services:
+  backend:
+    build:
+      context: ./
+      dockerfile: Dockerfile
+    image: nanocloud/backend
+    volumes:
+      - static:/opt/back/assets/dist
+    env_file:
+      - config.env
+    networks:
+      - nanocloud
+    depends_on:
+      - postgres
+    restart: always
+
+  frontend:
+    build:
+      context: ./assets
+      dockerfile: Dockerfile
+    image: nanocloud/frontend
+    volumes:
+      - static:/opt/dist
+    networks:
+      - nanocloud
+
+  proxy:
+    build: ./proxy
+    image: nanocloud/proxy
+    ports:
+      - 80:80
+      - 443:443
+    depends_on:
+      - backend
+    networks:
+      - nanocloud
+    restart: always
+
+  guacamole-client:
+    build: ./guacamole-client
+    image: nanocloud/guacamole-client
+    networks:
+      - nanocloud
+    restart: always
+
+  guacd:
+    image: glyptodon/guacd:0.9.9
+    networks:
+      - nanocloud
+    restart: always
+
+  postgres:
+    build: ./postgres
+    image: nanocloud/postgres
+    environment:
+      - PGDATA=/var/lib/postgresql/data/pgdata
+      - POSTGRES_USER=nanocloud
+    networks:
+      - nanocloud
+    restart: always
+
+networks:
+  nanocloud:
+    driver: bridge
+
+volumes:
+  static:
+    driver: local

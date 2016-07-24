@@ -1,0 +1,10 @@
+<span {{action 'launch' target='record'}} class='link'>
+ {{ record.name }}
+</span>
+{{#if record.session.user.isAdmin}}
+  {{#link-to 'protected.apps.app' record.model}}
+    <span class="fright">
+      {{icon-component materialIcon="settings"}}
+    </span>
+  {{/link-to}}
+{{/if}}

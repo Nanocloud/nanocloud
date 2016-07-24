@@ -1,0 +1,73 @@
+
+<div class="edit m-t-2">
+  <table class="table user-table">
+    <tbody>
+      <tr>
+        <th class='p-t-2' scope="row">Name</th>
+        <td class='p-t-2'>
+          <form {{action 'renameGroup' on='submit'}}>
+            <div class="form-group row">
+              <div class="col-sm-6">
+                {{input
+                  class="form-control"
+                  id="new-group-name"
+                  placeholder="Name"
+                  value=groupName
+                  disabled=renaming}}
+              </div>
+              <div class="col-sm-4">
+                <button type="submit" class="btn btn-secondary" disabled={{preventRenaming}}>
+                  {{#if renaming}}
+                    {{ fa-icon "spinner" spin=true }}
+                  {{/if}}
+                  Rename
+                </button>
+              </div>
+            </div>
+          </form>
+        </td>
+      </tr>
+      {{#unless model.isAdmin }}
+        <tr>
+          <th class='p-t-2' scope="row">Delete Account</th>
+          <td class='p-t-2'>
+            <button type="button" class="btn btn-danger" {{ action "toggleModal" }}>
+            Delete this group
+            </button>
+          </td>
+        </tr>
+      {{/unless}}
+
+    </tbody>
+  </table>
+</div>
+
+{{#if showModal}}
+  {{#modal-dialog close="toggleModal"
+                  targetAttachment="center"
+                  containerClassNames="modal-dialog"
+                  translucentOverlay=true}}
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" {{action "toggleModal"}} aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+        <h4 class="modal-title text-xs-center">Delete group</h4>
+      </div>
+      <div class="modal-body">
+        Deleting a group is irreversible. Enter the group's name
+        (<code>{{model.name}}</code>) below to confirm you want to permanently delete it:
+
+        <form class="m-y-1" {{ action "deleteGroup" on="submit" }}>
+          <fieldset class="form-group">
+            {{input class="form-control" placeholder="Group name" value=groupNameConfirm}}
+          </fieldset>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" {{action "toggleModal"}}>Cancel</button>
+        <button type="button" class="btn btn-primary" {{action "deleteGroup"}} disabled={{preventDeletion}}>Delete group</button>
+      </div>
+    </div>
+  {{/modal-dialog}}
+{{/if}}

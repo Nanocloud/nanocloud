@@ -1,0 +1,5 @@
+<ol class="breadcrumb" style="margin-bottom: 5px;">
+  {{#each data as |item index|}}
+    <li><a {{ action "clickPath" index}}>{{ item }}</a></li>
+  {{/each}} 
+</ol>

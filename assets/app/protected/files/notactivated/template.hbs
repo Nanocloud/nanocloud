@@ -1,0 +1,16 @@
+<div class="section p-a-2">
+  <h4>Files</h4>
+  <div class='content-wrapper'>
+    <div class="alert alert-info" role="alert">
+      <strong>It seems like you never connect to any applications yet</strong>
+      <br />
+      This feature requires a first successful connection to an application to be available.<br />
+      Click "Go to applications" to be redirected to the page were you will be able launch your apps
+    </div>
+    {{#link-to "protected.apps"}}
+      <button class='btn btn-primary btn-block'>
+        Go to applications
+      </button>
+    {{/link-to}}
+  </div>
+</div>

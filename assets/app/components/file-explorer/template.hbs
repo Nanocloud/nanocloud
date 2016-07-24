@@ -1,0 +1,34 @@
+<div class='file-explorer-wrapper noselect transition-enabled-2'>
+  <div class='file-explorer'>
+    <div class='section content-wrapper'>
+    <p class="color-primary indication">Select the application you want to publish</p>
+      <h4>{{ file-path data=historyData class="filePath" clickOnPath=(action 'moveOffset') }}</h4>
+        <div class='navigation'>
+          <i {{ action "clickPrevBtn" }} class="navigation-btn material-icons">navigate_before</i>
+          <i {{ action "clickNextBtn" }} class="navigation-btn material-icons">navigate_next</i>
+        </div>
+        <div class='file-list-wrapper'>
+        {{#each items as |item|}}
+          <div {{ action "clickItem" item }} class="item {{ if (is-equal selectedFile item) 'selected' }}">
+            <i class='va-top material-icons'>{{ item.icon }}</i>
+            {{ item.name }}
+          </div>
+        {{else}}
+          No files.
+        {{/each}}
+      </div>
+      <div class='file-explorer-footer'>
+        {{#if isPublishing}}
+          <button type="button" class="publish-btn btn btn-info">In progress {{ fa-icon "spinner" spin=true}}</button>
+        {{else}}
+          <button {{ action "clickPublish" }} type="button" class="publish-btn btn {{ if selectedFile 'btn-primary' 'btn-secondary-outline disabled' }}">Publish it!</button>
+        {{/if}}
+        <span class='info'>
+        {{#if selectedFile}}
+          Selected file : {{ selectedFile.name }}
+        {{/if}}
+        </span>
+      </div>
+    </div>
+  </div>
+</div>

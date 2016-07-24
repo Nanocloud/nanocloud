@@ -12,7 +12,7 @@ module.exports.seeds = {
   user: {
     data: [
       {
-        id: "1",
+        id: "aff17b8b-bf91-40bf-ace6-6dfc985680bb",
         firstName: "Admin",
         lastName: "Nanocloud",
         password: "admin",

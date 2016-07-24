@@ -1,0 +1,28 @@
+<div class="login-container">
+  <div class="login-form">
+  <div class="login-logo"></div>
+		<div class="section">
+		  <div class="content-wrapper form">
+		    <form {{action 'add' on='submit'}}>
+					<h4>Create an account</h4>
+		        {{nano-input placeholder='Firstname' model=model valuePath="firstName" autofocus=true }}
+		        {{nano-input placeholder='Lastname' model=model valuePath="lastName"}}
+		        {{nano-input placeholder='Email address' model=model valuePath="email"}}
+		        {{nano-input placeholder='Password' type="password" model=model valuePath="password"}}
+		        {{nano-input placeholder='Password confirmation' type="password" value=passwordConfirmation}}
+
+            <button {{ action "submitForm" }} type="submit" class="btn btn-primary btn-block text-uppercase {{ if loadState 'loadState' }}">
+              <span class='text'>Sign Up</span>
+              {{#if (is-equal loadState 1) }}
+                {{icon-component fontAwesome="spinner" fontAwesomeSpin=true}}
+              {{else}}
+                {{#if (is-equal loadState 2) }}
+                  {{icon-component fontAwesome="check-circle"}}
+                {{/if}}
+              {{/if}}
+            </button>
+		    </form>
+		  </div>
+		</div>
+	</div>
+</div>

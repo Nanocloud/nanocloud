@@ -19,7 +19,7 @@ before(function(done) {
 
     // Here is loaded administrator token
     AccessToken.create({
-      userId: 1,
+      userId: "aff17b8b-bf91-40bf-ace6-6dfc985680bb",
       token: "admintoken"
     }, function(err, accessToken) {
 

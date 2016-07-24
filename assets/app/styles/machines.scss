@@ -1,0 +1,20 @@
+.machines {
+  .refresh-notification {
+    font-size: 11px;
+    height: 20px;
+    padding: 1px 4px;
+    position: relative;
+    bottom: 2px;
+  }
+}
+
+.machine-detail {
+  .content-wrapper {
+    table {
+      th { 
+        width: 40%;
+        height: 30px;
+      }
+    }
+  }
+}

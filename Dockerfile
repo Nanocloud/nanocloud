@@ -1,7 +1,7 @@
-FROM node:6.2-slim
+FROM node:6.3.0-slim
 MAINTAINER Olivier Berthonneau <olivier.berthonneau@nanocloud.com>
 
-RUN npm install -g ember-cli bower sails pm2
+RUN npm install -g pm2
 
 RUN mkdir -p /opt/back
 WORKDIR /opt/back
@@ -13,6 +13,5 @@ RUN cp -a /tmp/node_modules /opt/back
 COPY ./ /opt/back
 
 EXPOSE 1337
-VOLUME ["/opt/back/assets"]
 
 CMD pm2 start app.js -- --prod && pm2 logs

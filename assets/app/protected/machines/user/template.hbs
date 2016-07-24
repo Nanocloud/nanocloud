@@ -1,0 +1,39 @@
+<div class="machines section">
+  <h4 class="in-bl">
+		{{#link-to 'protected.machines.user' }}Machines{{/link-to}}
+  </h4>
+  <span class="icon_link clickable noselect" {{ action "refreshModel" }}>
+    {{icon-component class='va-tb' size=19 materialIcon="autorenew" spin=loadState content="Refresh machine list"}}
+  </span>
+  {{#if needRefresh}}
+    <div class='refresh-notification indication in-bl'>
+      <p>Machine list is outdated. Please refresh</p>
+    </div>
+  {{/if}}  
+
+  <div class='content-wrapper m-t-2'>
+		{{#unless loadState}}
+      {{models-table
+        class="sortableTable"
+        data=data
+        columns=columns
+        showColumnsDropdown=false
+        filteringIgnoreCase=sortableTableConfig.filteringIgnoreCase
+        customMessages=sortableTableConfig.messageConfig
+        customIcons=sortableTableConfig.customIcons
+        customClasses=sortableTableConfig.customClasses
+        useNumericPagination=true
+        multipleColumnsSorting=false
+      }}
+		{{/unless}} 
+  </div>
+</div>
+{{#if loadState}}
+<div class="centered refresh-loading">
+  <div>
+    <p class='ta-center'>
+    {{loading-component}}
+    </p>
+  </div>
+</div>
+{{/if}}

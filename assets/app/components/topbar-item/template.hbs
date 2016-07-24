@@ -1,0 +1,15 @@
+<div {{ action "clickAction"}} class='centered topbar-item {{ if clickable "clickable" }} {{ if hover-enabled "hover-enabled" }} {{ if hover-darker "hover-darker" }} {{ if adjustIcon "adjustIcon" }}'>
+  {{#if materialIcon }}
+    <i class="material-icons">{{ materialIcon }}</i>
+  {{/if}}
+
+  {{#if fontAwesome }}
+    {{ fa-icon fontAwesome spin=fontAwesomeSpin}}
+  {{/if}}
+
+  {{#if textContent}}
+    <span class="{{ if clickable "clickable"}}">{{ textContent }}</span>
+  {{/if}}
+
+  {{ yield }}
+</div>

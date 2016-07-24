@@ -1,0 +1,56 @@
+version: '2'
+
+services:
+  backend:
+    build:
+      context: ./
+      dockerfile: Dockerfile-dev
+    image: nanocloud/backend:dev
+    volumes:
+      - ./:/opt/back
+    env_file:
+      - config.env
+    network_mode: host
+    container_name: "backend"
+
+  frontend:
+    build:
+      context: ./assets
+      dockerfile: Dockerfile-dev
+    image: nanocloud/frontend:dev
+    volumes:
+      - ./assets:/opt
+    network_mode: host
+    container_name: "frontend"
+
+  proxy:
+    image: nanocloud/proxy
+    volumes:
+      - ./proxy/nginx.dev.conf:/etc/nginx/conf.d/default.conf:ro
+      - ./proxy/certificates:/etc/nginx/ssl/:ro
+    depends_on:
+      - backend
+    network_mode: host
+    container_name: "proxy"
+    restart: always
+
+  guacamole-client:
+    image: nanocloud/guacamole-client
+    volumes:
+      - ./guacamole-client/guac_home/guacamole.dev.properties:/etc/guacamole/guacamole.properties
+    network_mode: host
+    container_name: "guacamole-client"
+    restart: always
+
+  guacd:
+    image: glyptodon/guacd:0.9.9
+    network_mode: host
+    container_name: "guacd"
+
+  postgres:
+    image: postgres:9.5.3
+    environment:
+      - PGDATA=/var/lib/postgresql/data/pgdata
+      - POSTGRES_USER=nanocloud
+    network_mode: host
+    container_name: "postgres"

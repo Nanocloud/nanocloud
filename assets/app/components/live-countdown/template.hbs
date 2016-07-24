@@ -1,0 +1,9 @@
+{{#if decrementLoopEnabled}}
+  {{#if isTime}}
+    {{timeFormat}}
+  {{else}}
+    {{currentCountdown}}
+  {{/if}}
+{{else}}
+  {{currentCountdown}}
+{{/if}}

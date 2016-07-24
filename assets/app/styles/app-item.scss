@@ -1,0 +1,41 @@
+
+.app-item-block {
+
+  font-size: $font-size-root;
+  @extend .transition-enabled-1;
+  display: flex;
+  padding: 10px 15px 7px 10px;
+  border-bottom: 1px solid $gray-lighter;
+
+  &.hover-enabled:hover {
+    background-color: $blue-lighter;
+  }
+
+  > .app-item {
+  }
+
+  > .app-item.part1 {
+    padding-right: 10px;
+    vertical-align: middle;
+  }
+
+  > .app-item.part2 {
+    flex-grow: 1;
+    i {
+      width: 30px;
+      overflow: hidden;
+    }
+
+    .filename,
+    > .icon {
+      vertical-align: -webkit-baseline-middle;
+    }
+  }
+
+  > .app-item.part3 {
+
+    > * {
+      vertical-align: sub;
+    }
+  }
+}

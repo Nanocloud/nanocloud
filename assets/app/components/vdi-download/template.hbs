@@ -1,0 +1,16 @@
+{{#vdi-window
+  title="Download"
+  windowClass="vdi-download"
+  toggleWindow=toggleWindow
+  stateVisible=stateVisible}}
+
+  <div class='content-wrapper'>
+    {{#each items as |file|}}
+      {{#unless file.isDir}}
+        {{ file-item file=file download="downloadFile" }}
+      {{/unless}}
+    {{else}}
+      No data available
+    {{/each}}
+  </div>
+{{/vdi-window}}

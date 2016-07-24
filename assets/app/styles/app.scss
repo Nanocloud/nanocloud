@@ -1,0 +1,51 @@
+
+$blue-default:             #006CB6 !default;
+
+@import "variables";
+
+@import "ember-modal-dialog/ember-modal-structure";
+@import "ember-modal-dialog/ember-modal-appearance";
+
+@import "bower_components/bootstrap/scss/bootstrap";
+@import "font-awesome";
+
+@import "user-table";
+@import "icons";
+@import "sidebar";
+@import "login";
+@import "drag_n_drop";
+@import "machines";
+@import "applications";
+@import "single-tab";
+@import "menu-top";
+@import "app-item";
+@import "global";
+@import "dim-background";
+@import "file-explorer";
+@import "edit-text";
+@import "topbar-item";
+@import "vdi-drag-n-drop";
+@import "vdi-window";
+@import "vdi-clipboard";
+@import "vdi-download";
+@import "vdi-progress-item";
+@import "vdi-packaging";
+@import "dashboard";
+@import "loading";
+@import "direct-link";
+@import "sortable-table";
+@import "icon-component";
+@import "edit";
+@import "connection-histories";
+@import "configuration";
+@import "nano-switch";
+@import "histories";
+@import "light-bulb";
+@import "user-new";
+@import "confirm-input";
+
+@include bg-variant('.bg-light', $gray-lighter);
+
+.ember-modal-overlay.translucent {
+  background-color: rgba(63,63,68,.8);
+}

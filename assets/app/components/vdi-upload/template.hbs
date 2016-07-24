@@ -1,0 +1,31 @@
+{{#vdi-window
+  title="Uploaded files"
+  windowClass="vdi-upload"
+  toggleWindow=toggleWindow
+  stateVisible=stateVisible }}
+
+  <div class='content-wrapper'>
+    {{#each queue as |file|}}
+      <div class='item'>
+        <div class='vdi-progress-item'>
+          {{ file.name }}
+
+          {{#if file.completed}}
+            Completed
+          {{else}}
+            {{#if file.uploading }}
+              {{ file.progress }}%
+              {{ fa-icon "spinner" spin=true}}
+              <span class="link" {{ action "cancel" target=file }}>
+                Cancel
+              </span>
+            {{/if}}
+          {{/if}}
+        </div>
+      </div>
+    {{else}}
+      No items
+    {{/each}}
+  </div>
+  <button {{action "clearList"}} type="button" class="btn btn-primary">Clear History</button>
+{{/vdi-window}}

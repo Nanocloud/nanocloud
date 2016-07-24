@@ -1,0 +1,31 @@
+<div class="row">
+  <div class="col-md-6">
+    <h2>Manage applications:</h2>
+    <table class="table m-t-2">
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        {{#each applications as |app|}}
+          <tr>
+            <td scope="row">
+              <span class="link in-bl">
+                {{#link-to 'protected.apps.app' app}}
+                  {{app.displayName}}
+                {{/link-to}}
+              </span>
+            </td>
+            <td>
+              {{toggle-item-from-list list=group.apps item=app property='id' addAction="addApp" removeAction="removeApp"}}
+            </td>
+          </tr>
+        {{/each}}
+
+      </tbody>
+    </table>
+  </div>
+</div>
+{{outlet}}

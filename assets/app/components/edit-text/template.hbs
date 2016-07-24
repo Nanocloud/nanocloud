@@ -1,0 +1,26 @@
+<div class='editText'>
+  {{#if isEditing }}
+    <form {{action "submit" on='submit'}}>
+      {{input class='edit-input-text' type=getInputType value=textInput placeholder=textInputPlaceholder enter="submit" }}
+      {{#if confirmation}}
+        {{input class='edit-input-text' type=getInputType value=confirmInput placeholder=confirmInputPlaceholder enter="submit" }}
+      {{/if}}
+      <div class='controls-wrapper'>
+        <span class="icon icon_link clickable" {{ action "submit" bubbles=false }}>
+          <i class="material-icons">done</i>
+        </span>
+        <span class="icon icon_link clickable close_icon" {{ action "cancel" bubbles=false }}>
+          <i class="material-icons">clear</i>
+        </span>
+      </div>
+      {{errorMessage}}
+    </form>
+  {{else}}
+    <span class="content">
+    {{ yield }}
+    </span>
+    <span class="edit-mode-icon link">
+      <i {{ action "toggle" bubbles=false }} class="material-icons icon_link edit">editmode</i>
+    </span>
+  {{/if}}
+</div>

@@ -1,0 +1,17 @@
+.icon-component {
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+}
+
+.icon-component.hover-enabled:hover i {
+  color: $blue-default;
+}
+
+.icon-component.hover-darker:hover i {
+  color: $blue-darken;
+}
+
+.icon-component.clickable i {
+  cursor: pointer;
+}

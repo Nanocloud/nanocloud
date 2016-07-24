@@ -1,0 +1,46 @@
+<h5 class="m-t-1">User rights</h5>
+<div class="m-t-1">
+  {{input type="checkbox" checked=configController.autoRegister}}
+  <label for="cbox2">User can register himself</label>
+</div>
+{{#if configController.autoRegister}}
+  {{log model}}
+  {{#if model.groups.length}}
+    <p class='m-t-1 color-primary'>You can select a default group:</p>
+    <ul class="selectable-list">
+      <div class="row">
+        <div class="col-md-6">
+          <table class="table">
+            <tbody>
+              {{#each model.groups as |group|}}
+                <tr>
+                  <td scope="row">
+                    <span class="link in-bl">
+                      {{#link-to 'protected.users.groups.group' group}}
+                        {{group.name}}
+                      {{/link-to}}
+                    </span>
+                  </td>
+                  <td {{action "selectGroup" group.id}}>
+                    {{nano-switch checked=(is-equal group.id defaultGroup)}}
+                  </td>
+                </tr>
+              {{/each}}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </ul>
+  {{/if}}
+  <div class="form-group row">
+    <div class="col-sm-2">
+      <p class="confirm-input-item color-primary">You can enter an expiration date for new users (in days):</p>
+    </div>
+    <div class="col-sm-2">{{input-confirm value=configController.expirationDays type="number" min="1"}}</div>
+  </div>
+{{/if}}
+<div>
+  {{input type="checkbox" checked=configController.autoLogoff}}
+  <label for="cbox2">Logoff after closing VDI</label>
+</div>
+

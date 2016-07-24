@@ -1,0 +1,30 @@
+<div class="dashboard section">
+
+  <div class='card-wrapper'>
+  {{#card-component title="Current registered users" content=users.length clickOnContent="goToUsers" wait=loadState.user}}
+    {{#link-to 'protected.users.new'}}
+      <span class='color-primary'>Add users</span>
+    {{/link-to}}/
+    {{#link-to 'protected.users'}}
+      <span class='color-primary'>View users</span>
+    {{/link-to}}
+  {{/card-component}}
+
+  {{#card-component title="Current online users" content=sessions.length clickOnContent="goToConnectedUsers" wait=loadState.session}}
+    {{#link-to 'protected.histories'}}
+      <span class='color-primary'>View connection history</span>
+    {{/link-to}}
+  {{/card-component}}
+  {{#card-component title="Published applications" content=apps.length clickOnContent="goToApps" wait=loadState.application}}
+    {{#link-to 'protected.apps'}}
+      <span class='color-primary'>View apps</span>
+    {{/link-to}}
+  {{/card-component}}
+  {{#card-component title="Machines up" content=machines.length clickOnContent="goToMachines" wait=loadState.machine}}
+    {{#link-to 'protected.machines'}}
+      <span class='color-primary'>View machines</span>
+    {{/link-to}}
+  {{/card-component}}
+  </div>
+
+</div>

@@ -1,0 +1,26 @@
+<div class="m-t-2">
+  <h4>
+    {{#link-to 'protected.users' }}
+      Users 
+    {{/link-to}} - Create a new user
+ </h4>
+  <div class="user-new content-wrapper form m-t-1">
+    <form {{action 'add' on='submit'}}>
+        {{nano-input hideError=userHasSubmitted placeholder='Firstname' model=model valuePath="firstName" autofocus=true }}
+        {{nano-input hideError=userHasSubmitted placeholder='Lastname' model=model valuePath="lastName"}}
+        {{nano-input hideError=userHasSubmitted placeholder='Email address' model=model valuePath="email"}}
+        {{nano-input hideError=userHasSubmitted placeholder='Password' type="password" model=model valuePath="password"}}
+        {{nano-input hideError=userHasSubmitted placeholder='Password confirmation' type="password" model=model valuePath="passwordConfirmation"}}
+        {{nano-input hideError=userHasSubmitted placeholder='Days left before expiration' model=model valuePath="expirationDays"}}
+
+        {{#if loadState}}
+          <button type="submit" class="btn btn-info btn-block text-uppercase">
+            Create
+            {{ fa-icon "spinner" spin=true}}
+          </button>
+        {{else}}
+          <button type="submit" class="btn btn-primary btn-block text-uppercase">Create</button>
+        {{/if}}
+    </form>
+  </div>
+</div>

@@ -1,0 +1,213 @@
+{{#if isVisible }}
+  {{#modal-dialog containerClassNames="ember-modal-fullscreen"
+    attachment="" targetAttachment=""}}
+
+    {{#vdi-drag-n-drop dragAndDropActive=dragAndDropActive as |uploadData|}}
+      <div class="ember-modal-fullscreen {{if togglable 'togglable-state'}} {{if vdiLoadOrError 'vdi-off'}}">
+        <div class="remote-session-topbar">
+          <div class="left">
+            {{#if uploadData.progress}}
+                {{ topbar-item
+                  materialIcon="cloud_upload"
+                  clickable=true
+                  hover-enabled=true
+                  class="state-enabled"
+                  click="toggleUploadWindow"
+                  stateEnabled=uploadIsVisible
+                  content="File Upload"
+                }}
+                {{#unless uploadData.state}}
+                  <span class="state">
+                    {{ uploadData.progress }}%
+                  </span>
+                {{/unless}}
+            {{else}}
+               {{ topbar-item
+                  materialIcon="cloud_upload"
+                  clickable=true
+                  hover-enabled=true
+                  class="state-disabled"
+                  click="toggleUploadWindow"
+                  stateEnabled=uploadIsVisible
+                  content="File Upload"
+                }}
+            {{/if}}
+
+            <span class="state">{{uploadData.state}}</span>
+            {{#if uploadData.progress}}
+              <span class="link progress" {{ action uploadData.stopUpload }}>Cancel All</span>
+            {{/if}}
+            {{ topbar-item
+              materialIcon="cloud_download"
+              clickable=true
+              hover-enabled=true
+              hover-darker=false
+              click="toggleDownloadWindow"
+              stateEnabled=downloadIsVisible
+              content="Download"
+            }}
+
+            {{ topbar-item
+              materialIcon="content_copy"
+              clickable=true
+              hover-enabled=true
+              hover-darker=false
+              size=16
+              click="toggleClipboardWindow"
+              stateEnabled=clipboardIsVisible
+              content="Copy / paste"
+            }}
+
+            {{#if recordingIsAvailable}}
+              {{#if recordingOnWait}}
+                {{ topbar-item
+                class="go-back"
+                fontAwesome="spinner"
+                fontAwesomeSpin=true
+                }}
+              {{/if}}
+
+              {{#if recordingOnDefault}}
+                {{ topbar-item
+                materialIcon="fiber_manual_record"
+                clickable=true
+                hover-enabled=true
+                click="toggleRecordWindow"
+                content="Record new application"
+                }}
+              {{/if}}
+
+              {{#if recordingOnCapturing}}
+                <div {{ action "toggleRecordWindow" }}> 
+                  {{#topbar-item clickable=true}}
+                    <div class='record-blink'></div>
+                  {{/topbar-item }}
+                </div>
+                {{ topbar-item
+                hover-enabled=false
+                textContent="Recording"
+                clickable=false
+                }}
+              {{/if}}
+
+              {{#if recordingOnPackaging}}
+                {{ topbar-item
+                  fontAwesome="spinner"
+                  fontAwesomeSpin=true
+                }}
+                {{ topbar-item
+                  hover-enabled=false
+                  textContent="Packaging"
+                  clickable=false
+                }}
+              {{/if}}
+            {{/if}}
+          </div>
+          <div class="right">
+
+            {{#if disconnectBtn}}
+              {{#if logoff}}
+                {{ topbar-item
+                  class="go-back"
+                  fontAwesome="spinner"
+                  fontAwesomeSpin=true
+                  content="Disconnect VDI"
+                }}
+              {{else}}
+                {{ topbar-item
+                  clickable=true
+                  class="go-back"
+                  hover-enabled=true
+                  hover-darker=true
+                  materialIcon="power_settings_new"
+                  click="disconnectVDI"
+                  content="Disconnect VDI"
+                }}
+              {{/if}}
+            {{/if}}
+
+            {{#if homeBtn}}
+              {{ topbar-item
+                clickable=true
+                class="go-back"
+                hover-enabled=true
+                hover-darker=true
+                materialIcon="home"
+                click="toggleSingleTab"
+                content="Minimize VDI"
+              }}
+            {{/if}}
+
+          </div>
+        </div>
+        <div class="canva-fullscreen">
+
+          {{dim-background show=windowIsSelected click=(action 'closeAll')}}
+          {{#vdi-upload
+            queue=uploadData.queue
+            stateVisible=uploadIsVisible
+            flushHistory=uploadData.flushHistory
+            cancelSingleUpload=uploadData.cancelSingleUpload
+            toggleWindow=(action 'toggleUploadWindow')}}
+          {{/vdi-upload}}
+
+          {{#vdi-clipboard
+            connectionName=connectionName
+            stateVisible=clipboardIsVisible
+            toggleWindow=(action 'toggleClipboardWindow')}}
+          {{/vdi-clipboard}}
+
+          {{#vdi-download
+            stateVisible=downloadIsVisible
+            toggleWindow=(action 'toggleDownloadWindow')
+            }}
+          {{/vdi-download}}
+
+          {{#if vdiIsLoading}}
+            <div class="vdi-load-background section centered">
+              <div>
+                <h1>Loading VDI, Please wait</h1>
+                <p class='ta-center'>
+                {{loading-component}}
+                </p>
+              </div>
+            </div>
+          {{/if}}
+
+          {{#if vdiLoadError}}
+            <div class="vdi-load-background section centered">
+              <div>
+                <h1 class='ta-center'>An error has occured.</h1>
+                <p class='ta-center'>
+                  {{ vdiLoadErrorMessage }}
+                </p>
+                <p class='ta-center'>
+                  <span {{ action "retryConnection" }} class="link">Retry connection</span>
+                </p>
+              </div>
+            </div>
+          {{/if}}
+
+          {{yield (hash disconnectVDI=(action 'disconnectVDI')) }}
+        </div>
+      </div>
+    {{/vdi-drag-n-drop}}
+  {{/modal-dialog}}
+  {{#if savePackageModal}}
+    {{#modal-dialog close="toggleModal"
+                    targetAttachment="center"
+                    containerClassNames="modal-dialog"
+                    translucentOverlay=true}}
+      <div class="modal-content">
+        <div class="modal-body">
+          <p class="color-primary indication">Your application has been packaged successfully!</p>
+          <div>
+            {{input class="savePackageInput" type="text" value=savePackageName placeholder="Package name"}}
+            <button type="button" class="btn btn-secondary" {{action "savePackage"}}>Submit</button>
+          </div>
+        </div>
+      </div>
+    {{/modal-dialog}}
+  {{/if}}
+{{/if}}
+

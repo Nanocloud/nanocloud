@@ -1,0 +1,24 @@
+.nano-switch {
+  @extend .transition-enabled-2;
+  @extend .clickable;
+  text-align: center;
+  width: 90px;
+  height: 25px;
+  padding-top: 1px;
+
+  &.disabled {
+    color: $blue-default;
+    border: 1px solid #fff;
+
+    &:hover {
+      color: $blue-darken;
+    }
+  }
+
+  &.enabled {
+    background-color: $blue-default;
+    color: $white;
+    border: 1px solid $blue-default;
+  }
+}
+

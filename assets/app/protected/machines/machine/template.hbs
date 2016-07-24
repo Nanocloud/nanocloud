@@ -1,0 +1,103 @@
+<div class="machine-detail section">
+  <h4 class="in-bl">
+		{{#if session.user.isAdmin}}
+			{{#link-to 'protected.machines' }}Machines{{/link-to}}
+		{{else}}
+			{{#link-to 'protected.machines.user' }}Machines{{/link-to}}
+		{{/if}}
+  </h4>
+  <h4 class="in-bl">
+  > {{machineName}}
+  </h4>
+  <div class='content-wrapper m-t-2'>
+    <table class="table">
+      <tbody>
+        {{#if controlsAreSupported}}
+        <tr>
+          <th scope="row">Command</th>
+          <td>
+            <div class="btn-group" role="group">
+              <button type="button" class="btn btn-secondary" {{action 'startMachine'}} disabled={{model.isUp}}>
+              Start
+              </button>
+              <button type="button" class="btn btn-secondary" {{action 'stopMachine'}} disabled={{model.isDown}}>
+              Stop
+              </button>
+              <button type="button" class="btn btn-secondary" {{action 'terminateMachine'}} disabled={{model.isUp}}>
+              Terminate
+              </button>
+            </div>
+          </td>
+        </tr>
+        {{/if}}
+        <tr>
+          <th scope="row">IP</th>
+          <td>
+            {{#if model.ip}}
+              {{model.ip}}
+            {{else}}
+              No Ip detected
+            {{/if}}
+          </td>
+        </tr>
+        <tr>
+          <th scope="row">Driver</th>
+          <td>
+            {{#if model.getPlatform}}
+              {{ model.getPlatform }}
+            {{else}}
+              No driver detected
+            {{/if}}
+          </td>
+        </tr>
+        <tr>
+          <th scope="row">Machine size</th>
+          <td>
+            {{model.machineSize}}
+          </td>
+        </tr>
+        <tr>
+          <th scope="row">Assigned user</th>
+          <td>
+            {{#if user}}
+              {{#link-to 'protected.users.user' user.id}}
+                {{ user.fullName }}
+              {{/link-to}}
+            {{else}}
+              None
+            {{/if}}
+          </td>
+        </tr>
+        <tr>
+          <th scope="row">Boot state</th>
+          <td>
+            {{state-machine model.status}}
+          </td>
+        </tr>
+        <tr>
+          <th scope="row">Machine state</th>
+          <td>
+            {{#if displayCountdown}}
+              Shutdown in {{live-countdown class="in-bl" value=model.countdownTimeleft isTime=true}}
+            {{else}}
+              {{model.formattedTimeleft}}
+            {{/if}}
+          </td>
+        </tr>
+        <tr>
+          <th scope="row">Reboot</th>
+          <td>
+            {{#if loadState}}
+              <button type="submit" class="btn btn-info">
+                Reboot
+                {{ fa-icon "spinner" spin=true}}
+              </button>
+            {{else}}
+              <button {{ action "rebootMachine" }} type="submit" class="btn btn-primary">Reboot</button>
+            {{/if}}
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>

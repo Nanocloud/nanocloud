@@ -1,0 +1,7 @@
+{{#if removeConfirmation}}
+	<p>Are you sure?</p>
+	<button type="button" class='btn btn-danger' {{ action "removeAccount" }}>Yes</button>
+	<button type="button" class='btn btn-primary' {{ action "cancelAccountConfirm" }}>No</button>
+{{else}}
+	<button class='btn btn-danger' {{ action "removeAccountConfirm" }}>Delete this account</button>
+{{/if}}
