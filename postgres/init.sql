@@ -428,40 +428,19 @@ ALTER SEQUENCE refreshtoken_id_seq OWNED BY refreshtoken.id;
 --
 
 CREATE TABLE "user" (
+    id text NOT NULL,
     "firstName" text,
     "lastName" text,
     "hashedPassword" text,
     email text,
     activated boolean,
     "isAdmin" boolean,
-    id integer NOT NULL,
     "createdAt" timestamp with time zone,
     "updatedAt" timestamp with time zone
 );
 
 
 ALTER TABLE "user" OWNER TO nanocloud;
-
---
--- Name: user_id_seq; Type: SEQUENCE; Schema: public; Owner: nanocloud
---
-
-CREATE SEQUENCE user_id_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
-ALTER TABLE user_id_seq OWNER TO nanocloud;
-
---
--- Name: user_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: nanocloud
---
-
-ALTER SEQUENCE user_id_seq OWNED BY "user".id;
-
 
 --
 -- Name: id; Type: DEFAULT; Schema: public; Owner: nanocloud
@@ -538,13 +517,6 @@ ALTER TABLE ONLY property ALTER COLUMN id SET DEFAULT nextval('property_id_seq':
 --
 
 ALTER TABLE ONLY refreshtoken ALTER COLUMN id SET DEFAULT nextval('refreshtoken_id_seq'::regclass);
-
-
---
--- Name: id; Type: DEFAULT; Schema: public; Owner: nanocloud
---
-
-ALTER TABLE ONLY "user" ALTER COLUMN id SET DEFAULT nextval('user_id_seq'::regclass);
 
 
 --
@@ -719,16 +691,9 @@ SELECT pg_catalog.setval('refreshtoken_id_seq', 1, false);
 -- Data for Name: user; Type: TABLE DATA; Schema: public; Owner: nanocloud
 --
 
-COPY "user" ("firstName", "lastName", "hashedPassword", email, activated, "isAdmin", id, "createdAt", "updatedAt") FROM stdin;
-Admin	Nanocloud	$2a$10$9gITRHFf1EqS4xJV3uVdveAx6UCwx1ZVKygcU8Ly4Wx8NJht9VmBG	admin@nanocloud.com	t	t	1	2016-07-24 16:55:02+00	2016-07-24 16:55:02+00
+COPY "user" (id, "firstName", "lastName", "hashedPassword", email, activated, "isAdmin", "createdAt", "updatedAt") FROM stdin;
+aff17b8b-bf91-40bf-ace6-6dfc985680bb	Admin	Nanocloud	$2a$10$23CAm2ZFtyhHkXok8mbzuuFSEmEyzrdB5A0.bTehL1sSVaESs3avm	admin@nanocloud.com	t	t	2016-07-24 21:07:09+00	2016-07-24 21:07:09+00
 \.
-
-
---
--- Name: user_id_seq; Type: SEQUENCE SET; Schema: public; Owner: nanocloud
---
-
-SELECT pg_catalog.setval('user_id_seq', 1, true);
 
 
 --
@@ -825,6 +790,13 @@ ALTER TABLE ONLY refreshtoken
 
 ALTER TABLE ONLY "user"
     ADD CONSTRAINT user_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: user_id; Type: INDEX; Schema: public; Owner: nanocloud
+--
+
+CREATE INDEX user_id ON "user" USING btree (id);
 
 
 --
