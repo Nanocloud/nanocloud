@@ -1,8 +1,8 @@
-FROM tomcat:8.0.20-jre7
+FROM tomcat:8.5.4-jre8
 MAINTAINER Olivier Berthonneau <olivier.berthonneau@nanocloud.com>
 
 RUN apt-get update && apt-get -y install maven \
-    openjdk-7-jdk
+    openjdk-8-jdk
 
 ENV GUAC_VERSION=0.9.9
 ENV GUACAMOLE_HOME="/etc/guacamole"
