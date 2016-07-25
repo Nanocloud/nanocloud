@@ -4,11 +4,11 @@ const Promise = require('bluebird');
 
 /**
  * nanocloudConfigValue returns the value associated to the config variable's
- * name. It will retreive the value from the environment variable if any and
+ * name. It will retrieve the value from the environment variable if any and
  * ensure that the type of the varriable is the same as the defaultValue.
  * If default value is an object, the environment variable is expected to be a
  * serialized JSON object.
- * It it's an array, it's expected to be a serialized JSON array.
+ * If it's an array, it's expected to be a serialized JSON array.
  * Otherwise, it returns the defaultValue.
  *
  * @method nanocloudConfigValue

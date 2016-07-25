@@ -7,6 +7,9 @@ tests:
 test-api:
 	mocha tests/api/bootstrap.test.js tests/api/index.js
 
+test-units:
+	mocha ./tests/unit/**/*.js
+
 test-jshint:
 	jshint api/ config/
 
