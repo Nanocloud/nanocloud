@@ -21,7 +21,7 @@ module.exports.policies = {
 
   '*': 'isAuthorized',
 
-  'PropertyController': {
+  PropertyController: {
     find: true
   }
 };

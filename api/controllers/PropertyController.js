@@ -1,14 +1,51 @@
 /**
- * PropertyController
+ * PropertyController is responsible of the installation properties. Those are
+ * publicly accessible (without authentication) and are firstly used to customize
+ * the frontend.
  *
- * @description :: Server-side logic for managing properties
- * @help        :: See http://sailsjs.org/#!/documentation/concepts/Controllers
+ * @class PropertyController
  */
+
+/* globals ConfigService */
 
 module.exports = {
 
-  find: function(req, res) {
+  /**
+   * find retreives all the properties
+   *
+   * @method find
+   * @public true
+   */
+  find(req, res) {
 
-    res.json({"favicon":"favicon.ico","primaryColor":"","style":".sidebar { background-color: };","title":""});
+    ConfigService.get(
+      'title', 'favIconPath', 'logoPath', 'primaryColor'
+    )
+    .then((config) => {
+
+      let logo = '';
+      if (config.logoPath) {
+        logo = [
+          `.sidebar-logo{background-image:url(${config.logoPath})}`,
+          `.login-logo{background-image:url(${config.logoPath})}`
+        ].join('');
+      }
+
+      let favIcon = 'favicon.ico';
+      if (config.favIconPath) {
+        favIcon = config.favIconPath;
+      }
+
+      let sidebarColor = `.sidebar{background-color:${config.primaryColor}}`;
+
+      res.send({
+        primaryColor: config.primaryColor,
+        title: config.title,
+        style: logo + sidebarColor,
+        favicon: favIcon
+      });
+    })
+    .catch((err) => res.negotiate(err));
   }
+
 };
