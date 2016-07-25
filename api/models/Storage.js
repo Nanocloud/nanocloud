@@ -19,12 +19,15 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
- * FileController
+ * Storage.js
  *
- * @description :: Server-side logic for managing files
- * @help        :: See http://sailsjs.org/#!/documentation/concepts/Controllers
+ * @description :: TODO: You might write a short summary of how this model works and what it represents here.
+ * @docs        :: http://sailsjs.org/documentation/concepts/models-and-orm/models
  */
 
 module.exports = {
 
+  attributes: {
+
+  }
 };

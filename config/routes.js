@@ -74,6 +74,11 @@ module.exports.routes = {
   'GET /apps/connections': {
     controller: 'Apps',
     action: 'connections'
-  }
+  },
+
+  'POST /api/upload': {
+    controller: 'Storage',
+    action: 'upload'
+  },
 
 };
