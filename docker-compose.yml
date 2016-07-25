@@ -14,6 +14,7 @@ services:
       - nanocloud
     depends_on:
       - postgres
+      - storage
     restart: always
 
   frontend:
@@ -37,6 +38,34 @@ services:
     networks:
       - nanocloud
     restart: always
+
+  storage:
+    build: ./storage
+    image: nanocloud/storage
+    ports:
+     - 138/udp:138/udp
+     - 139:139
+     - 445/udp:445/udp
+     - 445:445
+     - 9090:9090
+    networks:
+      - nanocloud
+    depends_on:
+      - plaza
+    volumes:
+      - plaza:/opt/plaza
+    restart: always
+
+  plaza:
+    build: ./plaza
+    image: nanocloud/plaza
+    environment:
+      - GOOS=linux
+      - GOARCH=amd64
+    networks:
+      - nanocloud
+    volumes:
+      - plaza:/go/src/github.com/Nanocloud/community/plaza/
 
   guacamole-client:
     build: ./guacamole-client
@@ -67,4 +96,6 @@ networks:
 
 volumes:
   static:
+    driver: local
+  plaza:
     driver: local
