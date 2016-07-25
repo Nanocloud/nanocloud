@@ -38,7 +38,7 @@ module.exports = function() {
               type: 'users'
             }
           })
-          .set('Authorization', 'Bearer admintoken')
+          .set(nano.adminLogin())
           .expect(201)
           .expect(nano.jsonApiSchema(expectedSchema))
           .end(done);
@@ -50,7 +50,7 @@ module.exports = function() {
 
         nano.request(sails.hooks.http.app)
           .get('/api/users')
-          .set('Authorization', 'Bearer admintoken')
+          .set(nano.adminLogin())
           .expect(200)
           .expect(nano.jsonApiSchema(expectedSchema))
           .end(done);

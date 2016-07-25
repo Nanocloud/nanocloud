@@ -17,6 +17,13 @@ module.exports = {
     validator.validate(res.body);
   },
 
+  adminLogin: function() {
+
+    return {
+      'Authorization': 'Bearer admintoken'
+    };
+  },
+
   schema: function(schema) {
 
     return function(res) {
