@@ -14,3 +14,4 @@ ratings:
 exclude_paths:
   - tests/api/**
   - assets/tests/**
+  - assets/vendor/**
