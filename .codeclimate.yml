@@ -1,7 +1,9 @@
 engines:
   eslint:
     enabled: true
-  duplication:
+    checks:
+      comma-dangle:
+        enabled: false
     enabled: true
     config:
       languages:
@@ -12,3 +14,4 @@ ratings:
 exclude_paths:
   - tests/api/**
   - assets/tests/**
+  - assets/vendor/**
