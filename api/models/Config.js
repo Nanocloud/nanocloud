@@ -11,8 +11,10 @@ module.exports = {
   attributes: {
 
     key: {
+      type: 'string',
       primaryKey: true,
-      type: 'string'
+      unique: true,
+      index: true
     },
 
     value: {
@@ -20,4 +22,3 @@ module.exports = {
     }
   }
 };
-
