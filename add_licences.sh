@@ -1,8 +1,8 @@
 #!/bin/bash
 
 LICENSE_TEXT="/**
- * Nanocloud, a comprehensive platform to turn any application into a cloud
- * solution.
+ * Nanocloud turns any traditional software into a cloud solution, without
+ * changing or redeveloping existing source code.
  *
  * Copyright (C) 2016 Nanocloud Software
  *
