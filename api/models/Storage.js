@@ -46,6 +46,7 @@ module.exports = {
 
   beforeCreate: function(values, next){
 
+    console.log("Create storage for user : ", values);
     PlazaService.exec(
       values.hostname,
       ["useradd", values.username, "--create-home", "--groups", "users"],

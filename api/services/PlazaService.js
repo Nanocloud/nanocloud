@@ -19,8 +19,9 @@ module.exports = {
     }
 
     let req = http.request(options, function (response) {
-      console.log(response.statusCode);
-      console.log(response.body);
+      response.on('data', function (data) {
+        console.log(JSON.parse(data));
+      });
     });
 
     req.write(JSON.stringify(data));
