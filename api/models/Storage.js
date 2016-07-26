@@ -1,3 +1,5 @@
+const url = require('url')
+
 /**
  * Nanocloud, a comprehensive platform to turn any application into a cloud
  * solution.
@@ -28,6 +30,28 @@
 module.exports = {
 
   attributes: {
+    user: {
+      model: 'user'
+    },
+    username: {
+      type: 'string'
+    },
+    password: {
+      type: 'string'
+    },
+    hostname: {
+      type: 'string'
+    }
+  },
 
+  beforeCreate: function(values, next){
+
+    PlazaService.exec(
+      values.hostname,
+      ["useradd", values.username, "--create-home", "--groups", "users"],
+      ""
+    )
+
+    next();
   }
 };
