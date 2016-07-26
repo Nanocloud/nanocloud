@@ -13,4 +13,6 @@ function check_command {
 
 check_command make test-jshint
 check_command make test-api
+check_command make test-units
+
 exit $EXIT_STATUS

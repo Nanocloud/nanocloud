@@ -7,8 +7,17 @@
 
 module.exports = {
 
+  autoPK: false,
   attributes: {
 
+    key: {
+      primaryKey: true,
+      type: 'string'
+    },
+
+    value: {
+      type: 'string'
+    }
   }
 };
 
