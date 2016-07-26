@@ -14,7 +14,7 @@ module.exports = {
     MachineService.find((err, machines) => {
 
       if (err) {
-        return res.negociate(err);
+        return res.negotiate(err);
       }
 
       const userMachine = machines[0];
@@ -38,7 +38,7 @@ module.exports = {
           return res.ok(connections);
         })
         .catch((err) => {
-          return res.negociate(err);
+          return res.negotiate(err);
         });
     });
   }
