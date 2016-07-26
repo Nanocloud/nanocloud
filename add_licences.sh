@@ -1,5 +1,33 @@
 #!/bin/bash
 
+# Nanocloud turns any traditional software into a cloud solution, without
+# changing or redeveloping existing source code.
+#
+# Copyright (C) 2016 Nanocloud Software
+#
+# This file is part of Nanocloud.
+#
+# Nanocloud is free software; you can redistribute it and/or modify
+# it under the terms of the GNU Affero General Public License as
+# published by the Free Software Foundation, either version 3 of the
+# License, or (at your option) any later version.
+#
+# Nanocloud is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU Affero General Public License for more details.
+#
+# You should have received a copy of the GNU Affero General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+# To change a specific line over every licences text in source tree, you can
+# adapt the followin command
+# ```
+# git grep -n "your pattern to match" | \
+#     column -t -s: | \
+#     awk '{ print "sed -i \""$2","$2 + 1 "d\" "$1"; sed -i \""$2"i \\ What do you want to change " $1; }' > test.sh
+# ```
+
 LICENSE_TEXT="/**
  * Nanocloud turns any traditional software into a cloud solution, without
  * changing or redeveloping existing source code.
@@ -81,3 +109,4 @@ for file in $(find tests -name "*.js"); do
     mv "${file}.new" "${file}"
   fi
 done
+
