@@ -81,4 +81,9 @@ module.exports.routes = {
     action: 'upload'
   },
 
+  'GET /api/files': {
+    controller: 'Storage',
+    action: 'files'
+  }
+
 };

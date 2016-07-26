@@ -17,5 +17,11 @@ module.exports = {
     console.log("TODO: forward file to http://localhost:9090/upload?username=" + user.username + "&filename=" +  encodeURIComponent(filename));
     return res.send("upload endpoint not implemented yet");
   },
+
+  files: function(req, res) {
+    PlazaService.files("localhost", "", "/home/qleblqnc/", (files) => {
+      res.send(files);
+    })
+  }
 };
 
