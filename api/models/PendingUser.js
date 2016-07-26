@@ -10,6 +10,7 @@ const uuid = require('node-uuid');
 
 module.exports = {
 
+  autoPK: false,
   attributes: {
     id: {
       type: 'string',
@@ -30,9 +31,6 @@ module.exports = {
     },
     email: {
       type: 'string'
-    },
-    activated: {
-      type: 'boolean'
     },
     isAdmin: {
       type: 'boolean'

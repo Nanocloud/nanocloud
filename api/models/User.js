@@ -48,9 +48,6 @@ module.exports = {
     email: {
       type: 'string'
     },
-    activated: {
-      type: 'boolean'
-    },
     isAdmin: {
       type: 'boolean'
     },

@@ -9,7 +9,7 @@ module.exports = {
   create: function(req, res) {
     var nodemailer  = require('nodemailer');
     var uuid = require('node-uuid');
-    var host        = 'http://127.0.0.1:4200';
+    var host        = 'http://127.0.0.1';
     var user        = req.body.data.attributes;
     user.id = uuid.v4();
     var transporter = nodemailer.createTransport('smtps://postmaster%40mg.nanocloud.com:NObArwDhaHfq@smtp.mailgun.org');   
