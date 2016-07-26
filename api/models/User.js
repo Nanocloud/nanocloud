@@ -65,10 +65,11 @@ module.exports = {
 
   beforeCreate: function(values, next){
 
-    var hash = bcrypt.hashSync(values.password, 10);
-
-    values.hashedPassword = hash;
-    delete values.password;
+    if (values.password) {
+      var hash = bcrypt.hashSync(values.password, 10);
+      values.hashedPassword = hash;
+      delete values.password;
+    }
     next();
   }
 };
