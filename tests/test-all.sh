@@ -11,6 +11,7 @@ function check_command {
     fi
 }
 
+check_command make test-licences
 check_command make test-jshint
 check_command make test-api
 check_command make test-units

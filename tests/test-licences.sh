@@ -28,6 +28,8 @@
 #     awk '{ print "sed -i \""$2","$2 + 1 "d\" "$1"; sed -i \""$2"i \\ What do you want to change " $1; }' > test.sh
 # ```
 
+ACTION=${1:-tests}
+LICENCE_PATTERN="Copyright"
 LICENSE_TEXT="/**
  * Nanocloud turns any traditional software into a cloud solution, without
  * changing or redeveloping existing source code.
@@ -63,50 +65,70 @@ for file in $(find assets -path assets/tmp -prune -o -name "*.js" | grep -v node
   fi
 
   echo "Scanning ${file}" >> add_licence.log
-  if [ -z "$(grep "Copyright" "${file}")" ]; then
-    echo "Adding licence in : ${file}"
-    { echo -n "${LICENSE_TEXT}"; cat "${file}"; } > "${file}.new"
-    mv "${file}.new" "${file}"
+  if [ -z "$(grep ${LICENCE_PATTERN} "${file}")" ]; then
+    echo "Missing licence in : ${file}"
+    if [ "tests" = "${ACTION}" ]; then
+      exit 1
+    else
+      { echo -n "${LICENSE_TEXT}"; cat "${file}"; } > "${file}.new"
+      mv "${file}.new" "${file}"
+    fi
   fi
 done
 
 echo "### Find source files in *config* directory"
 for file in $(find config -name "*.js"); do
   echo "Scanning ${file}" >> add_licence.log
-  if [ -z "$(grep "Copyright" "${file}")" ]; then
+  if [ -z "$(grep ${LICENCE_PATTERN} "${file}")" ]; then
     echo "Adding licence in : ${file}"
-    { echo -n "${LICENSE_TEXT}"; cat "${file}"; } > "${file}.new"
-    mv "${file}.new" "${file}"
+    if [ "tests" = "${ACTION}" ]; then
+      exit 1
+    else
+      { echo -n "${LICENSE_TEXT}"; cat "${file}"; } > "${file}.new"
+      mv "${file}.new" "${file}"
+    fi
   fi
 done
 
 echo "### Find source files in *api* directory"
 for file in $(find api -name "*.js"); do
   echo "Scanning ${file}" >> add_licence.log
-  if [ -z "$(grep "Copyright" "${file}")" ]; then
+  if [ -z "$(grep ${LICENCE_PATTERN} "${file}")" ]; then
     echo "Adding licence in : ${file}"
-    { echo -n "${LICENSE_TEXT}"; cat "${file}"; } > "${file}.new"
-    mv "${file}.new" "${file}"
+    if [ "tests" = "${ACTION}" ]; then
+      exit 1
+    else
+      { echo -n "${LICENSE_TEXT}"; cat "${file}"; } > "${file}.new"
+      mv "${file}.new" "${file}"
+    fi
   fi
 done
 
 echo "### Find source files in *plaza* directory"
 for file in $(find plaza -name "*.go"); do
   echo "Scanning ${file}" >> add_licence.log
-  if [ -z "$(grep "Copyright" "${file}")" ]; then
+  if [ -z "$(grep ${LICENCE_PATTERN} "${file}")" ]; then
     echo "Adding licence in : ${file}"
-    { echo -n "${LICENSE_TEXT}"; cat "${file}"; } > "${file}.new"
-    mv "${file}.new" "${file}"
+    if [ "tests" = "${ACTION}" ]; then
+      exit 1
+    else
+      { echo -n "${LICENSE_TEXT}"; cat "${file}"; } > "${file}.new"
+      mv "${file}.new" "${file}"
+    fi
   fi
 done
 
 echo "### Find source files in *tests* directory"
 for file in $(find tests -name "*.js"); do
   echo "Scanning ${file}" >> add_licence.log
-  if [ -z "$(grep "Copyright" "${file}")" ]; then
+  if [ -z "$(grep ${LICENCE_PATTERN} "${file}")" ]; then
     echo "Adding licence in : ${file}"
-    { echo -n "${LICENSE_TEXT}"; cat "${file}"; } > "${file}.new"
-    mv "${file}.new" "${file}"
+    if [ "tests" = "${ACTION}" ]; then
+      exit 1
+    else
+      { echo -n "${LICENSE_TEXT}"; cat "${file}"; } > "${file}.new"
+      mv "${file}.new" "${file}"
+    fi
   fi
 done
 
