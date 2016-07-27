@@ -5,37 +5,35 @@
  * @help        :: See http://sailsjs.org/#!/documentation/concepts/Controllers
  */
 
+const uuid = require('node-uuid');
+
 module.exports = {
+
   create: function(req, res) {
-    var nodemailer  = require('nodemailer');
-    var uuid = require('node-uuid');
-    var host        = 'http://127.0.0.1';
-    var user        = req.body.data.attributes;
+
+    var host = "http://127.0.0.1:4200";
+    var user = req.body.data.attributes;
     user.id = uuid.v4();
-    var transporter = nodemailer.createTransport('smtps://postmaster%40mg.nanocloud.com:NObArwDhaHfq@smtp.mailgun.org');   
-    var mailOptions = {
-      from: '"Nanocloud" <postmaster@nanocloud.com>', // sender address
-      to: user.email, // list of receivers seperated by a comma
-      subject: 'Nanocloud - Verify your email address', // Subject line
-      html: 'Hello ' + user["first-name"] + ' ' + user["last-name"] + ',<br> please verify your email address by clicking this link: '+
-        '<a href="'+host+'/#/activate/'+user.id+'">Activate my account</a>' // html body
+    user["isAdmin"] = false;
+    var to =  user.email;
+    var subject = 'Nanocloud - Verify your email address';
+    var message = 'Hello ' + user["first-name"] + ' ' + user["last-name"] + ',<br> please verify your email address by clicking this link: '+
+        '<a href="'+host+'/#/activate/'+user.id+'">Activate my account</a>';
 
-    };
-
-    transporter.sendMail(mailOptions, function(error, info){
-      if(error){
-        return console.log(error);
-      }
-      console.log('Message sent: ' + info.response);
-
-      PendingUser.create(JsonApiService.deserialize(user))
+    EmailService.sendMail(to, subject, message)
       .then(() => {
-        return res.json(JsonApiService.serialize("pendinguser", []));
+        PendingUser.create(JsonApiService.deserialize(user))
+          .then((created_user) => {
+            res.status(201);
+            return res.json(JsonApiService.serialize("PendingUser", created_user.toJSON()));
+          })
+        .catch(() => {
+          return res.send(500, "Could not sign up");
+        });
       })
       .catch(() => {
-        return res.send(500, "Could not sign up");
+          return res.send(500, "Could not send activation email");
       });
-    });
   },
 
   update: function(req, res) {
