@@ -36,8 +36,13 @@ module.exports = {
   },
 
   files: function(req, res) {
-    PlazaService.files("localhost", "", "/home/qleblqnc/", (files) => {
-      res.send(files);
+    let filename = req.query["filename"];
+    let user = req.user;
+
+    StorageService.findOrCreate(user, (err, storage) => {
+      PlazaService.files(storage.hostname, "", "/home/" + storage.username, (files) => {
+        res.send(files);
+      })
     })
   }
 };
