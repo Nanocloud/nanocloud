@@ -22,17 +22,14 @@ module.exports = {
 
     EmailService.sendMail(to, subject, message)
       .then(() => {
-        PendingUser.create(JsonApiService.deserialize(user))
-          .then((created_user) => {
-            res.status(201);
-            return res.json(JsonApiService.serialize("PendingUser", created_user.toJSON()));
-          })
-        .catch(() => {
-          return res.send(500, "Could not sign up");
-        });
+        return PendingUser.create(JsonApiService.deserialize(user))
+      })
+      .then((created_user) => {
+        res.status(201);
+        return res.json(JsonApiService.serialize("PendingUser", created_user));
       })
       .catch(() => {
-          return res.send(500, "Could not send activation email");
+          return res.send(500, "Could not signup");
       });
   },
 

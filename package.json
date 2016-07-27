@@ -54,6 +54,7 @@
     "jshint": "^2.9.2",
     "jsonapi-validator": "^2.1.0",
     "mocha": "2.4.5",
-    "supertest": "^1.2.0"
+    "supertest": "^1.2.0",
+    "supertest-as-promised": "^3.2.0"
   }
 }

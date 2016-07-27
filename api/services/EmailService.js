@@ -1,4 +1,5 @@
 const nodemailer  = require('nodemailer');
+const stubTransport = require('nodemailer-stub-transport');
 
 module.exports = {
 
@@ -6,7 +7,9 @@ module.exports = {
 
   sendMail: function(to, subject, message) {
 
-    return ConfigService.get('smtpServerHost', 'smtpLogin', 'smtpPassword', 'smtpSendFrom')
+    return ConfigService.get(
+      'testSendMail', 'smtpServerHost', 'smtpLogin', 'smtpPassword', 'smtpSendFrom'
+    )
       .then((res) => {
         var smtpConfig = {
           host: "smtp.mailgun.org",
@@ -15,6 +18,11 @@ module.exports = {
             pass: res.smtpPassword
           }
         };
+       
+        if (res.testSendMail) {
+          smtpConfig = stubTransport();
+        }
+
         var transporter = nodemailer.createTransport(smtpConfig);   
         var mailOptions = {
           from: '"Nanocloud" <' + res.smtpSendFrom + '>', // sender address

@@ -11,6 +11,7 @@ const uuid = require('node-uuid');
 module.exports = {
 
   autoPK: false,
+
   attributes: {
     id: {
       type: 'string',
@@ -20,28 +21,26 @@ module.exports = {
       uuidv4: true,
       defaultsTo: function (){ return uuid.v4(); }
     },
+
     firstName: {
       type: 'string'
     },
+
     lastName: {
       type: 'string'
     },
+
     hashedPassword: {
       type: 'string'
     },
+
     email: {
       type: 'string'
     },
+
     isAdmin: {
       type: 'boolean'
     },
-
-    toJSON: function() {
-      var obj = this.toObject();
-      delete obj.password;
-      delete obj.hashedPassword;
-      return obj;
-    }
   },
 
   beforeCreate: function(values, next){

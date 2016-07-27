@@ -22,7 +22,7 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-const supertestRequest = require('supertest');
+const supertestRequest = require("supertest-as-promised");
 const Validator = require('jsonapi-validator').Validator;
 const validator = new Validator();
 const Ajv = require('ajv');
