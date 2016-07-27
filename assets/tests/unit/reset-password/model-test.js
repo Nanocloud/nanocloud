@@ -22,23 +22,15 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-import Ember from 'ember';
+import { moduleForModel, test } from 'ember-qunit';
 
-export default Ember.Controller.extend({
-	actions: {
-		submitForm() {
-			this.get('model')
-			.save()
-			.then(
-				() => {
-					this.toast.success("Your password has been updated.", "Please log in now");
-					this.transitionToRoute('login');
-				},
-				(err) => {
-					this.toast.error(err.errors[0].detail, "Please try again with another token.");
-					return err.responseJSON;
-				}
-			);
-		}
-	}
+moduleForModel('reset-password', 'Unit | Model | reset password', {
+  // Specify the other units that are required for this test.
+  needs: []
+});
+
+test('it exists', function(assert) {
+  let model = this.subject();
+  // let store = this.store();
+  assert.ok(!!model);
 });

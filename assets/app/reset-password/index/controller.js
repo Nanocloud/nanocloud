@@ -40,7 +40,7 @@ export default Ember.Controller.extend({
 				},
 				(err) => {
           this.set('loadState', 0);
-					this.toast.error(err.errors[0].title, "Password can not be reset");
+					this.toast.error(err.errors[0].detail, "Password can not be reset");
 					return err.responseJSON;
 				}
 			);
