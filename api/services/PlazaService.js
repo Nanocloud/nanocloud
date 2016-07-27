@@ -1,4 +1,5 @@
 const http = require("http")
+const fs = require("fs")
 
 module.exports = {
 
@@ -45,16 +46,15 @@ module.exports = {
     req.end();
   },
 
-  upload: function(hostname, filename, path) {
+  upload: function(storage, file, callback) {
     let options = {
-      host: hostname,
-      path: "/upload?filename" + filename,
+      host: storage.hostname,
+      path: "/upload?filename=" + encodeURI(file.filename) + "&username=" + storage.username,
       port: 9090,
       method: 'POST'
     }
 
-    let req = http.request(options, function(response) {
-      console.log(response.body);
-    });
+    readableStream = fs.createReadStream(file.stream.fd)
+    readableStream.pipe(http.request(options, callback));
   }
 };
