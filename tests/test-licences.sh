@@ -58,7 +58,7 @@ LICENSE_TEXT="/**
 
 echo "" > add_licence.log
 
-echo "### Find source files in frontend"
+echo "### Looking for source files in frontend"
 for file in $(find assets -path assets/tmp -prune -o -name "*.js" | grep -v node_modules | grep -v bower_components | grep -v dist); do
   if [ "${file}" = "assets/tmp" ]; then
     continue
@@ -76,7 +76,7 @@ for file in $(find assets -path assets/tmp -prune -o -name "*.js" | grep -v node
   fi
 done
 
-echo "### Find source files in *config* directory"
+echo "### Looking for source files in *config* directory"
 for file in $(find config -name "*.js"); do
   echo "Scanning ${file}" >> add_licence.log
   if [ -z "$(grep ${LICENCE_PATTERN} "${file}")" ]; then
@@ -90,7 +90,7 @@ for file in $(find config -name "*.js"); do
   fi
 done
 
-echo "### Find source files in *api* directory"
+echo "### Looking for source files in *api* directory"
 for file in $(find api -name "*.js"); do
   echo "Scanning ${file}" >> add_licence.log
   if [ -z "$(grep ${LICENCE_PATTERN} "${file}")" ]; then
@@ -104,7 +104,7 @@ for file in $(find api -name "*.js"); do
   fi
 done
 
-echo "### Find source files in *plaza* directory"
+echo "### Looking for source files in *plaza* directory"
 for file in $(find plaza -name "*.go"); do
   echo "Scanning ${file}" >> add_licence.log
   if [ -z "$(grep ${LICENCE_PATTERN} "${file}")" ]; then
@@ -118,7 +118,7 @@ for file in $(find plaza -name "*.go"); do
   fi
 done
 
-echo "### Find source files in *tests* directory"
+echo "### Looking for source files in *tests* directory"
 for file in $(find tests -name "*.js"); do
   echo "Scanning ${file}" >> add_licence.log
   if [ -z "$(grep ${LICENCE_PATTERN} "${file}")" ]; then
