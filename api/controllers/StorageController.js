@@ -10,12 +10,29 @@
 module.exports = {
 
   upload: function(req, res) {
-    let filename = req.query["filename"];
-    let user = JsonApiService.serialize('users', req.user);
+    let user = req.user;
 
-    console.log(StorageService.findOrCreate(user));
-    console.log("TODO: forward file to http://localhost:9090/upload?username=" + user.username + "&filename=" +  encodeURIComponent(filename));
-    return res.send("upload endpoint not implemented yet");
+    StorageService.findOrCreate(user, (err, storage) => {
+      let filename = req.query["filename"];
+
+      req.file(filename).upload(function (err, uploadedFiles) {
+          if (err) {
+            return res.negotiate(err);
+          }
+
+          // If no files were uploaded, respond with an error.
+          if (uploadedFiles.length === 0){
+            return res.badRequest('No file was uploaded');
+          }
+
+          PlazaService.upload(
+            storage,
+            uploadedFiles[0],
+            (err, data) => {
+              res.send("Upload successful");
+            });
+        });
+    });
   },
 
   files: function(req, res) {
