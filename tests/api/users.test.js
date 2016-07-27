@@ -10,14 +10,15 @@ module.exports = function() {
       type: 'object',
       properties: {
         'email': {type: 'string'},
+        'hashed-password': {type: 'string'},
         'activated': {type: 'boolean'},
         'is-admin': {type: 'boolean'},
         'first-name': {type: 'string'},
         'last-name': {type: 'string'},
-        'created-at': {format: 'date'},
-        'updated-at': {format: 'date'}
+        'created-at': {type: 'string'},
+        'updated-at': {type: 'string'}
       },
-      required: ['email', 'activated', 'is-admin', 'first-name', 'last-name', 'created-at', 'updated-at'],
+      required: ['email', 'activated', 'hashed-password', 'is-admin', 'first-name', 'last-name', 'created-at', 'updated-at'],
       additionalProperties: false
     };
 
@@ -33,7 +34,9 @@ module.exports = function() {
                 'first-name': "Firstname",
                 'last-name': "Lastname",
                 'email': "user@nanocloud.com",
-                'password': "nanocloud"
+                'password': "nanocloud",
+                'activated': true,
+                'is-admin': false
               },
               type: 'users'
             }

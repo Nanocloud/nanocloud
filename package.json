@@ -50,7 +50,6 @@
   "devDependencies": {
     "ajv": "^4.1.7",
     "chai": "^3.5.0",
-    "clone": "^1.0.2",
     "jshint": "^2.9.2",
     "jsonapi-validator": "^2.1.0",
     "mocha": "2.4.5",
