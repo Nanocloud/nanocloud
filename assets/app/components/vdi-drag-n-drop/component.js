@@ -64,7 +64,11 @@ var FileUploader = Ember.Object.extend(Ember.Evented, {
     };
 
     this.set('uploading', true);
-    req.send(this.get('file'));
+
+    var formData = new FormData();
+    formData.append(this.get('file').name, this.get('file'));
+
+    req.send(formData);
   },
 
   cancel(preventEvent) {
