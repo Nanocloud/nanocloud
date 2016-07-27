@@ -56,6 +56,12 @@ module.exports = {
       type: 'integer'
     },
 
+    groups: {
+      collection: 'group',
+      via: 'members',
+      through: 'usergroup'
+    },
+
     toJSON: function() {
       var obj = this.toObject();
       delete obj.password;

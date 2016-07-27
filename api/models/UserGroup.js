@@ -16,36 +16,19 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- *
- * Group.js
- *
- * @description :: TODO: You might write a short summary of how this model works and what it represents here.
- * @docs        :: http://sailsjs.org/documentation/concepts/models-and-orm/models
+ * You should have received a copy of the GNU Affero General
+ * Public License
+ * along with this program.  If not, see
+ * <http://www.gnu.org/licenses/>.
  */
 
-const uuid = require('node-uuid');
-
 module.exports = {
-
-  autoPK: false,
-
   attributes: {
-    id: {
-      type: 'string',
-      primaryKey: true,
-      uuidv4: true,
-      defaultsTo: function (){ return uuid.v4(); }
+    user: {
+      model: 'user'
     },
-    name: {
-      type: 'string'
-    },
-
-    members: {
-      collection: 'user',
-      via: 'groups',
-      through: 'usergroup'
+    group: {
+      model: 'group'
     }
   }
 };
