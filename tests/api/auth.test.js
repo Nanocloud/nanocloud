@@ -84,7 +84,7 @@ module.exports = function() {
 
         nano.request(sails.hooks.http.app)
           .get('/api/users')
-          .set('Authorization', 'Bearer admintoken')
+          .set(nano.adminLogin())
           .expect(200)
           .expect(nano.isJsonApi)
           .end(done);
