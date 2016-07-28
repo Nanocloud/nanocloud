@@ -24,11 +24,27 @@ module.exports = {
         "id": user.id
       })
       .then(() => {
+        return ConfigService.get(
+            'smtpServerHost', 'smtpLogin', 'smtpPassword', 'smtpSendFrom'
+        );
+      })
+      .then((res) => {
+        let smtpConfig = {
+          host: res.smtpServerHost,
+          auth: {
+            user: res.smtpLogin,
+            pass: res.smtpPassword,
+            from: res.smtpSendFrom
+          }
+        };
         let host        = 'http://127.0.0.1';
-        let transporter = nodemailer.createTransport('smtps://postmaster%40'
-            +'mg.nanocloud.com:NObArwDhaHfq@smtp.mailgun.org');   
+        let transporter = nodemailer.createTransport(
+          'smtps://'+smtpConfig.user
+          +':'+stmpConfig.pass
+          +'@'+smtpConfig.host
+        );
         let mailOptions = {
-          from: '"Nanocloud" <postmaster@nanocloud.com>', // sender address
+          from: '"Nanocloud" <'+smtpConfig.from+'>', // sender address
           to: user.email, // list of receivers seperated by a comma
           subject: 'Nanocloud - Reset your password', // Subject line
           html: "Hello,<br>"
@@ -51,48 +67,58 @@ module.exports = {
       });
     })
     .catch((err) => {
-      // console.log(err);
       console.log('An error has occured while retrieving user');
       return res.send(500, 'An error has occured while retrieving user');
     });
   },
 
   update: function(req, res) {
+    const bcrypt        = require("bcryptjs");
+    const ResetPassword = global['Reset-password'];
+
     var token    = req.params.id;
     var dataReq  = req.body.data.attributes;
 
-    global['Reset-password'].findOne({
+    // find user
+    ResetPassword.findOne({
       "id": token
     })
-    .then((token) => {
+    .then((tokenFound) => {
+      token = tokenFound;
       return User.findOne({
         "email": token.email
       });
     })
+    // update his password
     .then((user) => {
       if (!user) {
         return res.notFound('No user has been found');
       }
-      // console.log("dataReq = ");
-      // console.log(dataReq);
-      console.log(user.id);
+
+      let hash = bcrypt.hashSync(dataReq.password, 10);
       return User.update({
-        id: user.id,
-        password: "tototiti"
+        id: user.id
+      }, {
+        hashedPassword: hash
       });
     })
-    .then((updatedUser) => {
-      console.log(">>> ok <<<");
-      console.log(updatedUser);
-      res.status(202);
-      return res.json(updatedUser);
+    // destroy the reset password token
+    .then(() => {
+      return ResetPassword.destroy({
+        id: token.id
+      });
+    })
+    // return response
+    .then(() => {
+      res.status(200);
+      return res.send(
+        JsonApiService.serialize('Reset-password', {})
+      );
     })
     .catch((err) => {
-      console.log("failure");
       console.log(err);
       return res.send(500, "Invalid token");
     });
-    return res.json(JsonApiService.serialize("Reset-password", []));
   }
 };
 
