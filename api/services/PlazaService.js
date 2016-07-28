@@ -3,7 +3,7 @@ const fs = require("fs")
 
 module.exports = {
 
-  exec: function(hostname, cmd, stdin) {
+  exec: function(hostname, cmd, stdin, callback) {
     let data = {
       "command": cmd,
       "stdin": stdin
@@ -21,7 +21,7 @@ module.exports = {
 
     let req = http.request(options, function (response) {
       response.on('data', function (data) {
-        console.log(JSON.parse(data));
+        callback(JSON.parse(data));
       });
     });
 
