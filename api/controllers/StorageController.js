@@ -70,7 +70,7 @@ module.exports = {
     let user = req.user;
 
     StorageService.findOrCreate(user, (err, storage) => {
-      PlazaService.files(storage.hostname, "", "/home/" + storage.username, (files) => {
+      PlazaService.files(storage, "", "/home/" + storage.username, (files) => {
         res.send(files);
       });
     });
@@ -85,7 +85,7 @@ module.exports = {
 
       Storage.findOne({user: accessToken.userId}, (err, storage) => {
         PlazaService.download(
-          storage.hostname,
+          storage,
           "/home/" + storage.username + "/" + filename,
           (dataStream) => {
             dataStream.pipe(res.attachment(filename));

@@ -53,9 +53,9 @@ module.exports = {
     req.end();
   },
 
-  files: function(hostname, filename, path, next) {
+  files: function(storage, filename, path, next) {
     let options = {
-      host: hostname,
+      host: storage.hostname,
       path: "/files?path=" + path,
       port: '9090',
       method: 'GET'
@@ -69,9 +69,9 @@ module.exports = {
     req.end();
   },
 
-  download: function(hostname, path, callback) {
+  download: function(storage, path, callback) {
     let options = {
-      host: hostname,
+      host: storage.hostname,
       path: "/files?path=" + encodeURI(path),
       port: '9090',
       method: 'GET'
