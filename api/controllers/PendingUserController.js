@@ -83,7 +83,7 @@ module.exports = {
       });
     })
     .catch(() => {
-      return res.notFound('An error has occured while retrieving user');
+      return res.notFound('An error occured while retrieving user');
     });
   } 
 };

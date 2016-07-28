@@ -33,25 +33,23 @@ var sails = require('sails');
 describe('EmailService', () => {
 
   before(function(done) {
+    // it takes time to send a mail with nodemailer
     this.timeout(10000);
     ConfigService.set('testSendMail', true)
       .then(() => {
         return ConfigService.set('smtpSendFrom', "test@nanocloud.com");
       })
       .then(done);
-    // it takes time to send a mail with nodemailer
   });
 
-  it('Should do amazing stuff', (done) => {
+  it('Should return expected datas in envelope', (done) => {
     EmailService.sendMail("otto@protonmail.com", "subject", "message")
       .then((res) => {
         expect(res.envelope.from).to.equal('test@nanocloud.com');
         expect(res.envelope.to[0]).to.equal('otto@protonmail.com');
         return done();
       })
-      .catch((err) => {
-        done(err);
-      });
+      .catch(done);
   });
 
   after(function() {

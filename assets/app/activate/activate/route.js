@@ -32,7 +32,6 @@ export default Ember.Route.extend({
 	},
 
 	model(params) {
-    console.log(params);
 		return Ember.$.ajax({
 			type: "PATCH",
 			url: '/api/pendingusers/' + params.activate_id,
