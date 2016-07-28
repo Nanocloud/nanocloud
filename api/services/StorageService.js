@@ -1,4 +1,6 @@
-const randomstring = require("randomstring")
+/* globals Storage */
+
+const randomstring = require("randomstring");
 
 module.exports = {
 
@@ -33,6 +35,6 @@ module.exports = {
       })
       .catch((err) => {
         return callback(err);
-      })
+      });
   }
 };

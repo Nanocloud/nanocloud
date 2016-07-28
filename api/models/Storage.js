@@ -1,5 +1,3 @@
-const url = require('url')
-
 /**
  * Nanocloud, a comprehensive platform to turn any application into a cloud
  * solution.
@@ -27,6 +25,8 @@ const url = require('url')
  * @docs        :: http://sailsjs.org/documentation/concepts/models-and-orm/models
  */
 
+/* globals PlazaService */
+
 module.exports = {
 
   attributes: {
@@ -49,8 +49,9 @@ module.exports = {
     PlazaService.exec(
       values.hostname,
       ["useradd", values.username, "--create-home", "--groups", "users"],
-      ""
-    )
+      "",
+      null
+    );
 
     next();
   }
