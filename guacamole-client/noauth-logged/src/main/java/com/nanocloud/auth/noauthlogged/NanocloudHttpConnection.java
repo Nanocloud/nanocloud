@@ -17,8 +17,11 @@ import java.lang.reflect.Field;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 public class NanocloudHttpConnection {
 
+		private static Logger logger = LoggerFactory.getLogger(NanocloudHttpConnection.class);
   private NanocloudHttpConnection() {
 
   }
@@ -62,6 +65,8 @@ public class NanocloudHttpConnection {
       } catch (final Exception e) {
         throw new RuntimeException(e);
       }
+    } catch (final Exception e) {
+      logger.info(e.toString());
     }
   }
 

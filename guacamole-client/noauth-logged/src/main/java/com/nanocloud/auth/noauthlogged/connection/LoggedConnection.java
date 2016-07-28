@@ -78,8 +78,8 @@ public class LoggedConnection extends SimpleConnection {
       resp = NanocloudHttpConnection.HttpGet("http://" + hostname + ":" + port + "/api/machines/users", token);
       JSONArray dataArray = resp.getJSONArray("data");
       data = dataArray.getJSONObject(0);
+      String machineId = data.getString("id");
       dataAttribute = data.getJSONObject("attributes");
-      String machineId = dataAttribute.getString("id");
       String machineSize = dataAttribute.getString("machine-size");
       String machineDriver = dataAttribute.getString("platform");
 
@@ -202,8 +202,8 @@ public class LoggedConnection extends SimpleConnection {
         JSONObject resp = NanocloudHttpConnection.HttpGet("http://" + hostname + ":" + port + "/api/machines/users", token);
         JSONArray dataArray = resp.getJSONArray("data");
         JSONObject data = dataArray.getJSONObject(0);
+        String machineId = data.getString("id");
         JSONObject dataAttribute = data.getJSONObject("attributes");
-        String machineId = dataAttribute.getString("id");
         String machineSize = dataAttribute.getString("machine-size");
         String machineDriver = dataAttribute.getString("platform");
 
@@ -231,14 +231,13 @@ public class LoggedConnection extends SimpleConnection {
         urlConn.setUseCaches(false);
         urlConn.setDoOutput(true);
         // Send request (for some reason we actually need to wait for response)
-        OutputStream os = urlConn.getOutputStream();
-        NanocloudHttpConnection.setRequestMethodUsingWorkaroundForJREBug(urlConn, "PATCH");
-        DataOutputStream writer = new DataOutputStream(os);
+        NanocloudHttpConnection.setRequestMethodUsingWorkaroundForJREBug(urlConn, "POST");
+        DataOutputStream writer = new DataOutputStream(urlConn.getOutputStream());
         writer.writeBytes(params.toString());
         writer.close();
 
         urlConn.connect();
-        os.close();
+        urlConn.getOutputStream().close();
 
         // Get Response
         InputStream input = urlConn.getInputStream();
