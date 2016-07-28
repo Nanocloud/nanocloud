@@ -1,9 +1,8 @@
 // jshint mocha:true
+// global: ConfigService
 
 var nano = require('./lib/nanotest');
 var expect = require('chai').expect;
-
-const ConfigService = global['ConfigService'];
 
 module.exports = function() {
 
