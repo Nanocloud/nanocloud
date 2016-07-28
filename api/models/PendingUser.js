@@ -11,8 +11,8 @@ const uuid = require('node-uuid');
 module.exports = {
 
   autoPK: false,
-
   attributes: {
+
     id: {
       type: 'string',
       primaryKey: true,
@@ -50,4 +50,3 @@ module.exports = {
     next();
   }
 };
-

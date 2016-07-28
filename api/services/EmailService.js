@@ -1,28 +1,6 @@
 const nodemailer  = require('nodemailer');
 const stubTransport = require('nodemailer-stub-transport');
 
-/**
- * init initializes the EmailService. It will copy the configuration variables
- * found in `config.nanocloud` in the database.
- *
- * @method init
- * @private
- * @param {Function} callback Completion callback
- * @return {Promise[null]}
- */
-function init(callback) {
-  const config = sails.config.nanocloud;
-  let actions = [];
-
-  for (let name in config) {
-    if (config.hasOwnProperty(name)) {
-      actions.push(set(name, nanocloudConfigValue(name, config[name])));
-    }
-  }
-  return Promise.all(actions).then(callback, callback);
-}
-
-
 function sendMail(to, subject, message) {
 
   return ConfigService.get('testSendMail', 'smtpServerHost', 'smtpServerPort', 'smtpLogin', 'smtpPassword', 'smtpSendFrom')

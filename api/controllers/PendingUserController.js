@@ -33,7 +33,7 @@ module.exports = {
       })
     })
     .catch((err) => {
-        return res.negotiate(err);
+      return res.negotiate(err);
     });
   },
 
