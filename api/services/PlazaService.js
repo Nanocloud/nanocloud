@@ -1,5 +1,5 @@
-const http = require("http")
-const fs = require("fs")
+const http = require("http");
+const fs = require("fs");
 
 module.exports = {
 
@@ -17,7 +17,7 @@ module.exports = {
         'Content-Type': 'application/json'
       },
       method: 'POST'
-    }
+    };
 
     let req = http.request(options, function (response) {
       response.on('data', function (data) {
@@ -35,7 +35,7 @@ module.exports = {
       path: "/files?path=" + path,
       port: '9090',
       method: 'GET'
-    }
+    };
 
     let req = http.request(options, function(response) {
       response.on('data', function (data) {
@@ -65,9 +65,9 @@ module.exports = {
       path: "/upload?filename=" + encodeURI(file.filename) + "&username=" + storage.username,
       port: 9090,
       method: 'POST'
-    }
+    };
 
-    readableStream = fs.createReadStream(file.stream.fd)
+    let readableStream = fs.createReadStream(file.fd);
     readableStream.pipe(http.request(options, callback));
   }
 };
