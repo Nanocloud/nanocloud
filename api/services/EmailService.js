@@ -8,11 +8,12 @@ module.exports = {
   sendMail: function(to, subject, message) {
 
     return ConfigService.get(
-      'testSendMail', 'smtpServerHost', 'smtpLogin', 'smtpPassword', 'smtpSendFrom'
+      'testSendMail', 'smtpServerHost', 'smtpServerPort', 'smtpLogin', 'smtpPassword', 'smtpSendFrom'
     )
       .then((res) => {
         var smtpConfig = {
-          host: "smtp.mailgun.org",
+          host: res.smtpServerHost,
+          port: res.smtpServerPort,
           auth: {
             user: res.smtpLogin,
             pass: res.smtpPassword

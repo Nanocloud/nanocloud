@@ -11,26 +11,34 @@ module.exports = {
 
   create: function(req, res) {
 
-    var host = "http://127.0.0.1:4200";
-    var user = req.body.data.attributes;
-    user.id = uuid.v4();
-    user["isAdmin"] = false;
-    var to =  user.email;
-    var subject = 'Nanocloud - Verify your email address';
-    var message = 'Hello ' + user["first-name"] + ' ' + user["last-name"] + ',<br> please verify your email address by clicking this link: '+
-        '<a href="'+host+'/#/activate/'+user.id+'">Activate my account</a>';
+    ConfigService.get(
+      'host'
+    )
+    .then((configuration) => {
+      var host = configuration.host;
+      var user = req.body.data.attributes;
+      user.id = uuid.v4();
+      user["isAdmin"] = false;
+      var to =  user.email;
+      var subject = 'Nanocloud - Verify your email address';
+      var message = 'Hello ' + user["first-name"] + ' ' + user["last-name"] + ',<br> please verify your email address by clicking this link: '+
+          '<a href="'+configuration.host+'/#/activate/'+user.id+'">Activate my account</a>';
 
-    EmailService.sendMail(to, subject, message)
-      .then(() => {
-        return PendingUser.create(JsonApiService.deserialize(user))
-      })
-      .then((created_user) => {
-        res.status(201);
-        return res.json(JsonApiService.serialize("PendingUser", created_user));
-      })
-      .catch(() => {
-        return res.send(500, "Could not signup");
-      });
+      EmailService.sendMail(to, subject, message)
+        .then(() => {
+          return PendingUser.create(JsonApiService.deserialize(user))
+        })
+        .then((created_user) => {
+          res.status(201);
+          return res.json(JsonApiService.serialize("PendingUser", created_user));
+        })
+        .catch(() => {
+          return res.send(500, "Could not signup");
+        });
+    })
+    .catch(() => {
+      return res.send(500, "Unable to retrieve configuration variable");
+    });
   },
 
   update: function(req, res) {
