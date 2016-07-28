@@ -43,6 +43,10 @@ module.exports.policies = {
 
   '*': 'isAuthorized',
 
+  StorageController: {
+    download: 'checkDownloadToken',
+  },
+
   PropertyController: {
     find: true
   }

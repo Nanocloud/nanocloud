@@ -35,7 +35,7 @@ export default Ember.Service.extend({
       data: { filename: "./" + filename}
     })
     .then((response) => {
-      let url = "/api/files?filename=" + encodeURIComponent("./" + filename) + "&token=" + encodeURIComponent(response.token); 
+      let url = "/api/files/download?filename=" + encodeURIComponent("./" + filename) + "&token=" + encodeURIComponent(response.token); 
       window.location.assign(url);
     });
   }

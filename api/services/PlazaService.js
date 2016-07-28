@@ -42,7 +42,20 @@ module.exports = {
         next(JSON.parse(data));
       });
     });
+    req.end();
+  },
 
+  download: function(hostname, path, callback) {
+    let options = {
+      host: hostname,
+      path: "/files?path=" + encodeURI(path),
+      port: '9090',
+      method: 'GET'
+    };
+
+    let req = http.request(options, function(response) {
+      callback(response);
+    });
     req.end();
   },
 
