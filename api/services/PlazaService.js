@@ -43,8 +43,8 @@ module.exports = {
       method: 'POST'
     };
 
-    let req = http.request(options, function (response) {
-      response.on('data', function (data) {
+    let req = http.request(options, (response) => {
+      response.on('data', (data) => {
         callback(JSON.parse(data));
       });
     });
@@ -61,8 +61,8 @@ module.exports = {
       method: 'GET'
     };
 
-    let req = http.request(options, function(response) {
-      response.on('data', function (data) {
+    let req = http.request(options, (response) => {
+      response.on('data', (data) => {
         next(JSON.parse(data));
       });
     });
@@ -77,7 +77,7 @@ module.exports = {
       method: 'GET'
     };
 
-    let req = http.request(options, function(response) {
+    let req = http.request(options, (response) => {
       callback(response);
     });
     req.end();

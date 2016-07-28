@@ -50,9 +50,9 @@ module.exports = {
       values.hostname,
       ["useradd", values.username, "--create-home", "--groups", "users"],
       "",
-      null
+      () => {
+        next();
+      }
     );
-
-    next();
   }
 };
