@@ -9,6 +9,8 @@ module.exports = function() {
 
     before(function() {
       ConfigService.set('testSendMail', true);
+      // it takes time to send a mail with nodemailer
+      this.timeout(10000);
     });
 
     const expectedSchema = {
@@ -26,9 +28,9 @@ module.exports = function() {
       additionalProperties: false,
     };
 
-    describe("Create a pending user", function() {
+    describe("Auto signup", function() {
 
-      it('Should return created pending user', function(done) {
+      it('Should create an entry in user table', function(done) {
 
         // adding user to pendinguser table
         nano.request(sails.hooks.http.app)
@@ -46,7 +48,6 @@ module.exports = function() {
           })
           .set(nano.adminLogin())
           .expect(201)
-          .expect(nano.jsonApiSchema(expectedSchema))
           .then((res) => {
 
             // user has been added to pending user table
@@ -56,7 +57,6 @@ module.exports = function() {
               .expect(200)
               .expect(nano.jsonApiSchema(expectedSchema))
               .expect((res) => {
-                console.log(res.body.data[0]);
                 expect(res.body.data[0].attributes["first-name"]).to.equal('Firstname');
               })
           })
@@ -67,6 +67,7 @@ module.exports = function() {
               .patch('/api/pendingusers/' + res.body.data[0].id)
               .set(nano.adminLogin())
               .expect(200)
+              .expect(nano.jsonApiSchema(expectedSchema))
           })
           .then((res) => {
 

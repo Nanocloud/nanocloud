@@ -32,29 +32,6 @@ var sails = require('sails');
 
 process.env.IAAS = 'dummy';
 
-before(function(done) {
-
-  // Increase the Mocha timeout so that Sails has enough time to lift.
-  this.timeout(5000);
-
-  sails.lift({
-    models: {
-      migrate: 'drop'
-    }
-  }, (err) => {
-
-    if (err) {
-      throw new Error(err);
-    }
-
-    ConfigService.init()
-    .then(() => {
-      return done(null, sails);
-    }, done);
-
-  });
-});
-
 describe('Config single Get/Set/Unset', () => {
   it('Should retrieve the recorded value', (done) => {
 

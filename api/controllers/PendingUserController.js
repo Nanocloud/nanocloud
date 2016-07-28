@@ -25,19 +25,15 @@ module.exports = {
           '<a href="'+configuration.host+'/#/activate/'+user.id+'">Activate my account</a>';
 
       EmailService.sendMail(to, subject, message)
-        .then(() => {
-          return PendingUser.create(JsonApiService.deserialize(user))
-        })
-        .then((created_user) => {
-          res.status(201);
-          return res.json(JsonApiService.serialize("PendingUser", created_user));
-        })
-        .catch(() => {
-          return res.send(500, "Could not signup");
-        });
+      .then(() => {
+        return PendingUser.create(JsonApiService.deserialize(user));
+      })
+      .then((created_user) => {
+        return res.created(created_user);
+      })
     })
-    .catch(() => {
-      return res.send(500, "Unable to retrieve configuration variable");
+    .catch((err) => {
+        return res.negotiate(err);
     });
   },
 
@@ -48,17 +44,17 @@ module.exports = {
     })
     .then((user) => {
       if (!user) {
-        return res.notFound('No user has been found');
+        return res.notFound('No user found');
       }
       User.create(user)
       .then(() => {
-        return PendingUser.destroy({
-          "id": pendingUserID
-        });
-      })
+          return PendingUser.destroy({
+            "id": pendingUserID
+          });
+        })
       .then(() => {
-        return res.json(user);
-      });
+        return res.ok(user);
+      })
     })
     .catch((error) => {
       return res.notFound('An error has occured while retrieving user');
