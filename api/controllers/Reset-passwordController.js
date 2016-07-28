@@ -5,75 +5,75 @@
  * @help        :: See http://sailsjs.org/#!/documentation/concepts/Controllers
  */
 
+const nodemailer  = require('nodemailer');
+const uuid        = require('node-uuid');
+const bcrypt      = require("bcryptjs");
+
 module.exports = {
   create: function(req, res) {
-    const nodemailer  = require('nodemailer');
-    const uuid        = require('node-uuid');
+    const ResetPassword = global['Reset-password'];
 
+    var token;
     var user = req.body.data.attributes;
 
+    // find user via his email address
     User.findOne({
       "email": user.email
     })
+    // generate new reset password token
     .then((user) => {
-      // generate new reset password token
-      user.id = uuid.v4();
+      token = uuid.v4();
 
-      global['Reset-password'].create({ 
+      return ResetPassword.create({
         "email": user.email,
-        "id": user.id
-      })
-      .then(() => {
-        return ConfigService.get(
-            'smtpServerHost', 'smtpLogin', 'smtpPassword', 'smtpSendFrom'
-        );
-      })
-      .then((res) => {
-        let smtpConfig = {
-          host: res.smtpServerHost,
-          auth: {
-            user: res.smtpLogin,
-            pass: res.smtpPassword,
-            from: res.smtpSendFrom
-          }
-        };
-        let host        = 'http://127.0.0.1';
-        let transporter = nodemailer.createTransport(
-          'smtps://'+smtpConfig.user
-          +':'+stmpConfig.pass
-          +'@'+smtpConfig.host
-        );
-        let mailOptions = {
-          from: '"Nanocloud" <'+smtpConfig.from+'>', // sender address
-          to: user.email, // list of receivers seperated by a comma
-          subject: 'Nanocloud - Reset your password', // Subject line
-          html: "Hello,<br>"
-            +"We got a request to reset your password.<br>"
-            +"<a href='"+host+"/#/reset-password/"+user.id+"'>"
-            +"Reset my password</a><br><br><i>"
-            +"If you ignore this message your password won't be changed.</i>"
-        };
-        transporter.sendMail(mailOptions, function(error, info){
-          if(error){
-            return console.log(error);
-          }
-          res.status(202);
-          return res.json(JsonApiService.serialize("Reset-password", []));
-        });
-      })
-      .catch((err) => {
-        console.log(err);
-        return res.send(500, "Could not create reset password token");
+        "id": token
+      });
+    })
+    .then(() => {
+      return ConfigService.get(
+        'smtpServerHost', 'smtpLogin', 'smtpPassword', 'smtpSendFrom', 'host'
+      );
+    })
+    // send him reset password link
+    .then((conf) => {
+      let smtpConfig  = {
+        host: conf.smtpServerHost,
+        from: conf.smtpSendFrom,
+        appHost: conf.host,
+        auth: {
+          user: conf.smtpLogin,
+          pass: conf.smtpPassword
+        }
+      };
+
+      let host        = smtpConfig.appHost;
+      let transporter = nodemailer.createTransport(smtpConfig);
+
+      let mailOptions = {
+        from: '"Nanocloud" <'+smtpConfig.from+'>', // sender address
+        to: user.email, // list of receivers seperated by a comma
+        subject: 'Nanocloud - Reset your password', // Subject line
+        html: "Hello,<br>"
+          +"We got a request to reset your password.<br>"
+          +"<a href='"+host+"/#/reset-password/"+token+"'>"
+          +"Reset my password</a><br><br><i>"
+          +"If you ignore this message your password won't be changed.</i>"
+      };
+
+      // mail sent here
+      transporter.sendMail(mailOptions, function(error, info){
+        if(error){
+          return res.negotiate(error);
+        }
+        return res.ok({});
       });
     })
     .catch((err) => {
-      console.log('An error has occured while retrieving user');
-      return res.send(500, 'An error has occured while retrieving user');
+      return res.negotiate(err);
     });
   },
 
   update: function(req, res) {
-    const bcrypt        = require("bcryptjs");
     const ResetPassword = global['Reset-password'];
 
     var token    = req.params.id;
@@ -110,14 +110,10 @@ module.exports = {
     })
     // return response
     .then(() => {
-      res.status(200);
-      return res.send(
-        JsonApiService.serialize('Reset-password', {})
-      );
+      return res.ok({});
     })
     .catch((err) => {
-      console.log(err);
-      return res.send(500, "Invalid token");
+      return res.negotiate(err);
     });
   }
 };
