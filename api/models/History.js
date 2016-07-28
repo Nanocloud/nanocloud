@@ -39,7 +39,7 @@ module.exports = {
       index: true,
       uuidv4: true,
       defaultsTo: function (){ return uuid.v4(); }
-	},
+    },
     userMail: {
       type: 'string'
     },
@@ -50,29 +50,29 @@ module.exports = {
       type: 'string'
     },
     userId: {
-	  type: 'string'
-	},
+      type: 'string'
+    },
     connectionId: {
-	  type: 'string'
-	},
+      type: 'string'
+    },
     startDate: {
-	  type: 'string'
-	},
+      type: 'string'
+    },
     endDate: {
       type: 'string'
-	},
+    },
     machineId: {
-	  type: 'string'
-	},
-	machineSize: {
-	  type: 'string'
+      type: 'string'
+    },
+    machineSize: {
+      type: 'string'
     },
     machineDriver: {
-	  type: 'string'
-	},
+      type: 'string'
+    },
     duration: {
-	  type: 'string'
-	}
+      type: 'string'
+    }
   }
 };
 

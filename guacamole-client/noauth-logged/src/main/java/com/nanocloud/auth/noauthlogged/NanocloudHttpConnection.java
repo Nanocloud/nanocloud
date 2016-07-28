@@ -21,7 +21,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 public class NanocloudHttpConnection {
 
-		private static Logger logger = LoggerFactory.getLogger(NanocloudHttpConnection.class);
+  private static Logger logger = LoggerFactory.getLogger(NanocloudHttpConnection.class);
   private NanocloudHttpConnection() {
 
   }
