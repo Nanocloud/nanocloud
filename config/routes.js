@@ -84,6 +84,16 @@ module.exports.routes = {
   'GET /api/files': {
     controller: 'Storage',
     action: 'files'
+  },
+
+  'GET /api/files/token': {
+    controller: 'Storage',
+    action: 'token'
+   },
+
+  'GET /api/files/download': {
+    controller: 'Storage',
+    action: 'download'
   }
 
 };
