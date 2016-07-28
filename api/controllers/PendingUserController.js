@@ -29,7 +29,7 @@ module.exports = {
         return res.json(JsonApiService.serialize("PendingUser", created_user));
       })
       .catch(() => {
-          return res.send(500, "Could not signup");
+        return res.send(500, "Could not signup");
       });
   },
 
@@ -42,8 +42,6 @@ module.exports = {
       if (!user) {
         return res.notFound('No user has been found');
       }
-      sails.log('Found "%s"', user.firstName);
-
       User.create(user)
       .then(() => {
         return PendingUser.destroy({
