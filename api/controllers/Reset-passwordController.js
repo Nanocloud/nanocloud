@@ -12,6 +12,7 @@ const bcrypt      = require("bcryptjs");
 module.exports = {
   create: function(req, res) {
     const ResetPassword = global['Reset-password'];
+    const User          = global['User'];
 
     var token;
     var user = req.body.data.attributes;
@@ -30,7 +31,7 @@ module.exports = {
       });
     })
     .then(() => {
-      return ConfigService.get(
+      return global['ConfigService'].get(
         'smtpServerHost', 'smtpLogin', 'smtpPassword', 'smtpSendFrom', 'host'
       );
     })
@@ -53,15 +54,15 @@ module.exports = {
         from: '"Nanocloud" <'+smtpConfig.from+'>', // sender address
         to: user.email, // list of receivers seperated by a comma
         subject: 'Nanocloud - Reset your password', // Subject line
-        html: "Hello,<br>"
-          +"We got a request to reset your password.<br>"
-          +"<a href='"+host+"/#/reset-password/"+token+"'>"
-          +"Reset my password</a><br><br><i>"
-          +"If you ignore this message your password won't be changed.</i>"
+        html: "Hello,<br>" +
+          "We got a request to reset your password.<br>" +
+          "<a href='"+host+"/#/reset-password/"+token+"'>" +
+          "Reset my password</a><br><br><i>" +
+          "If you ignore this message your password won't be changed.</i>"
       };
 
       // mail sent here
-      transporter.sendMail(mailOptions, function(error, info){
+      transporter.sendMail(mailOptions, function(error){
         if(error){
           return res.negotiate(error);
         }
@@ -75,6 +76,7 @@ module.exports = {
 
   update: function(req, res) {
     const ResetPassword = global['Reset-password'];
+    const User          = global['User'];
 
     var token    = req.params.id;
     var dataReq  = req.body.data.attributes;
