@@ -16,6 +16,9 @@ docker-compose up
 Some environment variable are expected to be set in `config.env`:
 - IAAS (mandatory) currently only "manual" in implemented
 
+Some variables in configurator are necessary to send an email
+- 'smtpServerHost', 'smtpLogin', 'smtpPassword'
+
 Manual driver specific:
 - EXECUTION_SERVERS (mandatory) the IP of the execution server
 - WINDOWS_PASSWORD (mandatory) the Windows password for the *administrator* account
