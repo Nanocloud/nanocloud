@@ -38,7 +38,6 @@ export default VdiWindowComponent.extend({
       });
       _package.save()
         .then(() => {
-          console.log('suvbmit ok!');
           this.sendAction('hasFinished');
         });
     }  
