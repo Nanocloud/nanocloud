@@ -32,55 +32,66 @@ const expect = require('chai').expect;
 const filename = "PlazaService.test.js";
 var filesize = 0;
 
-describe('Exec simple command', () => {
-  it('Should return success', (done) => {
+describe("PlazaService", function() {
 
-    (function() {
-      return PlazaService.exec(
-        "localhost",
-        ["ls", "-l"],
-        "",
-        (res) => {
-          expect(res.success).to.equal(true);
-          done();
-        });
-    })();
+  before(function(done) {
+    ConfigService.set("storageAddress", "localhost")
+      .then(() => {
+        return done();
+      });
   });
-});
 
-describe('Upload a file', () => {
-  it('Should upload file', (done) => {
+  describe('Exec simple command', () => {
+    it('Should return success', (done) => {
 
-    (function() {
-      User.findById("aff17b8b-bf91-40bf-ace6-6dfc985680bb", (err, users) => {
-        let user = users[0];
-
-        StorageService.findOrCreate(user, (err, storage) => {
-          let file = {
-            filename: filename,
-            fd: "./tests/unit/services/" + filename
-          };
-          PlazaService.upload(
-            storage,
-            file,
-            () => {
+      (function() {
+        return PlazaService.exec(
+            "localhost",
+            ["ls", "-l"],
+            "",
+            (res) => {
+              expect(res.success).to.equal(true);
               done();
             });
-        });
-      });
-    })();
+      })();
+    });
   });
-});
 
-describe('List files', () => {
-  it('Should return a list of file', (done) => {
+  describe('Upload a file', () => {
+    it('Should upload file', (done) => {
 
-    (function() {
-      User.findById("aff17b8b-bf91-40bf-ace6-6dfc985680bb", (err, users) => {
-        let user = users[0];
+      User.findOne({
+        id: "aff17b8b-bf91-40bf-ace6-6dfc985680bb"
+      })
+      .then((user) => {
+        return StorageService.findOrCreate(user)
+          .then((storage) => {
+            let file = {
+              filename: filename,
+              fd: "./tests/unit/services/" + filename
+            };
+            PlazaService.upload(
+                storage,
+                file,
+                () => {
+                  done();
+                });
+          });
+      });
+    });
+  });
 
-        StorageService.findOrCreate(user, (err, storage) => {
-          PlazaService.files(
+  describe('List files', () => {
+    it('Should return a list of file', (done) => {
+
+      User.findOne({
+        id: "aff17b8b-bf91-40bf-ace6-6dfc985680bb"
+      })
+      .then((user) => {
+        return StorageService.findOrCreate(user)
+      })
+      .then((storage) => {
+        PlazaService.files(
             storage,
             "",
             "/home/" + storage.username, (files) => {
@@ -92,21 +103,21 @@ describe('List files', () => {
               filesize = files.data[0].attributes.size;
               done();
             });
-        });
       });
-    })();
+    });
   });
-});
 
-describe('Download a file', () => {
-  it('Should return content of file', (done) => {
+  describe('Download a file', () => {
+    it('Should return content of file', (done) => {
 
-    (function() {
-      User.findById("aff17b8b-bf91-40bf-ace6-6dfc985680bb", (err, users) => {
-        let user = users[0];
-
-        StorageService.findOrCreate(user, (err, storage) => {
-          PlazaService.download(
+      User.findOne({
+        id: "aff17b8b-bf91-40bf-ace6-6dfc985680bb"
+      })
+      .then((user) => {
+        return StorageService.findOrCreate(user)
+      })
+      .then((storage) => {
+        PlazaService.download(
             storage,
             "/home/" + storage.username + "/" + filename,
             (res) => {
@@ -115,8 +126,7 @@ describe('Download a file', () => {
               expect(res.headers['content-length']).to.equal(filesize.toString());
               done();
             });
-        });
       });
-    })();
+    });
   });
 });

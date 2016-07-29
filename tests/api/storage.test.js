@@ -34,10 +34,10 @@ module.exports = function() {
   describe("Storage", function() {
 
     before(function(done) {
-	ConfigService.set("storageAddress", "localhost")
-	    .then(() => {
-		return done();
-	    });
+      ConfigService.set("storageAddress", "localhost")
+        .then(() => {
+          return done();
+        });
     });
 
     const fileSchema = {
@@ -76,7 +76,7 @@ module.exports = function() {
           .expect((res) => {
             fileSize = res.body.data[0].attributes.size;
           })
-          .end(done);
+        .end(done);
       });
     });
 
@@ -92,7 +92,7 @@ module.exports = function() {
             .expect((res) => {
               downloadToken = res.body.token;
             })
-            .end(done);
+          .end(done);
         });
       });
 
@@ -106,9 +106,10 @@ module.exports = function() {
             .expect((res) => {
               expect(res.text.length).to.equal(fileSize);
             })
-            .end(done);
+          .end(done);
         });
       });
     });
+
   });
 };

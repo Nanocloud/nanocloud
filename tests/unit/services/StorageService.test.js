@@ -29,21 +29,28 @@
 
 const expect = require('chai').expect;
 
-describe('Find or create a storage', () => {
-  it('Should return a Storage', (done) => {
-
-    (function() {
-      User.findById("aff17b8b-bf91-40bf-ace6-6dfc985680bb", (err, users) => {
-        let user = users[0];
-
-        StorageService.findOrCreate(user, (err, storage) => {
-          expect(storage.username.length).to.equal(30);
-          expect(storage.password.length).to.equal(60);
-          expect(storage.hostname).to.equal("localhost");
-          expect(storage.user).to.equal('aff17b8b-bf91-40bf-ace6-6dfc985680bb');
-          done();
-        });
+describe('Find or create a storage', function() {
+  before(function(done) {
+    ConfigService.set("storageAddress", "localhost")
+      .then(() => {
+        return done();
       });
-    })();
+  });
+
+  it('Should return a Storage', function(done) {
+
+    User.findOne({
+      id: "aff17b8b-bf91-40bf-ace6-6dfc985680bb"
+    })
+    .then((user) => {
+      return StorageService.findOrCreate(user)
+    })
+    .then((storage) => {
+      expect(storage.username.length).to.equal(30);
+      expect(storage.password.length).to.equal(60);
+      expect(storage.hostname).to.equal("localhost");
+      expect(storage.user).to.equal('aff17b8b-bf91-40bf-ace6-6dfc985680bb');
+      done();
+    });
   });
 });
