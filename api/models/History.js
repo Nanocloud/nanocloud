@@ -25,10 +25,54 @@
  * @docs        :: http://sailsjs.org/documentation/concepts/models-and-orm/models
  */
 
+const uuid = require('node-uuid');
+
 module.exports = {
 
-  attributes: {
+  autoPK: false,
 
+  attributes: {
+    id: {
+      type: 'string',
+      primaryKey: true,
+      unique: true,
+      index: true,
+      uuidv4: true,
+      defaultsTo: function (){ return uuid.v4(); }
+    },
+    userMail: {
+      type: 'string'
+    },
+    userFirstname: {
+      type: 'string'
+    },
+    userLastname: {
+      type: 'string'
+    },
+    userId: {
+      type: 'string'
+    },
+    connectionId: {
+      type: 'string'
+    },
+    startDate: {
+      type: 'string'
+    },
+    endDate: {
+      type: 'string'
+    },
+    machineId: {
+      type: 'string'
+    },
+    machineSize: {
+      type: 'string'
+    },
+    machineDriver: {
+      type: 'string'
+    },
+    duration: {
+      type: 'string'
+    }
   }
 };
 
