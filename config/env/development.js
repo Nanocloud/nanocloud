@@ -51,10 +51,10 @@ module.exports = {
     host: 'localhost',
     smtpServerHost: '',
     smtpServerPort: 25,
-    smtpLogin: '', 
+    smtpLogin: '',
     smtpPassword: '',
     smtpSendFrom: 'mail@nanocloud.com',
-    testMail: false
+    testMail: false,
     storageAddress: 'localhost'
   }
 };
