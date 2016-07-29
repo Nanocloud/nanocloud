@@ -86,10 +86,11 @@ function nanocloudConfigValue(name, defaultValue) {
       case 'boolean':
         if (envValue === 'true') {
           value = true;
-        } else if (value === 'false') {
+        } else if (envValue === 'false') {
           value = false;
+        } else {
+          throw new Error(`Config variable '${name}' must be a boolean.`);
         }
-        throw new Error(`Config variable '${name}' must be a boolean.`);
 
       case 'string':
         value = envValue;
