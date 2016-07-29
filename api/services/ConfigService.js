@@ -25,6 +25,7 @@
 /* globals Config */
 
 const Promise = require('bluebird');
+const _ = require('lodash');
 
 /**
  * nanocloudConfigValue returns the value associated to the config variable's
@@ -46,10 +47,13 @@ const Promise = require('bluebird');
 function nanocloudConfigValue(name, defaultValue) {
   let value;
 
+  // Sails configuration variables are in camelCase whereas environment variables are expected to be in snake_case
+  name = _.toUpper(_.snakeCase(name));
+
   if (process.env.hasOwnProperty(name)) {
     let type;
 
-    let value = process.env[name];
+    let envValue  = process.env[name];
 
     if (Array.isArray(defaultValue)) {
       type = 'array';
@@ -59,37 +63,39 @@ function nanocloudConfigValue(name, defaultValue) {
 
     switch (type) {
       case 'number':
-        value = parseInt(value, 10);
+        value = parseInt(envValue, 10);
         if (Number.isNaN(value)) {
-          throw new Error(`Config variable '${name}' must be an number.`);
+          throw new Error(`Config variable '${name}' must be a number.`);
         }
         break;
 
       case 'array':
-        value = JSON.parse(value);
+        value = JSON.parse(envValue);
         if (!Array.isArray(value)) {
           throw new Error(`Config variable '${name}' must be an array.`);
         }
         break;
 
       case 'object':
-        value = JSON.parse(value);
+        value = JSON.parse(envValue);
         if (typeof value !== 'object') {
           throw new Error(`Config variable '${name}' must be an object.`);
         }
         break;
 
       case 'boolean':
-        if (value === 'true') {
+        if (envValue === 'true') {
           value = true;
-        } else if (value === 'false') {
+        } else if (envValue === 'false') {
           value = false;
+        } else {
+          throw new Error(`Config variable '${name}' must be a boolean.`);
         }
-        throw new Error(`Config variable '${name}' must be an boolean.`);
+        break;
 
-   // case 'string':
-   //   value = value;
-   //   break;
+      case 'string':
+        value = envValue;
+        break;
 
     }
   } else {

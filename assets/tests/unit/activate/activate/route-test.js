@@ -22,41 +22,14 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-var sails = require('sails');
+import { moduleFor, test } from 'ember-qunit';
 
-process.env.IAAS = 'dummy';
-
-before(function(done) {
-
-  // Increase the Mocha timeout so that Sails has enough time to lift.
-  this.timeout(20000);
-
-  sails.lift({
-    models: {
-      migrate: 'drop'
-    }
-  }, function(err, server) {
-
-    if (err) {
-      throw new Error(err);
-    }
-
-    // Here is loaded administrator token
-    AccessToken.create({
-      userId: "aff17b8b-bf91-40bf-ace6-6dfc985680bb",
-      token: "admintoken"
-    }, function(err, accessToken) {
-
-      if (err) {
-        return done(err);
-      }
-
-      return done(err, sails);
-    });
-  });
+moduleFor('route:activate/activate', 'Unit | Route | activate/activate', {
+  // Specify the other units that are required for this test.
+  // needs: ['controller:foo']
 });
 
-after(function(done) {
-  // here you can clear fixtures, etc.
-  sails.lower(done);
+test('it exists', function(assert) {
+  let route = this.subject();
+  assert.ok(route);
 });

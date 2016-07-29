@@ -22,41 +22,22 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-var sails = require('sails');
+import Ember from 'ember';
 
-process.env.IAAS = 'dummy';
+export default Ember.Route.extend({
 
-before(function(done) {
+	afterModel() {
+		this.toast.success("Account activated");
+		this.transitionTo('login');
+	},
 
-  // Increase the Mocha timeout so that Sails has enough time to lift.
-  this.timeout(20000);
-
-  sails.lift({
-    models: {
-      migrate: 'drop'
-    }
-  }, function(err, server) {
-
-    if (err) {
-      throw new Error(err);
-    }
-
-    // Here is loaded administrator token
-    AccessToken.create({
-      userId: "aff17b8b-bf91-40bf-ace6-6dfc985680bb",
-      token: "admintoken"
-    }, function(err, accessToken) {
-
-      if (err) {
-        return done(err);
-      }
-
-      return done(err, sails);
-    });
-  });
-});
-
-after(function(done) {
-  // here you can clear fixtures, etc.
-  sails.lower(done);
+	model(params) {
+		return Ember.$.ajax({
+			type: "PATCH",
+			url: '/api/pendingusers/' + params.activate_id,
+		})
+		.then(null, (err) => {
+			return err.responseJSON;
+		});
+	},
 });

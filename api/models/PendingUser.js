@@ -16,8 +16,17 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General
+ * Public License
+ * along with this program.  If not, see
+ * <http://www.gnu.org/licenses/>.
+ */
+
+/**
+ * PendingUser.js
+ *
+ * @description :: TODO: You might write a short summary of how this model works and what it represents here.
+ * @docs        :: http://sailsjs.org/documentation/concepts/models-and-orm/models
  */
 
 const bcrypt = require("bcryptjs");
@@ -26,8 +35,8 @@ const uuid = require('node-uuid');
 module.exports = {
 
   autoPK: false,
-
   attributes: {
+
     id: {
       type: 'string',
       primaryKey: true,
@@ -36,38 +45,32 @@ module.exports = {
       uuidv4: true,
       defaultsTo: function (){ return uuid.v4(); }
     },
+
     firstName: {
       type: 'string'
     },
+
     lastName: {
       type: 'string'
     },
+
     hashedPassword: {
       type: 'string'
     },
+
     email: {
-      type: 'string',
-      unique: true
+      type: 'string'
     },
+
     isAdmin: {
       type: 'boolean'
     },
-
-    toJSON: function() {
-      var obj = this.toObject();
-      delete obj.password;
-      delete obj.hashedPassword;
-      return obj;
-    }
   },
 
   beforeCreate: function(values, next){
-
-    if (values.password) {
-      var hash = bcrypt.hashSync(values.password, 10);
-      values.hashedPassword = hash;
-      delete values.password;
-    }
+    var hash = bcrypt.hashSync(values.password, 10);
+    values.hashedPassword = hash;
+    delete values.password;
     next();
   }
 };

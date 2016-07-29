@@ -22,41 +22,39 @@
  * <http://www.gnu.org/licenses/>.
  */
 
+// jshint mocha:true
+
+/* global ConfigService */
+
+var assert = require('chai').assert;
+var expect = require('chai').expect;
 var sails = require('sails');
 
-process.env.IAAS = 'dummy';
+describe('EmailService', () => {
 
-before(function(done) {
-
-  // Increase the Mocha timeout so that Sails has enough time to lift.
-  this.timeout(20000);
-
-  sails.lift({
-    models: {
-      migrate: 'drop'
-    }
-  }, function(err, server) {
-
-    if (err) {
-      throw new Error(err);
-    }
-
-    // Here is loaded administrator token
-    AccessToken.create({
-      userId: "aff17b8b-bf91-40bf-ace6-6dfc985680bb",
-      token: "admintoken"
-    }, function(err, accessToken) {
-
-      if (err) {
-        return done(err);
-      }
-
-      return done(err, sails);
-    });
+  before(function(done) {
+    // it takes time to send a mail with nodemailer
+    this.timeout(10000);
+    ConfigService.set('testMail', true)
+      .then(() => {
+        return ConfigService.set('smtpSendFrom', "test@nanocloud.com");
+      })
+      .then(done);
   });
+
+  it('Should return expected data in envelope', (done) => {
+    EmailService.sendMail("otto@protonmail.com", "subject", "message")
+      .then((res) => {
+        expect(res.envelope.from).to.equal('test@nanocloud.com');
+        expect(res.envelope.to[0]).to.equal('otto@protonmail.com');
+        return done();
+      })
+      .catch(done);
+  });
+
+  after(function() {
+    ConfigService.unset('testMail');
+  });
+
 });
 
-after(function(done) {
-  // here you can clear fixtures, etc.
-  sails.lower(done);
-});

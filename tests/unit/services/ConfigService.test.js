@@ -32,29 +32,6 @@ var sails = require('sails');
 
 process.env.IAAS = 'dummy';
 
-before(function(done) {
-
-  // Increase the Mocha timeout so that Sails has enough time to lift.
-  this.timeout(5000);
-
-  sails.lift({
-    models: {
-      migrate: 'drop'
-    }
-  }, (err) => {
-
-    if (err) {
-      throw new Error(err);
-    }
-
-    ConfigService.init()
-    .then(() => {
-      return done(null, sails);
-    }, done);
-
-  });
-});
-
 describe('Config single Get/Set/Unset', () => {
   it('Should retrieve the recorded value', (done) => {
 
@@ -124,5 +101,25 @@ describe('Config multiple Get/Set/Unset', () => {
 
     .then(() => done()).catch(done);
 
+  });
+});
+
+describe('Config overridden value in environment', () => {
+  before(function(done) {
+    sails.config.nanocloud.nanocloudVar = "default";
+    process.env.NANOCLOUD_VAR = "overridden";
+    ConfigService.init()
+      .then(() => {
+        return done();
+      });
+  });
+  it('Should retrieve the overridden value', (done) => {
+    (function() {
+      return ConfigService.get('nanocloudVar')
+        .then((res) => {
+          assert.deepEqual({ nanocloudVar: 'overridden' }, res);
+        });
+    })()
+    .then(() => done()).catch(done);
   });
 });

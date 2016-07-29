@@ -45,5 +45,10 @@ module.exports.policies = {
 
   PropertyController: {
     find: true
-  }
+  },
+
+  'PendingUserController': {
+    create: true,
+    update: true,
+  },
 };
