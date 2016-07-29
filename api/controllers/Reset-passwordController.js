@@ -1,21 +1,49 @@
 /**
+ * Nanocloud turns any traditional software into a cloud solution, without
+ * changing or redeveloping existing source code.
+ *
+ * Copyright (C) 2016 Nanocloud Software
+ *
+ * This file is part of Nanocloud.
+ *
+ * Nanocloud is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ *
+ * Nanocloud is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General
+ * Public License
+ * along with this program.  If not, see
+ * <http://www.gnu.org/licenses/>.
+ */
+
+
+/**
  * Reset-passwordController
  *
  * @description :: Server-side logic for managing resetpasswords
  * @help        :: See http://sailsjs.org/#!/documentation/concepts/Controllers
  */
 
-const nodemailer  = require('nodemailer');
-const uuid        = require('node-uuid');
-const bcrypt      = require("bcryptjs");
+/* globals ConfigService */
+/* globals EmailService */
+/* globals User */
+
+const uuid          = require('node-uuid');
+const bcrypt        = require("bcryptjs");
 
 module.exports = {
   create: function(req, res) {
     const ResetPassword = global['Reset-password'];
-    const User          = global['User'];
 
     var token;
     var user = req.body.data.attributes;
+
 
     // find user via his email address
     User.findOne({
@@ -31,43 +59,22 @@ module.exports = {
       });
     })
     .then(() => {
-      return global['ConfigService'].get(
-        'smtpServerHost', 'smtpLogin', 'smtpPassword', 'smtpSendFrom', 'host'
-      );
+      return ConfigService.get('host');
     })
     // send him reset password link
     .then((conf) => {
-      let smtpConfig  = {
-        host: conf.smtpServerHost,
-        from: conf.smtpSendFrom,
-        appHost: conf.host,
-        auth: {
-          user: conf.smtpLogin,
-          pass: conf.smtpPassword
-        }
-      };
-
-      let host        = smtpConfig.appHost;
-      let transporter = nodemailer.createTransport(smtpConfig);
-
-      let mailOptions = {
-        from: '"Nanocloud" <'+smtpConfig.from+'>', // sender address
-        to: user.email, // list of receivers seperated by a comma
-        subject: 'Nanocloud - Reset your password', // Subject line
-        html: "Hello,<br>" +
+        let subject = 'Nanocloud - Reset your password';
+        let message = "Hello,<br>" +
           "We got a request to reset your password.<br>" +
-          "<a href='"+host+"/#/reset-password/"+token+"'>" +
+          "<a href='"+conf.host+"/#/reset-password/"+token+"'>" +
           "Reset my password</a><br><br><i>" +
-          "If you ignore this message your password won't be changed.</i>"
-      };
+          "If you ignore this message your password won't be changed.</i>";
 
       // mail sent here
-      transporter.sendMail(mailOptions, function(error){
-        if(error){
-          return res.negotiate(error);
-        }
-        return res.ok({});
-      });
+      return EmailService.sendMail(user.email, subject, message);
+    })
+    .then(() => {
+      return res.ok({});
     })
     .catch((err) => {
       return res.negotiate(err);
@@ -76,7 +83,6 @@ module.exports = {
 
   update: function(req, res) {
     const ResetPassword = global['Reset-password'];
-    const User          = global['User'];
 
     var token    = req.params.id;
     var dataReq  = req.body.data.attributes;
