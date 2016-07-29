@@ -54,10 +54,20 @@ function sendMail(to, subject, message) {
       }
 
       let transporter = nodemailer.createTransport(smtpConfig);
+      let verified_transporter = transporter.verify();
 
-      return transporter
-      .verify()
-      .then(() => {
+      // verifying smtpConfig before sending a mail
+      if (verified_transporter !== false) {
+        return verified_transporter 
+          .then(() => {
+            return sendMailOption(transporter);
+          });
+      } else {
+        // test scenario. just send a mail
+        return sendMailOption(transporter);
+      }
+
+      function sendMailOption(transporter) {
         var mailOptions = {
           from: '"Nanocloud" <' + configs.smtpSendFrom+ '>',
           to: to,
@@ -65,8 +75,8 @@ function sendMail(to, subject, message) {
           html: message
         };
         return transporter.sendMail(mailOptions);
-      })
-    })
+      }
+    });
 }
 
 module.exports = { sendMail };

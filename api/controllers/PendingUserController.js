@@ -56,7 +56,7 @@ module.exports = {
       })
       .then((created_user) => {
         return res.created(created_user);
-      })
+      });
     })
     .catch((err) => {
       if (err.code === 'ECONNECTION') {
