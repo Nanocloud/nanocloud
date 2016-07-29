@@ -93,13 +93,13 @@
 				{{#edit-text
 					type="number"
 					confirmation=false
-					textInput=model.expirationDays
+					textInput=model.expirationDate
 					textInputPlaceholder="Days left before expiration"
 					onClose="changeExpirationDays" }}
-						{{moment-calendar model.expirationDays}}
+						{{moment-calendar model.expirationDate}}
 						{{/edit-text}}
 				{{else}}
-						 {{moment-calendar model.expirationDays}}
+						 {{moment-calendar model.expirationDate}}
 				{{/if}}
           </td>
 		</tr>

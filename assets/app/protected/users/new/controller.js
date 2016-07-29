@@ -37,6 +37,10 @@ export default Ember.Controller.extend({
         .validate()
         .then(({ m, validations }) => {
 
+          let expirationDate = this.get('model.expirationDate');
+          let timestamp = window.moment().add(expirationDate, 'days').unix();
+          this.set('model.expirationDate', timestamp);
+
           if (validations.get('isInvalid') === true) {
             return this.toast.error('Cannot create user');
           }
