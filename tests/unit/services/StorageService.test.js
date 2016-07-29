@@ -20,34 +20,30 @@
  * Public License
  * along with this program.  If not, see
  * <http://www.gnu.org/licenses/>.
- *
- * Policy Mappings
- * (sails.config.policies)
- *
- * Policies are simple functions which run **before** your controllers.
- * You can apply one or more policies to a given controller, or protect
- * its actions individually.
- *
- * Any policy file (e.g. `api/policies/authenticated.js`) can be accessed
- * below by its filename, minus the extension, (e.g. "authenticated")
- *
- * For more information on how policies work, see:
- * http://sailsjs.org/#!/documentation/concepts/Policies
- *
- * For more information on configuring policies, check out:
- * http://sailsjs.org/#!/documentation/reference/sails.config/sails.config.policies.html
  */
 
+// jshint mocha:true
 
-module.exports.policies = {
+/* global StorageService */
+/* global User */
 
-  '*': 'isAuthorized',
+const expect = require('chai').expect;
 
-  StorageController: {
-    download: 'checkDownloadToken',
-  },
+describe('Find or create a storage', () => {
+  it('Should return a Storage', (done) => {
 
-  PropertyController: {
-    find: true
-  }
-};
+    (function() {
+      User.findById("aff17b8b-bf91-40bf-ace6-6dfc985680bb", (err, users) => {
+        let user = users[0];
+
+        StorageService.findOrCreate(user, (err, storage) => {
+          expect(storage.username.length).to.equal(30);
+          expect(storage.password.length).to.equal(60);
+          expect(storage.hostname).to.equal("localhost");
+          expect(storage.user).to.equal('aff17b8b-bf91-40bf-ace6-6dfc985680bb');
+          done();
+        });
+      });
+    })();
+  });
+});

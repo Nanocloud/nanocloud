@@ -26,6 +26,7 @@
 
 const testAuth = require('./auth.test');
 const testUsers = require('./users.test');
+const testStorage = require('./storage.test');
 
 var request = require('supertest');
 
@@ -41,3 +42,4 @@ describe('Nanocloud is Online', function() {
 
 testAuth();
 testUsers();
+testStorage();

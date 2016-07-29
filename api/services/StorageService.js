@@ -20,34 +20,47 @@
  * Public License
  * along with this program.  If not, see
  * <http://www.gnu.org/licenses/>.
- *
- * Policy Mappings
- * (sails.config.policies)
- *
- * Policies are simple functions which run **before** your controllers.
- * You can apply one or more policies to a given controller, or protect
- * its actions individually.
- *
- * Any policy file (e.g. `api/policies/authenticated.js`) can be accessed
- * below by its filename, minus the extension, (e.g. "authenticated")
- *
- * For more information on how policies work, see:
- * http://sailsjs.org/#!/documentation/concepts/Policies
- *
- * For more information on configuring policies, check out:
- * http://sailsjs.org/#!/documentation/reference/sails.config/sails.config.policies.html
  */
 
+/* globals Storage */
+/* globals ConfigService */
 
-module.exports.policies = {
+const randomstring = require("randomstring");
 
-  '*': 'isAuthorized',
+module.exports = {
 
-  StorageController: {
-    download: 'checkDownloadToken',
-  },
+  _initialized: true,
 
-  PropertyController: {
-    find: true
+  /**
+   * findOrCreate
+   *
+   * Find or create a user storage in database
+   *
+   * @user {user}
+   * @return {UserStorage}
+   */
+
+  findOrCreate: function(user, callback) {
+    return ConfigService.get('storageAdresse')
+      .then((configs) => {
+        return Storage.findOrCreate({
+          'user': user.id
+        }, {
+          user: user,
+          username: randomstring.generate({
+            length: 30,
+            charset: 'alphabetic',
+            capitalization: 'lowercase',
+          }),
+          password: randomstring.generate(60),
+          hostname: configs['storageAddress']
+        })
+      })
+      .then((storage) => {
+        return callback(null, storage);
+      })
+      .catch((err) => {
+        return callback(err);
+      });
   }
 };

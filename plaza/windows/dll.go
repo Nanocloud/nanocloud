@@ -20,34 +20,36 @@
  * Public License
  * along with this program.  If not, see
  * <http://www.gnu.org/licenses/>.
- *
- * Policy Mappings
- * (sails.config.policies)
- *
- * Policies are simple functions which run **before** your controllers.
- * You can apply one or more policies to a given controller, or protect
- * its actions individually.
- *
- * Any policy file (e.g. `api/policies/authenticated.js`) can be accessed
- * below by its filename, minus the extension, (e.g. "authenticated")
- *
- * For more information on how policies work, see:
- * http://sailsjs.org/#!/documentation/concepts/Policies
- *
- * For more information on configuring policies, check out:
- * http://sailsjs.org/#!/documentation/reference/sails.config/sails.config.policies.html
  */
 
+// +build windows
 
-module.exports.policies = {
+package windows
 
-  '*': 'isAuthorized',
+import "syscall"
 
-  StorageController: {
-    download: 'checkDownloadToken',
-  },
+var dlls map[string]*syscall.DLL
 
-  PropertyController: {
-    find: true
-  }
-};
+func loadDLL(name string) (dll *syscall.DLL, err error) {
+	if dlls == nil {
+		dlls = make(map[string]*syscall.DLL)
+	}
+
+	dll, exists := dlls[name]
+	if !exists {
+		dll, err = syscall.LoadDLL(name)
+		if err != nil {
+			return
+		}
+		dlls[name] = dll
+	}
+	return
+}
+
+func loadProc(dllName string, procName string) (*syscall.Proc, error) {
+	dll, err := loadDLL(dllName)
+	if err != nil {
+		return nil, err
+	}
+	return dll.FindProc(procName)
+}
