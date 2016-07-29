@@ -48,32 +48,30 @@ module.exports = {
   upload: function(req, res) {
     let user = req.user;
 
-    StorageService.findOrCreate(user, (err, storage) => {
-      if (err !== null) {
-        res.negotiate(err);
-      }
-      let filename = req.query["filename"];
+    StorageService.findOrCreate(user)
+      .then((storage) => {
+        let filename = req.query["filename"];
 
-      req.file(filename).upload({
-        maxBytes: 0,
-      }, function (err, uploadedFiles) {
-        if (err) {
-          return res.negotiate(err);
-        }
+        req.file(filename).upload({
+          maxBytes: 0,
+        }, function (err, uploadedFiles) {
+          if (err) {
+            return res.negotiate(err);
+          }
 
-        // If no files were uploaded, respond with an error.
-        if (uploadedFiles.length === 0){
-          return res.badRequest('No file was uploaded');
-        }
+          // If no files were uploaded, respond with an error.
+          if (uploadedFiles.length === 0){
+            return res.badRequest('No file was uploaded');
+          }
 
-        PlazaService.upload(
-          storage,
-          uploadedFiles[0],
-          (_, data) => {
-            res.send("Upload successful : " + data);
-          });
+          PlazaService.upload(
+              storage,
+              uploadedFiles[0],
+              (_, data) => {
+                res.send("Upload successful : " + data);
+              });
+        });
       });
-    });
   },
 
   /**
@@ -86,14 +84,12 @@ module.exports = {
   files: function(req, res) {
     let user = req.user;
 
-    StorageService.findOrCreate(user, (err, storage) => {
-      if (err !== null) {
-        res.negotiate(err);
-      }
-      PlazaService.files(storage, "", "/home/" + storage.username, (files) => {
-        res.send(files);
+    StorageService.findOrCreate(user)
+      .then((storage) => {
+        PlazaService.files(storage, "", "/home/" + storage.username, (files) => {
+          res.send(files);
+        });
       });
-    });
   },
 
   /**

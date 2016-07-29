@@ -40,8 +40,8 @@ module.exports = {
    * @return {UserStorage}
    */
 
-  findOrCreate: function(user, callback) {
-    return ConfigService.get('storageAdresse')
+  findOrCreate: function(user) {
+    return ConfigService.get('storageAddress')
       .then((configs) => {
         return Storage.findOrCreate({
           'user': user.id
@@ -54,13 +54,7 @@ module.exports = {
           }),
           password: randomstring.generate(60),
           hostname: configs['storageAddress']
-        })
-      })
-      .then((storage) => {
-        return callback(null, storage);
-      })
-      .catch((err) => {
-        return callback(err);
+        });
       });
   }
 };
