@@ -28,7 +28,7 @@ const nodemailer  = require('nodemailer');
 const stubTransport = require('nodemailer-stub-transport');
 
 /**
- * Send a mail and return a promise 
+ * Send a email and return a promise 
  * @method sendMail
  * @public
  * @param {String} receiver email address
