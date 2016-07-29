@@ -16,8 +16,8 @@ docker-compose up
 Some environment variable are expected to be set in `config.env`:
 - IAAS (mandatory) currently only "manual" in implemented
 - HOST (mandatory, defaults to localhost) nanocloud's host 
-- SMTP_HOST host to send email
-- SMTP_PORT (defaults to 25) port for the SMTP server
+- SMTP_SERVER_HOST host to send email
+- SMTP_SERVER_PORT (defaults to 25) port for the SMTP server
 - SMTP_LOGIN login for the SMTP server
 - SMTP_PASSWORD password for the SMTP server
 - SMTP_SEND_FROM (defaults to mail@nanocloud.com) nanocloud's sender

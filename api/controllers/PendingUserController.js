@@ -48,17 +48,20 @@ module.exports = {
       var to =  user.email;
       var subject = 'Nanocloud - Verify your email address';
       var message = 'Hello ' + user["first-name"] + ' ' + user["last-name"] + ',<br> please verify your email address by clicking this link: '+
-          '<a href="'+host+'/#/activate/'+user.id+'">Activate my account</a>';
+          '<a href="http://'+host+'/#/activate/'+user.id+'">Activate my account</a>';
 
-      EmailService.sendMail(to, subject, message)
+      return EmailService.sendMail(to, subject, message)
       .then(() => {
         return PendingUser.create(JsonApiService.deserialize(user));
       })
       .then((created_user) => {
         return res.created(created_user);
-      });
+      })
     })
     .catch((err) => {
+      if (err.code === 'ECONNECTION') {
+        return res.serverError("Cannot connect to SMTP server");
+      }
       return res.negotiate(err);
     });
   },
