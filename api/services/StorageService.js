@@ -41,19 +41,21 @@ module.exports = {
    */
 
   findOrCreate: function(user, callback) {
-    return Storage.findOrCreate({
-      'user': user.id
-    }, {
-      user: user,
-      username: randomstring.generate({
-        length: 30,
-        charset: 'alphabetic',
-        capitalization: 'lowercase',
-      }),
-      password: randomstring.generate(60),
-      hostname: ConfigService.get("storageAddress")
-      }
-    )
+    return ConfigService.get('storageAdresse')
+      .then((configs) => {
+        return Storage.findOrCreate({
+          'user': user.id
+        }, {
+          user: user,
+          username: randomstring.generate({
+            length: 30,
+            charset: 'alphabetic',
+            capitalization: 'lowercase',
+          }),
+          password: randomstring.generate(60),
+          hostname: configs['storageAddress']
+        })
+      })
       .then((storage) => {
         return callback(null, storage);
       })
