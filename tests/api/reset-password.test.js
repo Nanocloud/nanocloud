@@ -22,7 +22,6 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-
 // jshint mocha:true
 // global: ConfigService
 
@@ -86,9 +85,8 @@ module.exports = function() {
               .expect(200)
               .expect(nano.jsonApiSchema(expectedSchema))
               .expect((res) => {
-                console.log(res.body.data[0]);
                 expect(res.body.data[0].attributes["email"])
-                  .to.equal('admin@nanocloud.');
+                  .to.equal('user-test@nanocloud.com');
               })
             );
           });
@@ -96,10 +94,6 @@ module.exports = function() {
         .then(() => {
           return done(); 
         })
-        .catch((err) => {
-          console.log("failure");
-          console.log(err);
-        });
       });
     });
 

@@ -35,7 +35,6 @@ export default Ember.Controller.extend({
 					this.transitionToRoute('login');
 				},
 				(err) => {
-          console.log(err);
 					this.toast.error(err.errors[0].detail, "Please try again with another token.");
 					return err.responseJSON;
 				}

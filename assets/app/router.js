@@ -49,7 +49,7 @@ Router.map(function() {
       this.route('machine', { path: '/:machine_id' });
     });
     this.route('apps', function() {
-      this.route('app', { path: '/:app_id' }, function() {});
+      this.route('app', { path: '/:app_id' });
     });
     this.route('apps');
     this.route('files', function() {

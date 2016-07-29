@@ -55,7 +55,7 @@ module.exports = {
     // generate new reset password token
     .then((user) => {
       if (!user) {
-        throw new Error("No user has been found");
+        throw new Error("No user found");
       }
       token = uuid.v4();
 
@@ -71,10 +71,10 @@ module.exports = {
     .then((conf) => {
       let subject = 'Nanocloud - Reset your password';
       let message = "Hello,<br>" +
-        "We got a request to reset your password.<br>" +
+        "We received a request to reset your password.<br>" +
         "<a href='"+conf.host+"/#/reset-password/"+token+"'>" +
         "Reset my password</a><br><br><i>" +
-        "If you ignore thie message your password won't be changed.</i>";
+        "If you ignore this message your password won't be changed.</i>";
 
       // mail sent here
       return EmailService.sendMail(user.email, subject, message);
@@ -83,7 +83,7 @@ module.exports = {
       return res.ok({});
     })
     .catch((err) => {
-      if (err.message === "No user has been found") {
+      if (err.message === "No user found") {
         return res.notFound(err.message);
       } else if (err.code === 'ECONNECTION') {
         return res.serverError("Please check out your SMTP configuration");
@@ -104,7 +104,7 @@ module.exports = {
     })
     .then((tokenFound) => {
       if (!tokenFound) {
-        throw new Error('Token has expired');
+        throw new Error('Token expired');
       }
       token = tokenFound;
       return User.findOne({
@@ -114,7 +114,7 @@ module.exports = {
     // update his password
     .then((user) => {
       if (!user) {
-        throw new Error('No user has been found');
+        throw new Error('No user found');
       } else if (!dataReq.password) {
         throw new Error("Password can not be empty");
       }
@@ -137,7 +137,7 @@ module.exports = {
       return res.ok({});
     })
     .catch((err) => {
-      if (err.message === 'No user has been found') {
+      if (err.message === 'No user found') {
         return res.notFound(err.message);
       } else if (err.message === 'Password can not be empty') {
         return res.badRequest(err.message);
