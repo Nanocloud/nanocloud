@@ -23,6 +23,7 @@
  */
 
 /* globals Storage */
+/* globals ConfigService */
 
 const randomstring = require("randomstring");
 
@@ -50,8 +51,7 @@ module.exports = {
         capitalization: 'lowercase',
       }),
       password: randomstring.generate(60),
-      // TODO (aleblanc) hostname hard doded because configurator is not yet implemented
-      hostname: "localhost"
+      hostname: ConfigService.get("storageAddress")
       }
     )
       .then((storage) => {

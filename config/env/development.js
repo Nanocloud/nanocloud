@@ -55,5 +55,6 @@ module.exports = {
     smtpPassword: '',
     smtpSendFrom: 'mail@nanocloud.com',
     testMail: false
+    storageAddress: 'localhost'
   }
 };
