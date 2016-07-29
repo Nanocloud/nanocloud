@@ -35,7 +35,11 @@ var server = oauth2orize.createServer();
 server.exchange(oauth2orize.exchange.password(function(user, username, password, scope, done) {
 
   User.findOne({
-    email: username
+    email: username,
+    or: [
+      { expirationDate: { '>' : Math.floor(new Date() / 1000)  } },
+      { expirationDate: null  }
+    ]
   }, function(err, user) {
 
     if (err) {
