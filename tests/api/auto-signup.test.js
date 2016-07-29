@@ -52,66 +52,85 @@ module.exports = function() {
       additionalProperties: false,
     };
 
-    describe("Auto signup", function() {
+    const userData = {
+      'first-name': "Firstname",
+      'last-name': "Lastname",
+      'email': "signup@nanocloud.com",
+      'password': "nanocloud"
+    };
 
-      it('Should create an entry in user table', function(done) {
+    it('Should create an entry in user table', function(done) {
 
-        // adding user to pendinguser table
-        nano.request(sails.hooks.http.app)
-          .post('/api/pendingusers')
-          .send({
-            data: {
-              attributes: {
-                'first-name': "Firstname",
-                'last-name': "Lastname",
-                'email': "signup@nanocloud.com",
-                'password': "nanocloud"
-              },
-              type: 'pendingusers'
-            }
-          })
+      // adding user to pendinguser table
+      nano.request(sails.hooks.http.app)
+      .post('/api/pendingusers')
+      .send({
+        data: {
+          attributes: userData,
+          type: 'pendingusers'
+        }
+      })
+      .set(nano.adminLogin())
+      .expect(201)
+      .then((res) => {
+
+        // user has been added to pending user table
+        return nano.request(sails.hooks.http.app)
+          .get('/api/pendingusers')
           .set(nano.adminLogin())
-          .expect(201)
-          .then((res) => {
+          .expect(200)
+          .expect(nano.jsonApiSchema(expectedSchema))
+          .expect((res) => {
+            expect(res.body.data[0].attributes["first-name"]).to.equal('Firstname');
+          })
+      })
+      .then((res) => {
 
-            // user has been added to pending user table
-            return nano.request(sails.hooks.http.app)
-              .get('/api/pendingusers')
-              .set(nano.adminLogin())
-              .expect(200)
-              .expect(nano.jsonApiSchema(expectedSchema))
-              .expect((res) => {
-                expect(res.body.data[0].attributes["first-name"]).to.equal('Firstname');
-              })
-          })
-          .then((res) => {
+        // activate user
+        return nano.request(sails.hooks.http.app)
+          .patch('/api/pendingusers/' + res.body.data[0].id)
+          .set(nano.adminLogin())
+          .expect(200)
+          .expect(nano.jsonApiSchema(expectedSchema))
+      })
+      .then((res) => {
 
-            // activate user
-            return nano.request(sails.hooks.http.app)
-              .patch('/api/pendingusers/' + res.body.data[0].id)
-              .set(nano.adminLogin())
-              .expect(200)
-              .expect(nano.jsonApiSchema(expectedSchema))
+        // user has been activated
+        return nano.request(sails.hooks.http.app)
+          .get('/api/users')
+          .set(nano.adminLogin())
+          .expect(200)
+          .expect((res) => {
+            expect(res.body.data[1].attributes["first-name"]).to.equal('Firstname');
           })
-          .then((res) => {
+      })
+      .then(() => {
+        return done(); 
+      })
+    });
 
-            // user has been activated
-            return nano.request(sails.hooks.http.app)
-              .get('/api/users')
-              .set(nano.adminLogin())
-              .expect(200)
-              .expect((res) => {
-                expect(res.body.data[1].attributes["first-name"]).to.equal('Firstname');
-              })
-          })
-          .then(() => {
-            return done(); 
-          })
+    it('Should prevent from creating the same user twice', function(done) {
+
+      nano.request(sails.hooks.http.app)
+      .post('/api/pendingusers')
+      .send({
+        data: {
+          attributes: userData,
+          type: 'pendingusers'
+        }
+      })
+      .expect(400)
+      .end(done);
+    });
+
+    after(function(done) {
+      ConfigService.unset('testMail');
+      User.destroy({
+        "email": userData["email"]
+      })
+      .then(() => {
+        return done();
       });
     });
-
-    after(function() {
-      ConfigService.unset('testMail');
-    });
-  });
+  })
 };
