@@ -27,28 +27,37 @@
 const nodemailer  = require('nodemailer');
 const stubTransport = require('nodemailer-stub-transport');
 
+/**
+ * Send a mail and return a promise 
+ * @method sendMail
+ * @public
+ * @param {String} receiver email address
+ * @param {String} subject
+ * @param {String} email content 
+ * @return {Promise[Object]} A promise that resolves nodeMailer.sendMail
+ */
 function sendMail(to, subject, message) {
 
-  return ConfigService.get('testSendMail', 'smtpServerHost', 'smtpServerPort', 'smtpLogin', 'smtpPassword', 'smtpSendFrom')
-    .then((res) => {
+  return ConfigService.get('TEST_MAIL', 'SMTP_HOST', 'SMTP_PORT', 'SMTP_LOGIN', 'SMTP_PASSWORD', 'SMTP_SEND_FROM')
+    .then((configs) => {
       var smtpConfig = {
-        host: res.smtpServerHost,
-        port: res.smtpServerPort,
+        host: configs.SMTP_HOST,
+        port: configs.SMTP_PORT,
         auth: {
-          user: res.smtpLogin,
-          pass: res.smtpPassword
+          user: configs.SMTP_LOGIN,
+          pass: configs.SMTP_PASSWORD
         }
       };
 
-      if (res.testSendMail) {
+      if (configs.TEST_MAIL) {
         smtpConfig = stubTransport();
       }
 
       var transporter = nodemailer.createTransport(smtpConfig);   
       var mailOptions = {
-        from: '"Nanocloud" <' + res.smtpSendFrom + '>', // sender address
-        to: to, // list of receivers seperated by a comma
-        subject: subject, // Subject line
+        from: '"Nanocloud" <' + configs.SMTP_SEND_FROM+ '>',
+        to: to,
+        subject: subject,
         html: message
       };
       return transporter.sendMail(mailOptions);

@@ -35,14 +35,14 @@ describe('EmailService', () => {
   before(function(done) {
     // it takes time to send a mail with nodemailer
     this.timeout(10000);
-    ConfigService.set('testSendMail', true)
+    ConfigService.set('TEST_MAIL', true)
       .then(() => {
-        return ConfigService.set('smtpSendFrom', "test@nanocloud.com");
+        return ConfigService.set('SMTP_SEND_FROM', "test@nanocloud.com");
       })
       .then(done);
   });
 
-  it('Should return expected datas in envelope', (done) => {
+  it('Should return expected data in envelope', (done) => {
     EmailService.sendMail("otto@protonmail.com", "subject", "message")
       .then((res) => {
         expect(res.envelope.from).to.equal('test@nanocloud.com');
@@ -53,7 +53,7 @@ describe('EmailService', () => {
   });
 
   after(function() {
-    ConfigService.unset('testSendMail');
+    ConfigService.unset('TEST_MAIL');
   });
 
 });

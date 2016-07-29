@@ -32,7 +32,7 @@ module.exports = function() {
   describe("Auto sign-up", function() {
 
     before(function() {
-      ConfigService.set('testSendMail', true);
+      ConfigService.set('TEST_MAIL', true);
       // it takes time to send a mail with nodemailer
       this.timeout(10000);
     });
@@ -111,7 +111,7 @@ module.exports = function() {
     });
 
     after(function() {
-      ConfigService.unset('testSendMail');
+      ConfigService.unset('TEST_MAIL');
     });
   });
 };
