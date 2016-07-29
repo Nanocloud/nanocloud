@@ -20,6 +20,9 @@ Manual driver specific:
 - EXECUTION_SERVERS (mandatory) the IP of the execution server
 - WINDOWS_PASSWORD (mandatory) the Windows password for the *administrator* account
 
+Storage specific:
+- STORAGE_ADDRESS (mandatory, defaults to 'localhost') storage service's IP
+
 Once loaded, Nanocloud will be accessible on **localhost**.
 
 # Run in developer mode

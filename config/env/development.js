@@ -47,6 +47,7 @@ module.exports = {
     title: 'Nanocloud',
     favIconPath: 'favicon.ico',
     logoPath: '/assets/images/logo.png',
-    primaryColor: '#006CB6'
+    primaryColor: '#006CB6',
+    storageAddress: 'localhost'
   }
 };
