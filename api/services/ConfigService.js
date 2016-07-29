@@ -53,7 +53,7 @@ function nanocloudConfigValue(name, defaultValue) {
   if (process.env.hasOwnProperty(name)) {
     let type;
 
-    let value = process.env[name];
+    let envValue  = process.env[name];
 
     if (Array.isArray(defaultValue)) {
       type = 'array';
@@ -63,37 +63,37 @@ function nanocloudConfigValue(name, defaultValue) {
 
     switch (type) {
       case 'number':
-        value = parseInt(value, 10);
+        value = parseInt(envValue, 10);
         if (Number.isNaN(value)) {
           throw new Error(`Config variable '${name}' must be an number.`);
         }
         break;
 
       case 'array':
-        value = JSON.parse(value);
+        value = JSON.parse(envValue);
         if (!Array.isArray(value)) {
           throw new Error(`Config variable '${name}' must be an array.`);
         }
         break;
 
       case 'object':
-        value = JSON.parse(value);
+        value = JSON.parse(envValue);
         if (typeof value !== 'object') {
           throw new Error(`Config variable '${name}' must be an object.`);
         }
         break;
 
       case 'boolean':
-        if (value === 'true') {
+        if (envValue === 'true') {
           value = true;
         } else if (value === 'false') {
           value = false;
         }
         throw new Error(`Config variable '${name}' must be an boolean.`);
 
-   // case 'string':
-   //   value = value;
-   //   break;
+      case 'string':
+        value = envValue;
+        break;
 
     }
   } else {

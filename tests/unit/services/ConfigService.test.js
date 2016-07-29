@@ -103,3 +103,23 @@ describe('Config multiple Get/Set/Unset', () => {
 
   });
 });
+
+describe('Config overridden value in environment', () => {
+  before(function(done) {
+    sails.config.nanocloud.nanocloudVar = "default";
+    process.env.NANOCLOUD_VAR = "overridden";
+    ConfigService.init()
+      .then(() => {
+        return done();
+      });
+  });
+  it('Should retrieve the overridden value', (done) => {
+    (function() {
+      return ConfigService.get('nanocloudVar')
+        .then((res) => {
+          assert.deepEqual({ nanocloudVar: 'overridden' }, res);
+        });
+    })()
+    .then(() => done()).catch(done);
+  });
+});
