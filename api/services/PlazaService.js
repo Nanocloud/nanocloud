@@ -27,7 +27,7 @@ const fs = require("fs");
 
 module.exports = {
 
-  exec: function(hostname, cmd, stdin, callback) {
+  exec: function(hostname, port, cmd, stdin, callback) {
     let data = {
       "command": cmd,
       "stdin": stdin
@@ -36,7 +36,7 @@ module.exports = {
     let options = {
       host: hostname,
       path: '/exec',
-      port: '9090',
+      port: port,
       headers: {
         'Content-Type': 'application/json'
       },
@@ -57,7 +57,7 @@ module.exports = {
     let options = {
       host: storage.hostname,
       path: "/files?path=" + path,
-      port: '9090',
+      port: parseInt(storage.port),
       method: 'GET'
     };
 
@@ -73,7 +73,7 @@ module.exports = {
     let options = {
       host: storage.hostname,
       path: "/files?path=" + encodeURI(path),
-      port: '9090',
+      port: parseInt(storage.port),
       method: 'GET'
     };
 
@@ -87,7 +87,7 @@ module.exports = {
     let options = {
       host: storage.hostname,
       path: "/upload?filename=" + encodeURI(file.filename) + "&username=" + storage.username,
-      port: 9090,
+      port: parseInt(storage.port),
       method: 'POST'
     };
 

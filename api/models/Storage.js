@@ -41,6 +41,9 @@ module.exports = {
     },
     hostname: {
       type: 'string'
+    },
+    port: {
+      type: 'int'
     }
   },
 
@@ -48,6 +51,7 @@ module.exports = {
 
     PlazaService.exec(
       values.hostname,
+      values.port,
       ["useradd", values.username, "--create-home", "--groups", "users"],
       "",
       () => {

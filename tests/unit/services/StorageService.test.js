@@ -32,9 +32,12 @@ const expect = require('chai').expect;
 describe('Find or create a storage', function() {
   before(function(done) {
     ConfigService.set("storageAddress", "localhost")
-      .then(() => {
-        return done();
-      });
+    .then(() => {
+    ConfigService.set("storagePort", 9090)
+    .then(() => {
+      done();
+    });
+    });
   });
 
   it('Should return a Storage', function(done) {
@@ -43,12 +46,13 @@ describe('Find or create a storage', function() {
       id: "aff17b8b-bf91-40bf-ace6-6dfc985680bb"
     })
     .then((user) => {
-      return StorageService.findOrCreate(user)
+      return StorageService.findOrCreate(user);
     })
     .then((storage) => {
       expect(storage.username.length).to.equal(30);
       expect(storage.password.length).to.equal(60);
       expect(storage.hostname).to.equal("localhost");
+      expect(storage.port).to.equal('9090');
       expect(storage.user).to.equal('aff17b8b-bf91-40bf-ace6-6dfc985680bb');
       done();
     });

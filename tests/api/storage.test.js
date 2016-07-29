@@ -36,8 +36,11 @@ module.exports = function() {
     before(function(done) {
       ConfigService.set("storageAddress", "localhost")
         .then(() => {
-          return done();
-        });
+          return ConfigService.set("storagePort", 9090)
+        })
+      .then(() => {
+        return done();
+      });
     });
 
     const fileSchema = {

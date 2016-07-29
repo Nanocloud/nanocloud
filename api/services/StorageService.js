@@ -41,7 +41,7 @@ module.exports = {
    */
 
   findOrCreate: function(user) {
-    return ConfigService.get('storageAddress')
+    return ConfigService.get('storageAddress', 'storagePort')
       .then((configs) => {
         return Storage.findOrCreate({
           'user': user.id
@@ -53,7 +53,8 @@ module.exports = {
             capitalization: 'lowercase',
           }),
           password: randomstring.generate(60),
-          hostname: configs['storageAddress']
+          hostname: configs['storageAddress'],
+          port: configs['storagePort']
         });
       });
   }

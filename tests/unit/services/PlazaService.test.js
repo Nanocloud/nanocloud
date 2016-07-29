@@ -37,27 +37,29 @@ describe("PlazaService", function() {
   before(function(done) {
     ConfigService.set("storageAddress", "localhost")
       .then(() => {
-        return done();
-      });
-  });
-
-  describe('Exec simple command', () => {
-    it('Should return success', (done) => {
-
-      (function() {
-        return PlazaService.exec(
-            "localhost",
-            ["ls", "-l"],
-            "",
-            (res) => {
-              expect(res.success).to.equal(true);
-              done();
-            });
-      })();
+        return ConfigService.set("storagePort", 9090)
+      })
+    .then(() => {
+      return done();
     });
   });
 
-  describe('Upload a file', () => {
+  describe('Exec simple command', function() {
+    it('Should return success', (done) => {
+
+      return PlazaService.exec(
+          "localhost",
+          9090,
+          ["ls", "-l"],
+          "",
+          (res) => {
+            expect(res.success).to.equal(true);
+            done();
+          });
+    });
+  });
+
+  describe('Upload a file', function() {
     it('Should upload file', (done) => {
 
       User.findOne({
@@ -81,7 +83,7 @@ describe("PlazaService", function() {
     });
   });
 
-  describe('List files', () => {
+  describe('List files', function() {
     it('Should return a list of file', (done) => {
 
       User.findOne({
@@ -107,7 +109,7 @@ describe("PlazaService", function() {
     });
   });
 
-  describe('Download a file', () => {
+  describe('Download a file', function() {
     it('Should return content of file', (done) => {
 
       User.findOne({
