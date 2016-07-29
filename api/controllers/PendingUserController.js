@@ -37,14 +37,31 @@ module.exports = {
 
   create: function(req, res) {
 
-    ConfigService.get(
-      'host'
-    )
+    var user = req.body.data.attributes;
+    user["id"] = uuid.v4();
+    user["isAdmin"] = false;
+
+    User.findOne({
+      "email": user["email"] 
+    })
+    .then((userResponse) => {
+      if (userResponse === undefined) {
+        return PendingUser.findOne({
+          "email": user["email"] 
+        });
+      } else {
+        throw new Error("User already exist");
+      }
+    })
+    .then((pendingUserResponse) => {
+      if (pendingUserResponse === undefined) {
+        return ConfigService.get('host');
+      } else {
+        throw new Error("User already exist");
+      }
+    })
     .then((configuration) => {
       var host = configuration.host;
-      var user = req.body.data.attributes;
-      user.id = uuid.v4();
-      user["isAdmin"] = false;
       var to =  user.email;
       var subject = 'Nanocloud - Verify your email address';
       var message = 'Hello ' + user["first-name"] + ' ' + user["last-name"] + ',<br> please verify your email address by clicking this link: '+
@@ -61,6 +78,8 @@ module.exports = {
     .catch((err) => {
       if (err.code === 'ECONNECTION') {
         return res.serverError("Cannot connect to SMTP server");
+      } else if (err.message === 'User already exist') {
+        return res.badRequest("User already exist");
       }
       return res.negotiate(err);
     });
