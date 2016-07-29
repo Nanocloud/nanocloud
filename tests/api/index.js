@@ -27,6 +27,7 @@
 const testAuth = require('./auth.test');
 const testUsers = require('./users.test');
 const testAutoSignup = require('./auto-signup.test');
+const testResetPassword = require('./reset-password.test');
 
 var request = require('supertest');
 
@@ -43,3 +44,4 @@ describe('Nanocloud is Online', function() {
 testAuth();
 testUsers();
 testAutoSignup();
+testResetPassword();
