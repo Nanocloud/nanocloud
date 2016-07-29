@@ -53,6 +53,7 @@ module.exports = {
     smtpPort: 25,
     smtpLogin: undefined, 
     smtpPassword: undefined,
-    smtpSendFrom: 'mail@nanocloud.com'
+    smtpSendFrom: 'mail@nanocloud.com',
+    testMail: false
   }
 };

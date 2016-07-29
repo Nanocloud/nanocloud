@@ -16,7 +16,7 @@ docker-compose up
 Some environment variable are expected to be set in `config.env`:
 - IAAS (mandatory) currently only "manual" in implemented
 - HOST (mandatory, defaults to localhost) nanocloud's host 
-- SMTP_HOST host to send mail
+- SMTP_HOST host to send email
 - SMTP_PORT (defaults to 25) port for the SMTP server
 - SMTP_LOGIN login for the SMTP server
 - SMTP_PASSWORD password for the SMTP server
@@ -55,6 +55,9 @@ Alternativelly, tests can be run individually:
 
 - `make test-api` to test the API
 - `make test-jshint` to analyse code for errors and warnings
+
+Some environment variables can be set to customize tests:
+- TEST_MAIL (boolean, defaults to false) load stub email transporter for testing purpose
 
 **API tests expects a postgres database up and running on localhost**
 
