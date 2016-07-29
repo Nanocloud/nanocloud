@@ -22,6 +22,8 @@
  * <http://www.gnu.org/licenses/>.
  */
 
+/* globals ConfigService */
+
 // jshint mocha:true
 
 const nano = require('./lib/nanotest');
@@ -30,6 +32,14 @@ const expect = require('chai').expect;
 module.exports = function() {
 
   describe("Storage", function() {
+
+    before(function(done) {
+	ConfigService.set("storageAddress", "localhost")
+	    .then(() => {
+		return done();
+	    });
+    });
+
     const fileSchema = {
       type: 'object',
       properties: {
@@ -44,7 +54,6 @@ module.exports = function() {
 
     let filename = 'storage.test.js';
     let fileSize = null;
-
 
     describe("Upload a file", function() {
       it('Should upload a file', function(done) {
