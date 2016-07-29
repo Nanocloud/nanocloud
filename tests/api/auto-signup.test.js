@@ -64,7 +64,7 @@ module.exports = function() {
               attributes: {
                 'first-name': "Firstname",
                 'last-name': "Lastname",
-                'email': "user@nanocloud.com",
+                'email': "signup@nanocloud.com",
                 'password': "nanocloud"
               },
               type: 'pendingusers'
