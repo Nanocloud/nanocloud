@@ -38,6 +38,13 @@ const sha1 = require("sha1");
 
 module.exports = {
 
+  /**
+   * upload a file in storage
+   *
+   * @method uploqd
+   * @public true
+   */
+
   upload: function(req, res) {
     let user = req.user;
 
@@ -69,6 +76,13 @@ module.exports = {
     });
   },
 
+  /**
+   * files get a list of files
+   *
+   * @method files
+   * @public true
+   */
+
   files: function(req, res) {
     let user = req.user;
 
@@ -81,6 +95,13 @@ module.exports = {
       });
     });
   },
+
+  /**
+   * download a file fro; storage
+   *
+   * @method download
+   * @public true
+   */
 
   download: function(req, res) {
     let filename = req.query["filename"];
@@ -105,6 +126,13 @@ module.exports = {
       });
     });
   },
+
+  /**
+   * token create a one hour token for download
+   *
+   * @method tokenn
+   * @public true
+   */
 
   token: function(req, res) {
     let user = req.user;
