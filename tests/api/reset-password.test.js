@@ -51,7 +51,7 @@ module.exports = function() {
             attributes: {
               'first-name': "Firstname",
               'last-name': "Lastname",
-              'email': "user@nanocloud.com",
+              'email': "user-test@nanocloud.com",
               'password': "nanocloud",
               'is-admin': false
             },
@@ -69,7 +69,7 @@ module.exports = function() {
           .send({
             data: {
               attributes: {
-                'email': "user@nanocloud.com",
+                'email': "user-test@nanocloud.com",
                 'password': null,
               },
               type: 'reset-password'
