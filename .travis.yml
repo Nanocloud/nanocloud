@@ -18,7 +18,17 @@ before_script:
   - psql --version
   - psql -c 'create database nanocloud;' -U postgres
   - psql -c "CREATE USER nanocloud WITH SUPERUSER PASSWORD 'nanocloud';" -U postgres
+  - curl -fsSL https://golang.org/dl/go1.6.3.linux-amd64.tar.gz -o golang.tar.gz
+  - echo "cdde5e08530c0579255d6153b08fdb3b8e47caabbe717bc7bcd7561275a87aeb  golang.tar.gz" | sha256sum -c -
+  - sudo tar -C /usr/local -xzf golang.tar.gz && rm golang.tar.gz
+  - sudo mkdir -p /go/src/github.com/Nanocloud/community/plaza
+  - sudo mount --bind plaza /go/src/github.com/Nanocloud/community/plaza
+  - export GOPATH=/go
+  - cd /go/src/github.com/Nanocloud/community/plaza && ./install.sh
+  - sudo cp -nr /go/src/github.com/Nanocloud/community/plaza/vendor/* /go/src/
+  - cd /go/src/github.com/Nanocloud/community/plaza && GOOS=linux GOARCH=amd64 ./build.sh
+  - /go/src/github.com/Nanocloud/community/plaza/plaza &
+  - cd /home/travis/build/Nanocloud/nanocloud
   - npm install
   - cd assets && npm install && bower install && ./node_modules/ember-cli/bin/ember build --environment=production && cd ../
-  - cd plaza && GOOS=linux GOARCH=amd64 ./build.sh && nohup ./plaza &
   - make tests
