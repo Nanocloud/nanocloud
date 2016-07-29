@@ -49,10 +49,10 @@ module.exports = {
     logoPath: '/assets/images/logo.png',
     primaryColor: '#006CB6',
     host: 'localhost',
-    smtpServerHost: undefined,
+    smtpServerHost: '',
     smtpServerPort: 25,
-    smtpLogin: undefined, 
-    smtpPassword: undefined,
+    smtpLogin: '', 
+    smtpPassword: '',
     smtpSendFrom: 'mail@nanocloud.com',
     testMail: false
   }
