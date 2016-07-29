@@ -65,7 +65,7 @@ function nanocloudConfigValue(name, defaultValue) {
       case 'number':
         value = parseInt(envValue, 10);
         if (Number.isNaN(value)) {
-          throw new Error(`Config variable '${name}' must be an number.`);
+          throw new Error(`Config variable '${name}' must be a number.`);
         }
         break;
 
@@ -89,7 +89,7 @@ function nanocloudConfigValue(name, defaultValue) {
         } else if (value === 'false') {
           value = false;
         }
-        throw new Error(`Config variable '${name}' must be an boolean.`);
+        throw new Error(`Config variable '${name}' must be a boolean.`);
 
       case 'string':
         value = envValue;
