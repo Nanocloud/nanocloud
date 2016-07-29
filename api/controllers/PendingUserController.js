@@ -38,10 +38,10 @@ module.exports = {
   create: function(req, res) {
 
     ConfigService.get(
-      'HOST'
+      'host'
     )
     .then((configuration) => {
-      var host = configuration.HOST;
+      var host = configuration.host;
       var user = req.body.data.attributes;
       user.id = uuid.v4();
       user["isAdmin"] = false;

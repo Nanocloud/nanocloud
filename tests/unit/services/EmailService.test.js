@@ -35,9 +35,9 @@ describe('EmailService', () => {
   before(function(done) {
     // it takes time to send a mail with nodemailer
     this.timeout(10000);
-    ConfigService.set('TEST_MAIL', true)
+    ConfigService.set('testMail', true)
       .then(() => {
-        return ConfigService.set('SMTP_SEND_FROM', "test@nanocloud.com");
+        return ConfigService.set('smtpSendFrom', "test@nanocloud.com");
       })
       .then(done);
   });
@@ -53,7 +53,7 @@ describe('EmailService', () => {
   });
 
   after(function() {
-    ConfigService.unset('TEST_MAIL');
+    ConfigService.unset('testMail');
   });
 
 });

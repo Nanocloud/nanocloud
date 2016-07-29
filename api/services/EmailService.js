@@ -38,24 +38,24 @@ const stubTransport = require('nodemailer-stub-transport');
  */
 function sendMail(to, subject, message) {
 
-  return ConfigService.get('TEST_MAIL', 'SMTP_HOST', 'SMTP_PORT', 'SMTP_LOGIN', 'SMTP_PASSWORD', 'SMTP_SEND_FROM')
+  return ConfigService.get('testMail', 'smtpHost', 'smtpPort', 'smtpLogin', 'smtpPassword', 'smtpSendFrom')
     .then((configs) => {
       var smtpConfig = {
-        host: configs.SMTP_HOST,
-        port: configs.SMTP_PORT,
+        host: configs.smtpHost,
+        port: configs.smtpPort,
         auth: {
-          user: configs.SMTP_LOGIN,
-          pass: configs.SMTP_PASSWORD
+          user: configs.smtpLogin,
+          pass: configs.smtpPassword
         }
       };
 
-      if (configs.TEST_MAIL) {
+      if (configs.testMail) {
         smtpConfig = stubTransport();
       }
 
       var transporter = nodemailer.createTransport(smtpConfig);   
       var mailOptions = {
-        from: '"Nanocloud" <' + configs.SMTP_SEND_FROM+ '>',
+        from: '"Nanocloud" <' + configs.smtpSendFrom+ '>',
         to: to,
         subject: subject,
         html: message

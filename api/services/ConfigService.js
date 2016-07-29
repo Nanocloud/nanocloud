@@ -25,6 +25,7 @@
 /* globals Config */
 
 const Promise = require('bluebird');
+const _ = require('lodash');
 
 /**
  * nanocloudConfigValue returns the value associated to the config variable's
@@ -45,6 +46,9 @@ const Promise = require('bluebird');
  */
 function nanocloudConfigValue(name, defaultValue) {
   let value;
+
+  // Sails configuration variables are in camelCase whereas environment variables are expected to be in snake_case
+  name = _.toUpper(_.snakeCase(name));
 
   if (process.env.hasOwnProperty(name)) {
     let type;

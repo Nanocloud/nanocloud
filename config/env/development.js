@@ -47,6 +47,12 @@ module.exports = {
     title: 'Nanocloud',
     favIconPath: 'favicon.ico',
     logoPath: '/assets/images/logo.png',
-    primaryColor: '#006CB6'
+    primaryColor: '#006CB6',
+    host: 'localhost',
+    smtpHost: undefined,
+    smtpPort: 25,
+    smtpLogin: undefined, 
+    smtpPassword: undefined,
+    smtpSendFrom: 'mail@nanocloud.com'
   }
 };
