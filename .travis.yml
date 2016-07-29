@@ -20,4 +20,5 @@ before_script:
   - psql -c "CREATE USER nanocloud WITH SUPERUSER PASSWORD 'nanocloud';" -U postgres
   - npm install
   - cd assets && npm install && bower install && ./node_modules/ember-cli/bin/ember build --environment=production && cd ../
+  - cd plaza && GOOS=linux GOARCH=amd64 ./build.sh && nohup ./plaza &
   - make tests
