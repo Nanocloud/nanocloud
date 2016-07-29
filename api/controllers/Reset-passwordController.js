@@ -46,11 +46,17 @@ module.exports = {
 
 
     // find user via his email address
+    if (!user.email) {
+      return res.badRequest("Email can not be empty");
+    }
     User.findOne({
       "email": user.email
     })
     // generate new reset password token
     .then((user) => {
+      if (!user) {
+        throw new Error("No user has been found");
+      }
       token = uuid.v4();
 
       return ResetPassword.create({
@@ -63,12 +69,12 @@ module.exports = {
     })
     // send him reset password link
     .then((conf) => {
-        let subject = 'Nanocloud - Reset your password';
-        let message = "Hello,<br>" +
-          "We got a request to reset your password.<br>" +
-          "<a href='"+conf.host+"/#/reset-password/"+token+"'>" +
-          "Reset my password</a><br><br><i>" +
-          "If you ignore this message your password won't be changed.</i>";
+      let subject = 'Nanocloud - Reset your password';
+      let message = "Hello,<br>" +
+        "We got a request to reset your password.<br>" +
+        "<a href='"+conf.host+"/#/reset-password/"+token+"'>" +
+        "Reset my password</a><br><br><i>" +
+        "If you ignore thie message your password won't be changed.</i>";
 
       // mail sent here
       return EmailService.sendMail(user.email, subject, message);
@@ -77,6 +83,11 @@ module.exports = {
       return res.ok({});
     })
     .catch((err) => {
+      if (err.message === "No user has been found") {
+        return res.notFound(err.message);
+      } else if (err.code === 'ECONNECTION') {
+        return res.serverError("Please check out your SMTP configuration");
+      }
       return res.negotiate(err);
     });
   },
@@ -92,6 +103,9 @@ module.exports = {
       "id": token
     })
     .then((tokenFound) => {
+      if (!tokenFound) {
+        throw new Error('Token has expired');
+      }
       token = tokenFound;
       return User.findOne({
         "email": token.email
@@ -100,7 +114,9 @@ module.exports = {
     // update his password
     .then((user) => {
       if (!user) {
-        return res.notFound('No user has been found');
+        throw new Error('No user has been found');
+      } else if (!dataReq.password) {
+        throw new Error("Password can not be empty");
       }
 
       let hash = bcrypt.hashSync(dataReq.password, 10);
@@ -121,6 +137,13 @@ module.exports = {
       return res.ok({});
     })
     .catch((err) => {
+      if (err.message === 'No user has been found') {
+        return res.notFound(err.message);
+      } else if (err.message === 'Password can not be empty') {
+        return res.badRequest(err.message);
+      } else if (err.message === 'Token has expired') {
+        return res.serverError(err.message);
+      }
       return res.negotiate(err);
     });
   }
