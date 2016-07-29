@@ -34,11 +34,14 @@ module.exports = function(req, res, next) {
   let timeStone = timestamp + (3600 - timestamp % 3600);
 
   AccessToken.findById(downloadToken.split(":")[0], (err, accessTokens) => {
+    if (err !== null) {
+      res.negotiate(err);
+    }
     let accessToken = accessTokens[0];
     let expectedToken = accessToken.id + ":" + sha1(accessToken.token + ":" + filename + ":" + timeStone);
 
     if (expectedToken !== downloadToken) {
-      next(new Error("Wrong download token"));
+      res.negociate(new Error("Wrong download token"));
     }
     next();
   });

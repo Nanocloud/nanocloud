@@ -42,6 +42,9 @@ module.exports = {
     let user = req.user;
 
     StorageService.findOrCreate(user, (err, storage) => {
+      if (err !== null) {
+        res.negotiate(err);
+      }
       let filename = req.query["filename"];
 
       req.file(filename).upload({
@@ -70,6 +73,9 @@ module.exports = {
     let user = req.user;
 
     StorageService.findOrCreate(user, (err, storage) => {
+      if (err !== null) {
+        res.negotiate(err);
+      }
       PlazaService.files(storage, "", "/home/" + storage.username, (files) => {
         res.send(files);
       });
@@ -81,9 +87,15 @@ module.exports = {
     let downloadToken = req.query["token"];
 
     AccessToken.findById(downloadToken.split(":")[0], (err, accessTokens) => {
+      if (err !== null) {
+        res.negotiate(err);
+      }
       let accessToken = accessTokens[0];
 
       Storage.findOne({user: accessToken.userId}, (err, storage) => {
+        if (err !== null) {
+          res.negotiate(err);
+        }
         PlazaService.download(
           storage,
           "/home/" + storage.username + "/" + filename,
@@ -102,6 +114,9 @@ module.exports = {
     let timeStone = timestamp + (3600 - timestamp % 3600);
 
     AccessToken.findOne({userId: user.id}, (err, accessToken) => {
+      if (err !== null) {
+        res.negotiate(err);
+      }
       res.send(200, {
         token: accessToken.id + ":" + sha1(accessToken.token + ":" + filename + ":" + timeStone)
       });
