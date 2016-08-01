@@ -50,8 +50,8 @@ module.exports = {
 
         req.file(filename).upload({
           maxBytes: 0,
-        }, function (err, uploadedFiles) {
-          if (err) {
+        }, function(err, uploadedFiles) {
+          if (err !== null) {
             return res.negotiate(err);
           }
 
@@ -64,7 +64,7 @@ module.exports = {
               storage,
               uploadedFiles[0],
               (_, data) => {
-                res.send("Upload successful : " + data);
+                return res.ok(data);
               });
         });
       });
