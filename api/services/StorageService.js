@@ -22,10 +22,10 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-/* globals Storage */
-/* globals ConfigService */
+/* globals Storage, ConfigService */
 
 const randomstring = require("randomstring");
+const sha1 = require("sha1");
 
 module.exports = {
 
@@ -36,10 +36,9 @@ module.exports = {
    *
    * Find or create a user storage in database
    *
-   * @user {user}
-   * @return {UserStorage}
+   * @param {Object} user whose storage belong to
+   * @return {Promise} Resolves to user's Storage
    */
-
   findOrCreate: function(user) {
     return ConfigService.get('storageAddress', 'storagePort')
       .then((configs) => {
@@ -57,5 +56,41 @@ module.exports = {
           port: configs['storagePort']
         });
       });
+  },
+
+  /**
+   * createToken
+   *
+   * Create a 1-hour valid token to download a specific file
+   *
+   * @param {Object} User's access token
+   * @param {String} Filename to download
+   * @return {String} Download token to return to users
+   */
+  createToken: function(accessToken, filename) {
+
+    let timestamp = Date.now() / 1000;
+    let timeStone = timestamp + (3600 - timestamp % 3600);
+
+    return accessToken.id + ":" + sha1(accessToken.token + ":" + filename + ":" + timeStone);
+  },
+
+  /**
+   * checkToken
+   *
+   * Check wether a download token is valid or not
+   *
+   * @param {Object} User's access token
+   * @param {String} Download token specified by users in request
+   * @param {String} Filename to download
+   * @return {Boolean} True if downloadToken is valid, false in other cases
+   */
+  checkToken: function(accessToken, downloadToken, filename) {
+
+    let expectedToken = this.createToken(accessToken, filename);
+    if (expectedToken === downloadToken) {
+      return true;
+    }
+    return false;
   }
 };

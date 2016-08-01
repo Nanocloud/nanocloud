@@ -22,27 +22,23 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-/* globals AccessToken */
-
-const sha1 = require("sha1");
+/* globals AccessToken,StorageService */
 
 module.exports = function(req, res, next) {
   let filename = req.query["filename"];
   let downloadToken = req.query["token"];
 
-  let timestamp = Date.now() / 1000;
-  let timeStone = timestamp + (3600 - timestamp % 3600);
-
-  AccessToken.findById(downloadToken.split(":")[0], (err, accessTokens) => {
+  AccessToken.findOne({
+    id: downloadToken.split(":")[0]
+  }, (err, accessToken) => {
     if (err !== null) {
       res.negotiate(err);
     }
-    let accessToken = accessTokens[0];
-    let expectedToken = accessToken.id + ":" + sha1(accessToken.token + ":" + filename + ":" + timeStone);
 
-    if (expectedToken !== downloadToken) {
+    if (StorageService.checkToken(accessToken, downloadToken, filename)) {
+      next();
+    } else {
       res.negociate(new Error("Wrong download token"));
     }
-    next();
   });
 };

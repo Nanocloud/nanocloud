@@ -23,18 +23,14 @@
  */
 
 /**
- * UploadController
+ * StorageController
  *
  * @description :: Server-side logic for managing uploads
  * @help        :: See http://sailsjs.org/#!/documentation/concepts/Controllers
  */
 
-/* globals AccessToken */
-/* globals PlazaService */
-/* globals Storage */
-/* globals StorageService */
+/* globals AccessToken, PlazaService, Storage, StorageService */
 
-const sha1 = require("sha1");
 
 module.exports = {
 
@@ -93,7 +89,7 @@ module.exports = {
   },
 
   /**
-   * download a file fro; storage
+   * download a file from storage
    *
    * @method download
    * @public true
@@ -134,15 +130,12 @@ module.exports = {
     let user = req.user;
     let filename = req.query["filename"];
 
-    let timestamp = Date.now() / 1000;
-    let timeStone = timestamp + (3600 - timestamp % 3600);
-
     AccessToken.findOne({userId: user.id}, (err, accessToken) => {
       if (err !== null) {
         res.negotiate(err);
       }
       res.send(200, {
-        token: accessToken.id + ":" + sha1(accessToken.token + ":" + filename + ":" + timeStone)
+        token: StorageService.createToken(accessToken, filename)
       });
     });
   }
