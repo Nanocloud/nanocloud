@@ -22,26 +22,25 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-// jshint mocha:true
 
-const testAuth = require('./auth.test');
-const testUsers = require('./users.test');
-const testAutoSignup = require('./auto-signup.test');
-const testResetPassword = require('./reset-password.test');
+const uuid = require('node-uuid');
 
-var request = require('supertest');
+module.exports = {
 
-describe('Nanocloud is Online', function() {
+  autoPK: false,
 
-  it('Should return 200 on index', function (done) {
-    request(sails.hooks.http.app)
-      .get('/')
-      .expect(200)
-      .end(done);
-  });
-});
+  attributes: {
+    id: {
+      type: 'string',
+      primaryKey: true,
+      unique: true,
+      index: true,
+      uuidv4: true,
+      defaultsTo: function (){ return uuid.v4(); }
+    },
+    email: {
+      type: 'string'
+    }
+  }
+};
 
-testAuth();
-testUsers();
-testAutoSignup();
-testResetPassword();

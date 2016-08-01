@@ -3,10 +3,10 @@
   <div class="login-logo"></div>
 		<div class="section">
 		  <div class="content-wrapper form">
-		    <form {{action 'add' on='submit'}}>
+		    <form {{action 'update' on='submit'}}>
 				<h4>Reset your password</h4>
 		        	{{nano-input type="password" placeholder='New password' model=model valuePath="password"}}
-		        <button {{ action "submitForm" }} type="submit" class="btn btn-primary btn-block text-uppercase">Update my password</button>
+		        <button type="submit" class="btn btn-primary btn-block text-uppercase">Update my password</button>
 		    </form>
 		  </div>
 		</div>

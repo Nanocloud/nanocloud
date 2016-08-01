@@ -68,12 +68,12 @@ Router.map(function() {
   this.route('login');
   this.route('direct-link');
   this.route('sign-up');
-  this.route('reset-password', function() {
-      this.route('reset-password-tokens', { path: '/:reset-password-token_id' });
-  });
 
   this.route('activate', function() {
     this.route('activate',  { path: '/:activate_id' });
+  });
+  this.route('reset-password', function() {
+    this.route('token',  { path: '/:reset-password_id' });
   });
 });
 

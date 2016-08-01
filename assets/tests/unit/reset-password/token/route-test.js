@@ -22,26 +22,14 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-// jshint mocha:true
+import { moduleFor, test } from 'ember-qunit';
 
-const testAuth = require('./auth.test');
-const testUsers = require('./users.test');
-const testAutoSignup = require('./auto-signup.test');
-const testResetPassword = require('./reset-password.test');
-
-var request = require('supertest');
-
-describe('Nanocloud is Online', function() {
-
-  it('Should return 200 on index', function (done) {
-    request(sails.hooks.http.app)
-      .get('/')
-      .expect(200)
-      .end(done);
-  });
+moduleFor('route:reset-password/token', 'Unit | Route | reset password/token', {
+  // Specify the other units that are required for this test.
+  // needs: ['controller:foo']
 });
 
-testAuth();
-testUsers();
-testAutoSignup();
-testResetPassword();
+test('it exists', function(assert) {
+  let route = this.subject();
+  assert.ok(route);
+});

@@ -22,26 +22,37 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-// jshint mocha:true
+import DS from 'ember-data';
+import {validator, buildValidations} from 'ember-cp-validations';
 
-const testAuth = require('./auth.test');
-const testUsers = require('./users.test');
-const testAutoSignup = require('./auto-signup.test');
-const testResetPassword = require('./reset-password.test');
-
-var request = require('supertest');
-
-describe('Nanocloud is Online', function() {
-
-  it('Should return 200 on index', function (done) {
-    request(sails.hooks.http.app)
-      .get('/')
-      .expect(200)
-      .end(done);
-  });
+const Validations = buildValidations({
+  password: [
+    validator('presence', true),
+    validator('length', {
+      min: 8,
+      max: 255,
+      type: 'password',
+    })
+  ],
+  passwordConfirmation: [
+    validator('presence', true),
+    validator('confirmation', {
+      on: 'password',
+      message: 'Does not match password',
+    }),
+    validator('length', {
+      min: 8,
+      max: 255,
+      type: 'password',
+    })
+  ],
+  email: [
+    validator('presence', true),
+    validator('format', { type: 'email' })
+  ]
 });
 
-testAuth();
-testUsers();
-testAutoSignup();
-testResetPassword();
+export default DS.Model.extend(Validations, {
+  email: DS.attr('string'),
+  password: DS.attr('string')
+});
