@@ -46,6 +46,10 @@ server.exchange(oauth2orize.exchange.password(function(user, username, password,
       done(err);
     }
 
+    // delete reset password tokens
+    global['Reset-password'].destroy({
+      email: user.email
+    });
     RefreshToken.create({
       userId: user.id
     }, function(err, refreshToken){
