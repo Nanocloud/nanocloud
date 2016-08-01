@@ -42,7 +42,7 @@ module.exports = function() {
         'updated-at': {type: 'string'}
       },
       required: ['email', 'hashed-password', 'is-admin', 'first-name', 'last-name', 'created-at', 'updated-at'],
-      additionalProperties: false
+      additionalProperties: true // expiration date is not mandatory
     };
 
     describe("Create user", function() {
@@ -58,7 +58,8 @@ module.exports = function() {
                 'last-name': "Lastname",
                 'email': "user@nanocloud.com",
                 'password': "nanocloud",
-                'is-admin': false
+                'is-admin': false,
+                'expiration-date': null
               },
               type: 'users'
             }
