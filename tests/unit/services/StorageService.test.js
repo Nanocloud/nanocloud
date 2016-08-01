@@ -24,37 +24,61 @@
 
 // jshint mocha:true
 
-/* global StorageService */
-/* global User */
+/* global AccessToken,ConfigService,StorageService,User */
 
 const expect = require('chai').expect;
 
-describe('Find or create a storage', function() {
+describe('Storage Service', function() {
   before(function(done) {
     ConfigService.set("storageAddress", "localhost")
     .then(() => {
-    ConfigService.set("storagePort", 9090)
-    .then(() => {
-      done();
-    });
+      ConfigService.set("storagePort", 9090)
+      .then(() => {
+        done();
+      });
     });
   });
 
-  it('Should return a Storage', function(done) {
+  describe('Find or create a storage', function() {
+    it('Should return a Storage', function(done) {
+      User.findOne({
+        id: "aff17b8b-bf91-40bf-ace6-6dfc985680bb"
+      })
+      .then((user) => {
+        return StorageService.findOrCreate(user);
+      })
+      .then((storage) => {
+        expect(storage.username.length).to.equal(30);
+        expect(storage.password.length).to.equal(60);
+        expect(storage.hostname).to.equal("localhost");
+        expect(storage.port).to.equal('9090');
+        expect(storage.user).to.equal('aff17b8b-bf91-40bf-ace6-6dfc985680bb');
+        done();
+      });
+    });
+  });
 
-    User.findOne({
-      id: "aff17b8b-bf91-40bf-ace6-6dfc985680bb"
-    })
-    .then((user) => {
-      return StorageService.findOrCreate(user);
-    })
-    .then((storage) => {
-      expect(storage.username.length).to.equal(30);
-      expect(storage.password.length).to.equal(60);
-      expect(storage.hostname).to.equal("localhost");
-      expect(storage.port).to.equal('9090');
-      expect(storage.user).to.equal('aff17b8b-bf91-40bf-ace6-6dfc985680bb');
-      done();
+  let filename = "StorageService.test.js";
+  let token = null;
+  describe('Create a download token', function() {
+    it('Should return a new 1-hour valid download token', function(done) {
+      AccessToken.findOne({userId: "aff17b8b-bf91-40bf-ace6-6dfc985680bb"}, (err, accessToken) => {
+        token = StorageService.createToken(accessToken, filename);
+        expect(token.split(":").length).to.equal(2);
+        done();
+      });
+    });
+  });
+
+  describe('Check a download token', function() {
+    it('Should return true or false', function(done) {
+      AccessToken.findOne({userId: "aff17b8b-bf91-40bf-ace6-6dfc985680bb"}, (err, accessToken) => {
+        expect(StorageService.checkToken(accessToken, token, filename)).to.equal(true);
+        expect(StorageService.checkToken(accessToken, token, "")).to.equal(false);
+        expect(StorageService.checkToken(accessToken, "", filename)).to.equal(false);
+        expect(StorageService.checkToken(accessToken, "", "")).to.equal(false);
+        done();
+      });
     });
   });
 });
