@@ -31,6 +31,7 @@
 
 /* globals AccessToken, PlazaService, Storage, StorageService */
 
+const Promise = require("bluebird");
 
 module.exports = {
 
@@ -48,26 +49,29 @@ module.exports = {
       .then((storage) => {
         let filename = req.query["filename"];
 
-        req.file(filename).upload({
-          maxBytes: 0,
-        }, function(err, uploadedFiles) {
-          if (err !== null) {
-            return res.negotiate(err);
-          }
-
+        return new Promise(function(resolve, reject) {
+          req.file(filename).upload({
+            maxBytes: 0
+          }, function(error, uploadedFiles) {
+            return error ? reject(error) : resolve(uploadedFiles);
+          });
+        })
+        .then((uploadedFiles) => {
           // If no files were uploaded, respond with an error.
           if (uploadedFiles.length === 0){
             return res.badRequest('No file was uploaded');
           }
 
-          PlazaService.upload(
-              storage,
-              uploadedFiles[0],
-              (_, data) => {
-                return res.ok(data);
-              });
+          return PlazaService.upload(storage, uploadedFiles[0]);
         });
-      });
+    })
+    .then((response) => {
+      return res.ok(response.body);
+    })
+    .catch((err) => {
+      console.log(err);
+      return res.negotiate(err);
+    });
   },
 
   /**
@@ -81,11 +85,12 @@ module.exports = {
     let user = req.user;
 
     StorageService.findOrCreate(user)
-      .then((storage) => {
-        PlazaService.files(storage, "", "/home/" + storage.username, (files) => {
-          res.send(files);
-        });
-      });
+    .then((storage) => {
+      return PlazaService.files(storage, "", "/home/" + storage.username);
+    })
+    .then((files) => {
+      return res.send(files);
+    });
   },
 
   /**
@@ -108,12 +113,10 @@ module.exports = {
       });
     })
     .then((storage) => {
-      PlazaService.download(
-          storage,
-          "/home/" + storage.username + "/" + filename,
-          (dataStream) => {
-            dataStream.pipe(res.attachment(filename));
-          });
+      return PlazaService.download(storage, "/home/" + storage.username + "/" + filename);
+    })
+    .then((dataStream) => {
+      return dataStream.pipe(res.attachment(filename));
     })
     .catch((err) => {
       return res.negotiate(err);

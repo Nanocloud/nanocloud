@@ -35,9 +35,9 @@ module.exports = function() {
 
     before(function(done) {
       ConfigService.set("storageAddress", "localhost")
-        .then(() => {
-          return ConfigService.set("storagePort", 9090)
-        })
+      .then(() => {
+        return ConfigService.set("storagePort", 9090);
+      })
       .then(() => {
         return done();
       });

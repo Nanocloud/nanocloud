@@ -49,14 +49,17 @@ module.exports = {
 
   beforeCreate: function(values, next){
 
-    PlazaService.exec(
+    return PlazaService.exec(
       values.hostname,
       values.port,
       ["useradd", values.username, "--create-home", "--groups", "users"],
-      "",
-      () => {
-        next();
-      }
-    );
+      ""
+    )
+    .then(() => {
+      return next();
+    })
+    .catch((err) => {
+      return next(err);
+    });
   }
 };

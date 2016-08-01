@@ -24,66 +24,59 @@
 
 const http = require("http");
 const fs = require("fs");
+const request = require("request-promise");
+const Promise = require("bluebird");
 
 module.exports = {
 
-  exec: function(hostname, port, cmd, stdin, callback) {
-    let data = {
-      "command": cmd,
-      "stdin": stdin
-    };
-
+  exec: function(hostname, port, cmd, stdin) {
     let options = {
-      host: hostname,
-      path: '/exec',
-      port: port,
+      url: "http://" + hostname + ":" + port + "/exec",
       headers: {
         'Content-Type': 'application/json'
+      },
+      json: true,
+      body: {
+        "command": cmd,
+        "stdin": stdin
       },
       method: 'POST'
     };
 
-    let req = http.request(options, (response) => {
-      response.on('data', (data) => {
-        callback(JSON.parse(data));
-      });
-    });
-
-    req.write(JSON.stringify(data));
-    req.end();
+    return request(options);
   },
 
-  files: function(storage, filename, path, next) {
+  files: function(storage, filename, path) {
     let options = {
-      host: storage.hostname,
-      path: "/files?path=" + path,
-      port: storage.port,
+      url: "http://" + storage.hostname + ":" + storage.port + "/files?path=" + encodeURI(path),
       method: 'GET'
     };
 
-    let req = http.request(options, (response) => {
-      response.on('data', (data) => {
-        next(JSON.parse(data));
-      });
+    return request(options).then((result) => {
+      return JSON.parse(result);
     });
-    req.end();
   },
 
-  download: function(storage, path, callback) {
+  download: function(storage, path) {
     let options = {
       host: storage.hostname,
       path: "/files?path=" + encodeURI(path),
       port: storage.port,
-      method: 'GET'
+      method: 'GET',
     };
 
-    let req = http.request(options, (response) => {
-      callback(response);
+    return new Promise(function(resolve, reject) {
+      let req = http.request(options, function(response) {
+        if (response.statusCode !== 200) {
+          return reject(response);
+        }
+        return resolve(response);
+      });
+      req.end();
     });
-    req.end();
   },
 
-  upload: function(storage, file, callback) {
+  upload: function(storage, file) {
     let options = {
       host: storage.hostname,
       path: "/upload?filename=" + encodeURI(file.filename) + "&username=" + storage.username,
@@ -91,7 +84,14 @@ module.exports = {
       method: 'POST'
     };
 
-    let readableStream = fs.createReadStream(file.fd);
-    readableStream.pipe(http.request(options, callback));
+    return new Promise(function(resolve, reject) {
+      let readableStream = fs.createReadStream(file.fd);
+      readableStream.pipe(http.request(options, (response) => {
+        if (response.statusCode !== 200) {
+          return reject(response);
+        }
+        return resolve(response);
+      }));
+    });
   }
 };
