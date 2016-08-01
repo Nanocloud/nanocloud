@@ -40,7 +40,7 @@ module.exports = {
           key : key
         })
         .then((createdEntry) => {
-          return res.created(createdEntry);
+          return res.ok(createdEntry);
         });
       })
     .catch((err) => {

@@ -66,7 +66,7 @@ module.exports = function() {
             type: 'configs'
           }
         })
-        .expect(201)
+        .expect(200)
           .expect(nano.jsonApiSchema(setConfigSchema))
           .expect((res) => {
             expect(res.body.data[0].id).to.equal('test');
