@@ -32,10 +32,10 @@ describe('Storage Service', function() {
   before(function(done) {
     ConfigService.set("storageAddress", "localhost")
     .then(() => {
-      ConfigService.set("storagePort", 9090)
-      .then(() => {
-        done();
-      });
+      ConfigService.set("storagePort", 9090);
+    })
+    .then(() => {
+      done();
     });
   });
 
