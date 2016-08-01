@@ -13,7 +13,7 @@ test-units:
 test-jshint:
 	jshint api/ config/
 
-test-licences:
+test-licenses:
 	./tests/test-licences.sh
 
 .PHONY: tests
