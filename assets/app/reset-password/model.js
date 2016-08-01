@@ -23,8 +23,36 @@
  */
 
 import DS from 'ember-data';
+import {validator, buildValidations} from 'ember-cp-validations';
 
-export default DS.Model.extend({
+const Validations = buildValidations({
+  password: [
+    validator('presence', true),
+    validator('length', {
+      min: 8,
+      max: 255,
+      type: 'password',
+    })
+  ],
+  passwordConfirmation: [
+    validator('presence', true),
+    validator('confirmation', {
+      on: 'password',
+      message: 'Does not match password',
+    }),
+    validator('length', {
+      min: 8,
+      max: 255,
+      type: 'password',
+    })
+  ],
+  email: [
+    validator('presence', true),
+    validator('format', { type: 'email' })
+  ]
+});
+
+export default DS.Model.extend(Validations, {
   email: DS.attr('string'),
   password: DS.attr('string')
 });
