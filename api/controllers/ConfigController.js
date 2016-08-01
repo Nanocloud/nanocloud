@@ -25,8 +25,7 @@
  * @help        :: See http://sailsjs.org/#!/documentation/concepts/Controllers
  */
 
-/* globals Config */
-/* globals ConfigService */
+/* globals Config, ConfigService */
 
 module.exports = {
 	
@@ -35,18 +34,15 @@ module.exports = {
     let key = req.body.data.attributes.key;
     let value = req.body.data.attributes.value;
 
-    return Config.findOrCreate({
-      key: key
-    }, {
-      key: key,
-      value: value
-    })
-    .then((createdEntry) => {
-      return ConfigService.set(key, value)
+    ConfigService.set(key, value)
       .then(() => {
-        return res.created(createdEntry);
-      });
-    })
+        Config.find({
+          key : key
+        })
+        .then((createdEntry) => {
+          return res.created(createdEntry);
+        });
+      })
     .catch((err) => {
       return res.negotiate(err);
     });
@@ -59,7 +55,10 @@ module.exports = {
         let data = [];
         for (var property in config) {
           if (config.hasOwnProperty(property)) {
-            data.push({ key: property, value : config[property] });
+            data.push({ 
+              key: property,
+              value : config[property]
+            });
           }
         }
         return res.ok(data);

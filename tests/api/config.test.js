@@ -66,12 +66,12 @@ module.exports = function() {
             type: 'configs'
           }
         })
-      .expect(201)
-        .expect(nano.jsonApiSchema(setConfigSchema))
-        .expect((res) => {
-          expect(res.body.data.id).to.equal('test');
-          expect(res.body.data.attributes["value"]).to.equal('true');
-        })
+        .expect(201)
+          .expect(nano.jsonApiSchema(setConfigSchema))
+          .expect((res) => {
+            expect(res.body.data[0].id).to.equal('test');
+            expect(res.body.data[0].attributes["value"]).to.equal('true');
+          })
         .end(done);
     })
 
