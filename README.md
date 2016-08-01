@@ -28,6 +28,7 @@ Manual driver specific:
 
 Storage specific:
 - STORAGE_ADDRESS (mandatory, defaults to 'localhost') storage service's IP
+- STORAGE_PORT (mandatory, defaults to 9090) storage service's port
 
 Once loaded, Nanocloud will be accessible on **localhost**.
 
