@@ -67,10 +67,10 @@ for file in $(find assets -path assets/tmp -prune -o -name "*.js" | grep -v node
   echo "Scanning ${file}" >> add_licence.log
   if [ -z "$(grep ${LICENCE_PATTERN} "${file}")" ]; then
     if [ "tests" = "${ACTION}" ]; then
-      echo "Missing licence in : ${file}"
+      echo "Missing license in : ${file}"
       exit 1
     else
-      echo "Adding licence in : ${file}"
+      echo "Adding license in : ${file}"
       { echo -n "${LICENSE_TEXT}"; cat "${file}"; } > "${file}.new"
       mv "${file}.new" "${file}"
     fi
@@ -82,10 +82,10 @@ for file in $(find config -name "*.js"); do
   echo "Scanning ${file}" >> add_licence.log
   if [ -z "$(grep ${LICENCE_PATTERN} "${file}")" ]; then
     if [ "tests" = "${ACTION}" ]; then
-      echo "Missing licence in : ${file}"
+      echo "Missing license in : ${file}"
       exit 1
     else
-      echo "Adding licence in : ${file}"
+      echo "Adding license in : ${file}"
       { echo -n "${LICENSE_TEXT}"; cat "${file}"; } > "${file}.new"
       mv "${file}.new" "${file}"
     fi
@@ -97,10 +97,10 @@ for file in $(find api -name "*.js"); do
   echo "Scanning ${file}" >> add_licence.log
   if [ -z "$(grep ${LICENCE_PATTERN} "${file}")" ]; then
     if [ "tests" = "${ACTION}" ]; then
-      echo "Missing licence in : ${file}"
+      echo "Missing license in : ${file}"
       exit 1
     else
-      echo "Adding licence in : ${file}"
+      echo "Adding license in : ${file}"
       { echo -n "${LICENSE_TEXT}"; cat "${file}"; } > "${file}.new"
       mv "${file}.new" "${file}"
     fi
@@ -112,10 +112,10 @@ for file in $(find tests -name "*.js"); do
   echo "Scanning ${file}" >> add_licence.log
   if [ -z "$(grep ${LICENCE_PATTERN} "${file}")" ]; then
     if [ "tests" = "${ACTION}" ]; then
-      echo "Missing licence in : ${file}"
+      echo "Missing license in : ${file}"
       exit 1
     else
-      echo "Adding licence in : ${file}"
+      echo "Adding license in : ${file}"
       { echo -n "${LICENSE_TEXT}"; cat "${file}"; } > "${file}.new"
       mv "${file}.new" "${file}"
     fi
@@ -127,10 +127,10 @@ for file in $(find plaza -name "*.go"); do
   echo "Scanning ${file}" >> add_licence.log
   if [ -z "$(grep ${LICENCE_PATTERN} "${file}")" ]; then
     if [ "tests" = "${ACTION}" ]; then
-      echo "Missing licence in : ${file}"
+      echo "Missing license in : ${file}"
       exit 1
     else
-      echo "Adding licence in : ${file}"
+      echo "Adding license in : ${file}"
       { echo -n "${LICENSE_TEXT}"; cat "${file}"; } > "${file}.new"
       mv "${file}.new" "${file}"
     fi
