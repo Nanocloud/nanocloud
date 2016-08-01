@@ -29,6 +29,16 @@ const Promise = require("bluebird");
 
 module.exports = {
 
+  /**
+   * exec
+   *
+   * Exec a windwows command with Plaza
+   *
+   * @param {String} storage hostname
+   * @param {string} listening storage port
+   * @param {[]string} commands to execute
+   * @return {Promise} Request to Plaza
+   */
   exec: function(hostname, port, cmd, stdin) {
     let options = {
       url: "http://" + hostname + ":" + port + "/exec",
@@ -46,7 +56,16 @@ module.exports = {
     return request(options);
   },
 
-  files: function(storage, filename, path) {
+  /**
+   * files
+   *
+   * Ask a list of files
+   *
+   * @param {Object} storage used by user
+   * @param {string} path where we ask files
+   * @return {Promise} Request to Plaza
+   */
+  files: function(storage, path) {
     let options = {
       url: "http://" + storage.hostname + ":" + storage.port + "/files?path=" + encodeURI(path),
       method: 'GET'
@@ -57,6 +76,15 @@ module.exports = {
     });
   },
 
+  /**
+   * download
+   *
+   * Ask to download a file
+   *
+   * @param {Object} storage used by user
+   * @param {string} path of file
+   * @return {Promise} Request to Plaza
+   */
   download: function(storage, path) {
     let options = {
       host: storage.hostname,
@@ -76,6 +104,15 @@ module.exports = {
     });
   },
 
+  /**
+   * upload
+   *
+   * Ask to upload a file
+   *
+   * @param {Object} storage used by user
+   * @param {Object} Object of the new file
+   * @return {Promise} Request to Plaza
+   */
   upload: function(storage, file) {
     let options = {
       host: storage.hostname,
