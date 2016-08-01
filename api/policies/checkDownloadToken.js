@@ -36,9 +36,9 @@ module.exports = function(req, res, next) {
     }
 
     if (StorageService.checkToken(accessToken, downloadToken, filename)) {
-      next();
+      return next();
     } else {
-      res.negociate(new Error("Wrong download token"));
+      return res.negociate(new Error("Wrong download token"));
     }
   });
 };

@@ -57,7 +57,7 @@ module.exports = {
     let options = {
       host: storage.hostname,
       path: "/files?path=" + path,
-      port: parseInt(storage.port),
+      port: storage.port,
       method: 'GET'
     };
 
@@ -73,7 +73,7 @@ module.exports = {
     let options = {
       host: storage.hostname,
       path: "/files?path=" + encodeURI(path),
-      port: parseInt(storage.port),
+      port: storage.port,
       method: 'GET'
     };
 
@@ -87,7 +87,7 @@ module.exports = {
     let options = {
       host: storage.hostname,
       path: "/upload?filename=" + encodeURI(file.filename) + "&username=" + storage.username,
-      port: parseInt(storage.port),
+      port: storage.port,
       method: 'POST'
     };
 
