@@ -32,7 +32,7 @@ module.exports = function(req, res, next) {
     id: downloadToken.split(":")[0]
   }, (err, accessToken) => {
     if (err !== null) {
-      res.negotiate(err);
+      return res.negotiate(err);
     }
 
     if (StorageService.checkToken(accessToken, downloadToken, filename)) {
