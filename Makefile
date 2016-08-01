@@ -14,6 +14,6 @@ test-jshint:
 	jshint api/ config/
 
 test-licenses:
-	./tests/test-licences.sh
+	./tests/test-licenses.sh
 
 .PHONY: tests
