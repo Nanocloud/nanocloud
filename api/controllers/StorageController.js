@@ -105,17 +105,17 @@ module.exports = {
       }
       let accessToken = accessTokens[0];
 
-      Storage.findOne({user: accessToken.userId}, (err, storage) => {
-        if (err !== null) {
+      Storage.findOne({user: accessToken.userId})
+        .then((storage) => {
+          PlazaService.download(
+              storage,
+              "/home/" + storage.username + "/" + filename,
+              (dataStream) => {
+                dataStream.pipe(res.attachment(filename));
+              });
+        }).catch((err) => {
           res.negotiate(err);
-        }
-        PlazaService.download(
-          storage,
-          "/home/" + storage.username + "/" + filename,
-          (dataStream) => {
-            dataStream.pipe(res.attachment(filename));
-          });
-      });
+        });
     });
   },
 
