@@ -123,7 +123,10 @@ for file in $(find tests -name "*.js"); do
 done
 
 echo "### Looking for source files in *plaza* directory"
-for file in $(find plaza -name "*.go"); do
+for file in $(find plaza -path plaza/vendor -prune -o -name "*.go"); do
+  if [ "${file}" = "plaza/vendor" ]; then
+    continue
+  fi
   echo "Scanning ${file}" >> add_license.log
   if [ -z "$(grep ${LICENCE_PATTERN} "${file}")" ]; then
     if [ "tests" = "${ACTION}" ]; then
