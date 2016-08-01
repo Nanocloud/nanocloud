@@ -55,6 +55,6 @@ module.exports.policies = {
   'Reset-passwordController': {
     create: true,
     update: true,
-    find: true,
+    findOne: true,
   },
 };

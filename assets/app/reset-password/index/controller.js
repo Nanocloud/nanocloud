@@ -35,7 +35,8 @@ export default Ember.Controller.extend({
 			.then(
 				() => {
           this.set('loadState', 2);
-					this.toast.success("Please check out you emails to reset your password", "Link sent");
+					this.toast.success("Please check out your emails to reset your password",
+              "Link sent");
 					this.transitionToRoute('login');
 				},
 				(err) => {
