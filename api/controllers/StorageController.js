@@ -99,23 +99,24 @@ module.exports = {
     let filename = req.query["filename"];
     let downloadToken = req.query["token"];
 
-    AccessToken.findById(downloadToken.split(":")[0], (err, accessTokens) => {
-      if (err !== null) {
-        res.negotiate(err);
-      }
-      let accessToken = accessTokens[0];
-
-      Storage.findOne({user: accessToken.userId})
-        .then((storage) => {
-          PlazaService.download(
-              storage,
-              "/home/" + storage.username + "/" + filename,
-              (dataStream) => {
-                dataStream.pipe(res.attachment(filename));
-              });
-        }).catch((err) => {
-          res.negotiate(err);
-        });
+    AccessToken.findOne({
+      id: downloadToken.split(":")[0]
+    })
+    .then((accessToken) => {
+      return Storage.findOne({
+        user: accessToken.userId
+      });
+    })
+    .then((storage) => {
+      PlazaService.download(
+          storage,
+          "/home/" + storage.username + "/" + filename,
+          (dataStream) => {
+            dataStream.pipe(res.attachment(filename));
+          });
+    })
+    .catch((err) => {
+      return res.negotiate(err);
     });
   },
 
