@@ -78,7 +78,7 @@ module.exports = {
   /**
    * checkToken
    *
-   * Check wether a download token is valid or not
+   * Check whether a download token is valid or not
    *
    * @param {Object} User's access token
    * @param {String} Download token specified by users in request
