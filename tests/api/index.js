@@ -30,6 +30,7 @@ const testAutoSignup = require('./auto-signup.test');
 const testResetPassword = require('./reset-password.test');
 const testStorage = require('./storage.test');
 const testUserLimitation = require('./user-limitation.test');
+const testConfig = require('./config.test');
 
 var request = require('supertest');
 
@@ -49,3 +50,4 @@ testAutoSignup();
 testResetPassword();
 testStorage();
 testUserLimitation();
+testConfig();

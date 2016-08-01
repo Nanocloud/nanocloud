@@ -50,7 +50,10 @@ export default Ember.Service.extend({
     let data = "";
     for ( var property in params ) {
       if (params.hasOwnProperty(property)) { 
-        data += params[property] + ",";
+        data += params[property];
+        if (params[params.length-1] !== params[property]) {
+          data += ",";
+        }
       }
     }
     return data;
@@ -64,7 +67,7 @@ export default Ember.Service.extend({
         if (val === 'true' || val === 'false') {
           val = (val === 'true');
         }
-        this.set(item.get('key'), val);
+        this.set(item.get('id'), val);
       });
     });
     return promise;
