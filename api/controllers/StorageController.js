@@ -36,40 +36,37 @@ const Promise = require("bluebird");
 module.exports = {
 
   /**
-   * upload a file in storage
+   * Upload a file in user's storage
    *
-   * @method uploqd
+   * @method upload
    * @public true
    */
-
   upload: function(req, res) {
     let user = req.user;
+    let filename = req.query["filename"];
 
     StorageService.findOrCreate(user)
-      .then((storage) => {
-        let filename = req.query["filename"];
-
-        return new Promise(function(resolve, reject) {
-          req.file(filename).upload({
-            maxBytes: 0
-          }, function(error, uploadedFiles) {
-            return error ? reject(error) : resolve(uploadedFiles);
-          });
-        })
-        .then((uploadedFiles) => {
-          // If no files were uploaded, respond with an error.
-          if (uploadedFiles.length === 0){
-            return res.badRequest('No file was uploaded');
-          }
-
-          return PlazaService.upload(storage, uploadedFiles[0]);
+    .then((storage) => {
+      return new Promise(function(resolve, reject) {
+        req.file(filename).upload({
+          maxBytes: 0
+        }, function(error, uploadedFiles) {
+          return error ? reject(error) : resolve(uploadedFiles);
         });
+      })
+      .then((uploadedFiles) => {
+        // If no files were uploaded, respond with an error.
+        if (uploadedFiles.length === 0){
+          return res.badRequest('No file was uploaded');
+        }
+
+        return PlazaService.upload(storage, uploadedFiles[0]);
+      });
     })
     .then((response) => {
       return res.ok(response.body);
     })
     .catch((err) => {
-      console.log(err);
       return res.negotiate(err);
     });
   },
@@ -86,7 +83,7 @@ module.exports = {
 
     StorageService.findOrCreate(user)
     .then((storage) => {
-      return PlazaService.files(storage, "", "/home/" + storage.username);
+      return PlazaService.files(storage, "/home/" + storage.username);
     })
     .then((files) => {
       return res.send(files);

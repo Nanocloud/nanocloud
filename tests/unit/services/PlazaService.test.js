@@ -86,7 +86,7 @@ describe("PlazaService", function() {
         return StorageService.findOrCreate(user);
       })
       .then((storage) => {
-        return PlazaService.files(storage, "", "/home/" + storage.username);
+        return PlazaService.files(storage, "/home/" + storage.username);
       })
       .then((files) => {
         expect(files.data.length).to.equal(1);
