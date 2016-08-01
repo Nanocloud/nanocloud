@@ -40,6 +40,8 @@ services:
     container_name: "storage"
     volumes:
       - plaza:/opt/plaza
+    depends_on:
+      - plaza
 
   plaza:
     build: ./plaza
