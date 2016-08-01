@@ -75,7 +75,9 @@ describe("PlazaService", function() {
             PlazaService.upload(
                 storage,
                 file,
-                () => {
+                (res) => {
+                  expect(res.statusCode).to.equal(200);
+                  expect(res.headers["content-length"]).to.equal('0');
                   done();
                 });
           });
