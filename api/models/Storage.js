@@ -19,15 +19,47 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
- * File.js
+ * Storage.js
  *
  * @description :: TODO: You might write a short summary of how this model works and what it represents here.
  * @docs        :: http://sailsjs.org/documentation/concepts/models-and-orm/models
  */
 
+/* globals PlazaService */
+
 module.exports = {
 
   attributes: {
+    user: {
+      model: 'user'
+    },
+    username: {
+      type: 'string'
+    },
+    password: {
+      type: 'string'
+    },
+    hostname: {
+      type: 'string'
+    },
+    port: {
+      type: 'int'
+    }
+  },
 
+  beforeCreate: function(values, next){
+
+    return PlazaService.exec(
+      values.hostname,
+      values.port,
+      ["useradd", values.username, "--create-home", "--groups", "users"],
+      ""
+    )
+    .then(() => {
+      return next();
+    })
+    .catch((err) => {
+      return next(err);
+    });
   }
 };

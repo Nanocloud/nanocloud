@@ -34,6 +34,25 @@ services:
     container_name: "proxy"
     restart: always
 
+  storage:
+    image: nanocloud/storage
+    network_mode: host
+    container_name: "storage"
+    volumes:
+      - plaza:/opt/plaza
+    depends_on:
+      - plaza
+
+  plaza:
+    build: ./plaza
+    image: nanocloud/plaza
+    environment:
+      - GOOS=linux
+      - GOARCH=amd64
+    network_mode: host
+    volumes:
+      - plaza:/go/src/github.com/Nanocloud/community/plaza/
+
   guacamole-client:
     image: nanocloud/guacamole-client
     volumes:
@@ -54,3 +73,7 @@ services:
       - POSTGRES_USER=nanocloud
     network_mode: host
     container_name: "postgres"
+
+volumes:
+  plaza:
+    driver: local

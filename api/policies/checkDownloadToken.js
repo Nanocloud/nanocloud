@@ -22,21 +22,23 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-import Ember from 'ember';
+/* globals AccessToken,StorageService */
 
-export default Ember.Service.extend({
+module.exports = function(req, res, next) {
+  let filename = req.query["filename"];
+  let downloadToken = req.query["token"];
 
-  downloadFile(accessToken, filename) {
+  AccessToken.findOne({
+    id: downloadToken.split(":")[0]
+  }, (err, accessToken) => {
+    if (err !== null) {
+      return res.negotiate(err);
+    }
 
-    Ember.$.ajax({
-      type: "GET",
-      headers: { Authorization : "Bearer " + accessToken},
-      url: "/api/files/token",
-      data: { filename: "./" + filename}
-    })
-    .then((response) => {
-      let url = "/api/files/download?filename=" + encodeURIComponent("./" + filename) + "&token=" + encodeURIComponent(response.token); 
-      window.location.assign(url);
-    });
-  }
-});
+    if (StorageService.checkToken(accessToken, downloadToken, filename)) {
+      return next();
+    } else {
+      return res.negociate(new Error("Invalid download token"));
+    }
+  });
+};

@@ -31,11 +31,15 @@
     "passport-http": "^0.3.0",
     "passport-http-bearer": "^1.0.1",
     "passport-local": "^1.0.0",
+    "randomstring": "^1.1.5",
     "rc": "1.0.1",
+    "request": "^2.74.0",
+    "request-promise": "^4.1.0",
     "sails": "~0.12.3",
     "sails-json-api-blueprints": "0.10.0",
     "sails-postgresql": "^0.11.4",
     "sails-seed": "^0.4.5",
+    "sha1": "^1.1.1",
     "uuid": "^2.0.2"
   },
   "scripts": {

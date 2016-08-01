@@ -22,21 +22,34 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-import Ember from 'ember';
+// +build windows
 
-export default Ember.Service.extend({
+package windows
 
-  downloadFile(accessToken, filename) {
+import "syscall"
 
-    Ember.$.ajax({
-      type: "GET",
-      headers: { Authorization : "Bearer " + accessToken},
-      url: "/api/files/token",
-      data: { filename: "./" + filename}
-    })
-    .then((response) => {
-      let url = "/api/files/download?filename=" + encodeURIComponent("./" + filename) + "&token=" + encodeURIComponent(response.token); 
-      window.location.assign(url);
-    });
-  }
-});
+var dlls map[string]*syscall.DLL
+
+func loadDLL(name string) (dll *syscall.DLL, err error) {
+	if dlls == nil {
+		dlls = make(map[string]*syscall.DLL)
+	}
+
+	dll, exists := dlls[name]
+	if !exists {
+		dll, err = syscall.LoadDLL(name)
+		if err != nil {
+			return
+		}
+		dlls[name] = dll
+	}
+	return
+}
+
+func loadProc(dllName string, procName string) (*syscall.Proc, error) {
+	dll, err := loadDLL(dllName)
+	if err != nil {
+		return nil, err
+	}
+	return dll.FindProc(procName)
+}

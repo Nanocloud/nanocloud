@@ -28,6 +28,7 @@ const testAuth = require('./auth.test');
 const testUsers = require('./users.test');
 const testAutoSignup = require('./auto-signup.test');
 const testResetPassword = require('./reset-password.test');
+const testStorage = require('./storage.test');
 
 var request = require('supertest');
 
@@ -45,3 +46,4 @@ testAuth();
 testUsers();
 testAutoSignup();
 testResetPassword();
+testStorage();
