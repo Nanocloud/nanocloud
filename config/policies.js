@@ -51,4 +51,10 @@ module.exports.policies = {
     create: true,
     update: true,
   },
+
+  'Reset-passwordController': {
+    create: true,
+    update: true,
+    find: true,
+  },
 };
