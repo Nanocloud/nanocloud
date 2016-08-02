@@ -97,7 +97,7 @@ module.exports = {
     .then(() => {
       return PendingUser.findOne({
         "id": pendingUserID
-      })
+      });
     })
     .then((user) => {
       if (!user) {
