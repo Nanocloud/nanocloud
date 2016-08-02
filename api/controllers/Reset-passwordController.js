@@ -80,7 +80,7 @@ module.exports = {
       return EmailService.sendMail(user.email, subject, message);
     })
     .then(() => {
-      return res.ok({});
+      return res.json({meta: {}});
     })
     .catch((err) => {
       if (err.message === "No user found") {
@@ -148,4 +148,3 @@ module.exports = {
     });
   }
 };
-

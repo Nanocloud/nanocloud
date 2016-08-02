@@ -37,16 +37,16 @@ describe('Config single Get/Set/Unset', () => {
 
     (function() {
 
-      return ConfigService.set('NANOCLOUD', 'nanocloud')
+      return ConfigService.set('host', 'nanocloud')
       .then(() => {
-        return ConfigService.get('NANOCLOUD');
+        return ConfigService.get('host');
       })
       .then((res) => {
-        assert.deepEqual({ NANOCLOUD: 'nanocloud' }, res);
+        assert.deepEqual({ host: 'nanocloud' }, res);
 
-        return ConfigService.unset('NANOCLOUD')
+        return ConfigService.unset('host')
         .then(() => {
-          return ConfigService.get('NANOCLOUD')
+          return ConfigService.get('host')
           .then((res) => {
             assert.deepEqual({}, res);
           });
@@ -66,30 +66,26 @@ describe('Config multiple Get/Set/Unset', () => {
     (function() {
 
       return Promise.all([
-        ConfigService.set('NANOCLOUD', 'nanocloud'),
-        ConfigService.set('FOO', 'foo'),
-        ConfigService.set('BAR', 'bar'),
-        ConfigService.set('BAZ', 'baz')
+        ConfigService.set('host', 'nanocloud'),
+        ConfigService.set('iaas', 'foo'),
       ])
       .then(() => {
         return ConfigService.get(
-          'NANOCLOUD', 'FOO', 'BAR', 'BAZ'
+          'host', 'iaas'
         );
       })
       .then((res) => {
         assert.deepEqual({
-          NANOCLOUD: 'nanocloud',
-          FOO: 'foo',
-          BAR: 'bar',
-          BAZ: 'baz'
+          host: 'nanocloud',
+          iaas: 'foo'
         }, res);
 
         return ConfigService.unset(
-          'NANOCLOUD', 'FOO', 'BAR', 'BAZ'
+          'host', 'iaas'
         )
         .then(() => {
           return ConfigService.get(
-            'NANOCLOUD', 'FOO', 'BAR', 'BAZ'
+            'host', 'iaas'
           )
           .then((res) => {
             assert.deepEqual({}, res);

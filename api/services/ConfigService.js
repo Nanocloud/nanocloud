@@ -229,7 +229,7 @@ function set(key, value) {
   let expectedType = getVariableType(key);
 
   if (type !== expectedType) {
-    return Promise.reject(new Error(`Invalid data type. Exepected ${expectedType}. Got ${type}.`));
+    return Promise.reject(new Error(`Invalid data type for ${key}. Expected ${expectedType}. Got ${type}.`));
   }
 
   switch (type) {
@@ -243,9 +243,6 @@ function set(key, value) {
       break;
 
     case 'boolean':
-      value = (value) ? 'true' : 'false';
-      break;
-
     case 'string':
       // value = value;
       break;

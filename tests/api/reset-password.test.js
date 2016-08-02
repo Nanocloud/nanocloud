@@ -32,13 +32,16 @@ module.exports = function() {
 
   describe("Reset password", function() {
 
-    before(function() {
-      ConfigService.set('testSendMail', true);
-    });
-
     const expectedSchema = {};
 
     describe("Create a reset password token", function() {
+
+      before(function(done) {
+        ConfigService.set('testMail', true)
+          .then(() => {
+            return done();
+          });
+      });
 
       it('Should return empty meta', function(done) {
 
@@ -63,7 +66,7 @@ module.exports = function() {
         // test token creation
         .then(() => {
           // adding token to 'reset-password' table
-          nano.request(sails.hooks.http.app)
+          return nano.request(sails.hooks.http.app)
           .post('/api/reset-passwords')
           .send({
             data: {
@@ -76,7 +79,9 @@ module.exports = function() {
           })
           .set(nano.adminLogin())
           .expect(200)
-          .expect(nano.jsonApiSchema(expectedSchema))
+          .expect({
+            meta: {}
+          })
           .then(() => {
             // token has been added to 'reset-password' table
             return (nano.request(sails.hooks.http.app)
@@ -92,13 +97,16 @@ module.exports = function() {
           });
         })
         .then(() => {
-          return done(); 
+          return done();
         })
       });
     });
 
-    after(function() {
-      ConfigService.unset('testSendMail');
+    after(function(done) {
+      ConfigService.unset('testMail')
+        .then(() => {
+          return done();
+        });
     });
   });
 };

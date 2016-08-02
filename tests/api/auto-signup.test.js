@@ -31,10 +31,14 @@ module.exports = function() {
 
   describe("Auto sign-up", function() {
 
-    before(function() {
-      ConfigService.set('testMail', true);
+    before(function(done) {
       // it takes time to send a mail with nodemailer
       this.timeout(10000);
+
+      ConfigService.set('testMail', true)
+        .then(() => {
+          return done();
+        });
     });
 
     const expectedSchema = {
