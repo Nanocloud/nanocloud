@@ -49,7 +49,7 @@ function sendMail(to, subject, message) {
         }
       };
 
-      if (configs.testMail === 'true') {
+      if (configs.testMail === true) {
         smtpConfig = stubTransport();
       }
 

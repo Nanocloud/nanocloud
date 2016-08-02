@@ -16,16 +16,98 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General
- * Public License
- * along with this program.  If not, see
- * <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 /* globals Config */
 
 const Promise = require('bluebird');
 const _ = require('lodash');
+
+/**
+ * Return the type of val. It is similar to typeof except that it returns
+ * 'array' for arrays
+ *
+ * @method typeOf
+ * @private
+ * @param {Object} val The variable from which the type will be returned
+ * @return {String}
+ */
+function typeOf(val) {
+  const type = (typeof val);
+  if (type === 'object' && Array.isArray(val)) {
+    return 'array';
+  }
+  return type;
+}
+
+/**
+ * Return the type for config variable name
+ *
+ * @method getVariableType
+ * @private
+ * @return {String}
+ */
+function getVariableType(name) {
+  return typeOf(sails.config.nanocloud[name]);
+}
+
+/**
+ * Deserialize value according to the type of the default value of 'name'
+ *
+ * @method deserialize
+ * @private
+ * @param {String} name The name of the config variable
+ * @param {Object} value The value to be deserialized
+ * @return {Object} The deserilazied value.
+ */
+function deserialize(name, value) {
+  switch (getVariableType(name)) {
+    case 'number':
+      value = parseInt(value, 10);
+      if (Number.isNaN(value)) {
+        throw new Error(`Config variable '${name}' must be an number.`);
+      }
+      break;
+
+    case 'array':
+      value = JSON.parse(value);
+      if (!Array.isArray(value)) {
+        throw new Error(`Config variable '${name}' must be an array.`);
+      }
+      break;
+
+    case 'object':
+      try {
+        value = JSON.parse(value);
+
+        if (typeof value !== 'object' || Array.isArray(value)) {
+          throw new Error(`Config variable '${name}' must be an object.`);
+        }
+      } catch (e) {
+        throw new Error(`Config variable '${name}' must be an object.`);
+      }
+      break;
+
+    case 'boolean':
+      if (value === 'true') {
+        value = true;
+      } else if (value === 'false') {
+        value = false;
+      } else {
+        throw new Error(`Config variable '${name}' must be an boolean.`);
+      }
+      break;
+
+   case 'string':
+     break;
+
+   default:
+     throw new Error(`Config variable '${name}' as an invalid value.`);
+  }
+  return value;
+}
 
 /**
  * nanocloudConfigValue returns the value associated to the config variable's
@@ -99,7 +181,7 @@ function nanocloudConfigValue(name, defaultValue) {
 
     }
   } else {
-    value = defaultValue;
+    return defaultValue;
   }
 
   return value;
@@ -124,7 +206,7 @@ function get(...keys) {
       } else {
         let rt = {};
         res.forEach((row) => {
-          rt[row.key] = row.value;
+          rt[row.key] = deserialize(row.key, row.value);
         });
         resolve(rt);
       }
@@ -143,6 +225,32 @@ function get(...keys) {
  * @return {Promise[null]}
  */
 function set(key, value) {
+  let type = typeOf(value);
+  let expectedType = getVariableType(key);
+
+  if (type !== expectedType) {
+    return Promise.reject(new Error(`Invalid data type for ${key}. Expected ${expectedType}. Got ${type}.`));
+  }
+
+  switch (type) {
+    case 'number':
+      value = value.toString();
+      break;
+
+    case 'array':
+    case 'object':
+      value = JSON.stringify(value);
+      break;
+
+    case 'boolean':
+    case 'string':
+      // value = value;
+      break;
+
+    default:
+      return Promise.reject(new Error(`Invalid data type ${type}`));
+  }
+
   return new Promise((resolve, reject) => {
     Config.query({
       text: `INSERT INTO
