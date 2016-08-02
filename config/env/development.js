@@ -56,6 +56,8 @@ module.exports = {
     smtpSendFrom: 'mail@nanocloud.com',
     testMail: false,
     storageAddress: 'localhost',
-    storagePort: 9090
+    storagePort: 9090,
+
+    iaas: 'manual'
   }
 };
