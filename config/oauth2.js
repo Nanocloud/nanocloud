@@ -38,7 +38,8 @@ server.exchange(oauth2orize.exchange.password(function(user, username, password,
     email: username,
     or: [
       { expirationDate: { '>' : Math.floor(new Date() / 1000)  } },
-      { expirationDate: null  }
+      { expirationDate: null },
+      { expirationDate: 0 }
     ]
   }, function(err, user) {
 
