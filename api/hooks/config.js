@@ -22,23 +22,38 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-const ConfigService = require('../services/ConfigService');
+/* global ConfigService */
 
-module.exports = function(sails) {
+/**
+ * @module hooks
+ * @class Config
+ * @param {Object} sails The sails application
+ */
+function Config(sails) {
   return {
+
+    /**
+     * Initialize the hook
+     *
+     * @method initialize
+     * @param {Function} done Callback of the initialization
+     */
     initialize(done) {
       sails.after('hook:orm:loaded', () => {
-        return ConfigService.init()
+        ConfigService.init()
         .then(() => {
           sails.emit('hook:config:loaded');
           done();
         })
         .catch((err) => {
           if (err) {
-            throw new Error('Fail to initialize config.');
+            sails.log.error('Fail to initialize config.');
+            done(err);
           }
         });
       });
     }
   };
-};
+}
+
+module.exports = Config;
