@@ -60,7 +60,6 @@ module.exports = {
     expirationDate: 0,
     autoRegister: false,
     autoLogoff: false,
-    test: false,
     defaultGroup: '',
 
     iaas: 'manual'

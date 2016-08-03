@@ -45,7 +45,7 @@ module.exports = function() {
     const getConfigSchema = {
       type: 'object',
       properties: {
-        'value': {type: 'boolean'},
+        'value': {type: 'string'},
       },
       required: ['value'],
       additionalProperties: false,
@@ -60,8 +60,8 @@ module.exports = function() {
         .send({
           data: {
             attributes: {
-              key: "test",
-              value: 'true'
+              key: "host",
+              value: 'localhost'
             },
             type: 'configs'
           }
@@ -69,8 +69,8 @@ module.exports = function() {
         .expect(200)
           .expect(nano.jsonApiSchema(setConfigSchema))
           .expect((res) => {
-            expect(res.body.data[0].id).to.equal('test');
-            expect(res.body.data[0].attributes["value"]).to.equal('true');
+            expect(res.body.data[0].id).to.equal('host');
+            expect(res.body.data[0].attributes["value"]).to.equal('localhost');
           })
         .end(done);
     })
@@ -79,12 +79,12 @@ module.exports = function() {
 
       // user has been added to pending user table
       return nano.request(sails.hooks.http.app)
-        .get('/api/configs?key=test')
+        .get('/api/configs?key=host')
         .set(nano.adminLogin())
         .expect(200)
         .expect((res) => {
-          expect(res.body.data[0].id).to.equal('test');
-          expect(res.body.data[0].attributes["value"]).to.equal(true);
+          expect(res.body.data[0].id).to.equal('host');
+          expect(res.body.data[0].attributes["value"]).to.equal('localhost');
         })
         .expect(nano.jsonApiSchema(getConfigSchema))
         .end(done);
