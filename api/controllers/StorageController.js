@@ -46,29 +46,34 @@ module.exports = {
     let filename = req.query["filename"];
 
     StorageService.findOrCreate(user)
-    .then((storage) => {
-      return new Promise(function(resolve, reject) {
-        req.file(filename).upload({
-          maxBytes: 0
-        }, function(error, uploadedFiles) {
-          return error ? reject(error) : resolve(uploadedFiles);
-        });
+      .then((storage) => {
+        return StorageService.checkUploadLimit(storage, parseInt(req.headers["content-length"], 10))
+          .then(() => {
+            return new Promise(function(resolve, reject) {
+              req.file(filename).upload({
+                maxBytes: 0
+              }, function(error, uploadedFiles) {
+                return error ? reject(error) : resolve(uploadedFiles);
+              });
+            });
+          })
+          .then((uploadedFiles) => {
+            // If no files were uploaded, respond with an error.
+            if (uploadedFiles.length === 0){
+              return res.badRequest('No file was uploaded');
+            }
+            return PlazaService.upload(storage, uploadedFiles[0]);
+          });
       })
-      .then((uploadedFiles) => {
-        // If no files were uploaded, respond with an error.
-        if (uploadedFiles.length === 0){
-          return res.badRequest('No file was uploaded');
+      .then((response) => {
+        return res.ok(response.body);
+      })
+      .catch((err) => {
+        if (err.statusCode === 403) {
+          return res.forbidden(err.message);
         }
-
-        return PlazaService.upload(storage, uploadedFiles[0]);
+        return res.negotiate(err);
       });
-    })
-    .then((response) => {
-      return res.ok(response.body);
-    })
-    .catch((err) => {
-      return res.negotiate(err);
-    });
   },
 
   /**
@@ -82,12 +87,12 @@ module.exports = {
     let user = req.user;
 
     StorageService.findOrCreate(user)
-    .then((storage) => {
-      return PlazaService.files(storage, "/home/" + storage.username);
-    })
-    .then((files) => {
-      return res.send(files);
-    });
+      .then((storage) => {
+        return PlazaService.files(storage, "/home/" + storage.username);
+      })
+      .then((files) => {
+        return res.send(files);
+      });
   },
 
   /**
@@ -104,20 +109,20 @@ module.exports = {
     AccessToken.findOne({
       id: downloadToken.split(":")[0]
     })
-    .then((accessToken) => {
-      return Storage.findOne({
-        user: accessToken.userId
+      .then((accessToken) => {
+        return Storage.findOne({
+          user: accessToken.userId
+        });
+      })
+      .then((storage) => {
+        return PlazaService.download(storage, "/home/" + storage.username + "/" + filename);
+      })
+      .then((dataStream) => {
+        return dataStream.pipe(res.attachment(filename));
+      })
+      .catch((err) => {
+        return res.negotiate(err);
       });
-    })
-    .then((storage) => {
-      return PlazaService.download(storage, "/home/" + storage.username + "/" + filename);
-    })
-    .then((dataStream) => {
-      return dataStream.pipe(res.attachment(filename));
-    })
-    .catch((err) => {
-      return res.negotiate(err);
-    });
   },
 
   /**
