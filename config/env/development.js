@@ -61,6 +61,8 @@ module.exports = {
     autoRegister: false,
     autoLogoff: false,
     defaultGroup: '',
+    sessionDuration: 600,
+    awsCache: 0,
 
     iaas: 'manual'
   }

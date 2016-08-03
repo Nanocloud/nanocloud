@@ -40,10 +40,10 @@ export default Ember.Service.extend({
     "host",
     "defaultGroup",
     "awsCache",
-    "customTitle",
-    "customFavIconPath",
-    "customLogoPath",
-    "customPrimaryColor"
+    "title",
+    "favIconPath",
+    "logoPath",
+    "primaryColor"
   ],
   keyToBeRetrievedAsString: Ember.computed('keyToBeRetrieved', function() {
     let params = this.get('keyToBeRetrieved');
