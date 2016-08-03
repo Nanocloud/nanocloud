@@ -61,7 +61,7 @@ module.exports = function() {
           data: {
             attributes: {
               key: "test",
-              value: true
+              value: 'true'
             },
             type: 'configs'
           }

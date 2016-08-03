@@ -57,12 +57,9 @@ module.exports = {
     testMail: false,
     storageAddress: 'localhost',
     storagePort: 9090,
-<<<<<<< 7f40a7d880a34486da45678450248bee347be5f9
     expirationDate: 0,
-=======
     autoRegister: false,
     autoLogoff: false,
->>>>>>> variable in configuration are now referenced in conf.env file
     test: false,
     defaultGroup: '',
 
