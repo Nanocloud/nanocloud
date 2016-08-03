@@ -47,7 +47,7 @@ export default Ember.Controller.extend({
   unselectGroupWhenAutoRegisterIsOff: function() {
     if (this.get('loadState') === true) {
       if (this.get('autoRegister') === false) {
-        this.set('defaultGroup', null);
+        this.set('defaultGroup', '');
         this.saveKey(null, 'defaultGroup');
       }
     }
