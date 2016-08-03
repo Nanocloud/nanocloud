@@ -53,7 +53,7 @@ module.exports = function() {
         'updated-at': {type: 'string'},
       },
       required: ['first-name', 'last-name', 'hashed-password', 'email', 'is-admin', 'created-at', 'updated-at'],
-      additionalProperties: false,
+      additionalProperties: true, // expiration days
     };
 
     const userData = {

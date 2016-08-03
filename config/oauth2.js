@@ -35,13 +35,25 @@ var server = oauth2orize.createServer();
 server.exchange(oauth2orize.exchange.password(function(user, username, password, scope, done) {
 
   User.findOne({
-    email: username
+    email: username,
+    or: [
+      { expirationDate: { '>' : Math.floor(new Date() / 1000)  } },
+      { expirationDate: null },
+      { expirationDate: 0 }
+    ]
   }, function(err, user) {
 
     if (err) {
       done(err);
     }
+    if (!user) {
+      return done(user);
+    }
 
+    // delete reset password tokens
+    global['Reset-password'].destroy({
+      email: user.email
+    });
     RefreshToken.create({
       userId: user.id
     }, function(err, refreshToken){

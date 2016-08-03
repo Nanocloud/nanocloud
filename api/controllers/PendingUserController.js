@@ -31,7 +31,8 @@
 /* globals JsonApiService */
 /* globals User */
 
-const uuid = require('node-uuid');
+const uuid    = require('node-uuid');
+const moment  = require('moment');
 
 module.exports = {
 
@@ -65,7 +66,7 @@ module.exports = {
       var to =  user.email;
       var subject = 'Nanocloud - Verify your email address';
       var message = 'Hello ' + user["first-name"] + ' ' + user["last-name"] + ',<br> please verify your email address by clicking this link: '+
-          '<a href="http://'+host+'/#/activate/'+user.id+'">Activate my account</a>';
+          '<a href="'+host+'/#/activate/'+user.id+'">Activate my account</a>';
 
       return EmailService.sendMail(to, subject, message)
       .then(() => {
@@ -86,14 +87,21 @@ module.exports = {
   },
 
   update: function(req, res) {
-    let pendingUserID = req.params.id;
-    PendingUser.findOne({
-      "id": pendingUserID
+    var pendingUserID = req.params.id;
+    var expirationDays;
+
+    ConfigService.get('expirationDate')
+    .then((conf) => {
+      expirationDays = conf.expirationDate;
+      return PendingUser.findOne({
+        "id": pendingUserID
+      });
     })
     .then((user) => {
       if (!user) {
         return res.notFound('No user found');
       }
+      user['expirationDate'] = moment().add(expirationDays, 'days').unix();
       User.create(user)
       .then(() => {
           return PendingUser.destroy({

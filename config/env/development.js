@@ -57,6 +57,7 @@ module.exports = {
     testMail: false,
     storageAddress: 'localhost',
     storagePort: 9090,
+    expirationDate: 0,
 
     iaas: 'manual'
   }

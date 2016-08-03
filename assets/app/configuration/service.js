@@ -33,7 +33,7 @@ export default Ember.Service.extend({
     "sessionDuration",
     "smtpServerHost",
     "smtpServerPort",
-    "expirationDays",
+    "expirationDate",
     "smtpLogin",
     "smtpPassword",
     "smtpSendFrom",

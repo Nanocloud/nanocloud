@@ -89,18 +89,22 @@
 		<tr>
           <th scope="row">Expiration date</th>
           <td>
-				{{#if session.user.isAdmin }}
-				{{#edit-text
-					type="number"
-					confirmation=false
-					textInput=model.expirationDays
-					textInputPlaceholder="Days left before expiration"
-					onClose="changeExpirationDays" }}
-						{{moment-calendar model.expirationDays}}
-						{{/edit-text}}
-				{{else}}
-						 {{moment-calendar model.expirationDays}}
-				{{/if}}
+              {{#if session.user.isAdmin }}
+                  {{#edit-text
+                    type="number"
+                    confirmation=false
+                    textInput=expirationDays
+                    textInputPlaceholder="Days left before expiration"
+                    onClose="changeExpirationDays" }}
+                        {{#if model.expirationDate}}
+                          {{moment-calendar model.expirationDateInMs}}
+                        {{else}}
+                          No expiration date set
+                        {{/if}}
+                    {{/edit-text}}
+              {{else}}
+                  {{moment-calendar model.expirationDate}}
+              {{/if}}
           </td>
 		</tr>
         <tr>

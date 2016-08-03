@@ -52,6 +52,9 @@ module.exports = {
     isAdmin: {
       type: 'boolean'
     },
+    expirationDate: {
+      type: 'integer'
+    },
 
     toJSON: function() {
       var obj = this.toObject();
