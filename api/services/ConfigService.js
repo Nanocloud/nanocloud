@@ -57,7 +57,7 @@ function getVariableType(name) {
  * Deserialize value according to the type of the default value of 'name'
  *
  * @method deserialize
- * @private
+ * @public
  * @param {String} name The name of the config variable
  * @param {Object} value The value to be deserialized
  * @return {Object} The deserilazied value.
@@ -311,4 +311,4 @@ function unset(...keys) {
   });
 }
 
-module.exports = { get, set, unset, init };
+module.exports = { get, set, unset, init, deserialize };

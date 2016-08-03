@@ -32,7 +32,7 @@ module.exports = {
   create: function(req, res) {
 
     let key = req.body.data.attributes.key;
-    let value = req.body.data.attributes.value;
+    let value = ConfigService.deserialize(key, req.body.data.attributes.value);
 
     ConfigService.set(key, value)
       .then(() => {
