@@ -70,6 +70,7 @@ const Validations = buildValidations({
     validator('number', {
       allowBlank: true,
       integer: true,
+      allowString: true,
     })
   ]
 });

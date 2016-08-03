@@ -38,7 +38,8 @@ export default Ember.Controller.extend({
         .then(({ m, validations }) => {
 
           let expirationDate = this.get('model.expirationDate');
-          let timestamp = window.moment().add(expirationDate, 'days').unix();
+          let timestamp = (expirationDate) ?
+            (window.moment().add(expirationDate, 'days').unix()) : (null);
           this.set('model.expirationDate', timestamp);
 
           if (validations.get('isInvalid') === true) {
