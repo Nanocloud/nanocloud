@@ -154,6 +154,16 @@ export default Ember.Controller.extend({
             this.toast.error(this.get('model.validations.attrs.expirationDate.messages'));
             return defer.reject(this.get('model.validations.attrs.expirationDate.messages'));
           }
+          let expirationDays = this.get('expirationDays');
+          let timestamp = window.moment().add(expirationDays, 'days').unix();
+
+          if (this.get('model.expirationDays.length') > 3
+              || expirationDays < 0) {
+            this.toast.error("Expiration date has not been updated");
+            return defer.reject();
+          }
+
+          this.set('model.expirationDate', timestamp);
           this.model.save()
             .then(() => {
               defer.resolve();

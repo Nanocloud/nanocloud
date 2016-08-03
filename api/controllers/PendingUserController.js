@@ -93,8 +93,6 @@ module.exports = {
     ConfigService.get('expirationDate')
     .then((conf) => {
       expirationDays = conf.expirationDate;
-    })
-    .then(() => {
       return PendingUser.findOne({
         "id": pendingUserID
       });

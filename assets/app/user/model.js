@@ -66,11 +66,9 @@ const Validations = buildValidations({
     validator('format', { type: 'email' })
   ],
   expirationDate: [
-    validator('length', { max: 6 }),
+    validator('length', { max: 3 }),
     validator('number', {
-      allowString: true,
-	  allowBlank: true,
-      positive: true,
+      allowBlank: true,
       integer: true,
     })
   ]
@@ -78,13 +76,16 @@ const Validations = buildValidations({
 
 export default DS.Model.extend(Validations, {
   email: DS.attr('string'),
-  activated: DS.attr('boolean'),
   isAdmin: DS.attr('boolean'),
   firstName: DS.attr('string'),
   lastName: DS.attr('string'),
   password: DS.attr('string'),
   signupDate: DS.attr('number'),
   expirationDate: DS.attr('number'),
+
+  expirationDateInMs: Ember.computed('expirationDate', function() {
+    return this.get('expirationDate') * 1000;
+  }),
 
   fullName: function() {
     if (this.get('firstName') && this.get('lastName')) {
