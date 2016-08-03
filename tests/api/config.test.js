@@ -45,7 +45,7 @@ module.exports = function() {
     const getConfigSchema = {
       type: 'object',
       properties: {
-        'value': {type: 'string'},
+        'value': {type: 'boolean'},
       },
       required: ['value'],
       additionalProperties: false,
@@ -84,7 +84,7 @@ module.exports = function() {
         .expect(200)
         .expect((res) => {
           expect(res.body.data[0].id).to.equal('test');
-          expect(res.body.data[0].attributes["value"]).to.equal('true');
+          expect(res.body.data[0].attributes["value"]).to.equal(true);
         })
         .expect(nano.jsonApiSchema(getConfigSchema))
         .end(done);

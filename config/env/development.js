@@ -58,6 +58,7 @@ module.exports = {
     storageAddress: 'localhost',
     storagePort: 9090,
     expirationDate: 0,
+    test: false,
 
     iaas: 'manual'
   }
