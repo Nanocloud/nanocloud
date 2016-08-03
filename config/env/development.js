@@ -58,6 +58,7 @@ module.exports = {
     testMail: false,
     storageAddress: 'localhost',
     storagePort: 9090,
+    uploadLimit: 0,
     expirationDate: 0,
     autoRegister: false,
     autoLogoff: false,

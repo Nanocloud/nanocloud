@@ -110,8 +110,8 @@ module.exports = {
         return this.storageSize(storage, "", length)
           .then((size) => {
             return new Promise(function(resolve, reject) {
-              //limit["uploadLimit"] is in Mo
-              if (limit["uploadLimit"] !== '0' && size > limit["uploadLimit"] * 1048576) {
+              // limit["uploadLimit"] is in MB
+              if (limit["uploadLimit"] !== 0 && size > limit["uploadLimit"] * 1048576) {
                 return reject({
                   statusCode: 403,
                   message: "The upload limit is reached"
