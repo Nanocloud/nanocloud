@@ -30,7 +30,9 @@ var Promise = require('bluebird');
 var assert = require('chai').assert;
 var sails = require('sails');
 
-process.env.IAAS = 'dummy';
+process.env.iaas = 'dummy';
+process.env.machinePoolSize = 3;
+process.env.sessionDuration = 0;
 
 describe('Config single Get/Set/Unset', () => {
   it('Should retrieve the recorded value', (done) => {

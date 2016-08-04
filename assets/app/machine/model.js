@@ -36,7 +36,6 @@ export default DS.Model.extend({
   adminPassword: DS.attr('string'),
   platform: DS.attr('string'),
   progress: DS.attr('number'),
-  machineSize: DS.attr('string'),
   type: DS.belongsTo('machine-type'),
   driver: DS.belongsTo('machine-driver'),
 

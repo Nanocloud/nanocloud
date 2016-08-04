@@ -24,8 +24,14 @@
 
 const Promise = require('bluebird');
 const uuid = require('node-uuid');
+const http = require('http');
 
 const BaseDriver = require('../driver');
+
+let _plazaPort;
+let _plazaAddress;
+
+let _sessionOpen = false; // Use by fake plaza to hold session status
 
 class DummyDriver extends BaseDriver {
 
@@ -37,6 +43,42 @@ class DummyDriver extends BaseDriver {
    */
   initialize() {
     this._machines = {};
+
+    var FakePlaza = http.createServer((req, res) => {
+      res.writeHead(200, {'Content-Type': 'application/json'});
+
+      if (req.url === '/sessions/') {
+
+        let status = (_sessionOpen === true) ? 'Active' : 'Inactive';
+        let data = {
+          data: [
+            [
+              null, // Unknown parameter
+              'username', // Unused for now
+              null, // unknown paramater
+              status
+            ]
+          ]
+        };
+
+        return res.end(JSON.stringify(data));
+      } else if (req.url === '/sessionOpen') {
+        _sessionOpen = true;
+      } else if (req.url === '/sessionClose') {
+        _sessionOpen = false;
+      }
+
+      return res.end();
+    }).listen(0);
+
+    if (!FakePlaza) {
+      throw new Error('Fake plazaport failed to create');
+    } else {
+      _plazaPort = FakePlaza.address().port;
+      _plazaAddress = '127.0.0.1';
+
+      return Promise.resolve();
+    }
   }
 
   /**
@@ -62,9 +104,14 @@ class DummyDriver extends BaseDriver {
 
     machine.id = id;
     machine.name = options.name;
+    machine.ip = _plazaAddress;
+    machine.plazaport = _plazaPort;
 
     this._machines[machine.id] = machine;
-    return Machine.create(machine);
+    return new Promise((resolve, reject) => {
+      Machine.create(machine)
+      .then(resolve, reject);
+    });
   }
 
   destroyMachine(machine) {

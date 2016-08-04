@@ -26,6 +26,7 @@
 const Promise = require('bluebird');
 const ManualDriver = require('../drivers/manual/driver');
 const AWSDriver = require('../drivers/aws/driver');
+const DummyDriver = require('../drivers/dummy/driver');
 
 /**
  * Service responssible of the machine pool
@@ -39,7 +40,8 @@ const noMachineFoundError = new Error('No machine found');
 
 const drivers = {
   manual : ManualDriver,
-  aws    : AWSDriver
+  aws    : AWSDriver,
+  dummy  : DummyDriver
 };
 
 /**
@@ -157,8 +159,10 @@ function getMachineForUser(user) {
                 }
 
                 if (res.rows.length) {
-                  _updateMachinesPool();
-                  return resolve(res.rows[0]);
+                  return _updateMachinesPool()
+                    .then(() => {
+                      return resolve(res.rows[0]);
+                    });
                 }
 
                 return reject(noMachineFoundError);
@@ -219,11 +223,7 @@ function _createMachine() {
     .then((config) => {
       const machine = _driver.createMachine({
         name: config.machinesName
-      });
-
-      _awaitingMachines.push(machine);
-
-      machine.finally(() => {
+      }).finally(() => {
         const len = _awaitingMachines.length;
         for (let i = 0; i < len; i++) {
           if (_awaitingMachines[i] === machine) {
@@ -232,7 +232,8 @@ function _createMachine() {
         }
       });
 
-      return null;
+      _awaitingMachines.push(machine);
+      return machine;
     });
 }
 
