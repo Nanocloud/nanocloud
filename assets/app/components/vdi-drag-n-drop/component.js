@@ -29,6 +29,7 @@ var FileUploader = Ember.Object.extend(Ember.Evented, {
   completed: false,
   progress: 0,
   uploading: false,
+  forbidden: false,
 
   init() {
     this._super(...arguments);
@@ -57,9 +58,14 @@ var FileUploader = Ember.Object.extend(Ember.Evented, {
       }
     };
 
-    req.onload = () => {
-      this.set('completed', true);
-      this.trigger('completed');
+    req.onload = (res) => {
+      if (res.target.status === 403) {
+        this.set('forbidden', true);
+        this.trigger('forbidden');
+      } else {
+        this.set('completed', true);
+        this.trigger('completed');
+      }
       this.set('uploading', false);
     };
 
@@ -139,10 +145,8 @@ export default Ember.Component.extend({
         file: files[i],
         token: this.get('session.access_token')
       });
-      f.one('completed', this, () => {
-        this.completeNotif();
-      });
-
+      f.one('completed', this, this.completeNotif);
+      f.one('forbidden', this, this.limitNotif);
       f.one('canceled', this, this.abortNotif);
       q.pushObject(f);
     }
@@ -200,6 +204,10 @@ export default Ember.Component.extend({
 
   abortNotif() {
     this.toast.info('Abort successful');
+  },
+
+  limitNotif() {
+    this.toast.error('The upload limit is reached');
   },
 
   downloadCompleted() {
