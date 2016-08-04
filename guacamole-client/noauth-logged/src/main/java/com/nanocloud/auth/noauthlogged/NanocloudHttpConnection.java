@@ -62,6 +62,8 @@ public class NanocloudHttpConnection {
       } catch (final Exception e) {
         throw new RuntimeException(e);
       }
+    } catch (final Exception e) {
+      throw new RuntimeException(e);
     }
   }
 
