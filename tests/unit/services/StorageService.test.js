@@ -24,19 +24,22 @@
 
 // jshint mocha:true
 
-/* global AccessToken,ConfigService,StorageService,User */
+/* global AccessToken,ConfigService,StorageService,User, PlazaService */
 
 const expect = require('chai').expect;
 
 describe('Storage Service', function() {
   before(function(done) {
     ConfigService.set("storageAddress", "localhost")
-    .then(() => {
-      ConfigService.set("storagePort", 9090);
-    })
-    .then(() => {
-      done();
-    });
+      .then(() => {
+        ConfigService.set("storagePort", 9090);
+      })
+      .then(() => {
+        ConfigService.set("uploadLimit", 10);
+      })
+      .then(() => {
+        done();
+      });
   });
 
   describe('Find or create a storage', function() {
@@ -79,6 +82,64 @@ describe('Storage Service', function() {
         expect(StorageService.checkToken(accessToken, "", "")).to.equal(false);
         done();
       });
+    });
+  });
+
+  describe('Calculate storage size', function() {
+    it('Should return sum of files size', function(done) {
+      User.findOne({
+        id: "aff17b8b-bf91-40bf-ace6-6dfc985680bb"
+      })
+        .then((user) => {
+          return StorageService.findOrCreate(user);
+        })
+        .then((storage) => {
+          let file = {
+            filename: filename,
+            fd: "./tests/unit/services/" + filename
+          };
+          PlazaService.upload(storage, file);
+          StorageService.storageSize(storage, "", 0)
+            .then((sum) => {
+              expect(sum).to.not.equal(0);
+              done();
+            });
+        });
+    });
+  });
+
+  describe('Check upload limit', function() {
+    it('Should return promise without error', function(done) {
+      return User.findOne({
+        id: "aff17b8b-bf91-40bf-ace6-6dfc985680bb"
+      })
+        .then((user) => {
+          return StorageService.findOrCreate(user);
+        })
+        .then((storage) => {
+          return StorageService.checkUploadLimit(storage, 1)
+            .then((res) => {
+              expect(res).to.equal(null);
+              done();
+            });
+        });
+    });
+
+    it('Should return a promise with an error because limit is reached', function(done) {
+      return User.findOne({
+        id: "aff17b8b-bf91-40bf-ace6-6dfc985680bb"
+      })
+        .then((user) => {
+          return StorageService.findOrCreate(user);
+        })
+        .then((storage) => {
+          return StorageService.checkUploadLimit(storage, 10485761)
+            .catch((err) => {
+              expect(err.statusCode).to.equal(403);
+              expect(err.message).to.equal("The upload limit is reached");
+              done();
+            });
+        });
     });
   });
 });
