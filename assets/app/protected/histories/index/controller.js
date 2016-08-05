@@ -139,16 +139,11 @@ export default Ember.Controller.extend({
 
   downloadCsvLink: Ember.computed(function() {
     let content = this.get('downloadCSVService').getCsvBase64(this.get('sessionService.access_token'), this.get('items'));
-
-    var link = "data:text/csv;base64,";
-    link+=content;
-    
-    return link;
+    return "data:text/csv;base64," + content;
   }),
 
   downloadCsvFilename: Ember.computed(function() {
     let current_date = window.moment(new Date()).format('YYYY-MM-DD');
-    let filename = "nanocloud-history-" + current_date;
-    return filename;
+    return "nanocloud-history-" + current_date;
   })
 });
