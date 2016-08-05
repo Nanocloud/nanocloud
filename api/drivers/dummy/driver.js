@@ -22,26 +22,59 @@
 
 /* globals Machine */
 
-const baseDriver = require('../driver');
-const extend = require('extend');
+const Promise = require('bluebird');
+const uuid = require('node-uuid');
 
-module.exports = extend(baseDriver, {
+const BaseDriver = require('../driver');
 
-  init: function(done) {
-    Machine.findOrCreate({
-      ip: '127.0.0.1'
-    },{
-      name: 'Fake machine',
-      status: 'up',
-      ip: '127.0.0.1',
-      adminPassword: 'password',
-      platform: 'dummy'
-    })
-      .then(() => {
-        return done(null);
-      })
-      .catch((err) => {
-        return done(err);
-      });
+class DummyDriver extends BaseDriver {
+
+  /**
+   * Method executed when the driver is loaded
+   *
+   * @method initialize
+   * @return {Promise}
+   */
+  initialize() {
+    this._machines = {};
   }
-});
+
+  /**
+   * Returns the name of the driver used
+   *
+   * @method name
+   * @return {String} The name of the driver
+   */
+  name() {
+    return 'dummy driver';
+  }
+
+  /*
+   * Return the created machine
+   *
+   * @method createMachine
+   * @param {Object} options model to be created
+   * @return {Promise[Machine]} Machine model created
+   */
+  createMachine(options) {
+    let machine = {};
+    const id = uuid.v4();
+
+    machine.id = id;
+    machine.name = options.name;
+
+    this._machines[machine.id] = machine;
+    return Machine.create(machine);
+  }
+
+  destroyMachine(machine) {
+    if (this._machines.hasOwnProperty(machine.id)) {
+      delete this._machines[machine.id];
+      return Promise.resolve();
+    } else {
+      return Promise.reject(new Error('machine not found'));
+    }
+  }
+}
+
+module.exports = DummyDriver;

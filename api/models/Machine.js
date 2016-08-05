@@ -18,16 +18,26 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- *
- * Machine.js
- *
- * @description :: TODO: You might write a short summary of how this model works and what it represents here.
- * @docs        :: http://sailsjs.org/documentation/concepts/models-and-orm/models
  */
 
+/* global Machine */
+
+const url = require('url');
+const Promise = require('bluebird');
+const request = Promise.promisifyAll(require('request'));
+
+/**
+ * @module models
+ * @class Machine
+ */
 module.exports = {
 
+  autoPK: false,
   attributes: {
+    id: {
+      type: 'string',
+      primaryKey: true
+    },
     name: {
       type: 'string'
     },
@@ -37,14 +47,65 @@ module.exports = {
     ip: {
       type: 'string'
     },
-    status: {
+    username: {
       type: 'string'
     },
-    adminPassword: {
+    password: {
       type: 'string'
     },
-    platform: {
+    domain: {
       type: 'string'
+    },
+    endDate: {
+      type: 'datetime'
+    },
+    plazaport: {
+      type: 'integer'
+    },
+    user: {
+      model: 'user',
+      unique: true
+    },
+
+    setEndDate(duration) {
+      let now = (new Date()).getTime();
+      let endDate = new Date(now + duration * 1000);
+
+      return Machine.update({
+        id: this.id
+      }, {
+        endDate: endDate
+      });
+    },
+
+    isSessionActive() {
+      let plazaAddr = url.format({
+        protocol: 'http',
+        hostname: this.ip,
+        port: this.plazaport,
+        pathname: '/sessions/'
+      });
+
+      return request.getAsync(plazaAddr).then((res) => {
+        let body = res.body;
+
+        try {
+          body = JSON.parse(body);
+        } catch (err) {
+          return Promise.reject(err);
+        }
+
+        const data = body.data;
+
+        if (data.length) {
+          const status = data[0][3];
+
+          if (status === 'Active') {
+            return true;
+          }
+        }
+        return false;
+      });
     }
   }
 };

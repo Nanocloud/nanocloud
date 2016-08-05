@@ -20,27 +20,40 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-const MachineService = require('../services/MachineService');
+/* global MachineService */
 
-module.exports = function(sails) {
-
+/**
+ * Initialize the MachineService
+ *
+ * @module hooks
+ * @class Driver
+ * @param {Object} sails The sails application
+ */
+function Driver(sails) {
   return {
-    initialize: function(cb) {
 
-      sails.after('hook:orm:loaded', function() {
-        return MachineService.init(function(err) {
+    /**
+     * Initialize the driver hook
+     *
+     * @method initialize
+     * @param {Function} callback The initialize callback
+     */
+    initialize(callback) {
+      sails.after('hook:config:loaded', () => {
+        MachineService.initialize()
+          .then(() => {
+            const driverName = MachineService.driverName();
 
-          const driverName = MachineService.getDriverType();
-
-          if (err) {
-            throw new Error('Fail to initialize ' + driverName + ' driver');
-          }
-
-          sails.log.info('Driver ' + driverName + ' is initialized');
-         });
+            sails.log.info(`Driver ${driverName} is initialized`);
+            callback();
+          })
+          .catch((err) => {
+            callback(err);
+          });
       });
-
-      cb();
     }
+
   };
-};
+}
+
+module.exports = Driver;

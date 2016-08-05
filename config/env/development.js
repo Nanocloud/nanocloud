@@ -48,6 +48,7 @@ module.exports = {
     favIconPath: 'favicon.ico',
     logoPath: '/assets/images/logo.png',
     primaryColor: '#006CB6',
+
     host: 'localhost',
     smtpServerHost: '',
     smtpServerPort: 25,
@@ -61,9 +62,24 @@ module.exports = {
     autoRegister: false,
     autoLogoff: false,
     defaultGroup: '',
-    sessionDuration: 600,
     awsCache: 0,
 
-    iaas: 'manual'
+    iaas: 'manual',
+    machinePoolSize: 1,
+
+    sessionDuration: 600, // 10 minutes
+    machinesName: 'Nanocloud Exec Server',
+    plazaURI: 'https://s3-eu-west-1.amazonaws.com/nanocloud/plaza/1.0.0/windows/amd64/plaza.exe',
+    machines: [],
+    plazaPort: 9090,
+
+    awsAccessKeyId: '',
+    awsSecretAccessKey: '',
+    awsRegion: '',
+    awsKeyName: '',
+    awsPrivateKey: '~/.ssh/id_rsa',
+    awsImage: 'ami-09e61366',
+    awsFlavor: 't2.medium',
+    awsMachineUsername: 'Administrator'
   }
 };

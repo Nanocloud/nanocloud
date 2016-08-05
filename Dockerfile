@@ -1,6 +1,8 @@
 FROM node:6.3.0-slim
 MAINTAINER Olivier Berthonneau <olivier.berthonneau@nanocloud.com>
 
+RUN apt-get update -y && \
+    apt-get install -y git
 RUN npm install -g pm2
 
 RUN mkdir -p /opt/back

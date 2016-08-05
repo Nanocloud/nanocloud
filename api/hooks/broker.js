@@ -20,41 +20,34 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* globals MachineService, Machine */
+/* global MachineService */
 
 /**
- * Server-side logic for managing machines
+ * Initialize the MachineService
  *
- * @class MachineController
+ * @class broker
+ * @module hooks
  */
-module.exports = {
+module.exports = function(sails) {
+  return {
 
-  /**
-   * @method find
-   */
-  find(req, res) {
-    MachineService.machines()
-      .then((machines) => {
-        return res.ok(machines);
-      })
-      .catch((err) => res.negotiate(err));
-  },
-
-  /**
-   * @method create
-   */
-  create(req, res) {
-    return res.ok(MachineService.create(req.body));
-  },
-
-  /**
-   * @method users
-   */
-  users(req, res) {
-    Machine.find()
-      .then((machines) => {
-        return res.ok(machines);
-      })
-      .catch((err) => res.negotiate(err));
-  }
+    /**
+     * Initialize the hook
+     *
+     * @method initialize
+     */
+    initialize(done) {
+      sails.after('hook:config:loaded', () => {
+        return MachineService.initialize()
+          .then(() => {
+            done();
+          })
+          .catch((err) => {
+            if (err) {
+              done(err);
+            }
+          });
+      });
+    }
+  };
 };
