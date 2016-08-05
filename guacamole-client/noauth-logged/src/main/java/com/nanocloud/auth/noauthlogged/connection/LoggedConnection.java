@@ -78,10 +78,9 @@ public class LoggedConnection extends SimpleConnection {
       resp = NanocloudHttpConnection.HttpGet("http://" + hostname + ":" + port + "/api/machines/users", token);
       JSONArray dataArray = resp.getJSONArray("data");
       data = dataArray.getJSONObject(0);
+      String machineId = data.getString("id");
       dataAttribute = data.getJSONObject("attributes");
-      String machineId = dataAttribute.getString("id");
-      String machineSize = dataAttribute.getString("machine-size");
-      String machineDriver = dataAttribute.getString("platform");
+      String machineDriver = dataAttribute.getString("type");
 
       URL myUrl = new URL("http://" + hostname + ":" + port + "/" + endpoint);
       HttpURLConnection urlConn = (HttpURLConnection)myUrl.openConnection();
@@ -100,9 +99,7 @@ public class LoggedConnection extends SimpleConnection {
               .add("connection-id", connection.getConnectionName())
               .add("start-date", connection.getStartDate().toString())
               .add("end-date", "")
-              .add("machine-id", machineId)
-              .add("machine-size", machineSize)
-              .add("machine-driver", machineDriver)))
+              .add("machine-id", machineId)))
         .build();
 
       urlConn.setUseCaches(false);
@@ -202,10 +199,9 @@ public class LoggedConnection extends SimpleConnection {
         JSONObject resp = NanocloudHttpConnection.HttpGet("http://" + hostname + ":" + port + "/api/machines/users", token);
         JSONArray dataArray = resp.getJSONArray("data");
         JSONObject data = dataArray.getJSONObject(0);
+        String machineId = data.getString("id");
         JSONObject dataAttribute = data.getJSONObject("attributes");
-        String machineId = dataAttribute.getString("id");
-        String machineSize = dataAttribute.getString("machine-size");
-        String machineDriver = dataAttribute.getString("platform");
+        String machineDriver = dataAttribute.getString("type");
 
         URL myUrl = new URL("http://" + hostname + ":" + port + "/" + endpoint + "/" + LoggedConnection.this.historyId);
         HttpURLConnection urlConn = (HttpURLConnection)myUrl.openConnection();
@@ -223,22 +219,19 @@ public class LoggedConnection extends SimpleConnection {
                 .add("connection-id", this.connection.getConnectionName())
                 .add("start-date", this.connection.getStartDate().toString())
                 .add("end-date", new Date().toString())
-                .add("machine-id", machineId)
-                .add("machine-size", machineSize)
-                .add("machine-driver", machineDriver)))
+                .add("machine-id", machineId)))
           .build();
 
         urlConn.setUseCaches(false);
         urlConn.setDoOutput(true);
         // Send request (for some reason we actually need to wait for response)
-        OutputStream os = urlConn.getOutputStream();
-        NanocloudHttpConnection.setRequestMethodUsingWorkaroundForJREBug(urlConn, "PATCH");
-        DataOutputStream writer = new DataOutputStream(os);
+        NanocloudHttpConnection.setRequestMethodUsingWorkaroundForJREBug(urlConn, "POST");
+        DataOutputStream writer = new DataOutputStream(urlConn.getOutputStream());
         writer.writeBytes(params.toString());
         writer.close();
 
         urlConn.connect();
-        os.close();
+        urlConn.getOutputStream().close();
 
         // Get Response
         InputStream input = urlConn.getInputStream();

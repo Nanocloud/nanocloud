@@ -18,54 +18,36 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- *
- * History.js
- *
- * @description :: TODO: You might write a short summary of how this model works and what it represents here.
- * @docs        :: http://sailsjs.org/documentation/concepts/models-and-orm/models
  */
 
-const uuid = require('node-uuid');
+/* global MachineService */
 
-module.exports = {
+/**
+ * Initialize the MachineService
+ *
+ * @class broker
+ * @module hooks
+ */
+module.exports = function(sails) {
+  return {
 
-  autoPK: false,
-
-  attributes: {
-    id: {
-      type: 'string',
-      primaryKey: true,
-      unique: true,
-      index: true,
-      uuidv4: true,
-      defaultsTo: function (){ return uuid.v4(); }
-    },
-    userMail: {
-      type: 'string'
-    },
-    userFirstname: {
-      type: 'string'
-    },
-    userLastname: {
-      type: 'string'
-    },
-    userId: {
-      type: 'string'
-    },
-    connectionId: {
-      type: 'string'
-    },
-    startDate: {
-      type: 'string'
-    },
-    endDate: {
-      type: 'string'
-    },
-    machineId: {
-      type: 'string'
-    },
-    machineDriver: {
-      type: 'string'
+    /**
+     * Initialize the hook
+     *
+     * @method initialize
+     */
+    initialize(done) {
+      sails.after('hook:config:loaded', () => {
+        return MachineService.initialize()
+          .then(() => {
+            done();
+          })
+          .catch((err) => {
+            if (err) {
+              done(err);
+            }
+          });
+      });
     }
-  }
+  };
 };

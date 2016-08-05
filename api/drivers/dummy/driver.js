@@ -22,26 +22,106 @@
 
 /* globals Machine */
 
-const baseDriver = require('../driver');
-const extend = require('extend');
+const Promise = require('bluebird');
+const uuid = require('node-uuid');
+const http = require('http');
 
-module.exports = extend(baseDriver, {
+const BaseDriver = require('../driver');
 
-  init: function(done) {
-    Machine.findOrCreate({
-      ip: '127.0.0.1'
-    },{
-      name: 'Fake machine',
-      status: 'up',
-      ip: '127.0.0.1',
-      adminPassword: 'password',
-      platform: 'dummy'
-    })
-      .then(() => {
-        return done(null);
-      })
-      .catch((err) => {
-        return done(err);
-      });
+let _plazaPort;
+let _plazaAddress;
+
+let _sessionOpen = false; // Use by fake plaza to hold session status
+
+class DummyDriver extends BaseDriver {
+
+  /**
+   * Method executed when the driver is loaded
+   *
+   * @method initialize
+   * @return {Promise}
+   */
+  initialize() {
+    this._machines = {};
+
+    var FakePlaza = http.createServer((req, res) => {
+      res.writeHead(200, {'Content-Type': 'application/json'});
+
+      if (req.url === '/sessions/') {
+
+        let status = (_sessionOpen === true) ? 'Active' : 'Inactive';
+        let data = {
+          data: [
+            [
+              null, // Unknown parameter
+              'username', // Unused for now
+              null, // unknown paramater
+              status
+            ]
+          ]
+        };
+
+        return res.end(JSON.stringify(data));
+      } else if (req.url === '/sessionOpen') {
+        _sessionOpen = true;
+      } else if (req.url === '/sessionClose') {
+        _sessionOpen = false;
+      }
+
+      return res.end();
+    }).listen(0);
+
+    if (!FakePlaza) {
+      throw new Error('Fake plazaport failed to create');
+    } else {
+      _plazaPort = FakePlaza.address().port;
+      _plazaAddress = '127.0.0.1';
+
+      return Promise.resolve();
+    }
   }
-});
+
+  /**
+   * Returns the name of the driver used
+   *
+   * @method name
+   * @return {String} The name of the driver
+   */
+  name() {
+    return 'dummy driver';
+  }
+
+  /*
+   * Return the created machine
+   *
+   * @method createMachine
+   * @param {Object} options model to be created
+   * @return {Promise[Machine]} Machine model created
+   */
+  createMachine(options) {
+    let machine = {};
+    const id = uuid.v4();
+
+    machine.id = id;
+    machine.name = options.name;
+    machine.ip = _plazaAddress;
+    machine.plazaport = _plazaPort;
+
+    this._machines[machine.id] = machine;
+    return new Promise((resolve, reject) => {
+      Machine.create(machine)
+      .then(resolve, reject);
+    });
+  }
+
+  destroyMachine(machine) {
+    if (this._machines.hasOwnProperty(machine.id)) {
+      delete this._machines[machine.id];
+      return Promise.resolve();
+    } else {
+      return Promise.reject(new Error('machine not found'));
+    }
+  }
+}
+
+module.exports = DummyDriver;

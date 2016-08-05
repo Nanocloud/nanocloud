@@ -20,48 +20,60 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* jshint unused:vars */
-/* globals Machine */
+const Promise = require('bluebird');
 
-module.exports = {
+/**
+ * The base driver from which other driver should inherite.
+ *
+ * @class Driver
+ */
+class Driver {
 
-  /*
-   * Method to be executed when driver is loaded
+  /**
+   * Method executed when the driver is loaded
    *
-   * @method init
-   * @param {function} callback to call when init is done
+   * @method initialize
+   * @return {Promise}
    */
-  init: function(done) {
-    sails.log.verbose("Driver's init method not implemented");
-  },
-
-  /*
-   * Return list of machines
-   * Default behavior is to return all stored machines
-   *
-   * @method find
-   * @param {function} callback to call one find is done
-   * @return {array} Array of model Machine
-   */
-  find: function(done) {
-    Machine.find()
-      .then((machines) => {
-        return done(null, machines);
-      })
-      .catch((err) => {
-        return done(err);
-      });
-  },
-
-  /*
-   * Return list of machines
-   *
-   * @method create
-   * @param {object} Machine model to be created
-   * @param {function} callback to call one find is done
-   * @return {object} Machine model created
-   */
-  create: function(data, done) {
-    throw new Error("Driver's method 'create' not implemented");
+  initialize() {
+    return Promise.reject(new Error("Driver's init method not implemented"));
   }
-};
+
+
+  /**
+   * Returns the name of the driver used
+   *
+   * @method name
+   * @return {String} The name of the driver
+   */
+  name() {
+    return 'base driver';
+  }
+
+  /*
+   * Return list of machines
+   *
+   * @method createMachine
+   * @param {Object} options model to be created
+   * @return {Promise[Machine]} Machine model created
+   */
+  createMachine(/* options */) {
+    return Promise.reject(new Error("Driver's method 'createMachine' not implemented"));
+  }
+
+  destroyMachine(/* machine */) {
+    return Promise.reject(new Error("Driver's method 'destroyMachine' not implemented"));
+  }
+
+ /**
+   * Return the server with the specified id.
+   *
+   * @method getServer
+   * @return {Promise[Object]}
+   */
+  getServer(/* id */) {
+    return Promise.reject(new Error("Driver's method 'getServer' not implemented"));
+  }
+}
+
+module.exports = Driver;

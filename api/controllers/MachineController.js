@@ -18,42 +18,43 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- *
- * MachineController
- *
- * @description :: Server-side logic for managing machines
- * @help        :: See http://sailsjs.org/#!/documentation/concepts/Controllers
  */
 
-/* globals MachineService */
+/* globals MachineService, Machine */
 
+/**
+ * Server-side logic for managing machines
+ *
+ * @class MachineController
+ */
 module.exports = {
 
-  find: function(req, res) {
-
-    MachineService.find((err, machines) => {
-
-      if (err) {
-        return res.negotiate(err);
-      }
-
-      return res.ok(machines);
-    });
+  /**
+   * @method find
+   */
+  find(req, res) {
+    MachineService.machines()
+      .then((machines) => {
+        return res.ok(machines);
+      })
+      .catch((err) => res.negotiate(err));
   },
 
-  create: function(req, res) {
-    res.ok(MachineService.create(req.body));
+  /**
+   * @method create
+   */
+  create(req, res) {
+    return res.ok(MachineService.create(req.body));
   },
 
-  users: function(req, res) {
-
-    MachineService.find((err, machines) => {
-
-      if (err) {
-        return res.negotiate(err);
-      }
-
-      res.ok(machines);
-    });
+  /**
+   * @method users
+   */
+  users(req, res) {
+    Machine.find()
+      .then((machines) => {
+        return res.ok(machines);
+      })
+      .catch((err) => res.negotiate(err));
   }
 };

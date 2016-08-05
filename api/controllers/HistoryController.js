@@ -25,7 +25,18 @@
  * @help        :: See http://sailsjs.org/#!/documentation/concepts/Controllers
  */
 
-module.exports = {
-	
-};
+/* global MachineService, JsonApiService */
 
+module.exports = {
+  create(req, res) {
+    req.body = JsonApiService.deserialize(req.body);
+
+    if (req.body.data.attributes['end-date'] === '') {
+      MachineService.sessionOpen(req.user);
+    } else {
+      MachineService.sessionEnded(req.user);
+    }
+
+    return JsonApiService.createRecord(req, res);
+  }
+};

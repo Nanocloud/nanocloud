@@ -20,28 +20,44 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* globals Machine */
+/* global Machine, ConfigService */
 
-const baseDriver = require('../driver');
-const extend = require('extend');
+const Promise = require('bluebird');
+const Driver = require('../driver');
 
-module.exports = extend(baseDriver, {
-
-  init: function(done) {
-    Machine.findOrCreate({
-      ip: process.env.EXECUTION_SERVERS
-    },{
-      name: 'Manual static',
-      status: 'up',
-      ip: process.env.EXECUTION_SERVERS,
-      adminPassword: process.env.WINDOWS_PASSWORD,
-      platform: 'manual'
-    })
+/**
+ * The manual driver just user the specified list of machines. It cannot create
+ * nor delete machines.
+ *
+ * It uses the `ConfigService` variables:
+ *  - machines: the machines to use
+ * @class ManualDriver
+ */
+class ManualDriver extends Driver {
+  initialize() {
+    return ConfigService.set('machinePoolSize', 0)
       .then(() => {
-        return done(null);
+        return ConfigService.get('machines');
       })
-      .catch((err) => {
-        return done(err);
+      .then((config) => {
+
+        let machines = config.machines.map((machine) => {
+          return Machine.create(machine);
+        });
+
+        return Promise.all(machines);
       });
   }
-});
+
+  name() {
+    return 'manual';
+  }
+
+  getServer() {
+    return Promise.resolve({
+      status: 'running'
+    });
+  }
+}
+
+module.exports = ManualDriver;

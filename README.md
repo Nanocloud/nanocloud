@@ -14,7 +14,7 @@ docker-compose up
 ````
 
 Some environment variable are expected to be set in `config.env`:
-- IAAS (mandatory) currently only "manual" in implemented
+- IAAS (mandatory) currently only "manual" and "aws" are implemented
 - HOST (mandatory, defaults to localhost) nanocloud's host 
 - SMTP_SERVER_HOST host to send email
 - SMTP_SERVER_PORT (defaults to 25) port for the SMTP server
@@ -23,8 +23,17 @@ Some environment variable are expected to be set in `config.env`:
 - SMTP_SEND_FROM (defaults to mail@nanocloud.com) nanocloud's sender
 
 Manual driver specific:
-- EXECUTION_SERVERS (mandatory) the IP of the execution server
-- WINDOWS_PASSWORD (mandatory) the Windows password for the *administrator* account
+- MACHINES (array) Array of machine object to statically insert in the database
+
+AWS driver specific
+- AWS_REGION region where machines will appear
+- AWS_ACCESS_KEY_ID KeyId
+- AWS_SECRET_ACCESS_KEY Private key
+- AWS_KEY_NAME Private key name
+- AWS_PRIVATE_KEY (defaults to /tmp/id_rsa) path to where the key will be stored
+- AWS_IMAGE (defaults to ami-09e61366, Nanocloud default image)
+- AWS_FLAVOR (defaults to t2.medium) size of the virtual machine
+- AWS_MACHINE_USERNAME (defaults to Administrator) administrator account on the machine
 
 Storage specific:
 - STORAGE_ADDRESS (mandatory, defaults to 'localhost') storage service's IP

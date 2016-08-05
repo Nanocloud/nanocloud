@@ -32,10 +32,10 @@ module.exports = {
   find: function(req, res) {
 
     var machineDriver = {
-      id: MachineService.getDriverType(),
-      ID: MachineService.getDriverType()
+      id: MachineService.driverName(),
+      ID: MachineService.driverName()
     };
 
-    res.ok(machineDriver);
+    return res.ok(machineDriver);
   }
 };
