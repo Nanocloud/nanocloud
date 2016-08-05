@@ -72,7 +72,7 @@ export default Ember.Controller.extend({
       "title": "Name",
       "disableFiltering": true,
       "filterWithSelect": false,
-      "template": "sortable-table/machines/name",
+      "template": "protected/machines/index/table/machine-list/name",
     },
     {
       "propertyName": "ip",
@@ -85,7 +85,7 @@ export default Ember.Controller.extend({
       "title": "Status",
       "disableFiltering": true,
       "filterWithSelect": false,
-      "template": "sortable-table/machines/status",
+      "template": "protected/machines/index/table/machine-list/status",
     },
     {
       "propertyName": "platform",
@@ -104,7 +104,7 @@ export default Ember.Controller.extend({
       "title": "Boot state",
       "disableFiltering": true,
       "filterWithSelect": false,
-      "template": "sortable-table/machines/boot",
+      "template": "protected/machines/index/table/machine-list/boot",
     },
   ],
 

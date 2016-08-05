@@ -72,7 +72,7 @@ export default Ember.Controller.extend({
       "title": "Group name",
       "disableFiltering": true,
       "filterWithSelect": false,
-      "template": "sortable-table/group/group-edit"
+      "template": "protected/users/groups/index/table/group-list/group-edit"
     },
     {
       "propertyName": "members",

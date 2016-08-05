@@ -122,7 +122,7 @@ export default Ember.Controller.extend({
           "disableFiltering": true,
           "filterWithSelect": false,
           "disableSorting": true,
-          "template": "sortable-table/packages/name"
+          "template": "protected/apps/index/table/package-list/name"
         },
     ];
   }.property(),

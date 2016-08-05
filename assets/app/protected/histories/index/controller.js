@@ -133,7 +133,7 @@ export default Ember.Controller.extend({
       "title": "Total duration",
       "disableFiltering": true,
       "filterWithSelect": false,
-      "template": "sortable-table/duration",
+      "template": "protected/histories/index/table/history-list/duration",
     }
   ],
 
