@@ -137,9 +137,18 @@ export default Ember.Controller.extend({
     }
   ],
 
-  actions: {
-    downloadCSV() {
-      this.get('downloadCSVService').downloadCSV(this.get('sessionService.access_token'), this.get('items'));
-    }
-  }
+  downloadCsvLink: Ember.computed(function() {
+    let content = this.get('downloadCSVService').getCsvBase64(this.get('sessionService.access_token'), this.get('items'));
+
+    var link = "data:text/csv;base64,";
+    link+=content;
+    
+    return link;
+  }),
+
+  downloadCsvFilename: Ember.computed(function() {
+    let current_date = window.moment(new Date()).format('YYYY-MM-DD');
+    let filename = "nanocloud-history-" + current_date;
+    return filename;
+  })
 });

@@ -27,11 +27,9 @@ import formatTimeDuration from 'nanocloud/utils/format-duration';
 
 export default Ember.Service.extend({
 
-  downloadCSV(accessToken, model) {
+  getCsvBase64(accessToken, model) {
 
-    var csvContent = "data:text/csv;charset=utf-8,";
-
-    csvContent += "USERNAME,USERID,CONNECTION,START,END,DURATION\n"; 
+    var csvContent = "USERNAME,USERID,CONNECTION,START,END,DURATION\n"; 
 
     model.forEach(function(item) {
       csvContent += 
@@ -42,8 +40,6 @@ export default Ember.Service.extend({
         item.get('endDate') + ',' +
         formatTimeDuration(item.get('duration') / 1000) + '\n';
     });
-
-    let url = encodeURI(csvContent);
-    window.location.assign(url);
+    return btoa(csvContent);
   }
 });

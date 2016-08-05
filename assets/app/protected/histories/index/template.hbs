@@ -5,7 +5,7 @@
   <p class="color-primary indication">
     History gives you information about your users' sessions. You can also download this table as a CSV file.
     <p class="m-t-1 m-b-0"> 
-      <button class='btn btn-primary downloadcsv' {{ action 'downloadCSV' }}>Save as CSV file</button>
+      <a class='btn btn-primary downloadcsv' href={{downloadCsvLink}} download={{downloadCsvFilename}}>Save as CSV file</a>
       <button {{ action "refreshModel" }} class="btn btn-info">Reload</button> 
     </p>
   </p>
