@@ -1,0 +1,1300 @@
+---
+swagger: '2.0'
+info:
+  version: "1.9.0"
+  title: Nanocloud Enterprise API
+  description: |
+    **Complete Nanocloud enterprise API documentation.**
+
+    You can try all HTTP operation described in this Swagger spec.
+host: enterprise-qa.nanocloud.com
+basePath: /api
+schemes:
+  - https
+consumes:
+  - application/json
+produces:
+  - application/json
+paths:
+  /configs:
+    get:
+      tags:
+        - config
+      summary:
+        Get all configuration variables
+      parameters:
+        - in: query
+          name: key
+          description: Configuration keys you want to fetch (coma separated values)
+          required: true
+          type: string
+      responses:
+        200:
+          description: Get specified configuration objects
+          schema:
+            type: object
+            properties:
+              data:
+                type: array
+                items:
+                  "$ref": "#/definitions/Configuration"
+    post:
+      tags:
+        - config
+      summary:
+        Set a configuration variable
+      parameters:
+        - in: body
+          name: body
+          description: Give name and value to register to configurator
+          required: true
+          schema:
+            $ref: "#/definitions/Configuration"
+      responses:
+        200:
+          description: Set specified configuration variable
+          schema:
+            type: object
+            properties:
+              data:
+                "$ref": "#/definitions/Configuration"
+        400:
+          description: Can't decode JSON payload or JSON in wrong format
+          schema:
+            type: object
+            properties:
+              errors:
+                type: array
+                items:
+                  "$ref": "#/definitions/Errors"
+  /configs/{keyId}:
+    delete:
+      tags:
+        - config
+      parameters:
+        - in: path
+          name: keyId
+          description: Configuration key you want to delete
+          required: true
+          type: string
+          format: uuid
+      summary:
+        Delete specified configuration key
+      responses:
+        200:
+          description: Delete specified key
+          schema:
+            type: object
+            properties:
+              meta:
+                type: object
+        500:
+          description: Internal server error when no keyId are set
+  /users:
+    get:
+      tags:
+        - users
+      summary:
+        Get all users informations
+      parameters:
+        - in: query
+          name: me
+          type: boolean
+          required: false
+      responses:
+        200:
+          description: Fetch all users informations without "me" parameter,
+            fetch current user informations with it
+          schema:
+            type: object
+            properties:
+              data:
+                type: array
+                items:
+                  "$ref": "#/definitions/User"
+    post:
+      tags:
+        - users
+      summary:
+        Create a user account.
+        If connected as an administrator the user is directly created as standard user.
+        If you aren't connected, API create a pending account and send a mail to activate him (auto-registration must be enabled)
+      responses:
+        201:
+          description: Create a user account
+          schema:
+            type: object
+            properties:
+              data:
+                type: array
+                items:
+                  "$ref": "#/definitions/User"
+        400:
+          description: Can't decode JSON payload or JSON in wrong format
+          schema:
+            type: object
+            properties:
+              errors:
+                type: array
+                items:
+                  "$ref": "#/definitions/Errors"
+  /users/{id}:
+    get:
+      tags:
+        - users
+      summary:
+        Get detailed information about specified user
+      parameters:
+        - in: path
+          name: id
+          description: TODO
+          required: true
+          type: string
+          format: uuid
+      responses:
+        200:
+          description: Get the detailed information about specified user
+          schema:
+            type: object
+            properties:
+              data:
+                type: array
+                items:
+                  "$ref": "#/definitions/User"
+    patch:
+      tags:
+        - users
+      summary:
+        Modify user's detailed informations
+      parameters:
+        - in: path
+          name: id
+          description: TODO
+          required: true
+          type: string
+          format: uuid
+      responses:
+        200:
+          description: Modify the detailed informations
+          schema:
+            type: object
+            properties:
+              data:
+                type: array
+                items:
+                  "$ref": "#/definitions/User"
+    delete:
+      tags:
+        - users
+      summary:
+        Delete specified users
+      parameters:
+        - in: path
+          name: id
+          description: TODO
+          required: true
+          type: string
+          format: uuid
+      responses:
+        200:
+          description: Delete the specified users
+          schema:
+            type: object
+            properties:
+              data:
+                type: array
+                items:
+                  "$ref": "#/definitions/User"
+  /apps:
+    get:
+      tags:
+        - applications
+      summary:
+        Get all applications
+      responses:
+        200:
+          description: Get applications
+          schema:
+            type: object
+            properties:
+              data:
+                type: array
+                items:
+                  "$ref": "#/definitions/Application"
+    post:
+      tags:
+        - applications
+      summary:
+        Save an application
+      responses:
+        200:
+          description: Return all applications
+          schema:
+            type: object
+            properties:
+              data:
+                type: array
+                items:
+                  "$ref": "#/definitions/Application"
+  /apps/{app_id}:
+    get:
+      tags:
+        - applications
+      summary:
+        Get a specific application details
+      parameters:
+        - in: path
+          name: app_id
+          description: Application UUID
+          required: true
+          type: string
+          format: uuid
+      responses:
+        200:
+          description: Return specified application
+          schema:
+            type: object
+            properties:
+              data:
+                "$ref": "#/definitions/Application"
+    patch:
+      tags:
+        - applications
+      summary:
+        Modify a specific application details
+      parameters:
+        - in: path
+          name: app_id
+          description: TODO
+          required: true
+          type: string
+          format: uuid
+      responses:
+        200:
+          description: Modify the specified application
+          schema:
+            type: object
+            properties:
+              data:
+                "$ref": "#/definitions/Application"
+    delete:
+      tags:
+        - applications
+      summary:
+        Delete specified application
+      parameters:
+        - in: path
+          name: app_id
+          description: TODO
+          required: true
+          type: string
+          format: uuid
+      responses:
+        200:
+          description: Delete the specified application
+  /apps/connections:
+    get:
+      tags:
+        - applications
+        - connections
+      summary:
+        Get all connections. Connections are object that link an application to
+        a machine.
+      responses:
+        200:
+          description: Returns connections
+          schema:
+            type: object
+            properties:
+              data:
+                "$ref": "#/definitions/Connections"
+
+  /sessions:
+    get:
+      tags:
+        - sessions
+      summary:
+        List all sessions. Those sessions indicate which users are connected to
+        which VM
+      responses:
+        200:
+          description: Get connected sessions
+          schema:
+            type: object
+            properties:
+              data:
+                type: array
+                items:
+                  "$ref": "#/definitions/Session"
+        500:
+          description: When listing machines failed
+    delete:
+      tags:
+        - sessions
+      summary:
+        Disconnect logged on user from specified sessions (and machines)
+      responses:
+        200:
+          description: Session has correctly been disconnected
+        500:
+          description: Something went terribly wrong
+
+  /histories:
+    get:
+      tags:
+        - histories
+      summary:
+        Get all histories entries
+      responses:
+        200:
+          description: Get histories entries
+          schema:
+            type: object
+            properties:
+              data:
+                type: array
+                items:
+                  "$ref": "#/definitions/Histories"
+    post:
+      tags:
+        - histories
+      summary:
+        Save a new history entry
+      responses:
+        201:
+          description: Saved histories entries
+          schema:
+            type: object
+            properties:
+              data:
+                type: array
+                items:
+                  "$ref": "#/definitions/Histories"
+  /reset-password-tokens:
+    post:
+      tags:
+        - users
+        - password
+      summary:
+        Delete user's token for resetting its password
+      parameters:
+        - in: body
+          name: data
+          required: true
+          schema:
+            $ref: "#/definitions/Reset-password-token"
+      responses:
+        200:
+          description: Delete the token
+  /reset-password-tokens/{id}:
+    get:
+      tags:
+        - users
+        - password
+      summary:
+        Get user's token for resetting its password
+      parameters:
+        - in: path
+          name: id
+          description: TODO
+          required: true
+          type: string
+          format: uuid
+      responses:
+        200:
+          description: Return user's token
+    patch:
+      tags:
+        - users
+        - password
+      summary:
+        Reset password tokens for specified user
+      parameters:
+        - in: path
+          name: id
+          description: TODO
+          required: true
+          type: string
+          format: uuid
+      responses:
+        200:
+          description: Reset password
+  /machines:
+    get:
+      tags:
+        - machines
+      summary:
+        Get all machines
+      responses:
+        200:
+          description: Machine running
+          schema:
+            type: object
+            properties:
+              data:
+                type: array
+                items:
+                  "$ref": "#/definitions/Machines"
+    post:
+      tags:
+        - machines
+      summary:
+        Create a new machine
+      responses:
+        200:
+          description: New machine ready to be used
+          schema:
+            type: object
+            properties:
+              data:
+                type: array
+                items:
+                  "$ref": "#/definitions/Machines"
+  /machines/users:
+    get:
+      tags:
+        - machines
+        - users
+      summary:
+        Get all machines for users
+      responses:
+        200:
+          description: Return all machines for a user
+          schema:
+            type: object
+            properties:
+              data:
+                type: array
+                items:
+                  "$ref": "#/definitions/Machines"
+  /machines/{id}:
+    get:
+      tags:
+        - machines
+      summary:
+        Get detailed information for specified machine
+      parameters:
+        - in: path
+          name: id
+          description: TODO
+          required: true
+          type: string
+          format: uuid
+      responses:
+        200:
+          description: Return the specified machine information
+          schema:
+            type: object
+            properties:
+              data:
+                type: array
+                items:
+                  "$ref": "#/definitions/Machines"
+    patch:
+      tags:
+        - machines
+      summary:
+        Modify a specific machine details
+      parameters:
+        - in: path
+          name: id
+          description: TODO
+          required: true
+          type: string
+          format: uuid
+      responses:
+        200:
+          description: Modify the specified machine
+          schema:
+            type: object
+            properties:
+              data:
+                type: array
+                items:
+                  "$ref": "#/definitions/Machines"
+    delete:
+      tags:
+        - machines
+      summary:
+        Delete and terminate specified machines
+      parameters:
+        - in: path
+          name: id
+          description: TODO
+          required: true
+          type: string
+          format: uuid
+      responses:
+        200:
+          description: Delete the specified machine, and terminate her
+          schema:
+            type: object
+            properties:
+              data:
+                type: array
+                items:
+                  "$ref": "#/definitions/Machines"
+  /machine-drivers:
+    get:
+      tags:
+        - machines
+      summary:
+        Get all available machine driver
+      responses:
+        200:
+          description: Get all drivers for the machine
+          schema:
+            type: object
+            properties:
+              data:
+                type: string
+  /:
+    get:
+      summary:
+        Get static files
+      responses:
+        200:
+          description: Will get configurations
+  /tokens:
+    get:
+      tags:
+        - auth
+      summary:
+        Ask API for a token (oauth2 protocol)
+      responses:
+        200:
+          description: Return a token
+          schema:
+            type: object
+            properties:
+              data:
+                type: array
+                items:
+                  "$ref": "#/definitions/AccessToken"
+  /tokens/{id}:
+    delete:
+      tags:
+        - auth
+      summary:
+        Delete specified token. User associated to this token is disconnected
+        from Nanocloud
+      parameters:
+        - in: path
+          name: id
+          description: TODO
+          required: true
+          type: string
+          format: uuid
+      responses:
+        200:
+          description: Token has been deleted
+          schema:
+            type: object
+            properties:
+              data:
+                type: array
+                items:
+                  "$ref": "#/definitions/AccessToken"
+  /upload/{filename}:
+    post:
+      tags:
+        - files
+      summary:
+        Upload a file
+      parameters:
+        - in: path
+          name: filename
+          description: file name
+          required: true
+          type: string
+          format: string
+      responses:
+        200:
+          description: File have been uploaded
+  /groups:
+    get:
+      tags:
+        - users
+        - groups
+      summary:
+        Get all groups
+      responses:
+        200:
+          description: Get all groups
+          schema:
+            type: object
+            properties:
+              data:
+                type: array
+                items:
+                  "$ref": "#/definitions/Groups"
+    post:
+      tags:
+        - users
+        - groups
+      summary:
+        Create a new group
+      parameters:
+        - in: body
+          name: data
+          description: Groups description
+          required: true
+          schema:
+            $ref: "#/definitions/Groups"
+      responses:
+        200:
+          description: Group created
+  /groups/{group_id}:
+    get:
+      tags:
+        - users
+        - groups
+      summary:
+        Get detailed information variables
+      parameters:
+        - in: path
+          name: group_id
+          description: Id of the group to fetch
+          required: true
+          type: string
+          format: uuid
+      responses:
+        200:
+          description: Get group details
+          schema:
+            type: object
+            properties:
+              data:
+                type: array
+                items:
+                  "$ref": "#/definitions/Groups"
+              included:
+                type: array
+                items:
+                  "$ref": "#/definitions/User"
+    patch:
+      tags:
+        - users
+        - groups
+      summary:
+        Modify a specific group details
+      parameters:
+        - in: body
+          name: data
+          description: group
+          required: true
+          schema:
+            $ref: "#/definitions/Groups"
+        - in: path
+          name: group_id
+          description: Id of the group
+          required: true
+          type: string
+      responses:
+        200:
+          description: Modify the group name
+          schema:
+            type: object
+            properties:
+              data:
+                type: array
+                items:
+                  "$ref": "#/definitions/Groups"
+    delete:
+      tags:
+        - users
+        - groups
+      summary:
+        Delete specified group
+      parameters:
+        - in: path
+          name: group_id
+          description: TODO
+          required: true
+          type: string
+          format: uuid
+      responses:
+        200:
+          description: Group have been deleted
+  /groups/{group_id}/users:
+    get:
+      tags:
+        - users
+        - groups
+      summary:
+        Get all configuration variables
+      parameters:
+        - in: path
+          name: group_id
+          description: TODO
+          required: true
+          type: string
+          format: uuid
+      responses:
+        200:
+          description: Return all users of the specified group
+          schema:
+            type: object
+            properties:
+              data:
+                type: array
+                items:
+                  "$ref": "#/definitions/User"
+    post:
+      tags:
+        - users
+        - groups
+      summary:
+        Get all configuration variables
+      parameters:
+        - in: path
+          name: group_id
+          description: TODO
+          required: true
+          type: string
+          format: uuid
+      responses:
+        200:
+          description: Return configuration variables of the specified group
+  /groups/{group_id}/users/{user_id}:
+    delete:
+      tags:
+        - users
+        - groups
+      summary:
+        Remove specified users from specified groups
+      parameters:
+        - in: path
+          name: group_id
+          description: Group from which user will be removed
+          required: true
+          type: string
+          format: uuid
+        - in: path
+          name: user_id
+          description: User which will be removed from group
+          required: true
+          type: string
+          format: uuid
+      responses:
+        200:
+          description: User removed from the group
+
+  /teams:
+    get:
+      tags:
+        - users
+        - teams
+      summary:
+        Get all teams
+      responses:
+        200:
+          description: Get all teams
+          schema:
+            type: object
+            properties:
+              data:
+                type: array
+                items:
+                  "$ref": "#/definitions/Teams"
+    post:
+      tags:
+        - users
+        - teams
+      summary:
+        Create a new team
+      parameters:
+        - in: body
+          name: data
+          description: Teams description
+          required: true
+          schema:
+            $ref: "#/definitions/Teams"
+      responses:
+        200:
+          description: Team created
+  /teams/{team_id}:
+    get:
+      tags:
+        - users
+        - teams
+      summary:
+        Get detailed information variables
+      parameters:
+        - in: path
+          name: team_id
+          description: Id of the team to fetch
+          required: true
+          type: string
+          format: uuid
+      responses:
+        200:
+          description: Get team details
+          schema:
+            type: object
+            properties:
+              data:
+                type: array
+                items:
+                  "$ref": "#/definitions/Teams"
+              included:
+                type: array
+                items:
+                  "$ref": "#/definitions/User"
+    patch:
+      tags:
+        - users
+        - teams
+      summary:
+        Modify a specific team details
+      parameters:
+        - in: body
+          name: data
+          description: team
+          required: true
+          schema:
+            $ref: "#/definitions/Teams"
+        - in: path
+          name: team_id
+          description: Id of the team
+          required: true
+          type: string
+      responses:
+        200:
+          description: Modify the team name
+          schema:
+            type: object
+            properties:
+              data:
+                type: array
+                items:
+                  "$ref": "#/definitions/Teams"
+    delete:
+      tags:
+        - users
+        - teams
+      summary:
+        Delete specified team
+      parameters:
+        - in: path
+          name: team_id
+          description: TODO
+          required: true
+          type: string
+          format: uuid
+      responses:
+        200:
+          description: Team have been deleted
+  /teams/{team_id}/users:
+    get:
+      tags:
+        - users
+        - teams
+      summary:
+        Get all configuration variables
+      parameters:
+        - in: path
+          name: team_id
+          description: TODO
+          required: true
+          type: string
+          format: uuid
+      responses:
+        200:
+          description: Return all users of the specified team
+          schema:
+            type: object
+            properties:
+              data:
+                type: array
+                items:
+                  "$ref": "#/definitions/User"
+    post:
+      tags:
+        - users
+        - teams
+      summary:
+        Get all configuration variables
+      parameters:
+        - in: path
+          name: team_id
+          description: TODO
+          required: true
+          type: string
+          format: uuid
+      responses:
+        200:
+          description: Return configuration variables of the specified team
+  /teams/{team_id}/users/{user_id}:
+    delete:
+      tags:
+        - users
+        - teams
+      summary:
+        Remove specified users from specified teams
+      parameters:
+        - in: path
+          name: team_id
+          description: Team from which user will be removed
+          required: true
+          type: string
+          format: uuid
+        - in: path
+          name: user_id
+          description: User which will be removed from team
+          required: true
+          type: string
+          format: uuid
+      responses:
+        200:
+          description: User removed from the team
+
+  /files{filename}:
+    get:
+      tags:
+        - files
+      summary:
+        Get all configuration variables
+      parameters:
+        - in: path
+          name: filename
+          description: Name of the file
+          required: true
+          type: string
+          format: string
+      responses:
+        200:
+          description: Return the configuration
+          schema:
+            type: object
+            properties:
+              data:
+                type: array
+                items:
+                  "$ref": "#/definitions/Files"
+  /files/token{filename}:
+    get:
+      tags:
+        - files
+      summary:
+        Get all configuration variables
+      parameters:
+        - in: path
+          name: filename
+          description: Name of the file
+          required: true
+          type: string
+          format: string
+      responses:
+        200:
+          description: Return the file name token
+          schema:
+            type: string
+            properties:
+              token:
+                type: string
+
+definitions:
+  Configuration:
+    type: object
+    properties:
+      type:
+        type: string
+      id:
+        type: string
+      attributes:
+        type: object
+        properties:
+          key:
+            type: string
+          value:
+            type: string
+          private:
+            type: string
+            
+  Reset-password-token:
+    type: object
+    properties:
+      type:
+        type: string
+      attributes:
+        type: object
+        properties:
+          email:
+            type: string
+          password:
+            type: string
+          token:
+            type: string
+          userid:
+            type: string
+            
+
+  Errors:
+    type: object
+    properties:
+      code:
+        type: string
+      title:
+        type: string
+
+  User:
+    type: object
+    properties:
+      type:
+        type: string
+      id:
+        type: string
+      attributes:
+        type: object
+        properties:
+          email:
+            type: string
+          activated:
+            type: boolean
+          is-admin:
+            type: boolean
+          first-name:
+            type: string
+          last-name:
+            type: string
+          signup-date:
+            type: number
+            format: float
+
+  Application:
+    type: object
+    properties:
+      type:
+        type: string
+      id:
+        type: string
+      attributes:
+        type: object
+        properties:
+          collection-name:
+            type: string
+          alias:
+            type: string
+          display-name:
+            type: string
+          file-path:
+            type: string
+          path:
+            type: string
+          icon-content:
+            type: string
+          publication-date:
+            type: string
+      relationships:
+        type: object
+        properties:
+          groups:
+            type: array
+            items:
+              type: object
+              properties:
+                type:
+                  type: string
+                id:
+                  type: string
+          teams:
+            type: array
+            items:
+              type: object
+              properties:
+                type:
+                  type: string
+                id:
+                  type: string
+      included:
+        type: array
+        items:
+          "$ref": "#/definitions/Groups"
+
+  Session:
+    type: object
+    properties:
+      type:
+        type: string
+      id:
+        type: string
+      attributes:
+        type: object
+        properties:
+          session-name:
+            type: string
+          username:
+            type: string
+          state:
+            type: string
+          user-id:
+            type: string
+
+  Histories:
+    type: object
+    properties:
+      type:
+        type: string
+      id:
+        type: string
+      attributes:
+        type: object
+        properties:
+          user-id:
+            type: string
+          user-mail:
+            type: string
+          user-firstname:
+            type: string
+          user-lastname:
+            type: string
+          connection-id:
+            type: string
+          start-date:
+            type: string
+          end-date:
+            type: string
+
+  Machines:
+    type: object
+    properties:
+      type:
+        type: string
+      id:
+        type: string
+      attributes:
+        type: object
+        properties:
+          id:
+            type: string
+          name:
+            type: string
+          ip:
+            type: string
+          Type:
+            type: string
+          status:
+            type: string
+          username:
+            type: string
+          AdminPassword:
+            type: string
+          platform:
+            type: string
+          progress:
+            type: number
+            format: int
+
+  AccessToken:
+    type: object
+    properties:
+      Token:
+        type: string
+      Type:
+        type: string
+      ExpiresIn:
+        type: string
+
+  Groups:
+    type: object
+    properties:
+      type:
+        type: string
+      id:
+        type: string
+      attributes:
+        type: object
+        properties:
+          name:
+            type: string
+          id:
+            type: string
+      relationships:
+        type: object
+        properties:
+          apps:
+            type: object
+            properties:
+              type:
+                type: string
+              id:
+                type: string
+          members:
+            type: object
+            properties:
+              type:
+                type: string
+              id:
+                type: string
+
+  Teams:
+    type: object
+    properties:
+      type:
+        type: string
+      id:
+        type: string
+      attributes:
+        type: object
+        properties:
+          name:
+            type: string
+          id:
+            type: string
+      relationships:
+        type: object
+        properties:
+          members:
+            type: object
+            properties:
+              type:
+                type: string
+              id:
+                type: string
+
+  Files:
+    type: object
+    properties:
+      id:
+        type: string
+      type:
+        type: string
+      attribtues:
+        type: object
+        properties:
+          mod_time:
+            type: number
+            format: int
+          name:
+            type: string
+          size:
+            type: number
+            format: int
+          type:
+            type: string
+
+  Connections:
+    type: object
+    properties:
+      id:
+        type: string
+      type:
+        type: string
+      attributes:
+        type: object
+        properties:
+          hostname:
+            type: string
+          port:
+            type: string
+          username:
+            type: string
+          password:
+            type: string
+          remote_app:
+            type: string
+          protocol:
+            type: string
+          app_name:
+            type: string
