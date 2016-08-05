@@ -25,6 +25,7 @@
 const url = require('url');
 const Promise = require('bluebird');
 const request = Promise.promisifyAll(require('request'));
+const uuid = require('node-uuid');
 
 /**
  * @module models
@@ -36,7 +37,8 @@ module.exports = {
   attributes: {
     id: {
       type: 'string',
-      primaryKey: true
+      primaryKey: true,
+      defaultsTo: function (){ return uuid.v4(); }
     },
     name: {
       type: 'string'

@@ -35,7 +35,10 @@ const Driver = require('../driver');
  */
 class ManualDriver extends Driver {
   initialize() {
-    return ConfigService.get('machines')
+    return ConfigService.set('machinePoolSize', 0)
+      .then(() => {
+        return ConfigService.get('machines');
+      })
       .then((config) => {
 
         let machines = config.machines.map((machine) => {
@@ -48,6 +51,12 @@ class ManualDriver extends Driver {
 
   name() {
     return 'manual';
+  }
+
+  getServer() {
+    return Promise.resolve({
+      status: 'running'
+    });
   }
 }
 

@@ -64,6 +64,16 @@ class Driver {
   destroyMachine(/* machine */) {
     return Promise.reject(new Error("Driver's method 'destroyMachine' not implemented"));
   }
+
+ /**
+   * Return the server with the specified id.
+   *
+   * @method getServer
+   * @return {Promise[Object]}
+   */
+  getServer(/* id */) {
+    return Promise.reject(new Error("Driver's method 'getServer' not implemented"));
+  }
 }
 
 module.exports = Driver;

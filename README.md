@@ -23,8 +23,7 @@ Some environment variable are expected to be set in `config.env`:
 - SMTP_SEND_FROM (defaults to mail@nanocloud.com) nanocloud's sender
 
 Manual driver specific:
-- EXECUTION_SERVERS (mandatory) the IP of the execution server
-- WINDOWS_PASSWORD (mandatory) the Windows password for the *administrator* account
+- MACHINES (array) Array of machine object to statically insert in the database
 
 AWS driver specific
 - AWS_REGION region where machines will appear
