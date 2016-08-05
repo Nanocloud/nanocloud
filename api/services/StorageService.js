@@ -22,10 +22,11 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-/* globals Storage, ConfigService */
+/* globals Storage, ConfigService, PlazaService */
 
 const randomstring = require("randomstring");
 const sha1 = require("sha1");
+const Promise = require("bluebird");
 
 module.exports = {
 
@@ -92,5 +93,59 @@ module.exports = {
       return true;
     }
     return false;
+  },
+
+  /**
+   * checkUploadLimit
+   *
+   * Check if the upload limit is reached
+   *
+   * @param {Object} Storage of user want to upload
+   * @param {number} Length in byte of the new file
+   * @return {Promise[object|null]} Error object if upload limit is reached, null in other cases
+   */
+  checkUploadLimit: function(storage, length) {
+    return ConfigService.get('uploadLimit')
+      .then((limit) => {
+        return this.storageSize(storage, "", length)
+          .then((size) => {
+            return new Promise(function(resolve, reject) {
+              // limit["uploadLimit"] is in MB
+              if (limit["uploadLimit"] !== 0 && size > limit["uploadLimit"] * 1048576) {
+                return reject({
+                  statusCode: 403,
+                  message: "The upload limit is reached"
+                });
+              }
+              return resolve(null);
+            });
+          });
+      });
+  },
+
+  /**
+   * storageSize
+   *
+   * Calculate sum of files size recursively
+   *
+   * @param {Object} Storage of user want to upload
+   * @param {string} Directory where we search files
+   * @param {number} Sum of files size
+   * @return {number} Sum of files size
+   */
+  storageSize: function(storage, dir, sum) {
+    return PlazaService.files(storage, "/home/" + storage.username + "/" + dir)
+      .then((files) => {
+        return new Promise(function(resolve) {
+          for (let i = 0; i < files.data.length; i++) {
+            if (files.data[i].attributes.type === "directory") {
+              sum += this.storageSize(storage, files.data[i].attributes.name + "/" + dir, 0);
+            } else {
+              sum += files.data[i].attributes.size;
+            }
+          }
+          return resolve(sum);
+        });
+      });
   }
 };

@@ -38,6 +38,7 @@ AWS driver specific
 Storage specific:
 - STORAGE_ADDRESS (mandatory, defaults to 'localhost') storage service's IP
 - STORAGE_PORT (mandatory, defaults to 9090) storage service's port
+- UPLOAD_LIMIT (defaults 0 (desactivated)) upload limit, in MB, for each user
 
 Once loaded, Nanocloud will be accessible on **localhost**.
 
