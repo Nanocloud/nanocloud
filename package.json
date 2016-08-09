@@ -21,6 +21,7 @@
     "grunt-sails-linker": "~0.10.1",
     "grunt-sync": "0.2.4",
     "guess-content-type": "^0.1.0",
+    "handlebars": "^4.0.5",
     "include-all": "~0.1.6",
     "lodash": "^4.14.0",
     "moment": "^2.13.0",

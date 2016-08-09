@@ -25,60 +25,64 @@
  * @help        :: See http://sailsjs.org/#!/documentation/concepts/Controllers
  */
 
-/* globals ConfigService */
-/* globals EmailService */
-/* globals PendingUser */
-/* globals JsonApiService */
-/* globals User */
+/* globals ConfigService, EmailService, PendingUser, JsonApiService, User */
+/* globals TemplateService */
 
+const Promise = require('bluebird');
 const uuid    = require('node-uuid');
 const moment  = require('moment');
 
 module.exports = {
 
-  create: function(req, res) {
-
+  create(req, res) {
     var user = req.body.data.attributes;
-    user["id"] = uuid.v4();
-    user["isAdmin"] = false;
+
+    user.id = uuid.v4();
+    user.isAdmin = false;
 
     User.findOne({
-      "email": user["email"] 
+      email: user.email
     })
     .then((userResponse) => {
-      if (userResponse === undefined) {
+      if (!userResponse) {
         return PendingUser.findOne({
-          "email": user["email"] 
+          email: user.email
         });
-      } else {
-        throw new Error("User already exist");
       }
+
+      return Promise.reject(new Error('User already exists'));
     })
     .then((pendingUserResponse) => {
-      if (pendingUserResponse === undefined) {
+      if (!pendingUserResponse) {
         return ConfigService.get('host');
-      } else {
-        throw new Error("User already exist");
       }
+
+      return Promise.reject(new Error('User already exists'));
     })
+
     .then((configuration) => {
       var host = configuration.host;
       var to =  user.email;
       var subject = 'Nanocloud - Verify your email address';
-      var message = 'Hello ' + user["first-name"] + ' ' + user["last-name"] + ',<br> please verify your email address by clicking this link: '+
-          '<a href="'+host+'/#/activate/'+user.id+'">Activate my account</a>';
 
-      return EmailService.sendMail(to, subject, message)
-      .then(() => {
-        return PendingUser.create(JsonApiService.deserialize(user));
+      return TemplateService.render('activation-email', {
+        firstName: user['first-name'],
+        lastName: user['last-name'],
+        activationLink: `http://${host}/#/activate/${user.id}`
       })
-      .then((created_user) => {
-        return res.created(created_user);
+      .then((message) => {
+        return EmailService.sendMail(to, subject, message)
+        .then(() => {
+          return PendingUser.create(JsonApiService.deserialize(user));
+        })
+        .then((created_user) => {
+          return res.created(created_user);
+        });
       });
     })
     .catch((err) => {
       if (err.code === 'ECONNECTION') {
-        return res.serverError("Cannot connect to SMTP server");
+        return res.serverError('Cannot connect to SMTP server');
       } else if (err.message === 'User already exist') {
         return res.badRequest("User already exist");
       }
@@ -94,20 +98,20 @@ module.exports = {
     .then((conf) => {
       expirationDays = conf.expirationDate;
       return PendingUser.findOne({
-        "id": pendingUserID
+        id: pendingUserID
       });
     })
     .then((user) => {
       if (!user) {
         return res.notFound('No user found');
       }
-      user['expirationDate'] = moment().add(expirationDays, 'days').unix();
+      user.expirationDate = moment().add(expirationDays, 'days').unix();
       User.create(user)
       .then(() => {
-          return PendingUser.destroy({
-            "id": pendingUserID
-          });
-        })
+        return PendingUser.destroy({
+          id: pendingUserID
+        });
+      })
       .then(() => {
         return res.ok(user);
       });
@@ -115,5 +119,5 @@ module.exports = {
     .catch(() => {
       return res.notFound('An error occured while retrieving user');
     });
-  } 
+  }
 };
