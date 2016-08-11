@@ -21,6 +21,8 @@
  *
  */
 
+const Promise = require('bluebird');
+
 /* globals App, MachineService */
 
 /**
@@ -30,11 +32,51 @@
  */
 module.exports = {
 
+  /*
+   * Retrieves apps a given user can access
+   *
+   * @param {Object} a user object (usually req.user)
+   * @return {Promise[array]} a promise resolving to an array of Apps
+   */
+  _getApps(user) {
+
+    return new Promise((resolve, reject) => {
+
+      return App.query({
+          text: `SELECT DISTINCT
+                 "app".id,
+                 "app".alias,
+                 "app"."displayName",
+                 "app"."filePath"
+                 FROM "app"
+                 LEFT JOIN "appgroup" on appgroup.app = app.id
+                 LEFT JOIN "group" on appgroup.group = "group".id
+                 LEFT JOIN "usergroup" on usergroup.group = "group".id
+                 WHERE usergroup.user = $1::varchar OR $2::boolean = true`,
+          values: [
+              user.id,
+              user.isAdmin
+            ]
+      }, (err, apps) => {
+
+        if (err) {
+          return reject(err);
+        }
+
+        return resolve(apps);
+      });
+    });
+  },
+
   find(req, res) {
 
-    return App.find()
-      .populate("groups")
-      .then((res.ok));
+    this._getApps(req.user)
+      .then((apps) => {
+        return res.ok(apps.rows);
+      })
+      .catch((err) => {
+        return res.negotiate(err);
+      });
   },
 
   /**
@@ -45,11 +87,12 @@ module.exports = {
   connections(req, res) {
     MachineService.getMachineForUser(req.user)
       .then((machine) => {
-        var connections = [];
-
-        return App.find()
+        return this._getApps(req.user)
           .then((apps) => {
-            apps.forEach((app) => {
+
+            var connections = [];
+            apps.rows.forEach((app) => {
+
               connections.push({
                 id: app.id,
                 hostname: machine.ip,
@@ -63,11 +106,10 @@ module.exports = {
             });
 
             return res.ok(connections);
-          })
-          .catch((err) => {
-            return res.negotiate(err);
           });
       })
-      .catch((err) => res.negotiate(err));
+      .catch((err) => {
+        return res.negotiate(err);
+      });
   }
 };
