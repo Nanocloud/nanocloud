@@ -31,6 +31,7 @@ const testResetPassword = require('./reset-password.test');
 const testStorage = require('./storage.test');
 const testUserLimitation = require('./user-limitation.test');
 const testConfig = require('./config.test');
+const testGroup = require('./group.test');
 
 var request = require('supertest');
 
@@ -51,3 +52,4 @@ testResetPassword();
 testStorage();
 testUserLimitation();
 testConfig();
+testGroup();
