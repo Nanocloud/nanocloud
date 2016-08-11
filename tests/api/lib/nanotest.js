@@ -51,6 +51,10 @@ module.exports = {
     return "aff17b8b-bf91-40bf-ace6-6dfc985680bb";
   },
 
+  desktopId: function() {
+    return "aff17b8b-bf91-40bf-ace6-6dfc985680bb";
+  },
+
   schema: function(schema) {
 
     return function(res) {
@@ -117,10 +121,20 @@ module.exports = {
               "type": "string"
             },
             "attributes": {
-              "$ref": "#/definitions/attributes"
+              "$ref": "#/definitions/attributes_data"
             },
             "relationships": {
               "$ref": "#/definitions/relationships"
+            }
+          },
+          "additionalProperties": false
+        },
+        "attributes_data": {
+          "description": "Members of the attributes object (\"attributes\") represent information about the resource object in which it's defined.",
+          "type": "object",
+          "patternProperties": {
+            "^(?!relationships$|links$)\\w[-\\w_]*$": {
+              "description": "Attributes may contain any valid JSON value."
             }
           },
           "additionalProperties": false
@@ -222,32 +236,32 @@ module.exports = {
 
     return function(res) {
       for (let name in expectedRelationships) {
-        let expectedRelationship = expectedRelationships[name];
+        let relationshipGroup = expectedRelationships[name];
+        relationshipGroup.forEach((expectedRelationship) => {
 
-        if (res.body.data.relationships === undefined) {
-          throw new Error("Expected relationship " + name + " is not present in payload.");
-        }
-        let actualRelationship = res.body.data.relationships[name];
-
-        if (actualRelationship === undefined) {
-          throw new Error("No relation " + name + " in response.");
-        }
-
-        let match = false;
-        for (let recordName in actualRelationship) {
-          let record = actualRelationship[recordName];
-
-          if (record === expectedRelationship) {
-            match = true;
+          if (res.body.data.relationships === undefined) {
+            throw new Error("Expected relationship " + name + " is not present in payload.");
           }
-        }
+          let actualRelationship = res.body.data.relationships[name];
 
-        if (match === false) {
-          throw new Error("Relation ship " + recordName + " not found.");
-        }
+          if (actualRelationship === undefined) {
+            throw new Error("No relation " + name + " in response.");
+          }
+
+          let match = false;
+          actualRelationship.data.forEach((record) => {
+
+            if (JSON.stringify(record) === JSON.stringify(expectedRelationship)) {
+              match = true;
+            }
+          });
+
+          if (match === false) {
+            throw new Error("Relationship " + name + " not found.");
+          }
+        });
       }
     };
-
   },
 
   jsonApiSchema: function(schema) {

@@ -19,46 +19,55 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
- * AppController
- *
- * @description :: Server-side logic for managing Apps
- * @help        :: See http://sailsjs.org/#!/documentation/concepts/Controllers
  */
 
-const fs = require('fs');
-const url = require('url');
-const guessType = require("guess-content-type");
+/* globals App, MachineService */
 
+/**
+ * Controller of apps resource.
+ *
+ * @class AppsController
+ */
 module.exports = {
 
+  find(req, res) {
+
+    return App.find()
+      .populate("groups")
+      .then((res.ok));
+  },
+
   /**
-   * `AppController.serve()`
-   * Serves your Ember App directly from the assets/index.html
+   * Handles the /apps/connections endpoint
    *
-   * Add some custom code before delivering the app if you want
-   * You could add some analytics, or use this to serve different
-   * ember apps to differen people.
-   * That can be useful for limited feature roll-out or A/B Testing, etc.
-   *
+   * @method connections
    */
-  serve: function (req, res) {
+  connections(req, res) {
+    MachineService.getMachineForUser(req.user)
+      .then((machine) => {
+        var connections = [];
 
-    var file = "";
-    if (req.url === "/") {
-      file = "index.html";
-      res.set('Content-Type', 'text/html; charset=utf-8');
-    } else {
-      file = url.parse(req.url).pathname;
-      res.set('Content-Type', guessType(file));
-    }
+        return App.find()
+          .then((apps) => {
+            apps.forEach((app) => {
+              connections.push({
+                id: app.id,
+                hostname: machine.ip,
+                port: 3389,
+                username: machine.username,
+                password: machine.password,
+                "remote-app": '',
+                protocol: 'rdp',
+                "app-name": app.alias
+              });
+            });
 
-    var emberApp = __dirname + '/../../assets/dist/' + file;
-    fs.stat(emberApp, function (err) {
-      if (err) {
-        return res.notFound('The requested file does not exist.');
-      }
-
-      return fs.createReadStream(emberApp).pipe(res);
-    });
+            return res.ok(connections);
+          })
+          .catch((err) => {
+            return res.negotiate(err);
+          });
+      })
+      .catch((err) => res.negotiate(err));
   }
 };

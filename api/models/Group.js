@@ -46,6 +46,11 @@ module.exports = {
       collection: 'user',
       via: 'groups',
       through: 'usergroup'
+    },
+    apps: {
+      collection: 'app',
+      via: 'groups',
+      through: 'appgroup'
     }
   }
 };
