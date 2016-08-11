@@ -22,19 +22,19 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-// jshint mocha:true
+/* globals sails */
 
 var nano = require('./lib/nanotest');
 var expect = require('chai').expect;
 
 module.exports = function() {
 
-  describe("Config", function() {
+  describe('Config', function() {
 
     const setConfigSchema = {
       type: 'object',
       properties: {
-        'value': {type: 'string'},
+        value: {type: 'string'},
         'created-at': {type: 'string'},
         'updated-at': {type: 'string'},
       },
@@ -45,7 +45,7 @@ module.exports = function() {
     const getConfigSchema = {
       type: 'object',
       properties: {
-        'value': {type: 'string'},
+        value: {type: 'string'},
       },
       required: ['value'],
       additionalProperties: false,
@@ -60,20 +60,20 @@ module.exports = function() {
         .send({
           data: {
             attributes: {
-              key: "host",
+              key: 'host',
               value: 'localhost'
             },
             type: 'configs'
           }
         })
         .expect(200)
-          .expect(nano.jsonApiSchema(setConfigSchema))
-          .expect((res) => {
-            expect(res.body.data[0].id).to.equal('host');
-            expect(res.body.data[0].attributes["value"]).to.equal('localhost');
-          })
+        .expect(nano.jsonApiSchema(setConfigSchema))
+        .expect((res) => {
+          expect(res.body.data[0].id).to.equal('host');
+          expect(res.body.data[0].attributes.value).to.equal('localhost');
+        })
         .end(done);
-    })
+    });
 
     it('Should return test value from configurator', function(done) {
 
@@ -84,10 +84,10 @@ module.exports = function() {
         .expect(200)
         .expect((res) => {
           expect(res.body.data[0].id).to.equal('host');
-          expect(res.body.data[0].attributes["value"]).to.equal('localhost');
+          expect(res.body.data[0].attributes.value).to.equal('localhost');
         })
         .expect(nano.jsonApiSchema(getConfigSchema))
         .end(done);
-    })
-  })
+    });
+  });
 };

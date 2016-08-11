@@ -49,9 +49,9 @@ module.exports = {
                 port: 3389,
                 username: machine.username,
                 password: machine.password,
-                "remote-app": '',
+                'remote-app': '',
                 protocol: 'rdp',
-                "app-name": app.alias
+                'app-name': app.alias
               });
             });
 

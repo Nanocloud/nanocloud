@@ -31,7 +31,7 @@
 
 /* globals AccessToken, PlazaService, Storage, StorageService */
 
-const Promise = require("bluebird");
+const Promise = require('bluebird');
 
 module.exports = {
 
@@ -43,11 +43,11 @@ module.exports = {
    */
   upload: function(req, res) {
     let user = req.user;
-    let filename = req.query["filename"];
+    let filename = req.query.filename;
 
     StorageService.findOrCreate(user)
       .then((storage) => {
-        return StorageService.checkUploadLimit(storage, parseInt(req.headers["content-length"], 10))
+        return StorageService.checkUploadLimit(storage, parseInt(req.headers['content-length'], 10))
           .then(() => {
             return new Promise(function(resolve, reject) {
               req.file(filename).upload({
@@ -88,7 +88,7 @@ module.exports = {
 
     StorageService.findOrCreate(user)
       .then((storage) => {
-        return PlazaService.files(storage, "/home/" + storage.username);
+        return PlazaService.files(storage, '/home/' + storage.username);
       })
       .then((files) => {
         return res.send(files);
@@ -103,11 +103,11 @@ module.exports = {
    */
 
   download: function(req, res) {
-    let filename = req.query["filename"];
-    let downloadToken = req.query["token"];
+    let filename = req.query.filename;
+    let downloadToken = req.query.token;
 
     AccessToken.findOne({
-      id: downloadToken.split(":")[0]
+      id: downloadToken.split(':')[0]
     })
       .then((accessToken) => {
         return Storage.findOne({
@@ -115,7 +115,7 @@ module.exports = {
         });
       })
       .then((storage) => {
-        return PlazaService.download(storage, "/home/" + storage.username + "/" + filename);
+        return PlazaService.download(storage, '/home/' + storage.username + '/' + filename);
       })
       .then((dataStream) => {
         return dataStream.pipe(res.attachment(filename));
@@ -134,7 +134,7 @@ module.exports = {
 
   token: function(req, res) {
     let user = req.user;
-    let filename = req.query["filename"];
+    let filename = req.query.filename;
 
     AccessToken.findOne({userId: user.id}, (err, accessToken) => {
       if (err !== null) {

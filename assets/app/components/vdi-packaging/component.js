@@ -40,6 +40,6 @@ export default VdiWindowComponent.extend({
         .then(() => {
           this.sendAction('hasFinished');
         });
-    }  
+    }
   }
 });

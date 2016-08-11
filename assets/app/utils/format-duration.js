@@ -23,7 +23,7 @@
  */
 
 export default function formatDuration(value) {
-  
+
   if (value < 60) {
     return Number(value) + ' s';
   }

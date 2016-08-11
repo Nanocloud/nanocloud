@@ -22,14 +22,14 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-// jshint mocha:true
+/* globals sails, User, ConfigService */
 
 var nano = require('./lib/nanotest');
 var expect = require('chai').expect;
 
 module.exports = function() {
 
-  describe("Auto sign-up", function() {
+  describe('Auto sign-up', function() {
 
     before(function(done) {
       // it takes time to send a mail with nodemailer
@@ -47,7 +47,7 @@ module.exports = function() {
         'first-name': {type: 'string'},
         'last-name': {type: 'string'},
         'hashed-password': {type: 'string'},
-        'email': {type: 'string'},
+        email: {type: 'string'},
         'is-admin': {type: 'boolean'},
         'created-at': {type: 'string'},
         'updated-at': {type: 'string'},
@@ -57,84 +57,84 @@ module.exports = function() {
     };
 
     const userData = {
-      'first-name': "Firstname",
-      'last-name': "Lastname",
-      'email': "signup@nanocloud.com",
-      'password': "nanocloud"
+      'first-name': 'Firstname',
+      'last-name': 'Lastname',
+      email: 'signup@nanocloud.com',
+      password: 'nanocloud'
     };
 
     it('Should create an entry in user table', function(done) {
 
       // adding user to pendinguser table
       nano.request(sails.hooks.http.app)
-      .post('/api/pendingusers')
-      .send({
-        data: {
-          attributes: userData,
-          type: 'pendingusers'
-        }
-      })
-      .set(nano.adminLogin())
-      .expect(201)
-      .then((res) => {
+        .post('/api/pendingusers')
+        .send({
+          data: {
+            attributes: userData,
+            type: 'pendingusers'
+          }
+        })
+        .set(nano.adminLogin())
+        .expect(201)
+        .then(() => {
 
-        // user has been added to pending user table
-        return nano.request(sails.hooks.http.app)
-          .get('/api/pendingusers')
-          .set(nano.adminLogin())
-          .expect(200)
-          .expect(nano.jsonApiSchema(expectedSchema))
-          .expect((res) => {
-            expect(res.body.data[0].attributes["first-name"]).to.equal('Firstname');
-          })
-      })
-      .then((res) => {
+          // user has been added to pending user table
+          return nano.request(sails.hooks.http.app)
+            .get('/api/pendingusers')
+            .set(nano.adminLogin())
+            .expect(200)
+            .expect(nano.jsonApiSchema(expectedSchema))
+            .expect((res) => {
+              expect(res.body.data[0].attributes['first-name']).to.equal('Firstname');
+            });
+        })
+        .then((res) => {
 
-        // activate user
-        return nano.request(sails.hooks.http.app)
-          .patch('/api/pendingusers/' + res.body.data[0].id)
-          .set(nano.adminLogin())
-          .expect(200)
-          .expect(nano.jsonApiSchema(expectedSchema))
-      })
-      .then((res) => {
+          // activate user
+          return nano.request(sails.hooks.http.app)
+            .patch('/api/pendingusers/' + res.body.data[0].id)
+            .set(nano.adminLogin())
+            .expect(200)
+            .expect(nano.jsonApiSchema(expectedSchema));
+        })
+        .then(() => {
 
-        // user has been activated
-        return nano.request(sails.hooks.http.app)
-          .get('/api/users')
-          .set(nano.adminLogin())
-          .expect(200)
-          .expect((res) => {
-            expect(res.body.data[1].attributes["first-name"]).to.equal('Firstname');
-          })
-      })
-      .then(() => {
-        return done(); 
-      })
+          // user has been activated
+          return nano.request(sails.hooks.http.app)
+            .get('/api/users')
+            .set(nano.adminLogin())
+            .expect(200)
+            .expect((res) => {
+              expect(res.body.data[1].attributes['first-name']).to.equal('Firstname');
+            });
+        })
+        .then(() => {
+          return done();
+        });
     });
 
     it('Should prevent from creating the same user twice', function(done) {
 
       nano.request(sails.hooks.http.app)
-      .post('/api/pendingusers')
-      .send({
-        data: {
-          attributes: userData,
-          type: 'pendingusers'
-        }
-      })
-      .expect(400)
-      .end(done);
+        .post('/api/pendingusers')
+        .send({
+          data: {
+            attributes: userData,
+            type: 'pendingusers'
+          }
+        })
+        .expect(400)
+        .end(done);
     });
 
     after(function(done) {
       ConfigService.unset('testMail');
       User.destroy({
-        "email": userData["email"]
+        email: userData.email
       })
-      .then(() => {
-        return done();
-      });
+        .then(() => {
+          return done();
+        });
     });
-  })
+  });
 };

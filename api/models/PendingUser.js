@@ -22,7 +22,7 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-const bcrypt = require("bcryptjs");
+const bcrypt = require('bcryptjs');
 const uuid = require('node-uuid');
 
 module.exports = {

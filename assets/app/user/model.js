@@ -93,7 +93,7 @@ export default DS.Model.extend(Validations, {
       return `${this.get('firstName')} ${this.get('lastName')}`;
     }
     let email = this.get('email');
-    return email ? email : "Unknown user";
+    return email ? email : 'Unknown user';
   }.property('firstName', 'lastName'),
   isNotAdmin: function() {
     return !this.get('isAdmin');

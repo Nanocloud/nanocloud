@@ -46,10 +46,10 @@ export default Ember.Controller.extend({
       .save()
       .then(() => {
         this.transitionToRoute('protected.users.groups');
-        this.toast.success("Your group has breen created");
+        this.toast.success('Your group has breen created');
       })
       .catch(() => {
-        this.toast.error("Group could not be created");
+        this.toast.error('Group could not be created');
       })
       .finally(() => {
         this.set('loadState', false);

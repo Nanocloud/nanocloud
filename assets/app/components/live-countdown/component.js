@@ -36,7 +36,7 @@ export default Ember.Component.extend({
   init() {
     this._super(...arguments);
     this.set('decrementLoopEnabled', true);
-    Ember.run(() => { 
+    Ember.run(() => {
       this.set('interval', setInterval(this.get('decrementCountdown').bind(this), 1000));
     });
   },

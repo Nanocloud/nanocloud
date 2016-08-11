@@ -40,7 +40,7 @@ module.exports = function(req, res, next) {
     if(grantType === 'password'){
       // Make sure client_id is provided
 
-      var clientId = req.headers["authorization"];
+      var clientId = req.headers.authorization;
       if(!clientId){
         return res.send(400, 'missing client_id parameter');
       }
@@ -55,7 +55,7 @@ module.exports = function(req, res, next) {
             return res.send(500, err.message);
           } else {
             if(!client){
-              return res.send(404, "Client with client id "+ clientId + " not found");
+              return res.send(404, 'Client with client id '+ clientId + ' not found');
             }
 
             return next();

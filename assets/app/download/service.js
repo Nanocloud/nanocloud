@@ -29,13 +29,13 @@ export default Ember.Service.extend({
   downloadFile(accessToken, filename) {
 
     Ember.$.ajax({
-      type: "GET",
-      headers: { Authorization : "Bearer " + accessToken},
-      url: "/api/files/token",
-      data: { filename: "./" + filename}
+      type: 'GET',
+      headers: { Authorization : 'Bearer ' + accessToken},
+      url: '/api/files/token',
+      data: { filename: './' + filename}
     })
     .then((response) => {
-      let url = "/api/files/download?filename=" + encodeURIComponent("./" + filename) + "&token=" + encodeURIComponent(response.token); 
+      let url = '/api/files/download?filename=' + encodeURIComponent('./' + filename) + '&token=' + encodeURIComponent(response.token);
       window.location.assign(url);
     });
   }

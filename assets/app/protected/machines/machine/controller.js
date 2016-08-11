@@ -26,9 +26,9 @@ import Ember from 'ember';
 
 export default Ember.Controller.extend({
   loadState: false,
-  user: Ember.computed('model.users', function(){
-		var user = this.get('model.users');
-		return user ? user.objectAt(0) : null;
+  user: Ember.computed('model.users', () => {
+    var user = this.get('model.users');
+    return user ? user.objectAt(0) : null;
   }),
 
   displayCountdown: Ember.computed('model.countdownTimeleft', function() {
@@ -42,7 +42,7 @@ export default Ember.Controller.extend({
   }),
 
   machineName: Ember.computed('model.name', function() {
-    return this.get('model.name') ? this.get('model.name') : "Machine";
+    return this.get('model.name') ? this.get('model.name') : 'Machine';
   }),
 
   startMachine() {
@@ -65,10 +65,10 @@ export default Ember.Controller.extend({
     machine.set('status', 'reboot');
     machine.save()
       .then(() => {
-        this.toast.success("Machine has been rebooted");
+        this.toast.success('Machine has been rebooted');
       })
       .catch(() => {
-        this.toast.error("Machine could not be rebooted");
+        this.toast.error('Machine could not be rebooted');
       })
       .finally(() => {
         this.set('loadState', false);

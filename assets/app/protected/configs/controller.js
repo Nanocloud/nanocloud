@@ -56,8 +56,8 @@ export default Ember.Controller.extend({
   saveKey(sender, key) {
     this.get('configuration').saveData(key, this.get(key))
     .then(() => {
-        this.toast.success('Configuration has been saved.');
-      })
+      this.toast.success('Configuration has been saved.');
+    })
     .catch(() => {
       this.toast.error('Configuration could not be saved.');
     });

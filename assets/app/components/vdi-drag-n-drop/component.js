@@ -179,12 +179,12 @@ export default Ember.Component.extend({
     });
 
     if (this.get('assignBrowse')) {
-      var input = $('<input>', { type: "file" })
+      var input = $('<input>', { type: 'file' })
       .css({
-        "visibility": "hidden",
-        "position": "absolute",
-        "width": "1px",
-        "height": "1px"
+        visibility: 'hidden',
+        position: 'absolute',
+        width: '1px',
+        height: '1px'
       })
       .on('change', (event) => {
         this.startDownload(event.target.files);

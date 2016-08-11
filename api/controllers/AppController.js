@@ -27,7 +27,7 @@
 
 const fs = require('fs');
 const url = require('url');
-const guessType = require("guess-content-type");
+const guessType = require('guess-content-type');
 
 module.exports = {
 
@@ -43,9 +43,9 @@ module.exports = {
    */
   serve: function (req, res) {
 
-    var file = "";
-    if (req.url === "/") {
-      file = "index.html";
+    var file = '';
+    if (req.url === '/') {
+      file = 'index.html';
       res.set('Content-Type', 'text/html; charset=utf-8');
     } else {
       file = url.parse(req.url).pathname;
