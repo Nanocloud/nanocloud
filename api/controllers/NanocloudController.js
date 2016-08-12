@@ -28,6 +28,7 @@
 const fs = require('fs');
 const url = require('url');
 const guessType = require("guess-content-type");
+const path = require('path');
 
 module.exports = {
 
@@ -52,7 +53,7 @@ module.exports = {
       res.set('Content-Type', guessType(file));
     }
 
-    var emberApp = __dirname + '/../../assets/dist/' + file;
+    var emberApp = path.join(__dirname, '/../../assets/dist/', file);
     fs.stat(emberApp, function (err) {
       if (err) {
         return res.notFound('The requested file does not exist.');
