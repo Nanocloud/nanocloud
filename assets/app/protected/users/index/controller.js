@@ -88,7 +88,7 @@ export default Ember.Controller.extend({
       "title": "Name",
       "disableFiltering": true,
       "filterWithSelect": false,
-      "template": "sortable-table/user/user-edit",
+      "template": "protected/users/index/table/user-list/user-edit",
     },
     {
       "propertyName": "email",
@@ -107,7 +107,7 @@ export default Ember.Controller.extend({
       "title": "Connection status",
       "disableFiltering": true,
       "filterWithSelect": false,
-      "template": "sortable-table/user/is-online",
+      "template": "protected/users/index/table/user-list/is-online",
     },
   ],
 
