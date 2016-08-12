@@ -20,8 +20,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-const bcrypt = require("bcryptjs");
-const uuid = require('node-uuid');
+/* globals Group */
+
+const bcrypt = require('bcryptjs');
+const uuid   = require('node-uuid');
+const _      = require('lodash');
 
 module.exports = {
 
@@ -78,5 +81,19 @@ module.exports = {
       delete values.password;
     }
     next();
+  },
+
+  afterDestroy(destroyedRecords, next) {
+    if (!destroyedRecords.length) {
+      return next();
+    }
+
+    const ids = destroyedRecords.map((r) => r.id);
+    const bindings = _.times(ids.length, (i) => '$' + (i + 1));
+
+    Group.query({
+      text: `DELETE FROM "usergroup" WHERE "user" IN (${bindings})`,
+      values: ids
+    }, next);
   }
 };
