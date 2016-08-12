@@ -54,7 +54,7 @@ module.exports.routes = {
   *                                                                          *
   ***************************************************************************/
 
-  '/*': { controller: 'App', action: 'serve', skipAssets: false, skipRegex: /^\/api\/.*$/ },
+  '/*': { controller: 'Nanocloud', action: 'serve', skipAssets: false, skipRegex: /^\/api\/.*$/ },
 
   /***************************************************************************
   *                                                                          *
@@ -72,7 +72,7 @@ module.exports.routes = {
   },
 
   'GET /apps/connections': {
-    controller: 'Apps',
+    controller: 'App',
     action: 'connections'
   },
 

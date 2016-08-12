@@ -25,10 +25,49 @@
  * @docs        :: http://sailsjs.org/documentation/concepts/models-and-orm/models
  */
 
+/* globals Group */
+
+const uuid = require('node-uuid');
+const _    = require('lodash');
+
 module.exports = {
 
-  attributes: {
+  autoPK: false,
 
+  attributes: {
+    id: {
+      type: 'string',
+      primaryKey: true,
+      uuidv4: true,
+      defaultsTo: function (){ return uuid.v4(); }
+    },
+    name: {
+      type: 'string'
+    },
+
+    members: {
+      collection: 'user',
+      via: 'groups',
+      through: 'usergroup'
+    },
+    apps: {
+      collection: 'app',
+      via: 'groups',
+      through: 'appgroup'
+    }
+  },
+
+  afterDestroy(destroyedRecords, next) {
+    if (!destroyedRecords.length) {
+      return next();
+    }
+
+    const ids = destroyedRecords.map((r) => r.id);
+    const bindings = _.times(ids.length, (i) => '$' + (i + 1));
+
+    Group.query({
+      text: `DELETE FROM "usergroup" WHERE "group" IN (${bindings})`,
+      values: ids
+    }, next);
   }
 };
-

@@ -22,10 +22,13 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-import DS from 'ember-data';
-
-export default DS.JSONAPISerializer.extend({
-  attrs: {
-    "users" : { serialize: false }
+module.exports = {
+  attributes: {
+    user: {
+      model: 'user'
+    },
+    group: {
+      model: 'group'
+    }
   }
-});
+};

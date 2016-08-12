@@ -25,7 +25,16 @@
  * @help        :: See http://sailsjs.org/#!/documentation/concepts/Controllers
  */
 
-module.exports = {
-	
-};
+/* global Group */
 
+module.exports = {
+
+  findOne: function(req, res) {
+
+    Group.findOne(req.allParams()["id"])
+      .populate("members")
+      .populate('apps')
+      .then(res.ok)
+      .catch(res.negotiate);
+  }
+};

@@ -25,7 +25,7 @@
  * @help        :: See http://sailsjs.org/#!/documentation/concepts/Controllers
  */
 
-/* globals JsonApiService */
+/* globals User, JsonApiService */
 
 module.exports = {
 
@@ -37,6 +37,9 @@ module.exports = {
       return res.send(me);
     }
 
-    return JsonApiService.findRecords(req, res);
+    return User.find()
+      .populate("groups")
+      .then((res.ok))
+      .catch(res.negotiate);
   }
 };

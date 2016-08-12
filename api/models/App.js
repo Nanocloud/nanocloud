@@ -25,9 +25,21 @@
  * @docs        :: http://sailsjs.org/documentation/concepts/models-and-orm/models
  */
 
+const uuid = require('uuid');
+
 module.exports = {
 
+  autoPK: false,
+
   attributes: {
+    id: {
+      type: 'string',
+      primaryKey: true,
+      unique: true,
+      index: true,
+      uuidv4: true,
+      defaultsTo: function (){ return uuid.v4(); }
+    },
     alias: {
       type: 'string'
     },
@@ -36,6 +48,12 @@ module.exports = {
     },
     filePath: {
       type: 'string'
+    },
+
+    groups: {
+      collection: 'group',
+      via: 'apps',
+      through: 'appgroup'
     }
   }
 };

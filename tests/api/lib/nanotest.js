@@ -47,6 +47,14 @@ module.exports = {
     };
   },
 
+  adminId: function() {
+    return "aff17b8b-bf91-40bf-ace6-6dfc985680bb";
+  },
+
+  desktopId: function() {
+    return "aff17b8b-bf91-40bf-ace6-6dfc985680bb";
+  },
+
   schema: function(schema) {
 
     return function(res) {
@@ -59,9 +67,9 @@ module.exports = {
     };
   },
 
-  jsonApiSchema: function(schema) {
+  getJsonApiSchema: function() {
 
-    let JSONAPIschema = {
+    const JSONAPIschema = {
       "title": "JSON API Schema",
       "description": "This is a schema for responses in the JSON API format. For more, see http://jsonapi.org",
       "type": "object",
@@ -71,6 +79,14 @@ module.exports = {
       "properties": {
         "data": {
           "$ref": "#/definitions/data"
+        },
+        "included": {
+          "description": "To reduce the number of HTTP requests, servers **MAY** allow responses that include related resources along with the requested primary resources. Such responses are called \"compound documents\".",
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/resource"
+          },
+          "uniqueItems": true
         }
       },
       "definitions": {
@@ -105,15 +121,154 @@ module.exports = {
               "type": "string"
             },
             "attributes": {
-              "$ref": "#/definitions/attributes"
+              "$ref": "#/definitions/attributes_data"
+            },
+            "relationships": {
+              "$ref": "#/definitions/relationships"
             }
           },
           "additionalProperties": false
         },
-        "attributes": schema
+        "attributes_data": {
+          "description": "Members of the attributes object (\"attributes\") represent information about the resource object in which it's defined.",
+          "type": "object",
+          "patternProperties": {
+            "^(?!relationships$|links$)\\w[-\\w_]*$": {
+              "description": "Attributes may contain any valid JSON value."
+            }
+          },
+          "additionalProperties": false
+        },
+        "attributes": {
+          "description": "Members of the attributes object (\"attributes\") represent information about the resource object in which it's defined.",
+          "type": "object",
+          "patternProperties": {
+            "^(?!relationships$|links$)\\w[-\\w_]*$": {
+              "description": "Attributes may contain any valid JSON value."
+            }
+          },
+          "additionalProperties": false
+        },
+        "relationships": {
+          "description": "Members of the relationships object (\"relationships\") represent references from the resource object in which it's defined to other resource objects.",
+          "type": "object",
+          "patternProperties": {
+            "^\\w[-\\w_]*$": {
+              "properties": {
+                "data": {
+                  "description": "Member, whose value represents \"resource linkage\".",
+                  "oneOf": [
+                    {
+                      "$ref": "#/definitions/relationshipToOne"
+                    },
+                    {
+                      "$ref": "#/definitions/relationshipToMany"
+                    }
+                  ]
+                },
+                "meta": {
+                  "$ref": "#/definitions/meta"
+                }
+              },
+              "additionalProperties": false
+            }
+          },
+          "additionalProperties": false
+        },
+        "relationshipToOne": {
+          "description": "References to other resource objects in a to-one (\"relationship\"). Relationships can be specified by including a member in a resource's links object.",
+          "anyOf": [
+            {
+              "$ref": "#/definitions/empty"
+            },
+            {
+              "$ref": "#/definitions/linkage"
+            }
+          ]
+        },
+        "relationshipToMany": {
+          "description": "An array of objects each containing \"type\" and \"id\" members for to-many relationships.",
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/linkage"
+          },
+          "uniqueItems": true
+        },
+        "empty": {
+          "description": "Describes an empty to-one relationship.",
+          "type": ["object", "null"],
+          "properties": {},
+          "additionalProperties": false
+        },
+        "linkage": {
+          "description": "The \"type\" and \"id\" to non-empty members.",
+          "type": "object",
+          "required": [
+            "type",
+            "id"
+          ],
+          "properties": {
+            "type": {
+              "type": "string"
+            },
+            "id": {
+              "type": "string"
+            },
+            "meta": {
+              "$ref": "#/definitions/meta"
+            }
+          },
+          "additionalProperties": false
+        },
+        "meta": {
+          "description": "Non-standard meta-information that can not be represented as an attribute or relationship.",
+          "type": "object",
+          "additionalProperties": true
+        },
+
       }
     };
 
+    return JSONAPIschema;
+  },
+
+  jsonApiRelationship: function(expectedRelationships) {
+
+    return function(res) {
+      for (let name in expectedRelationships) {
+        let relationshipGroup = expectedRelationships[name];
+        relationshipGroup.forEach((expectedRelationship) => {
+
+          if (res.body.data.relationships === undefined) {
+            throw new Error("Expected relationship " + name + " is not present in payload.");
+          }
+          let actualRelationship = res.body.data.relationships[name];
+
+          if (actualRelationship === undefined) {
+            throw new Error("No relation " + name + " in response.");
+          }
+
+          let match = false;
+          actualRelationship.data.forEach((record) => {
+
+            if (JSON.stringify(record) === JSON.stringify(expectedRelationship)) {
+              match = true;
+            }
+          });
+
+          if (match === false) {
+            throw new Error("Relationship " + name + " not found.");
+          }
+        });
+      }
+    };
+  },
+
+  jsonApiSchema: function(schema) {
+
+    let JSONAPIschema = this.getJsonApiSchema();
+
+    JSONAPIschema.definitions.attributes = schema;
     return this.schema(JSONAPIschema);
   }
 };

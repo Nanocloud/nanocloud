@@ -19,46 +19,97 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
- * AppController
- *
- * @description :: Server-side logic for managing Apps
- * @help        :: See http://sailsjs.org/#!/documentation/concepts/Controllers
  */
 
-const fs = require('fs');
-const url = require('url');
-const guessType = require("guess-content-type");
+const Promise = require('bluebird');
 
+/* globals App, MachineService */
+
+/**
+ * Controller of apps resource.
+ *
+ * @class AppsController
+ */
 module.exports = {
 
-  /**
-   * `AppController.serve()`
-   * Serves your Ember App directly from the assets/index.html
+  /*
+   * Retrieves apps a given user can access
    *
-   * Add some custom code before delivering the app if you want
-   * You could add some analytics, or use this to serve different
-   * ember apps to differen people.
-   * That can be useful for limited feature roll-out or A/B Testing, etc.
-   *
+   * @param {Object} a user object (usually req.user)
+   * @return {Promise[array]} a promise resolving to an array of Apps
    */
-  serve: function (req, res) {
+  _getApps(user) {
 
-    var file = "";
-    if (req.url === "/") {
-      file = "index.html";
-      res.set('Content-Type', 'text/html; charset=utf-8');
-    } else {
-      file = url.parse(req.url).pathname;
-      res.set('Content-Type', guessType(file));
-    }
+    return new Promise((resolve, reject) => {
 
-    var emberApp = __dirname + '/../../assets/dist/' + file;
-    fs.stat(emberApp, function (err) {
-      if (err) {
-        return res.notFound('The requested file does not exist.');
-      }
+      return App.query({
+          text: `SELECT DISTINCT
+                 "app".id,
+                 "app".alias,
+                 "app"."displayName",
+                 "app"."filePath"
+                 FROM "app"
+                 LEFT JOIN "appgroup" on appgroup.app = app.id
+                 LEFT JOIN "group" on appgroup.group = "group".id
+                 LEFT JOIN "usergroup" on usergroup.group = "group".id
+                 WHERE usergroup.user = $1::varchar OR $2::boolean = true`,
+          values: [
+              user.id,
+              user.isAdmin
+            ]
+      }, (err, apps) => {
 
-      return fs.createReadStream(emberApp).pipe(res);
+        if (err) {
+          return reject(err);
+        }
+
+        return resolve(apps);
+      });
     });
+  },
+
+  find(req, res) {
+
+    this._getApps(req.user)
+      .then((apps) => {
+        return res.ok(apps.rows);
+      })
+      .catch((err) => {
+        return res.negotiate(err);
+      });
+  },
+
+  /**
+   * Handles the /apps/connections endpoint
+   *
+   * @method connections
+   */
+  connections(req, res) {
+    MachineService.getMachineForUser(req.user)
+      .then((machine) => {
+        return this._getApps(req.user)
+          .then((apps) => {
+
+            var connections = [];
+            apps.rows.forEach((app) => {
+
+              connections.push({
+                id: app.id,
+                hostname: machine.ip,
+                port: 3389,
+                username: machine.username,
+                password: machine.password,
+                "remote-app": '',
+                protocol: 'rdp',
+                "app-name": app.alias
+              });
+            });
+
+            return res.ok(connections);
+          });
+      })
+      .catch((err) => {
+        return res.negotiate(err);
+      });
   }
 };

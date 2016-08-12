@@ -47,12 +47,13 @@ module.exports.seeds = {
     ],
     unique: ["email"]
   },
-  apps: {
+  app: {
     data: [
       {
         alias: 'Desktop',
         displayName: 'Desktop',
-        filePath: 'C:\Windows\explorer.exe'
+        filePath: 'C:\\Windows\\explorer.exe',
+        id: "aff17b8b-bf91-40bf-ace6-6dfc985680bb"
       }
     ],
     unique: ['alias']
