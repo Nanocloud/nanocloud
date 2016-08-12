@@ -138,7 +138,10 @@ module.exports = {
                  if (req.body.grant_type === "refresh_token") {
                    var tokenFunction = server.token();
 
-                   return tokenFunction(req, res, function() {
+                   return tokenFunction(req, res, (err) => {
+                     if (err) {
+                       return next(err);
+                     }
                    });
                  }
                  return next();
