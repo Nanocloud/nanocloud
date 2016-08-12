@@ -35,24 +35,24 @@ export default Ember.Controller.extend({
       this.set('loadState', 1);
       this.set('userHasSubmitted', true);
       this.model
-        .validate({ on: ["email"] })
-        .then(({ m, validations }) => {
+        .validate({ on: ['email'] })
+        .then(({ validations }) => {
           if (validations.get('isInvalid') === true) {
             return this.toast.error('Please enter valid informations');
           }
 
           this.model.save()
             .then(() => {
-                this.set('loadState', 2);
-                this.toast.success("Please check out your emails to reset your password",
-                    "Link sent");
-                this.transitionToRoute('login');
-              },
+              this.set('loadState', 2);
+              this.toast.success('Please check out your emails to reset your password',
+                    'Link sent');
+              this.transitionToRoute('login');
+            },
               (err) => {
                 this.set('loadState', 0);
-                this.toast.error(err.errors[0].detail, "Password can not be reset");
+                this.toast.error(err.errors[0].detail, 'Password can not be reset');
                 return err.responseJSON;
-            });
+              });
         });
     }
   }

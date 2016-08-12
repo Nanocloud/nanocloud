@@ -22,13 +22,13 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-/* globals User, AccessToken */
+/* globals User, AccessToken, sails */
 
 var bcrypt = require('bcryptjs'),
-    moment = require('moment'),
-    passport = require('passport'),
-    BearerStrategy = require('passport-http-bearer').Strategy,
-    LocalStrategy = require('passport-local').Strategy;
+  moment = require('moment'),
+  passport = require('passport'),
+  BearerStrategy = require('passport-http-bearer').Strategy,
+  LocalStrategy = require('passport-local').Strategy;
 
 passport.serializeUser(function(user, done) {
   done(null, user.id);

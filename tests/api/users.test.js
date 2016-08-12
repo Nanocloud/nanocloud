@@ -22,18 +22,18 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-// jshint mocha:true
+/* globals sails */
 
 var nano = require('./lib/nanotest');
 
 module.exports = function() {
 
-  describe("Users", function() {
+  describe('Users', function() {
 
     const expectedSchema = {
       type: 'object',
       properties: {
-        'email': {type: 'string'},
+        email: {type: 'string'},
         'hashed-password': {type: 'string'},
         'is-admin': {type: 'boolean'},
         'first-name': {type: 'string'},
@@ -45,7 +45,7 @@ module.exports = function() {
       additionalProperties: true // expiration date is not mandatory
     };
 
-    describe("Create user", function() {
+    describe('Create user', function() {
 
       it('Should return created user', function(done) {
 
@@ -54,10 +54,10 @@ module.exports = function() {
           .send({
             data: {
               attributes: {
-                'first-name': "Firstname",
-                'last-name': "Lastname",
-                'email': "user@nanocloud.com",
-                'password': "nanocloud",
+                'first-name': 'Firstname',
+                'last-name': 'Lastname',
+                email: 'user@nanocloud.com',
+                password: 'nanocloud',
                 'is-admin': false,
                 'expiration-date': null
               },
@@ -71,7 +71,7 @@ module.exports = function() {
       });
     });
 
-    describe("List users", function() {
+    describe('List users', function() {
       it('Should return user list as admin', function(done) {
 
         nano.request(sails.hooks.http.app)

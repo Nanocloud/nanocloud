@@ -24,9 +24,9 @@
 
 /* globals Storage, ConfigService, PlazaService */
 
-const randomstring = require("randomstring");
-const sha1 = require("sha1");
-const Promise = require("bluebird");
+const randomstring = require('randomstring');
+const sha1 = require('sha1');
+const Promise = require('bluebird');
 
 module.exports = {
 
@@ -44,7 +44,7 @@ module.exports = {
     return ConfigService.get('storageAddress', 'storagePort')
       .then((configs) => {
         return Storage.findOrCreate({
-          'user': user.id
+          user: user.id
         }, {
           user: user,
           username: randomstring.generate({
@@ -53,8 +53,8 @@ module.exports = {
             capitalization: 'lowercase',
           }),
           password: randomstring.generate(60),
-          hostname: configs['storageAddress'],
-          port: configs['storagePort']
+          hostname: configs.storageAddress,
+          port: configs.storagePort
         });
       });
   },
@@ -73,7 +73,7 @@ module.exports = {
     let timestamp = Date.now() / 1000;
     let timeStone = timestamp + (3600 - timestamp % 3600);
 
-    return accessToken.id + ":" + sha1(accessToken.token + ":" + filename + ":" + timeStone);
+    return accessToken.id + ':' + sha1(accessToken.token + ':' + filename + ':' + timeStone);
   },
 
   /**
@@ -107,14 +107,14 @@ module.exports = {
   checkUploadLimit: function(storage, length) {
     return ConfigService.get('uploadLimit')
       .then((limit) => {
-        return this.storageSize(storage, "", length)
+        return this.storageSize(storage, '', length)
           .then((size) => {
             return new Promise(function(resolve, reject) {
-              // limit["uploadLimit"] is in MB
-              if (limit["uploadLimit"] !== 0 && size > limit["uploadLimit"] * 1048576) {
+              // limit['uploadLimit'] is in MB
+              if (limit.uploadLimit !== 0 && size > limit.uploadLimit * 1048576) {
                 return reject({
                   statusCode: 403,
-                  message: "The upload limit is reached"
+                  message: 'The upload limit is reached'
                 });
               }
               return resolve(null);
@@ -134,12 +134,12 @@ module.exports = {
    * @return {number} Sum of files size
    */
   storageSize: function(storage, dir, sum) {
-    return PlazaService.files(storage, "/home/" + storage.username + "/" + dir)
+    return PlazaService.files(storage, '/home/' + storage.username + '/' + dir)
       .then((files) => {
         return new Promise(function(resolve) {
           for (let i = 0; i < files.data.length; i++) {
-            if (files.data[i].attributes.type === "directory") {
-              sum += this.storageSize(storage, files.data[i].attributes.name + "/" + dir, 0);
+            if (files.data[i].attributes.type === 'directory') {
+              sum += this.storageSize(storage, files.data[i].attributes.name + '/' + dir, 0);
             } else {
               sum += files.data[i].attributes.size;
             }

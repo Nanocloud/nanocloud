@@ -52,19 +52,19 @@ export default Ember.Service.extend(Ember.Evented, {
 
     // Build base connect string
     var connectString =
-        "token="             + token +
-        "&GUAC_DATA_SOURCE=" + "noauthlogged" +
-        "&GUAC_ID="          + connectionName +
-        "&GUAC_TYPE="        + "c" + // connection
-        "&GUAC_WIDTH="       + Math.floor(optimal_width) +
-        "&GUAC_HEIGHT="      + Math.floor(optimal_height) +
-        "&GUAC_DPI="         + Math.floor(optimal_dpi);
+        'token='             + token +
+        '&GUAC_DATA_SOURCE=' + 'noauthlogged' +
+        '&GUAC_ID='          + connectionName +
+        '&GUAC_TYPE='        + 'c' + // connection
+        '&GUAC_WIDTH='       + Math.floor(optimal_width) +
+        '&GUAC_HEIGHT='      + Math.floor(optimal_height) +
+        '&GUAC_DPI='         + Math.floor(optimal_dpi);
 
     // Add audio mimetypes to connect string
-    connectString += "&GUAC_AUDIO=" + "audio%2Fwav";
+    connectString += '&GUAC_AUDIO=' + 'audio%2Fwav';
 
     // Add video mimetypes to connect string
-    connectString += "&GUAC_VIDEO=" + "video%2Fmp4";
+    connectString += '&GUAC_VIDEO=' + 'video%2Fmp4';
 
     return connectString;
   },
@@ -104,12 +104,12 @@ export default Ember.Service.extend(Ember.Evented, {
         guacamole: guacamole
       };
     }, () => {
-      this.stateChanged(this.get('STATE_DISCONNECTED'), true, "Could not authenticate session");
+      this.stateChanged(this.get('STATE_DISCONNECTED'), true, 'Could not authenticate session');
     });
   },
 
   copyTextToClipboard(text) {
-    var textArea = document.createElement("textarea");
+    var textArea = document.createElement('textarea');
     textArea.value = text;
     document.body.appendChild(textArea);
     textArea.select();
@@ -155,14 +155,14 @@ export default Ember.Service.extend(Ember.Evented, {
     if (this.get('openedGuacSession')[name]) {
       return this.get('openedGuacSession')[name].cloudClipboard;
     }
-    return "";
+    return '';
   },
 
   getLocalClipboard(name) {
     if (this.get('openedGuacSession')[name]) {
       return this.get('openedGuacSession')[name].localClipboard;
     }
-    return "";
+    return '';
   },
 
   disconnectSession(name) {

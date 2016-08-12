@@ -28,31 +28,31 @@ export default Ember.Service.extend({
   store: Ember.inject.service('store'),
   session: Ember.inject.service('session'),
   keyToBeRetrieved: [
-    "autoRegister",
-    "autoLogoff",
-    "sessionDuration",
-    "smtpServerHost",
-    "smtpServerPort",
-    "expirationDate",
-    "smtpLogin",
-    "smtpPassword",
-    "smtpSendFrom",
-    "host",
-    "defaultGroup",
-    "awsCache",
-    "title",
-    "favIconPath",
-    "logoPath",
-    "primaryColor"
+    'autoRegister',
+    'autoLogoff',
+    'sessionDuration',
+    'smtpServerHost',
+    'smtpServerPort',
+    'expirationDate',
+    'smtpLogin',
+    'smtpPassword',
+    'smtpSendFrom',
+    'host',
+    'defaultGroup',
+    'awsCache',
+    'title',
+    'favIconPath',
+    'logoPath',
+    'primaryColor'
   ],
   keyToBeRetrievedAsString: Ember.computed('keyToBeRetrieved', function() {
     let params = this.get('keyToBeRetrieved');
-    let data = "";
+    let data = '';
     for ( var property in params ) {
-      if (params.hasOwnProperty(property)) { 
+      if (params.hasOwnProperty(property)) {
         data += params[property];
         if (params[params.length-1] !== params[property]) {
-          data += ",";
+          data += ',';
         }
       }
     }
@@ -78,9 +78,9 @@ export default Ember.Service.extend({
       .filterBy('key', key)
       .objectAt(0);
     if (res) {
-      return res.get('value') || "";
+      return res.get('value') || '';
     }
-    return "";
+    return '';
   },
 
   saveData(key, value) {

@@ -46,18 +46,18 @@ export default Ember.Controller.extend({
 
     filteringIgnoreCase: true,
     messageConfig: {
-      searchLabel: "Search",
+      searchLabel: 'Search',
     },
 
     customIcons: {
-      "sort-asc": "fa fa-caret-up",
-      "sort-desc": "fa fa-caret-down",
-      "caret": "fa fa-minus",
-      "column-visible": "fa fa-minus",
+      'sort-asc': 'fa fa-caret-up',
+      'sort-desc': 'fa fa-caret-down',
+      caret: 'fa fa-minus',
+      'column-visible': 'fa fa-minus',
     },
 
     customClasses: {
-      "pageSizeSelectWrapper": "pagination-number"
+      pageSizeSelectWrapper: 'pagination-number'
     }
   },
 
@@ -84,30 +84,30 @@ export default Ember.Controller.extend({
 
   columns: [
     {
-      "propertyName": "fullname",
-      "title": "Name",
-      "disableFiltering": true,
-      "filterWithSelect": false,
-      "template": "protected/users/index/table/user-list/user-edit",
+      propertyName: 'fullname',
+      title: 'Name',
+      disableFiltering: true,
+      filterWithSelect: false,
+      template: 'protected/users/index/table/user-list/user-edit'
     },
     {
-      "propertyName": "email",
-      "title": "Email",
-      "disableFiltering": true,
-      "filterWithSelect": false,
+      propertyName: 'email',
+      title: 'Email',
+      disableFiltering: true,
+      filterWithSelect: false
     },
     {
-      "propertyName": "type",
-      "title": "Type",
-      "disableFiltering": true,
-      "filterWithSelect": false,
+      propertyName: 'type',
+      title: 'Type',
+      disableFiltering: true,
+      filterWithSelect: false
     },
     {
-      "propertyName": "online",
-      "title": "Connection status",
-      "disableFiltering": true,
-      "filterWithSelect": false,
-      "template": "protected/users/index/table/user-list/is-online",
+      propertyName: 'online',
+      title: 'Connection status',
+      disableFiltering: true,
+      filterWithSelect: false,
+      template: 'protected/users/index/table/user-list/is-online'
     },
   ],
 

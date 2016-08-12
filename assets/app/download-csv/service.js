@@ -29,14 +29,14 @@ export default Ember.Service.extend({
 
   getCsvBase64(accessToken, model) {
 
-    var csvContent = "USERNAME,USERID,CONNECTION,START,END,DURATION\n"; 
+    var csvContent = 'USERNAME,USERID,CONNECTION,START,END,DURATION\n';
 
     model.forEach(function(item) {
-      csvContent += 
-        item.get('userFullName') + "," +
-        item.get('userId') + "," +
-        item.get('connectionId') + "," +
-        item.get('startDate') + "," +
+      csvContent +=
+        item.get('userFullName') + ',' +
+        item.get('userId') + ',' +
+        item.get('connectionId') + ',' +
+        item.get('startDate') + ',' +
         item.get('endDate') + ',' +
         formatTimeDuration(item.get('duration') / 1000) + '\n';
     });

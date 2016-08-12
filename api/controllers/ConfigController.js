@@ -28,7 +28,7 @@
 /* globals Config, ConfigService */
 
 module.exports = {
-	
+
   create: function(req, res) {
 
     let key = req.body.data.attributes.key;
@@ -55,7 +55,7 @@ module.exports = {
         let data = [];
         for (var property in config) {
           if (config.hasOwnProperty(property)) {
-            data.push({ 
+            data.push({
               key: property,
               value : config[property]
             });

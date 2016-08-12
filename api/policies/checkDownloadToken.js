@@ -25,11 +25,11 @@
 /* globals AccessToken,StorageService */
 
 module.exports = function(req, res, next) {
-  let filename = req.query["filename"];
-  let downloadToken = req.query["token"];
+  let filename = req.query.filename;
+  let downloadToken = req.query.token;
 
   AccessToken.findOne({
-    id: downloadToken.split(":")[0]
+    id: downloadToken.split(':')[0]
   }, (err, accessToken) => {
     if (err !== null) {
       return res.negotiate(err);
@@ -38,7 +38,7 @@ module.exports = function(req, res, next) {
     if (StorageService.checkToken(accessToken, downloadToken, filename)) {
       return next();
     } else {
-      return res.negociate(new Error("Invalid download token"));
+      return res.negociate(new Error('Invalid download token'));
     }
   });
 };

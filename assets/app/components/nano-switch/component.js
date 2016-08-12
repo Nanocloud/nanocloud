@@ -27,7 +27,7 @@ import Ember from 'ember';
 export default Ember.Component.extend({
 
   state: Ember.computed('checked', 'checked', function() {
-    return this.get('checked') ? "On" : "Off";
+    return this.get('checked') ? 'On' : 'Off';
   }),
 
   click() {

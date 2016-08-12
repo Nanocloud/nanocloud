@@ -34,22 +34,22 @@ export default VdiWindowComponent.extend({
   stateUpdated: function() {
     if (this.get('stateVisible') === true) {
       this.loadFiles();
-    } 
+    }
   }.observes('stateVisible'),
 
   loadFiles: function() {
 
-    this.get('store').query('file', { filename: "./" })
+    this.get('store').query('file', { filename: './' })
       .then(function(response) {
         this.set('items', response);
       }.bind(this))
       .catch((err) => {
         // If windows has to be ran once
-        if (err.errors.length === 1 && err.errors[0].code === "000008") {
+        if (err.errors.length === 1 && err.errors[0].code === '000008') {
           return ;
         }
 
-        this.toast.error("Couldn't retrieve files");
+        this.toast.error('Couldn\'t retrieve files');
       });
 
   }.on('becameVisible'),

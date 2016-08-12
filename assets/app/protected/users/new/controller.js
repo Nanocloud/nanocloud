@@ -35,7 +35,7 @@ export default Ember.Controller.extend({
       this.set('userHasSubmitted', true);
       this.model
         .validate()
-        .then(({ m, validations }) => {
+        .then(({ validations }) => {
 
           let expirationDate = this.get('model.expirationDate');
           let timestamp = (expirationDate) ?

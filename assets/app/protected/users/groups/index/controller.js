@@ -34,18 +34,18 @@ export default Ember.Controller.extend({
 
     filteringIgnoreCase: true,
     messageConfig: {
-      searchLabel: "Search",
+      searchLabel: 'Search',
     },
 
     customIcons: {
-      "sort-asc": "fa fa-caret-up",
-      "sort-desc": "fa fa-caret-down",
-      "caret": "fa fa-minus",
-      "column-visible": "fa fa-minus",
+      'sort-asc': 'fa fa-caret-up',
+      'sort-desc': 'fa fa-caret-down',
+      caret: 'fa fa-minus',
+      'column-visible': 'fa fa-minus',
     },
 
     customClasses: {
-      "pageSizeSelectWrapper": "pagination-number"
+      pageSizeSelectWrapper: 'pagination-number'
     }
   },
 
@@ -68,23 +68,23 @@ export default Ember.Controller.extend({
 
   columns: [
     {
-      "propertyName": "name",
-      "title": "Group name",
-      "disableFiltering": true,
-      "filterWithSelect": false,
-      "template": "protected/users/groups/index/table/group-list/group-edit"
+      propertyName: 'name',
+      title: 'Group name',
+      disableFiltering: true,
+      filterWithSelect: false,
+      template: 'protected/users/groups/index/table/group-list/group-edit'
     },
     {
-      "propertyName": "members",
-      "title": "number of member",
-      "disableFiltering": true,
-      "filterWithSelect": false,
+      propertyName: 'members',
+      title: 'number of member',
+      disableFiltering: true,
+      filterWithSelect: false
     },
     {
-      "propertyName": "apps",
-      "title": "number of application",
-      "disableFiltering": true,
-      "filterWithSelect": false,
+      propertyName: 'apps',
+      title: 'number of application',
+      disableFiltering: true,
+      filterWithSelect: false
     },
   ],
 });

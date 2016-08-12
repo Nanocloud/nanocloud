@@ -22,7 +22,7 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-// jshint mocha:true
+/* globals sails */
 
 var nano = require('./lib/nanotest');
 

@@ -45,7 +45,7 @@ export default Ember.Component.extend({
   windowIsSelected: false,
   store: Ember.inject.service(),
   savePackageModal: false,
-  savePackageName: "",
+  savePackageName: '',
 
   RECORD_DEFAULT: 0,
   RECORD_WAIT: 1,
@@ -65,7 +65,7 @@ export default Ember.Component.extend({
       $('.canva-fullscreen').hide();
       $('.ember-modal-fullscreen').css('top: 100%');
       $('.ember-modal-fullscreen').velocity({ opacity: 1} , {
-        easing: "linear",
+        easing: 'linear',
         duration: 300,
         complete: function() {
           $('.canva-fullscreen').show();
@@ -128,15 +128,15 @@ export default Ember.Component.extend({
   vdiDisconnectHandler(options) {
     this.set('logoff', true);
     Ember.$.ajax({
-      type: "DELETE",
-      headers: { Authorization : "Bearer " + this.get('session.access_token')},
-      url: "/api/sessions",
-      data: { user: "./" + this.get('session.user')}
+      type: 'DELETE',
+      headers: { Authorization : 'Bearer ' + this.get('session.access_token')},
+      url: '/api/sessions',
+      data: { user: './' + this.get('session.user')}
     })
     .then(() => {
       this.set('logoff', false);
       if (!options) {
-        this.toast.success("You have been disconnected successfully");
+        this.toast.success('You have been disconnected successfully');
       }
       else {
         if (options.error === true) {
@@ -167,7 +167,7 @@ export default Ember.Component.extend({
   }),
 
   vdiLoadErrorMessage: Ember.computed('remoteSession.errorMessage', function() {
-    return this.get('remoteSession.errorMessage') || "Unknown error";
+    return this.get('remoteSession.errorMessage') || 'Unknown error';
   }),
 
   vdiLoadOrError: Ember.computed('vdiIsLoading', 'vdiLoadError', function() {
@@ -179,8 +179,8 @@ export default Ember.Component.extend({
 
   becameVisible() {
     this.set('savePackageModal', false);
-    this.set('savePackageName', "");
-    this.set('recordState', this.get("RECORD_DEFAULT"));
+    this.set('savePackageName', '');
+    this.set('recordState', this.get('RECORD_DEFAULT'));
   },
 
   handlePackageModalInputs: function() {
@@ -275,28 +275,28 @@ export default Ember.Component.extend({
       let app = this.get('currentApplication');
 
       Ember.$.ajax({
-        type: "PATCH",
-        headers: { 
-          "Content-type": "application/json",
-          Authorization : "Bearer " + this.get('session.access_token'),
+        type: 'PATCH',
+        headers: {
+          'Content-type': 'application/json',
+          Authorization : 'Bearer ' + this.get('session.access_token'),
         },
-        url: "/api/apps/" + app.get("id"),
+        url: '/api/apps/' + app.get('id'),
         data: JSON.stringify({
-          "data":{  
-            "attributes":{  
-              "display-name": name,
+          data: {
+            attributes: {
+              'display-name': name,
             },
-            "id": app.get("id"), 
-            "type": "apps",
+            id: app.get('id'),
+            type: 'apps',
           }
         })
       })
       .then(() => {
         this.set('savePackageModal', false);
-        this.toast.success("Packaging successful");
+        this.toast.success('Packaging successful');
       }, (() => {
         this.set('savePackageModal', false);
-        this.toast.error("Couldn't give a name to your package");
+        this.toast.error('Couldn\'t give a name to your package');
       }));
     },
 
@@ -320,45 +320,45 @@ export default Ember.Component.extend({
       var stateBeforeWaiting = this.get('recordState');
       this.set('recordState', this.get('RECORD_WAIT'));
 
-      if (stateBeforeWaiting === this.get("RECORD_CAPTURING")) {
+      if (stateBeforeWaiting === this.get('RECORD_CAPTURING')) {
         getMachine().then((machine) => {
           this.set('recordState', this.get('RECORD_PACKAGING'));
           Ember.$.ajax({
-            type: "PATCH",
-            "Content-type" : "application/json",
-            headers: { 
-              Authorization : "Bearer " + this.get('session.access_token'),
+            type: 'PATCH',
+            'Content-type' : 'application/json',
+            headers: {
+              Authorization : 'Bearer ' + this.get('session.access_token'),
             },
-            url: "/api/machines/" + machine.get('id'),
+            url: '/api/machines/' + machine.get('id'),
             data: JSON.stringify({
-                "data":{  
-                  "attributes":{  
-                    "id": machine.get('id'),
-                    "name":machine.get('name'),
-                    "ip":machine.get('ip'),
-                    "status":machine.get('status'),
-                    "username":machine.get('username'),
-                    "platform":machine.get('platform'),
-                    "progress":machine.get('progress'),
-                    "recording":"packaging",
-                    "timeleft":machine.get('timeleft')
-                  },
-                  "id":machine.get('id'),
-                  "type":"machines"
-                }
-              })
+              data: {
+                attributes: {
+                  id: machine.get('id'),
+                  name: machine.get('name'),
+                  ip: machine.get('ip'),
+                  status: machine.get('status'),
+                  username: machine.get('username'),
+                  platform: machine.get('platform'),
+                  progress: machine.get('progress'),
+                  recording: 'packaging',
+                  timeleft: machine.get('timeleft')
+                },
+                id: machine.get('id'),
+                type: 'machines'
+              }
+            })
           })
           .then((data) => {
             this.set('savePackageModal', true);
             var currentApplication = this.get('store').createRecord('app', {
-              "id":data.included["id"],
-              "collection-name":data.included.attributes["collection-name"],
-              "alias":data.included.attributes["alias"],
-              "display-name":data.included.attributes["display-name"],
-              "file-path":data.included.attributes["file-path"],
-              "path": data.included.attributes["path"],
-              "icon-content":data.included.attributes["icon-content"],
-              "state":data.included.attributes["state"],
+              id: data.included['id'],
+              'collection-name':data.included.attributes['collection-name'],
+              alias: data.included.attributes['alias'],
+              'display-name':data.included.attributes['display-name'],
+              'file-path':data.included.attributes['file-path'],
+              path: data.included.attributes['path'],
+              'icon-content':data.included.attributes['icon-content'],
+              state: data.included.attributes['state'],
             });
 
             this.set('currentApplication', currentApplication);
@@ -372,7 +372,7 @@ export default Ember.Component.extend({
         });
       } else {
         getMachine().then((machine) => {
-          machine.set('recording', "capturing");
+          machine.set('recording', 'capturing');
           machine.save()
             .then(() => {
               this.set('recordState', this.get('RECORD_CAPTURING'));
@@ -384,6 +384,6 @@ export default Ember.Component.extend({
             });
         });
       }
-    },
+    }
   }
 });

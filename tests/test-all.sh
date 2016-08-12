@@ -12,7 +12,7 @@ function check_command {
 }
 
 check_command make test-licenses
-check_command make test-jshint
+check_command make test-linter
 check_command make test-api
 check_command make test-units
 
