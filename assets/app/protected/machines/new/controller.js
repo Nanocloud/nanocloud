@@ -51,11 +51,11 @@ export default Ember.Controller.extend({
         }
       });
       if (!this.machineName) {
-        this.toast.error("Insert a machine name");
+        this.toast.error('Insert a machine name');
         return;
       }
       if (!type) {
-        this.toast.error("Select an instance type");
+        this.toast.error('Select an instance type');
         return;
       }
 

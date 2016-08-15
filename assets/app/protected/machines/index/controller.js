@@ -31,18 +31,18 @@ export default Ember.Controller.extend({
 
     filteringIgnoreCase: true,
     messageConfig: {
-      searchLabel: "Search",
+      searchLabel: 'Search',
     },
 
     customIcons: {
-      "sort-asc": "fa fa-caret-up",
-      "sort-desc": "fa fa-caret-down",
-      "caret": "fa fa-minus",
-      "column-visible": "fa fa-minus",
+      'sort-asc': 'fa fa-caret-up',
+      'sort-desc': 'fa fa-caret-down',
+      caret: 'fa fa-minus',
+      'column-visible': 'fa fa-minus',
     },
 
     customClasses: {
-      "pageSizeSelectWrapper": "pagination-number"
+      pageSizeSelectWrapper: 'pagination-number'
     }
   },
 
@@ -68,55 +68,55 @@ export default Ember.Controller.extend({
 
   columns: [
     {
-      "propertyName": "name",
-      "title": "Name",
-      "disableFiltering": true,
-      "filterWithSelect": false,
-      "template": "protected/machines/index/table/machine-list/name",
+      propertyName: 'name',
+      title: 'Name',
+      disableFiltering: true,
+      filterWithSelect: false,
+      template: 'protected/machines/index/table/machine-list/name',
     },
     {
-      "propertyName": "ip",
-      "title": "IP",
-      "disableFiltering": true,
-      "filterWithSelect": false,
+      propertyName: 'ip',
+      title: 'IP',
+      disableFiltering: true,
+      filterWithSelect: false,
     },
     {
-      "propertyName": "status",
-      "title": "Status",
-      "disableFiltering": true,
-      "filterWithSelect": false,
-      "template": "protected/machines/index/table/machine-list/status",
+      propertyName: 'status',
+      title: 'Status',
+      disableFiltering: true,
+      filterWithSelect: false,
+      template: 'protected/machines/index/table/machine-list/status',
     },
     {
-      "propertyName": "platform",
-      "title": "Platform",
-      "disableFiltering": true,
-      "filterWithSelect": false,
+      propertyName: 'platform',
+      title: 'Platform',
+      disableFiltering: true,
+      filterWithSelect: false,
     },
     {
-      "propertyName": "machineSize",
-      "title": "Size",
-      "disableFiltering": true,
-      "filterWithSelect": false,
+      propertyName: 'machineSize',
+      title: 'Size',
+      disableFiltering: true,
+      filterWithSelect: false,
     },
     {
-      "propertyName": "platform",
-      "title": "Boot state",
-      "disableFiltering": true,
-      "filterWithSelect": false,
-      "template": "protected/machines/index/table/machine-list/boot",
+      propertyName: 'platform',
+      title: 'Boot state',
+      disableFiltering: true,
+      filterWithSelect: false,
+      template: 'protected/machines/index/table/machine-list/boot',
     },
   ],
 
   lookIfRefreshIsNeeded: function() {
     var res = this.get('model').filterBy('countdownTimeleft', 0).get('length');
 
-   if (res > 0) {
-     this.set('needRefresh', true);
-   } 
-   else {
-     this.set('needRefresh', false);
-   }
+    if (res > 0) {
+      this.set('needRefresh', true);
+    }
+    else {
+      this.set('needRefresh', false);
+    }
   }.observes('model.@each.countdownTimeleft'),
 
   machinesController: Ember.inject.controller('protected.machines'),
@@ -132,10 +132,10 @@ export default Ember.Controller.extend({
   }),
 
   isConfigurable : function() {
-    return(this.get("driverName") !== "qemu" &&
-           this.get("driverName") !== "manual" &&
-           this.get("driverName") !== "vmwarefusion");
-  }.property("driverName"),
+    return(this.get('driverName') !== 'qemu' &&
+           this.get('driverName') !== 'manual' &&
+           this.get('driverName') !== 'vmwarefusion');
+  }.property('driverName'),
 
   actions: {
     selectMachine(machine) {
@@ -144,16 +144,16 @@ export default Ember.Controller.extend({
 
     downloadWindows: function() {
       let machine = this.store.createRecord('machine', {
-        name: "windows-custom-server-127.0.0.1-windows-server-std-2012R2-amd64",
-        adminPassword: "Nanocloud123+",
+        name: 'windows-custom-server-127.0.0.1-windows-server-std-2012R2-amd64',
+        adminPassword: 'Nanocloud123+',
       });
 
       machine.save()
       .then(() => {
-        this.toast.info("Windows is downloading");
+        this.toast.info('Windows is downloading');
       })
       .catch(() => {
-        this.toast.error("Could not download Windows, please try again");
+        this.toast.error('Could not download Windows, please try again');
       });
     }
   }

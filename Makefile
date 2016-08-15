@@ -10,8 +10,10 @@ test-api:
 test-units:
 	mocha tests/api/bootstrap.test.js ./tests/unit/**/*.js
 
-test-jshint:
-	jshint api/ config/
+test-linter:
+	jshint .
+	./node_modules/eslint/bin/eslint.js -c eslintrc.json .
+	./node_modules/eslint/bin/eslint.js -c ./tests/eslintrc.json ./tests
 
 test-licenses:
 	./tests/test-licenses.sh

@@ -48,17 +48,17 @@ export default VdiWindowComponent.extend({
       this.get('remoteSession').setLocalClipboard(this.get('connectionName'), this.get('cloudClipboardContent'));
       Ember.$('.vdi-clipboard .done-msg').css('opacity', 0);
       Ember.$('.vdi-clipboard .done-msg')
-        .velocity("stop")
+        .velocity('stop')
         .velocity({ opacity: 1}, {
-        duration: 400,
-        complete: function() {
-          setTimeout(function() {
-            Ember.$('.vdi-clipboard .done-msg').velocity({ opacity: 0}, {
-              duration: 400,
-            });
-          }, 4000);
-        }
-      });
+          duration: 400,
+          complete: function() {
+            setTimeout(function() {
+              Ember.$('.vdi-clipboard .done-msg').velocity({ opacity: 0}, {
+                duration: 400,
+              });
+            }, 4000);
+          }
+        });
     },
 
     clearClipboard() {

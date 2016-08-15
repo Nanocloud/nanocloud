@@ -40,7 +40,7 @@ module.exports = {
    ***************************************************************************/
 
   models: {
-     connection: 'postgresDevelopment'
+    connection: 'postgresDevelopment'
   },
 
   nanocloud: {

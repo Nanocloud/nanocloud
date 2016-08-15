@@ -37,18 +37,18 @@ export default Ember.Controller.extend({
 
     filteringIgnoreCase: true,
     messageConfig: {
-      searchLabel: "Search",
+      searchLabel: 'Search',
     },
 
     customIcons: {
-      "sort-asc": "fa fa-caret-up",
-      "sort-desc": "fa fa-caret-down",
-      "caret": "fa fa-minus",
-      "column-visible": "fa fa-minus",
+      'sort-asc': 'fa fa-caret-up',
+      'sort-desc': 'fa fa-caret-down',
+      caret: 'fa fa-minus',
+      'column-visible': 'fa fa-minus',
     },
 
     customClasses: {
-      "pageSizeSelectWrapper": "pagination-number"
+      pageSizeSelectWrapper: 'pagination-number'
     }
   },
 
@@ -70,34 +70,34 @@ export default Ember.Controller.extend({
   columns: function() {
 
     return [
-        {
-          "propertyName": "type",
-          "title": "Type",
-          "disableFiltering": true,
-          "filterWithSelect": false,
-          "className": "short",
-          "template": "protected/files/index/table/file-list/file-type",
-          "disableSorting": true,
-        },
-        {
-          "propertyName": "name",
-          "title": "Filename",
-          "disableFiltering": true,
-          "filterWithSelect": false,
-        },
-        {
-          "propertyName": "size",
-          "title": "Size",
-          "disableFiltering": true,
-          "filterWithSelect": false,
-          "template": "protected/files/index/table/file-list/size",
-        },
-        {
-          "title": "Action",
-          "className": "short",
-          "template": "protected/files/index/table/file-list/download-button",
-          "disableSorting": true,
-        }
+      {
+        propertyName: 'type',
+        title: 'Type',
+        disableFiltering: true,
+        filterWithSelect: false,
+        className: 'short',
+        template: 'protected/files/index/table/file-list/file-type',
+        disableSorting: true,
+      },
+      {
+        propertyName: 'name',
+        title: 'Filename',
+        disableFiltering: true,
+        filterWithSelect: false,
+      },
+      {
+        propertyName: 'size',
+        title: 'Size',
+        disableFiltering: true,
+        filterWithSelect: false,
+        template: 'protected/files/index/table/file-list/size',
+      },
+      {
+        title: 'Action',
+        className: 'short',
+        template: 'protected/files/index/table/file-list/download-button',
+        disableSorting: true,
+      }
     ];
   }.property(),
 

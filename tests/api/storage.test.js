@@ -22,21 +22,19 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-/* globals ConfigService */
-
-// jshint mocha:true
+/* globals sails, ConfigService */
 
 const nano = require('./lib/nanotest');
 const expect = require('chai').expect;
 
 module.exports = function() {
 
-  describe("Storage", function() {
+  describe('Storage', function() {
 
-    before(function(done) {
-      ConfigService.set("storageAddress", "localhost")
+    before((done) => {
+      ConfigService.set('storageAddress', 'localhost')
       .then(() => {
-        return ConfigService.set("storagePort", 9090);
+        return ConfigService.set('storagePort', 9090);
       })
       .then(() => {
         return done();
@@ -46,10 +44,10 @@ module.exports = function() {
     const fileSchema = {
       type: 'object',
       properties: {
-        'mod_time': {type: 'number'},
-        'name': {type: 'string'},
-        'size': {type: 'number'},
-        'type': {type: 'string'},
+        mod_time: {type: 'number'},
+        name: {type: 'string'},
+        size: {type: 'number'},
+        type: {type: 'string'},
       },
       required: ['mod_time', 'name', 'size', 'type'],
       additionalProperties: false
@@ -58,57 +56,57 @@ module.exports = function() {
     let filename = 'storage.test.js';
     let fileSize = null;
 
-    describe("Upload a file", function() {
+    describe('Upload a file', function() {
       it('Should upload a file', function(done) {
         nano.request(sails.hooks.http.app)
-          .post('/api/upload?filename=' + filename)
-          .attach(filename, './tests/api/storage.test.js', filename)
-          .set(nano.adminLogin())
-          .expect(200)
-          .end(done);
-      });
-    });
-
-    describe("Get user's files", function() {
-      it('Should return a list of files', function(done) {
-        nano.request(sails.hooks.http.app)
-          .get('/api/files')
-          .set(nano.adminLogin())
-          .expect(200)
-          .expect(nano.jsonApiSchema(fileSchema))
-          .expect((res) => {
-            fileSize = res.body.data[0].attributes.size;
-          })
+        .post('/api/upload?filename=' + filename)
+        .attach(filename, './tests/api/storage.test.js', filename)
+        .set(nano.adminLogin())
+        .expect(200)
         .end(done);
       });
     });
 
-    describe("Download a file", function() {
+    describe('Get user\'s files', function() {
+      it('Should return a list of files', function(done) {
+        nano.request(sails.hooks.http.app)
+        .get('/api/files')
+        .set(nano.adminLogin())
+        .expect(200)
+        .expect(nano.jsonApiSchema(fileSchema))
+        .expect((res) => {
+          fileSize = res.body.data[0].attributes.size;
+        })
+        .end(done);
+      });
+    });
+
+    describe('Download a file', function() {
 
       let downloadToken = null;
-      describe("Get a download token", function() {
+      describe('Get a download token', function() {
         it('Should return a download token', function(done) {
           nano.request(sails.hooks.http.app)
-            .get('/api/files/token?filename=' + filename)
-            .set(nano.adminLogin())
-            .expect(200)
-            .expect((res) => {
-              downloadToken = res.body.token;
-            })
+          .get('/api/files/token?filename=' + filename)
+          .set(nano.adminLogin())
+          .expect(200)
+          .expect((res) => {
+            downloadToken = res.body.token;
+          })
           .end(done);
         });
       });
 
-      describe("Download file", function() {
+      describe('Download file', function() {
         it('Should return file content', function(done) {
           nano.request(sails.hooks.http.app)
-            .get('/api/files/download?filename=' + filename + '&token=' + downloadToken)
-            .expect(200)
-            .expect('Content-Type', 'application/javascript')
-            .expect('Content-disposition', 'attachment; filename="' + filename + '"')
-            .expect((res) => {
-              expect(res.text.length).to.equal(fileSize);
-            })
+          .get('/api/files/download?filename=' + filename + '&token=' + downloadToken)
+          .expect(200)
+          .expect('Content-Type', 'application/javascript')
+          .expect('Content-disposition', `attachment; filename="${filename}"`)
+          .expect((res) => {
+            expect(res.text.length).to.equal(fileSize);
+          })
           .end(done);
         });
       });

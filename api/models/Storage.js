@@ -52,8 +52,8 @@ module.exports = {
     return PlazaService.exec(
       values.hostname,
       values.port,
-      ["useradd", values.username, "--create-home", "--groups", "users"],
-      ""
+      ['useradd', values.username, '--create-home', '--groups', 'users'],
+      ''
     )
     .then(() => {
       return next();

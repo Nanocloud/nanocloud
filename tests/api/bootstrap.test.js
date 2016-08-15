@@ -22,6 +22,8 @@
  * <http://www.gnu.org/licenses/>.
  */
 
+/* globals AccessToken */
+
 var sails = require('sails');
 
 process.env.IAAS = 'dummy';
@@ -35,7 +37,7 @@ before(function(done) {
     models: {
       migrate: 'drop'
     }
-  }, function(err, server) {
+  }, function(err) {
 
     if (err) {
       throw new Error(err);
@@ -43,9 +45,9 @@ before(function(done) {
 
     // Here is loaded administrator token
     AccessToken.create({
-      userId: "aff17b8b-bf91-40bf-ace6-6dfc985680bb",
-      token: "admintoken"
-    }, function(err, accessToken) {
+      userId: 'aff17b8b-bf91-40bf-ace6-6dfc985680bb',
+      token: 'admintoken'
+    }, function(err) {
 
       if (err) {
         return done(err);

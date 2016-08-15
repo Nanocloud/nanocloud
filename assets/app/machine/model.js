@@ -51,30 +51,30 @@ export default DS.Model.extend({
 
   getPlatform: Ember.computed('platform', function() {
     switch (this.get('platform')) {
-      case "vmwarefusion":
-          return "VMware Fusion";
-      case "qemu":
-          return "Qemu";
-      case "manual":
-          return "Manual";
-      case "aws":
-          return "AWS";
-      case "openstack":
-          return "Openstack";
-      default:
-          return false;
+    case 'vmwarefusion':
+      return 'VMware Fusion';
+    case 'qemu':
+      return 'Qemu';
+    case 'manual':
+      return 'Manual';
+    case 'aws':
+      return 'AWS';
+    case 'openstack':
+      return 'Openstack';
+    default:
+      return false;
     }
   }),
 
   machineName: Ember.computed('name', function() {
-    return this.get('name') || "No name";
+    return this.get('name') || 'No name';
   }),
 
   driverDetected: Ember.computed('platform', function() {
     return this.get('getPlatform')? true : false;
   }),
   recording: DS.attr('string', {
-    defaultValue: "idle"
+    defaultValue: 'idle'
   }),
   timeleft: DS.attr('number'),
   countdownTimeleft: Ember.computed.alias('timeleft'),
@@ -82,14 +82,14 @@ export default DS.Model.extend({
 
   formattedTimeleft: Ember.computed('timeleft', function() {
     switch (this.get('timeleft')) {
-      case INUSE:
-        return "In use";
-      case UNASSIGNED:
-        return "Unassigned";
-      case TERMINATED:
-        return "Waiting to be terminated";
-      default:
-        return "Not supported";
+    case INUSE:
+      return 'In use';
+    case UNASSIGNED:
+      return 'Unassigned';
+    case TERMINATED:
+      return 'Waiting to be terminated';
+    default:
+      return 'Not supported';
     }
   }),
 

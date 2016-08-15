@@ -30,7 +30,7 @@ export function vdiProgressFormater([value, noStatus]) {
     val = 'Reassembling';
   }
   if (Number.isInteger(val)) {
-    return val + "%";
+    return val + '%';
   }
   else {
     return val;

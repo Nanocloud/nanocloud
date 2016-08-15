@@ -22,7 +22,9 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-const supertestRequest = require("supertest-as-promised");
+/*jshint loopfunc: true */
+
+const supertestRequest = require('supertest-as-promised');
 const Validator = require('jsonapi-validator').Validator;
 const validator = new Validator();
 const Ajv = require('ajv');
@@ -48,11 +50,11 @@ module.exports = {
   },
 
   adminId: function() {
-    return "aff17b8b-bf91-40bf-ace6-6dfc985680bb";
+    return 'aff17b8b-bf91-40bf-ace6-6dfc985680bb';
   },
 
   desktopId: function() {
-    return "aff17b8b-bf91-40bf-ace6-6dfc985680bb";
+    return 'aff17b8b-bf91-40bf-ace6-6dfc985680bb';
   },
 
   schema: function(schema) {
@@ -70,160 +72,183 @@ module.exports = {
   getJsonApiSchema: function() {
 
     const JSONAPIschema = {
-      "title": "JSON API Schema",
-      "description": "This is a schema for responses in the JSON API format. For more, see http://jsonapi.org",
-      "type": "object",
-      "required": [
-        "data"
+      'title': 'JSON API Schema',
+      'description': 'This is a schema for responses in the JSON API format. For more, see http://jsonapi.org',
+      'type': 'object',
+      'required': [
+        'data'
       ],
-      "properties": {
-        "data": {
-          "$ref": "#/definitions/data"
+      'properties': {
+        'data': {
+          '$ref': '#/definitions/data'
         },
-        "included": {
-          "description": "To reduce the number of HTTP requests, servers **MAY** allow responses that include related resources along with the requested primary resources. Such responses are called \"compound documents\".",
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/resource"
+        'included': {
+          'description': 'To reduce the number of HTTP requests, servers **MAY** allow responses that include related resources along with the requested primary resources. Such responses are called \'compound documents\'.',
+          'type': 'array',
+          'items': {
+            '$ref': '#/definitions/resource'
           },
-          "uniqueItems": true
+          'uniqueItems': true
         }
       },
-      "definitions": {
-        "data": {
-          "description": "The document's \"primary data\" is a representation of the resource or collection of resources targeted by a request.",
-          "oneOf": [
+      'definitions': {
+        'data': {
+          'description': 'The document\'s \'primary data\' is a representation of the resource or collection of resources targeted by a request.',
+          'oneOf': [
             {
-              "$ref": "#/definitions/resource"
+              '$ref': '#/definitions/resource_data'
             },
             {
-              "description": "An array of resource objects, an array of resource identifier objects, or an empty array ([]), for requests that target resource collections.",
-              "type": "array",
-              "items": {
-                "$ref": "#/definitions/resource"
+              'description': 'An array of resource objects, an array of resource identifier objects, or an empty array ([]), for requests that target resource collections.',
+              'type': 'array',
+              'items': {
+                '$ref': '#/definitions/resource_data'
               },
-              "uniqueItems": true
+              'uniqueItems': true
             }
           ]
         },
-        "resource": {
-          "description": "\"Resource objects\" appear in a JSON API document to represent resources.",
-          "type": "object",
-          "required": [
-            "type",
-            "id"
+        'resource_data': {
+          'description': '\'Resource objects\' appear in a JSON API document to represent resources.',
+          'type': 'object',
+          'required': [
+            'type',
+            'id'
           ],
-          "properties": {
-            "type": {
-              "type": "string"
+          'properties': {
+            'type': {
+              'type': 'string'
             },
-            "id": {
-              "type": "string"
+            'id': {
+              'type': 'string'
             },
-            "attributes": {
-              "$ref": "#/definitions/attributes_data"
+            'attributes': {
+              '$ref': '#/definitions/attributes_data'
             },
-            "relationships": {
-              "$ref": "#/definitions/relationships"
+            'relationships': {
+              '$ref': '#/definitions/relationships'
             }
           },
-          "additionalProperties": false
+          'additionalProperties': false
         },
-        "attributes_data": {
-          "description": "Members of the attributes object (\"attributes\") represent information about the resource object in which it's defined.",
-          "type": "object",
-          "patternProperties": {
-            "^(?!relationships$|links$)\\w[-\\w_]*$": {
-              "description": "Attributes may contain any valid JSON value."
+        'resource': {
+          'description': '\'Resource objects\' appear in a JSON API document to represent resources.',
+          'type': 'object',
+          'required': [
+            'type',
+            'id'
+          ],
+          'properties': {
+            'type': {
+              'type': 'string'
+            },
+            'id': {
+              'type': 'string'
+            },
+            'attributes': {
+              '$ref': '#/definitions/attributes'
+            },
+            'relationships': {
+              '$ref': '#/definitions/relationships'
             }
           },
-          "additionalProperties": false
+          'additionalProperties': false
         },
-        "attributes": {
-          "description": "Members of the attributes object (\"attributes\") represent information about the resource object in which it's defined.",
-          "type": "object",
-          "patternProperties": {
-            "^(?!relationships$|links$)\\w[-\\w_]*$": {
-              "description": "Attributes may contain any valid JSON value."
+        'attributes_data': {
+          'description': 'Members of the attributes object (\'attributes\') represent information about the resource object in which it\'s defined.',
+          'type': 'object',
+          'patternProperties': {
+            '^(?!relationships$|links$)\\w[-\\w_]*$': {
+              'description': 'Attributes may contain any valid JSON value.'
             }
           },
-          "additionalProperties": false
+          'additionalProperties': false
         },
-        "relationships": {
-          "description": "Members of the relationships object (\"relationships\") represent references from the resource object in which it's defined to other resource objects.",
-          "type": "object",
-          "patternProperties": {
-            "^\\w[-\\w_]*$": {
-              "properties": {
-                "data": {
-                  "description": "Member, whose value represents \"resource linkage\".",
-                  "oneOf": [
+        'attributes': {
+          'description': 'Members of the attributes object (\'attributes\') represent information about the resource object in which it\'s defined.',
+          'type': 'object',
+          'patternProperties': {
+            '^(?!relationships$|links$)\\w[-\\w_]*$': {
+              'description': 'Attributes may contain any valid JSON value.'
+            }
+          },
+          'additionalProperties': false
+        },
+        'relationships': {
+          'description': 'Members of the relationships object (\'relationships\') represent references from the resource object in which it\'s defined to other resource objects.',
+          'type': 'object',
+          'patternProperties': {
+            '^\\w[-\\w_]*$': {
+              'properties': {
+                'data': {
+                  'description': 'Member, whose value represents \'resource linkage\'.',
+                  'oneOf': [
                     {
-                      "$ref": "#/definitions/relationshipToOne"
+                      '$ref': '#/definitions/relationshipToOne'
                     },
                     {
-                      "$ref": "#/definitions/relationshipToMany"
+                      '$ref': '#/definitions/relationshipToMany'
                     }
                   ]
                 },
-                "meta": {
-                  "$ref": "#/definitions/meta"
+                'meta': {
+                  '$ref': '#/definitions/meta'
                 }
               },
-              "additionalProperties": false
+              'additionalProperties': false
             }
           },
-          "additionalProperties": false
+          'additionalProperties': false
         },
-        "relationshipToOne": {
-          "description": "References to other resource objects in a to-one (\"relationship\"). Relationships can be specified by including a member in a resource's links object.",
-          "anyOf": [
+        'relationshipToOne': {
+          'description': 'References to other resource objects in a to-one (\'relationship\'). Relationships can be specified by including a member in a resource\'s links object.',
+          'anyOf': [
             {
-              "$ref": "#/definitions/empty"
+              '$ref': '#/definitions/empty'
             },
             {
-              "$ref": "#/definitions/linkage"
+              '$ref': '#/definitions/linkage'
             }
           ]
         },
-        "relationshipToMany": {
-          "description": "An array of objects each containing \"type\" and \"id\" members for to-many relationships.",
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/linkage"
+        'relationshipToMany': {
+          'description': 'An array of objects each containing \'type\' and \'id\' members for to-many relationships.',
+          'type': 'array',
+          'items': {
+            '$ref': '#/definitions/linkage'
           },
-          "uniqueItems": true
+          'uniqueItems': true
         },
-        "empty": {
-          "description": "Describes an empty to-one relationship.",
-          "type": ["object", "null"],
-          "properties": {},
-          "additionalProperties": false
+        'empty': {
+          'description': 'Describes an empty to-one relationship.',
+          'type': ['object', 'null'],
+          'properties': {},
+          'additionalProperties': false
         },
-        "linkage": {
-          "description": "The \"type\" and \"id\" to non-empty members.",
-          "type": "object",
-          "required": [
-            "type",
-            "id"
+        'linkage': {
+          'description': 'The \'type\' and \'id\' to non-empty members.',
+          'type': 'object',
+          'required': [
+            'type',
+            'id'
           ],
-          "properties": {
-            "type": {
-              "type": "string"
+          'properties': {
+            'type': {
+              'type': 'string'
             },
-            "id": {
-              "type": "string"
+            'id': {
+              'type': 'string'
             },
-            "meta": {
-              "$ref": "#/definitions/meta"
+            'meta': {
+              '$ref': '#/definitions/meta'
             }
           },
-          "additionalProperties": false
+          'additionalProperties': false
         },
-        "meta": {
-          "description": "Non-standard meta-information that can not be represented as an attribute or relationship.",
-          "type": "object",
-          "additionalProperties": true
+        'meta': {
+          'description': 'Non-standard meta-information that can not be represented as an attribute or relationship.',
+          'type': 'object',
+          'additionalProperties': true
         },
 
       }
@@ -236,30 +261,32 @@ module.exports = {
 
     return function(res) {
       for (let name in expectedRelationships) {
-        let relationshipGroup = expectedRelationships[name];
-        relationshipGroup.forEach((expectedRelationship) => {
+        if (expectedRelationships.hasOwnProperty(name)) {
+          let relationshipGroup = expectedRelationships[name];
+          relationshipGroup.forEach((expectedRelationship) => {
 
-          if (res.body.data.relationships === undefined) {
-            throw new Error("Expected relationship " + name + " is not present in payload.");
-          }
-          let actualRelationship = res.body.data.relationships[name];
+            if (res.body.data.relationships === undefined) {
+              throw new Error('Expected relationship ' + name + ' is not present in payload.');
+            }
+            let actualRelationship = res.body.data.relationships[name];
 
-          if (actualRelationship === undefined) {
-            throw new Error("No relation " + name + " in response.");
-          }
+            if (actualRelationship === undefined) {
+              throw new Error('No relation ' + name + ' in response.');
+            }
 
-          let match = false;
-          actualRelationship.data.forEach((record) => {
+            let match = false;
+            actualRelationship.data.forEach((record) => {
 
-            if (JSON.stringify(record) === JSON.stringify(expectedRelationship)) {
-              match = true;
+              if (JSON.stringify(record) === JSON.stringify(expectedRelationship)) {
+                match = true;
+              }
+            });
+
+            if (match === false) {
+              throw new Error('Relationship ' + name + ' not found.');
             }
           });
-
-          if (match === false) {
-            throw new Error("Relationship " + name + " not found.");
-          }
-        });
+        }
       }
     };
   },
@@ -268,7 +295,7 @@ module.exports = {
 
     let JSONAPIschema = this.getJsonApiSchema();
 
-    JSONAPIschema.definitions.attributes = schema;
+    JSONAPIschema.definitions.attributes_data = schema;
     return this.schema(JSONAPIschema);
   }
 };

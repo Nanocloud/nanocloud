@@ -26,7 +26,7 @@ import Ember from 'ember';
 
 export default Ember.Component.extend({
 
-  classNames: ["card-component"],
+  classNames: ['card-component'],
 
   actions: {
     clickOnContent() {

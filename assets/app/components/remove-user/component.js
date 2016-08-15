@@ -26,20 +26,20 @@ import Ember from 'ember';
 
 export default Ember.Component.extend({
 
-	removeConfirmation: null,
+  removeConfirmation: null,
 
-	actions: {
+  actions: {
 
-		removeAccountConfirm: function() {
-			this.set("removeConfirmation", true);
-		},
+    removeAccountConfirm: function() {
+      this.set('removeConfirmation', true);
+    },
 
-		cancelAccountConfirm: function() {
-			this.set("removeConfirmation", false); 
-		},
+    cancelAccountConfirm: function() {
+      this.set('removeConfirmation', false);
+    },
 
-		removeAccount: function() {
-			this.sendAction();
-		}
-	}
+    removeAccount: function() {
+      this.sendAction();
+    }
+  }
 });

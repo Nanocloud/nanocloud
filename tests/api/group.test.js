@@ -23,6 +23,7 @@
  */
 
 // jshint mocha:true
+/* globals sails, Group */
 
 var nano = require('./lib/nanotest');
 var chai = require('chai');
@@ -30,7 +31,7 @@ var expect = chai.expect;
 
 module.exports = function() {
 
-  describe("Group", function() {
+  describe('Group', function() {
 
     afterEach('Cleaning database', function(done) {
 
@@ -48,24 +49,24 @@ module.exports = function() {
       additionalProperties: false
     };
 
-    describe("Create group", function() {
+    describe('Create group', function() {
 
       it('Should return created group', function(done) {
 
         nano.request(sails.hooks.http.app)
           .post('/api/groups')
           .send({
-            "data": {
-              "attributes": {
-                "name": "Test group"
+            'data': {
+              'attributes': {
+                'name': 'Test group'
               },
-              "type": "groups"
+              'type': 'groups'
             }
           })
           .set(nano.adminLogin())
           .expect(201)
           .expect(nano.jsonApiSchema(expectedSchema))
-          .then((res) => {
+          .then(() => {
 
             return nano.request(sails.hooks.http.app)
               .get('/api/groups')
@@ -76,24 +77,24 @@ module.exports = function() {
                 expect(res.body.data[0].attributes.name).to.equal('Test group');
               });
           })
-          .then((res) => {
+          .then(() => {
             return done();
           });
       });
     });
 
-    describe("Rename group", function() {
+    describe('Rename group', function() {
 
       it('Should return renamed group', function(done) {
 
         nano.request(sails.hooks.http.app)
           .post('/api/groups')
           .send({
-            "data": {
-              "attributes": {
-                "name": "Group to rename"
+            'data': {
+              'attributes': {
+                'name': 'Group to rename'
               },
-              "type": "groups"
+              'type': 'groups'
             }
           })
           .set(nano.adminLogin())
@@ -106,11 +107,11 @@ module.exports = function() {
             return nano.request(sails.hooks.http.app)
               .patch('/api/groups/' + groupId)
               .send({
-                "data": {
-                  "attributes": {
-                    "name": "Group renamed"
+                'data': {
+                  'attributes': {
+                    'name': 'Group renamed'
                   },
-                  "type": "groups",
+                  'type': 'groups',
                   id: groupId
                 }
               })
@@ -124,7 +125,7 @@ module.exports = function() {
                 expect(res.body.data.attributes.name).to.equal('Group renamed');
               });
           })
-          .then((res) => {
+          .then(() => {
 
             return nano.request(sails.hooks.http.app)
               .get('/api/groups')
@@ -135,24 +136,24 @@ module.exports = function() {
                 expect(res.body.data[0].attributes.name).to.equal('Group renamed');
               });
           })
-          .then((res) => {
+          .then(() => {
             return done();
           });
       });
     });
 
-    describe("Remove group", function() {
+    describe('Remove group', function() {
 
       it('Should leave no trace of the removed group', function(done) {
 
         nano.request(sails.hooks.http.app)
           .post('/api/groups')
           .send({
-            "data": {
-              "attributes": {
-                "name": "Group to removed"
+            'data': {
+              'attributes': {
+                'name': 'Group to removed'
               },
-              "type": "groups"
+              'type': 'groups'
             }
           })
           .set(nano.adminLogin())
@@ -167,11 +168,11 @@ module.exports = function() {
               .set(nano.adminLogin())
               .expect(200)
               .expect({
-                "meta": {
+                'meta': {
                 }
               });
           })
-          .then((res) => {
+          .then(() => {
 
             return nano.request(sails.hooks.http.app)
               .get('/api/groups')
@@ -181,24 +182,24 @@ module.exports = function() {
                 data: []
               });
           })
-          .then((res) => {
+          .then(() => {
             return done();
           });
       });
     });
 
-    describe("Fetch a specific group's informations", function() {
+    describe('Fetch a specific group\'s informations', function() {
 
       it('Should return created group', function(done) {
 
         nano.request(sails.hooks.http.app)
           .post('/api/groups')
           .send({
-            "data": {
-              "attributes": {
-                "name": "Group"
+            'data': {
+              'attributes': {
+                'name': 'Group'
               },
-              "type": "groups"
+              'type': 'groups'
             }
           })
           .set(nano.adminLogin())
@@ -217,27 +218,26 @@ module.exports = function() {
               })
               .expect(nano.jsonApiSchema(expectedSchema));
           })
-          .then((res) => {
+          .then(() => {
             return done();
           });
       });
     });
 
-    describe("Add user to a group", function() {
+    describe('Add user to a group', function() {
 
       it('Should return group with user relationship', function(done) {
 
         var groupID = null;
-        var userID = null;
 
         nano.request(sails.hooks.http.app)
           .post('/api/groups')
           .send({
-            "data": {
-              "attributes": {
-                "name": "Group to add user to"
+            'data': {
+              'attributes': {
+                'name': 'Group to add user to'
               },
-              "type": "groups"
+              'type': 'groups'
             }
           })
           .set(nano.adminLogin())
@@ -250,20 +250,20 @@ module.exports = function() {
             return nano.request(sails.hooks.http.app)
               .patch('/api/groups/' + groupID)
               .send({
-                "data": {
-                  "id": groupID,
-                  "attributes": {
-                    "name": "Group to add user to"
+                'data': {
+                  'id': groupID,
+                  'attributes': {
+                    'name': 'Group to add user to'
                   },
-                  "relationships": {
-                    "members": {
-                      "data": [{
-                        "type": "users",
-                        "id": nano.adminId()
+                  'relationships': {
+                    'members': {
+                      'data': [{
+                        'type': 'users',
+                        'id': nano.adminId()
                       }]
                     }
                   },
-                  "type": "groups"
+                  'type': 'groups'
                 }
               })
               .set(nano.adminLogin())
@@ -279,23 +279,23 @@ module.exports = function() {
                 }]
               }));
           })
-          .then((res) => {
+          .then(() => {
             return nano.request(sails.hooks.http.app)
               .get('/api/groups')
               .set(nano.adminLogin())
               .expect(200)
               .expect(nano.jsonApiSchema(expectedSchema));
           })
-          .then((res) => {
+          .then(() => {
             return nano.request(sails.hooks.http.app)
               .post('/api/users')
               .send({
                 data: {
                   attributes: {
-                    'first-name': "Firstname",
-                    'last-name': "Lastname",
-                    'email': "usergroup@nanocloud.com",
-                    'password': "nanocloud",
+                    'first-name': 'Firstname',
+                    'last-name': 'Lastname',
+                    'email': 'usergroup@nanocloud.com',
+                    'password': 'nanocloud',
                     'is-admin': false
                   },
                   type: 'users'
@@ -311,23 +311,23 @@ module.exports = function() {
             return nano.request(sails.hooks.http.app)
               .patch('/api/groups/' + groupID)
               .send({
-                "data": {
-                  "id": groupID,
-                  "attributes": {
-                    "name": "Group to add user to"
+                'data': {
+                  'id': groupID,
+                  'attributes': {
+                    'name': 'Group to add user to'
                   },
-                  "relationships": {
-                    "members": {
-                      "data": [{
-                        "type": "users",
-                        "id": nano.adminId()
+                  'relationships': {
+                    'members': {
+                      'data': [{
+                        'type': 'users',
+                        'id': nano.adminId()
                       }, {
-                        "type": "users",
-                        "id": userID
+                        'type': 'users',
+                        'id': userID
                       }]
                     }
                   },
-                  "type": "groups"
+                  'type': 'groups'
                 }
               })
               .set(nano.adminLogin())
@@ -346,27 +346,26 @@ module.exports = function() {
                 }]
               }));
           })
-          .then((res) => {
+          .then(() => {
             return done();
           });
       });
     });
 
-    describe("Remove user from a group", function() {
+    describe('Remove user from a group', function() {
 
       it('Should return group without user relationship', function(done) {
 
         var groupID = null;
-        var userID = null;
 
         nano.request(sails.hooks.http.app)
           .post('/api/groups')
           .send({
-            "data": {
-              "attributes": {
-                "name": "Group to remove user from"
+            'data': {
+              'attributes': {
+                'name': 'Group to remove user from'
               },
-              "type": "groups"
+              'type': 'groups'
             }
           })
           .set(nano.adminLogin())
@@ -379,20 +378,20 @@ module.exports = function() {
             return nano.request(sails.hooks.http.app)
               .patch('/api/groups/' + groupID)
               .send({
-                "data": {
-                  "id": groupID,
-                  "attributes": {
-                    "name": "Group to remove user from"
+                'data': {
+                  'id': groupID,
+                  'attributes': {
+                    'name': 'Group to remove user from'
                   },
-                  "relationships": {
-                    "members": {
-                      "data": [{
-                        "type": "users",
-                        "id": nano.adminId()
+                  'relationships': {
+                    'members': {
+                      'data': [{
+                        'type': 'users',
+                        'id': nano.adminId()
                       }]
                     }
                   },
-                  "type": "groups"
+                  'type': 'groups'
                 }
               })
               .set(nano.adminLogin())
@@ -408,21 +407,21 @@ module.exports = function() {
                 }]
               }));
           })
-          .then((res) => {
+          .then(() => {
             return nano.request(sails.hooks.http.app)
               .patch('/api/groups/' + groupID)
               .send({
-                "data": {
-                  "id": groupID,
-                  "attributes": {
-                    "name": "Group to remove user from"
+                'data': {
+                  'id': groupID,
+                  'attributes': {
+                    'name': 'Group to remove user from'
                   },
-                  "relationships": {
-                    "members": {
-                      "data": []
+                  'relationships': {
+                    'members': {
+                      'data': []
                     }
                   },
-                  "type": "groups"
+                  'type': 'groups'
                 }
               })
               .set(nano.adminLogin())
@@ -435,27 +434,26 @@ module.exports = function() {
                 'members': []
               }));
           })
-          .then((res) => {
+          .then(() => {
             return done();
           });
       });
     });
 
-    describe("Add application to a group", function() {
+    describe('Add application to a group', function() {
 
       it('Should return group with apps relationship', function(done) {
 
         var groupID = null;
-        var userID = null;
 
         nano.request(sails.hooks.http.app)
           .post('/api/groups')
           .send({
-            "data": {
-              "attributes": {
-                "name": "Group to add application to"
+            'data': {
+              'attributes': {
+                'name': 'Group to add application to'
               },
-              "type": "groups"
+              'type': 'groups'
             }
           })
           .set(nano.adminLogin())
@@ -468,20 +466,20 @@ module.exports = function() {
             return nano.request(sails.hooks.http.app)
               .patch('/api/groups/' + groupID)
               .send({
-                "data": {
-                  "id": groupID,
-                  "attributes": {
-                    "name": "Group to add application to"
+                'data': {
+                  'id': groupID,
+                  'attributes': {
+                    'name': 'Group to add application to'
                   },
-                  "relationships": {
-                    "apps": {
-                      "data": [{
-                        "type": "apps",
-                        "id": nano.desktopId()
+                  'relationships': {
+                    'apps': {
+                      'data': [{
+                        'type': 'apps',
+                        'id': nano.desktopId()
                       }]
                     }
                   },
-                  "type": "groups"
+                  'type': 'groups'
                 }
               })
               .set(nano.adminLogin())
@@ -497,27 +495,26 @@ module.exports = function() {
                 }]
               }));
           })
-          .then((res) => {
+          .then(() => {
             return done();
           });
       });
     });
 
-    describe("Remove application from a group", function() {
+    describe('Remove application from a group', function() {
 
       it('Should return group without any applications relationship', function(done) {
 
         var groupID = null;
-        var userID = null;
 
         nano.request(sails.hooks.http.app)
           .post('/api/groups')
           .send({
-            "data": {
-              "attributes": {
-                "name": "Group to remove application from"
+            'data': {
+              'attributes': {
+                'name': 'Group to remove application from'
               },
-              "type": "groups"
+              'type': 'groups'
             }
           })
           .set(nano.adminLogin())
@@ -530,20 +527,20 @@ module.exports = function() {
             return nano.request(sails.hooks.http.app)
               .patch('/api/groups/' + groupID)
               .send({
-                "data": {
-                  "id": groupID,
-                  "attributes": {
-                    "name": "Group to remove application from"
+                'data': {
+                  'id': groupID,
+                  'attributes': {
+                    'name': 'Group to remove application from'
                   },
-                  "relationships": {
-                    "apps": {
-                      "data": [{
-                        "type": "apps",
-                        "id": nano.desktopId()
+                  'relationships': {
+                    'apps': {
+                      'data': [{
+                        'type': 'apps',
+                        'id': nano.desktopId()
                       }]
                     }
                   },
-                  "type": "groups"
+                  'type': 'groups'
                 }
               })
               .set(nano.adminLogin())
@@ -559,21 +556,21 @@ module.exports = function() {
                 }]
               }));
           })
-          .then((res) => {
+          .then(() => {
             return nano.request(sails.hooks.http.app)
               .patch('/api/groups/' + groupID)
               .send({
-                "data": {
-                  "id": groupID,
-                  "attributes": {
-                    "name": "Group to remove user from"
+                'data': {
+                  'id': groupID,
+                  'attributes': {
+                    'name': 'Group to remove user from'
                   },
-                  "relationships": {
-                    "apps": {
-                      "data": []
+                  'relationships': {
+                    'apps': {
+                      'data': []
                     }
                   },
-                  "type": "groups"
+                  'type': 'groups'
                 }
               })
               .set(nano.adminLogin())
@@ -586,7 +583,7 @@ module.exports = function() {
                 'apps': []
               }));
           })
-          .then((res) => {
+          .then(() => {
             return done();
           });
       });

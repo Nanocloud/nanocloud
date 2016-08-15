@@ -22,17 +22,17 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-// jshint mocha:true
+/* global Histories, sails */
 
 var nano = require('./lib/nanotest');
 var expect = require('chai').expect;
 
 module.exports = function() {
 
-  describe("Histories", function() {
+  describe('Histories', function() {
 
-    afterEach('Cleaning database', function () {
-      Histories.query('TRUNCATE TABLE public.history', done);
+    afterEach('Cleaning database', () => {
+      Histories.query('TRUNCATE TABLE public.history');
     });
 
     const expectedSchema = {
@@ -55,7 +55,7 @@ module.exports = function() {
       additionalProperties: false
     };
 
-    describe("Create history", () => {
+    describe('Create history', () => {
       it('Should create history', (done) => {
         nano.request(sails.hooks.http.app)
         .post('/api/histories')
@@ -72,14 +72,14 @@ module.exports = function() {
               'machine-id': 'f7362994-a8df-4ed6-89f5-99092b145999',
               'machine-size': '',
               'machine-driver': 'dummy'
-             },
+            },
             type: 'histories'
           }
         })
         .set('Authorization', 'Bearer admintoken')
         .expect(201)
         .expect(nano.jsonApiSchema(expectedSchema))
-        .then((res) => {
+        .then(() => {
           return nano.request(sails.hooks.http.app)
           .get('/api/hitories')
           .expect(200)
@@ -89,7 +89,7 @@ module.exports = function() {
           });
         })
         .then((res) => {
-          return nano.request(sailt.hooks.http.app)
+          return nano.request(sails.hooks.http.app)
           .post('/api/histories/' + res.body.data[0].id)
           .send({
             data: {

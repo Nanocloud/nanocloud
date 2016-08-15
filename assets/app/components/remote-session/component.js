@@ -62,16 +62,16 @@ export default Ember.Component.extend({
 
       guacData.tunnel.onerror = function(status) {
         this.get('element').removeChild(guacData.guacamole.getDisplay().getElement());
-        var message = "Opening a WebSocketTunnel has failed";
+        var message = 'Opening a WebSocketTunnel has failed';
         var code = getKeyFromVal(Guacamole.Status.Code, status.code);
         if (code !== -1) {
-          message += " - " + code;
+          message += ' - ' + code;
         }
         this.get('remoteSession').stateChanged(this.get('remoteSession.STATE_DISCONNECTED'), true, message);
         this.get('remoteSession').disconnectSession(this.get('connectionName'));
         this.sendAction('onError', {
           error : true,
-          message: "You have been disconnected due to some error"
+          message: 'You have been disconnected due to some error'
         });
       }.bind(this);
       let guac = guacData.guacamole;
@@ -80,7 +80,7 @@ export default Ember.Component.extend({
         let blob_reader = new Guacamole.BlobReader(stream, mimetype);
 
         blob_reader.onprogress = function() {
-          stream.sendAck("Received", Guacamole.Status.Code.SUCCESS);
+          stream.sendAck('Received', Guacamole.Status.Code.SUCCESS);
         }.bind(this);
 
         blob_reader.onend = function() {
@@ -96,7 +96,7 @@ export default Ember.Component.extend({
           document.body.removeChild(element);
         }.bind(this);
 
-        stream.sendAck("Ready", Guacamole.Status.Code.SUCCESS);
+        stream.sendAck('Ready', Guacamole.Status.Code.SUCCESS);
       }.bind(this);
 
       guac.onstatechange = (state) => {
@@ -107,7 +107,7 @@ export default Ember.Component.extend({
 
         let blob_reader = new Guacamole.BlobReader(stream, mimetype);
         blob_reader.onprogress = function() {
-          stream.sendAck("Received", Guacamole.Status.Code.SUCCESS);
+          stream.sendAck('Received', Guacamole.Status.Code.SUCCESS);
         }.bind(this);
 
         blob_reader.onend = function() {

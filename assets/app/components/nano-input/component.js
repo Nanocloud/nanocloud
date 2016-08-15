@@ -27,10 +27,10 @@ import Ember from 'ember';
 export default Ember.Component.extend({
 
   mode: null,
-  placeholder: "",
-  value: "",
+  placeholder: '',
+  value: '',
   focus: false,
-  type: "text",
+  type: 'text',
   validation: null,
 
   didInsertElement() {

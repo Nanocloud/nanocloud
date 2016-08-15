@@ -20,7 +20,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* globals Config */
+/* globals sails, Config */
 
 const Promise = require('bluebird');
 const _ = require('lodash');
@@ -64,47 +64,47 @@ function getVariableType(name) {
  */
 function deserialize(name, value) {
   switch (getVariableType(name)) {
-    case 'number':
-      value = parseInt(value, 10);
-      if (Number.isNaN(value)) {
-        throw new Error(`Config variable '${name}' must be an number.`);
-      }
-      break;
+  case 'number':
+    value = parseInt(value, 10);
+    if (Number.isNaN(value)) {
+      throw new Error(`Config variable '${name}' must be an number.`);
+    }
+    break;
 
-    case 'array':
+  case 'array':
+    value = JSON.parse(value);
+    if (!Array.isArray(value)) {
+      throw new Error(`Config variable '${name}' must be an array.`);
+    }
+    break;
+
+  case 'object':
+    try {
       value = JSON.parse(value);
-      if (!Array.isArray(value)) {
-        throw new Error(`Config variable '${name}' must be an array.`);
-      }
-      break;
 
-    case 'object':
-      try {
-        value = JSON.parse(value);
-
-        if (typeof value !== 'object' || Array.isArray(value)) {
-          throw new Error(`Config variable '${name}' must be an object.`);
-        }
-      } catch (e) {
+      if (typeof value !== 'object' || Array.isArray(value)) {
         throw new Error(`Config variable '${name}' must be an object.`);
       }
-      break;
+    } catch (e) {
+      throw new Error(`Config variable '${name}' must be an object.`);
+    }
+    break;
 
-    case 'boolean':
-      if (value === 'true') {
-        value = true;
-      } else if (value === 'false') {
-        value = false;
-      } else {
-        throw new Error(`Config variable '${name}' must be an boolean.`);
-      }
-      break;
+  case 'boolean':
+    if (value === 'true') {
+      value = true;
+    } else if (value === 'false') {
+      value = false;
+    } else {
+      throw new Error(`Config variable '${name}' must be an boolean.`);
+    }
+    break;
 
-   case 'string':
-     break;
+  case 'string':
+    break;
 
-   default:
-     throw new Error(`Config variable '${name}' as an invalid value.`);
+  default:
+    throw new Error(`Config variable '${name}' as an invalid value.`);
   }
   return value;
 }
@@ -144,40 +144,40 @@ function nanocloudConfigValue(name, defaultValue) {
     }
 
     switch (type) {
-      case 'number':
-        value = parseInt(envValue, 10);
-        if (Number.isNaN(value)) {
-          throw new Error(`Config variable '${name}' must be a number.`);
-        }
-        break;
+    case 'number':
+      value = parseInt(envValue, 10);
+      if (Number.isNaN(value)) {
+        throw new Error(`Config variable '${name}' must be a number.`);
+      }
+      break;
 
-      case 'array':
-        value = JSON.parse(envValue);
-        if (!Array.isArray(value)) {
-          throw new Error(`Config variable '${name}' must be an array.`);
-        }
-        break;
+    case 'array':
+      value = JSON.parse(envValue);
+      if (!Array.isArray(value)) {
+        throw new Error(`Config variable '${name}' must be an array.`);
+      }
+      break;
 
-      case 'object':
-        value = JSON.parse(envValue);
-        if (typeof value !== 'object') {
-          throw new Error(`Config variable '${name}' must be an object.`);
-        }
-        break;
+    case 'object':
+      value = JSON.parse(envValue);
+      if (typeof value !== 'object') {
+        throw new Error(`Config variable '${name}' must be an object.`);
+      }
+      break;
 
-      case 'boolean':
-        if (envValue === 'true') {
-          value = true;
-        } else if (envValue === 'false') {
-          value = false;
-        } else {
-          throw new Error(`Config variable '${name}' must be a boolean.`);
-        }
-        break;
+    case 'boolean':
+      if (envValue === 'true') {
+        value = true;
+      } else if (envValue === 'false') {
+        value = false;
+      } else {
+        throw new Error(`Config variable '${name}' must be a boolean.`);
+      }
+      break;
 
-      case 'string':
-        value = envValue;
-        break;
+    case 'string':
+      value = envValue;
+      break;
 
     }
   } else {
@@ -233,22 +233,22 @@ function set(key, value) {
   }
 
   switch (type) {
-    case 'number':
-      value = value.toString();
-      break;
+  case 'number':
+    value = value.toString();
+    break;
 
-    case 'array':
-    case 'object':
-      value = JSON.stringify(value);
-      break;
+  case 'array':
+  case 'object':
+    value = JSON.stringify(value);
+    break;
 
-    case 'boolean':
-    case 'string':
+  case 'boolean':
+  case 'string':
       // value = value;
-      break;
+    break;
 
-    default:
-      return Promise.reject(new Error(`Invalid data type ${type}`));
+  default:
+    return Promise.reject(new Error(`Invalid data type ${type}`));
   }
 
   return new Promise((resolve, reject) => {

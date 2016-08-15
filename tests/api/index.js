@@ -22,7 +22,7 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-// jshint mocha:true
+/* globals sails */
 
 const testAuth = require('./auth.test');
 const testUsers = require('./users.test');

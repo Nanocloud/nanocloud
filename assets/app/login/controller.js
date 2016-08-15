@@ -46,7 +46,7 @@ export default Ember.Controller.extend({
         identification,
         password
       ).catch(() => {
-        this.toast.error("Invalid credentials");
+        this.toast.error('Invalid credentials');
       });
     }
   }

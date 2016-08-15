@@ -22,19 +22,18 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-// jshint mocha:true
-// global: ConfigService
+/* global sails, ConfigService */
 
 var nano = require('./lib/nanotest');
 var expect = require('chai').expect;
 
 module.exports = function() {
 
-  describe("Reset password", function() {
+  describe('Reset password', function() {
 
     const expectedSchema = {};
 
-    describe("Create a reset password token", function() {
+    describe('Create a reset password token', function() {
 
       before(function(done) {
         ConfigService.set('testMail', true)
@@ -51,10 +50,10 @@ module.exports = function() {
         .send({
           data: {
             attributes: {
-              'first-name': "Firstname",
-              'last-name': "Lastname",
-              'email': "user-test@nanocloud.com",
-              'password': "nanocloud",
+              'first-name': 'Firstname',
+              'last-name': 'Lastname',
+              email: 'user-test@nanocloud.com',
+              password: 'nanocloud',
               'is-admin': false
             },
             type: 'users'
@@ -71,8 +70,8 @@ module.exports = function() {
           .send({
             data: {
               attributes: {
-                'email': "user-test@nanocloud.com",
-                'password': null,
+                email: 'user-test@nanocloud.com',
+                password: null,
               },
               type: 'reset-password'
             }
@@ -90,7 +89,7 @@ module.exports = function() {
               .expect(200)
               .expect(nano.jsonApiSchema(expectedSchema))
               .expect((res) => {
-                expect(res.body.data[0].attributes["email"])
+                expect(res.body.data[0].attributes.email)
                   .to.equal('user-test@nanocloud.com');
               })
             );
@@ -98,7 +97,7 @@ module.exports = function() {
         })
         .then(() => {
           return done();
-        })
+        });
       });
     });
 

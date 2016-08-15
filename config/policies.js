@@ -51,7 +51,7 @@ module.exports.policies = {
     find: true
   },
 
-  'PendingUserController': {
+  PendingUserController: {
     create: true,
     update: true,
   },

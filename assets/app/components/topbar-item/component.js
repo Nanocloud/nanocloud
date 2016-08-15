@@ -32,7 +32,7 @@ export default TooltipsterComponent.extend({
 
   actions: {
     clickAction() {
-      this.sendAction("click");
+      this.sendAction('click');
     }
   }
 });

@@ -22,13 +22,9 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-// jshint mocha:true
+/* global ConfigService, EmailService */
 
-/* global ConfigService */
-
-var assert = require('chai').assert;
 var expect = require('chai').expect;
-var sails = require('sails');
 
 describe('EmailService', () => {
 
@@ -36,20 +32,20 @@ describe('EmailService', () => {
     // it takes time to send a mail with nodemailer
     this.timeout(10000);
     ConfigService.set('testMail', true)
-      .then(() => {
-        return ConfigService.set('smtpSendFrom', "test@nanocloud.com");
-      })
-      .then(done);
+    .then(() => {
+      return ConfigService.set('smtpSendFrom', 'test@nanocloud.com');
+    })
+    .then(done);
   });
 
   it('Should return expected data in envelope', (done) => {
-    EmailService.sendMail("otto@protonmail.com", "subject", "message")
-      .then((res) => {
-        expect(res.envelope.from).to.equal('test@nanocloud.com');
-        expect(res.envelope.to[0]).to.equal('otto@protonmail.com');
-        return done();
-      })
-      .catch(done);
+    EmailService.sendMail('otto@protonmail.com', 'subject', 'message')
+    .then((res) => {
+      expect(res.envelope.from).to.equal('test@nanocloud.com');
+      expect(res.envelope.to[0]).to.equal('otto@protonmail.com');
+      return done();
+    })
+    .catch(done);
   });
 
   after(function() {

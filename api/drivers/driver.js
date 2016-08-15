@@ -36,7 +36,7 @@ class Driver {
    * @return {Promise}
    */
   initialize() {
-    return Promise.reject(new Error("Driver's init method not implemented"));
+    return Promise.reject(new Error('Driver\'s init method not implemented'));
   }
 
 
@@ -58,11 +58,11 @@ class Driver {
    * @return {Promise[Machine]} Machine model created
    */
   createMachine(/* options */) {
-    return Promise.reject(new Error("Driver's method 'createMachine' not implemented"));
+    return Promise.reject(new Error('Driver\'s method "createMachine" not implemented'));
   }
 
   destroyMachine(/* machine */) {
-    return Promise.reject(new Error("Driver's method 'destroyMachine' not implemented"));
+    return Promise.reject(new Error('Driver\'s method "destroyMachine" not implemented'));
   }
 
  /**
@@ -72,7 +72,7 @@ class Driver {
    * @return {Promise[Object]}
    */
   getServer(/* id */) {
-    return Promise.reject(new Error("Driver's method 'getServer' not implemented"));
+    return Promise.reject(new Error('Driver\'s method "getServer" not implemented'));
   }
 }
 

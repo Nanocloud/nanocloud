@@ -43,7 +43,7 @@ module.exports = function(environment) {
       // Here you can pass flags/options to your application instance
       // when it is created
     },
-    GUACAMOLE_URL: "/guacamole/",
+    GUACAMOLE_URL: '/guacamole/',
 
     'ember-simple-auth': {
       routeAfterAuthentication: 'protected'
@@ -70,9 +70,8 @@ module.exports = function(environment) {
     ENV.APP.rootElement = '#ember-testing';
   }
 
-  if (environment === 'production') {
-
-  }
+  // if (environment === 'production') {
+  // }
 
   return ENV;
 };

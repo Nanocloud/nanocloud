@@ -23,13 +23,14 @@
  */
 
 // jshint mocha:true
+/* globals sails, App, AccessToken, User, Group */
 
 var nano = require('./lib/nanotest');
 var chai = require('chai');
 var expect = chai.expect;
 
 module.exports = function() {
-  describe("Group app permission", function() {
+  describe('Group app permission', function() {
 
     let group1 = null;
     let group2 = null;
@@ -47,7 +48,7 @@ module.exports = function() {
      * group1 has admin and someotherguy as user and desktop + app1 as app
      * group2 has someguy and someotherguy as user and app1 + app2 as app
      */
-    before("Add proper groups, users and app for testing", function(done) {
+    before('Add proper groups, users and app for testing', function(done) {
 
       Group.create({
         name: 'group1'
@@ -119,79 +120,79 @@ module.exports = function() {
           return nano.request(sails.hooks.http.app)
             .patch('/api/groups/' + group1)
             .send({
-              "data": {
-                "id": group1,
-                "attributes": {
-                  "name": "group1"
+              'data': {
+                'id': group1,
+                'attributes': {
+                  'name': 'group1'
                 },
-                "relationships": {
-                  "apps": {
-                    "data": [{
-                      "type": "apps",
-                      "id": app1
+                'relationships': {
+                  'apps': {
+                    'data': [{
+                      'type': 'apps',
+                      'id': app1
                     }, {
-                      "type": "apps",
-                      "id": nano.desktopId()
+                      'type': 'apps',
+                      'id': nano.desktopId()
                     }]
                   },
-                  "members": {
-                    "data": [{
-                      "type": "users",
-                      "id": someotherguy
+                  'members': {
+                    'data': [{
+                      'type': 'users',
+                      'id': someotherguy
                     }, {
-                      "type": "users",
-                      "id": nano.adminId()
+                      'type': 'users',
+                      'id': nano.adminId()
                     }]
                   }
                 },
-                "type": "groups"
+                'type': 'groups'
               }
             })
             .set(nano.adminLogin())
             .expect(200);
         })
-        .then((res) => {
+        .then(() => {
 
           return nano.request(sails.hooks.http.app)
             .patch('/api/groups/' + group2)
             .send({
-              "data": {
-                "id": group2,
-                "attributes": {
-                  "name": "group2"
+              'data': {
+                'id': group2,
+                'attributes': {
+                  'name': 'group2'
                 },
-                "relationships": {
-                  "apps": {
-                    "data": [{
-                      "type": "apps",
-                      "id": app1
+                'relationships': {
+                  'apps': {
+                    'data': [{
+                      'type': 'apps',
+                      'id': app1
                     }, {
-                      "type": "apps",
-                      "id": app2
+                      'type': 'apps',
+                      'id': app2
                     }]
                   },
-                  "members": {
-                    "data": [{
-                      "type": "users",
-                      "id": someotherguy
+                  'members': {
+                    'data': [{
+                      'type': 'users',
+                      'id': someotherguy
                     }, {
-                      "type": "users",
-                      "id": someguy
+                      'type': 'users',
+                      'id': someguy
                     }]
                   }
                 },
-                "type": "groups"
+                'type': 'groups'
               }
             })
             .set(nano.adminLogin())
             .expect(200);
         })
-        .then((res) => {
+        .then(() => {
           return done();
         });
     });
 
-    it("Admins should be able to list all apps", function(done) {
+    it('Admins should be able to list all apps', function(done) {
 
       nano.request(sails.hooks.http.app)
         .get('/api/apps')
@@ -203,39 +204,39 @@ module.exports = function() {
         .expect((res) => {
 
           expect(res.body.data).to.include({
-            "type": "apps",
-            "id": app1,
-            "attributes": {
-              "alias": "app1",
-              "display-name": "app1",
-              "file-path": "C:\\invalid.exe"
+            'type': 'apps',
+            'id': app1,
+            'attributes': {
+              'alias': 'app1',
+              'display-name': 'app1',
+              'file-path': 'C:\\invalid.exe'
             }
           });
           expect(res.body.data).to.include({
-            "type": "apps",
-            "id": app2,
-            "attributes": {
-              "alias": "app2",
-              "display-name": "app2",
-              "file-path": "C:\\invalid.exe"
+            'type': 'apps',
+            'id': app2,
+            'attributes': {
+              'alias': 'app2',
+              'display-name': 'app2',
+              'file-path': 'C:\\invalid.exe'
             }
           });
           expect(res.body.data).to.include({
-            "type": "apps",
-            "id": nano.desktopId(),
-            "attributes": {
-              "alias": "Desktop",
-              "display-name": "Desktop",
-              "file-path": "C:\\Windows\\explorer.exe"
+            'type': 'apps',
+            'id': nano.desktopId(),
+            'attributes': {
+              'alias': 'Desktop',
+              'display-name': 'Desktop',
+              'file-path': 'C:\\Windows\\explorer.exe'
             }
           });
         })
-        .then((res) => {
+        .then(() => {
           return done();
         });
     });
 
-    it("Regular users should only be able to retrieve apps included in groups they are member of", function(done) {
+    it('Regular users should only be able to retrieve apps included in groups they are member of', function(done) {
 
       nano.request(sails.hooks.http.app)
         .get('/api/apps')
@@ -249,21 +250,21 @@ module.exports = function() {
         .expect((res) => {
 
           expect(res.body.data).to.include({
-            "type": "apps",
-            "id": app1,
-            "attributes": {
-              "alias": "app1",
-              "display-name": "app1",
-              "file-path": "C:\\invalid.exe"
+            'type': 'apps',
+            'id': app1,
+            'attributes': {
+              'alias': 'app1',
+              'display-name': 'app1',
+              'file-path': 'C:\\invalid.exe'
             }
           });
           expect(res.body.data).to.include({
-            "type": "apps",
-            "id": app2,
-            "attributes": {
-              "alias": "app2",
-              "display-name": "app2",
-              "file-path": "C:\\invalid.exe"
+            'type': 'apps',
+            'id': app2,
+            'attributes': {
+              'alias': 'app2',
+              'display-name': 'app2',
+              'file-path': 'C:\\invalid.exe'
             }
           });
         })
@@ -280,40 +281,40 @@ module.exports = function() {
             .expect((res) => {
 
               expect(res.body.data).to.include({
-                "type": "apps",
-                "id": app1,
-                "attributes": {
-                  "alias": "app1",
-                  "display-name": "app1",
-                  "file-path": "C:\\invalid.exe"
+                'type': 'apps',
+                'id': app1,
+                'attributes': {
+                  'alias': 'app1',
+                  'display-name': 'app1',
+                  'file-path': 'C:\\invalid.exe'
                 }
               });
               expect(res.body.data).to.include({
-                "type": "apps",
-                "id": app2,
-                "attributes": {
-                  "alias": "app2",
-                  "display-name": "app2",
-                  "file-path": "C:\\invalid.exe"
+                'type': 'apps',
+                'id': app2,
+                'attributes': {
+                  'alias': 'app2',
+                  'display-name': 'app2',
+                  'file-path': 'C:\\invalid.exe'
                 }
               });
               expect(res.body.data).to.include({
-                "type": "apps",
-                "id": nano.desktopId(),
-                "attributes": {
-                  "alias": "Desktop",
-                  "display-name": "Desktop",
-                  "file-path": "C:\\Windows\\explorer.exe"
+                'type': 'apps',
+                'id': nano.desktopId(),
+                'attributes': {
+                  'alias': 'Desktop',
+                  'display-name': 'Desktop',
+                  'file-path': 'C:\\Windows\\explorer.exe'
                 }
               });
             })
-            .then((res) => {
+            .then(() => {
               return done();
             });
         });
     });
 
-    it("Admins should be able to get connection out of every app", function(done) {
+    it('Admins should be able to get connection out of every app', function(done) {
 
       nano.request(sails.hooks.http.app)
         .get('/api/apps/connections')
@@ -325,52 +326,52 @@ module.exports = function() {
         .expect((res) => {
 
           expect(res.body.data).to.include({
-            "type": "apps",
-            "id": app1,
-            "attributes": {
-              "hostname": "127.0.0.1",
-              "port": 3389,
-              "username": null,
-              "password": null,
-              "remote-app": "",
-              "protocol": "rdp",
-              "app-name": "app1"
+            'type': 'apps',
+            'id': app1,
+            'attributes': {
+              'hostname': '127.0.0.1',
+              'port': 3389,
+              'username': null,
+              'password': null,
+              'remote-app': '',
+              'protocol': 'rdp',
+              'app-name': 'app1'
             }
           });
           expect(res.body.data).to.include({
-            "type": "apps",
-            "id": app2,
-            "attributes": {
-              "hostname": "127.0.0.1",
-              "port": 3389,
-              "username": null,
-              "password": null,
-              "remote-app": "",
-              "protocol": "rdp",
-              "app-name": "app2"
+            'type': 'apps',
+            'id': app2,
+            'attributes': {
+              'hostname': '127.0.0.1',
+              'port': 3389,
+              'username': null,
+              'password': null,
+              'remote-app': '',
+              'protocol': 'rdp',
+              'app-name': 'app2'
             }
           });
           expect(res.body.data).to.include({
-            "type": "apps",
-            "id": nano.desktopId(),
-            "attributes": {
-              "hostname": "127.0.0.1",
-              "port": 3389,
-              "username": null,
-              "password": null,
-              "remote-app": "",
-              "protocol": "rdp",
-              "app-name": "Desktop"
+            'type': 'apps',
+            'id': nano.desktopId(),
+            'attributes': {
+              'hostname': '127.0.0.1',
+              'port': 3389,
+              'username': null,
+              'password': null,
+              'remote-app': '',
+              'protocol': 'rdp',
+              'app-name': 'Desktop'
             }
           });
 
         })
-        .then((res) => {
+        .then(() => {
           return done();
         });
     });
 
-    it("Regular users should be able to get connections out of their apps", function(done) {
+    it('Regular users should be able to get connections out of their apps', function(done) {
 
       nano.request(sails.hooks.http.app)
         .get('/api/apps/connections')
@@ -384,33 +385,33 @@ module.exports = function() {
         .expect((res) => {
 
           expect(res.body.data).to.include({
-            "type": "apps",
-            "id": app1,
-            "attributes": {
-              "hostname": "127.0.0.1",
-              "port": 3389,
-              "username": null,
-              "password": null,
-              "remote-app": "",
-              "protocol": "rdp",
-              "app-name": "app1"
+            'type': 'apps',
+            'id': app1,
+            'attributes': {
+              'hostname': '127.0.0.1',
+              'port': 3389,
+              'username': null,
+              'password': null,
+              'remote-app': '',
+              'protocol': 'rdp',
+              'app-name': 'app1'
             }
           });
           expect(res.body.data).to.include({
-            "type": "apps",
-            "id": app2,
-            "attributes": {
-              "hostname": "127.0.0.1",
-              "port": 3389,
-              "username": null,
-              "password": null,
-              "remote-app": "",
-              "protocol": "rdp",
-              "app-name": "app2"
+            'type': 'apps',
+            'id': app2,
+            'attributes': {
+              'hostname': '127.0.0.1',
+              'port': 3389,
+              'username': null,
+              'password': null,
+              'remote-app': '',
+              'protocol': 'rdp',
+              'app-name': 'app2'
             }
           });
         })
-        .then((res) => {
+        .then(() => {
           return done();
         });
     });

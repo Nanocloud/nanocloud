@@ -22,10 +22,10 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-const http = require("http");
-const fs = require("fs");
-const request = require("request-promise");
-const Promise = require("bluebird");
+const http = require('http');
+const fs = require('fs');
+const request = require('request-promise');
+const Promise = require('bluebird');
 
 module.exports = {
 
@@ -41,14 +41,14 @@ module.exports = {
    */
   exec: function(hostname, port, cmd, stdin) {
     let options = {
-      url: "http://" + hostname + ":" + port + "/exec",
+      url: 'http://' + hostname + ':' + port + '/exec',
       headers: {
         'Content-Type': 'application/json'
       },
       json: true,
       body: {
-        "command": cmd,
-        "stdin": stdin
+        command: cmd,
+        stdin: stdin
       },
       method: 'POST'
     };
@@ -67,7 +67,7 @@ module.exports = {
    */
   files: function(storage, path) {
     let options = {
-      url: "http://" + storage.hostname + ":" + storage.port + "/files?path=" + encodeURI(path),
+      url: 'http://' + storage.hostname + ':' + storage.port + '/files?path=' + encodeURI(path),
       method: 'GET'
     };
 
@@ -88,7 +88,7 @@ module.exports = {
   download: function(storage, path) {
     let options = {
       host: storage.hostname,
-      path: "/files?path=" + encodeURI(path),
+      path: '/files?path=' + encodeURI(path),
       port: storage.port,
       method: 'GET',
     };
@@ -116,7 +116,7 @@ module.exports = {
   upload: function(storage, file) {
     let options = {
       host: storage.hostname,
-      path: "/upload?filename=" + encodeURI(file.filename) + "&username=" + storage.username,
+      path: '/upload?filename=' + encodeURI(file.filename) + '&username=' + storage.username,
       port: storage.port,
       method: 'POST'
     };
