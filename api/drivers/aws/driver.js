@@ -24,13 +24,19 @@
  * @description :: Driver for Amazon Web Service EC2 Iaas
  */
 
-/* global Machine, ConfigService */
+/* global UserService, Machine, ConfigService */
 
 const pkgcloud = require('pkgcloud');
 const Promise = require('bluebird');
 const Driver = require('../driver');
 const ursa = require('ursa-purejs');
 const fs = Promise.promisifyAll(require('fs'));
+const request = require('request');
+/**
+ * The prices of aws virtual machines will be stored
+ */
+//let price = null;
+
 
 /**
  * Driver for Amazon Web Services EC2 Iaas
@@ -89,6 +95,43 @@ class AWSDriver extends Driver {
                   }
                 )
                   .then(() => {
+                    let priceObjet = {};
+                    let confReg = {
+                      'us-east-1': 'US East (N.Virginia)',
+                      'us-west-2': 'US West (Oregon)',
+                      'ap-southeast-1': 'Asia Pacific (Singapore)',
+                      'ap-southeast-2': 'Asia Pacific (Sydney)',
+                      'ap-northeast-1': 'Asia Pacific (Tokyo)',
+                      'eu-central-1': 'EU (Frankfurt)',
+                      'eu-west-1': 'EU (Ireland)'
+                    };
+                    let keyPrice = [];
+                    request('https://pricing.us-east-1.amazonaws.com/offers/v1.0/aws/AmazonEC2/current/index.json', (err, res, body) => {
+                      Promise.resolve(JSON.parse(body))
+                        .then((prix) => {
+                          priceObjet = prix;
+                          keyPrice = Object.keys(prix.products);
+                        })
+                        .then(() => {
+                          return ConfigService.get('awsRegion');
+                        })
+                        .then((conf) => {
+                          return keyPrice.forEach((elem) => {
+                            if (priceObjet.products[elem].attributes.location !== confReg[conf.awsRegion] || priceObjet.products[elem].attributes.operatingSystem !== 'Windows' || priceObjet.products[elem].attributes.licenseModel !== 'License Included' || priceObjet.products[elem].attributes.preInstalledSw !== 'NA') {
+                              delete priceObjet.products[elem];
+                            }
+                          });
+                        })
+                        .then(() => {
+                          return ConfigService.set('price', priceObjet);
+                        })
+                        .then(() => {
+                          console.log('Price OK');
+                        })
+                        .catch((err) => {
+                          console.log(err);
+                        });
+                    });
                     resolve();
                   });
               });
@@ -195,7 +238,7 @@ class AWSDriver extends Driver {
             const password = res.password;
 
 
-            return ConfigService.get('awsMachineUsername', 'plazaPort')
+            return ConfigService.get('awsMachineUsername', 'plazaPort', 'awsFlavor')
               .then((config) => {
                 return this._decryptPassword(password)
                   .then((password) => {
@@ -206,6 +249,7 @@ class AWSDriver extends Driver {
                       id: server.id,
                       name: server.name,
                       type: this.name(),
+                      flavor: config.awsFlavor,
                       ip: ip,
                       username: config.awsMachineUsername,
                       password: password,
@@ -213,11 +257,11 @@ class AWSDriver extends Driver {
                       plazaport: config.plazaPort
                     });
 
-                  });
-              });
+                });
+            });
 
-          });
-      });
+        });
+    });
   }
 
   /**
@@ -253,6 +297,71 @@ class AWSDriver extends Driver {
           resolve(server);
         }
       });
+    });
+  }
+
+  /**
+   * Calcul credit used by a user
+   *
+   * @method getUserCredit
+   * @return {Promise}
+   */
+  getUserCredit(user) {
+    let product = [];
+    let pri = [];
+    let duration = [];
+    var finalPrice = 0;
+
+    return new Promise((resolve, reject) => {
+      ConfigService.get('price')
+        .then((conf) => {
+          var jsonPrice = conf.price;
+          UserService.getUserHistory(user, 'aws')
+            .then((dur) => {
+              duration = dur;
+              var prod = Object.keys(jsonPrice.products);
+              return dur.forEach((element) => {
+                return prod.forEach((elem) => {
+                  var obj = jsonPrice.products[elem].attributes;
+                  if (obj.location === 'EU (Frankfurt)' && obj.operatingSystem === 'Windows' && obj.licenseModel === 'License Included' && obj.instanceType === element.type && obj.preInstalledSw === 'NA') {
+                    product.push(jsonPrice.products[elem]);
+                    return jsonPrice.products[elem];
+                  } else {
+                    return null;
+                  }
+                });
+              });
+            })
+            .then(() => {
+              return product.forEach((elem) => {
+                var tmp = {};
+                var tmpKey = null;
+
+                tmp = jsonPrice.terms.OnDemand[elem.sku];
+                tmpKey = Object.keys(tmp);
+                tmp = tmp[tmpKey].priceDimensions;
+                tmpKey = Object.keys(tmp);
+                pri.push(tmp[tmpKey].pricePerUnit.USD);
+              });
+            })
+            .then(() => {
+              return duration.forEach((elem, index) => {
+                finalPrice += (elem.time * pri[index]);
+              });
+            })
+            .then(() => {
+              return resolve(finalPrice);
+            })
+            .catch((err) => {
+              console.log(err);
+              return reject();
+            });
+        })
+        .catch((err) => {
+          console.log(err);
+          return reject();
+        });
+
     });
   }
 }

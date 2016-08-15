@@ -74,6 +74,15 @@ class Driver {
   getServer(/* id */) {
     return Promise.reject(new Error('Driver\'s method "getServer" not implemented'));
   }
+
+  /**
+   * Return price
+   *
+   *
+   */
+  getUserCredit(/* user */) {
+    return Promise.reject(new Error('Driver\'s method "getUserCredit" not implemented'));
+  }
 }
 
 module.exports = Driver;

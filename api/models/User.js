@@ -39,6 +39,9 @@ module.exports = {
       uuidv4: true,
       defaultsTo: function (){ return uuid.v4(); }
     },
+    credit: {
+      type: 'string'
+    },
     firstName: {
       type: 'string'
     },

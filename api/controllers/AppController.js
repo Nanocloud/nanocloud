@@ -95,6 +95,9 @@ module.exports = {
               connections.push({
                 id: app.id,
                 hostname: machine.ip,
+                machineId: machine.id,
+                machineType: machine.flavor,
+                machineDriver: machine.type,
                 port: 3389,
                 username: machine.username,
                 password: machine.password,
@@ -108,7 +111,12 @@ module.exports = {
           });
       })
       .catch((err) => {
-        return res.negotiate(err);
+        if (err !== 'Exceeded credit') {
+          return res.negotiate(err);
+        } else {
+          res.status(402);
+          return res.send(err);
+        }
       });
   }
 };
