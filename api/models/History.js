@@ -66,6 +66,9 @@ module.exports = {
     },
     machineDriver: {
       type: 'string'
+    },
+    machineType: {
+      type: 'string'
     }
   }
 };

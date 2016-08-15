@@ -109,7 +109,19 @@
               {{moment-calendar model.expirationDateInMs}}
             {{/if}}
           </td>
-        </tr>
+		</tr>
+    {{#if isAws}}
+      <tr>
+          <th scope="row">Credit Used</th>
+          <td>
+            {{#if model.credit}}
+              {{model.credit}}
+            {{else}}
+              No credit used
+            {{/if}}
+          </td>
+      </tr>
+    {{/if}}
         <tr>
           <th scope="row">Creation date</th>
           <td>

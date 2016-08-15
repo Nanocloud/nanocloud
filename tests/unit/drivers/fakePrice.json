@@ -1,0 +1,54 @@
+{
+  "products" : {
+    "SUPPEZST6XFGKCM2" : {
+      "sku" : "SUPPEZST6XFGKCM2",
+      "productFamily" : "Compute Instance",
+      "attributes" : {
+        "servicecode" : "AmazonEC2",
+        "location" : "EU (Frankfurt)",
+        "locationType" : "AWS Region",
+        "instanceType" : "t2.small",
+        "instanceFamily" : "General purpose",
+        "vcpu" : "1",
+        "physicalProcessor" : "Intel Xeon Family",
+        "clockSpeed" : "Up to 3.3 GHz",
+        "memory" : "2 GiB",
+        "storage" : "EBS only",
+        "networkPerformance" : "Low to Moderate",
+        "processorArchitecture" : "32-bit or 64-bit",
+        "tenancy" : "Shared",
+        "operatingSystem" : "Windows",
+        "licenseModel" : "License Included",
+        "usagetype" : "EUC1-BoxUsage:t2.small",
+        "operation" : "RunInstances:0002",
+        "preInstalledSw" : "NA",
+        "processorFeatures" : "Intel AVX; Intel Turbo"
+      }
+    }
+  },
+  "terms" : {
+    "OnDemand" : {
+      "SUPPEZST6XFGKCM2" : {
+        "SUPPEZST6XFGKCM2.JRTCKXETXF" : {
+          "offerTermCode" : "JRTCKXETXF",
+          "sku" : "SUPPEZST6XFGKCM2",
+          "effectiveDate" : "2016-06-01T00:00:00Z",
+          "priceDimensions" : {
+            "SUPPEZST6XFGKCM2.JRTCKXETXF.6YS6EN2CT7" : {
+              "rateCode" : "SUPPEZST6XFGKCM2.JRTCKXETXF.6YS6EN2CT7",
+              "description" : "$0.04 per On Demand Windows t2.small Instance Hour",
+              "beginRange" : "0",
+              "endRange" : "Inf",
+              "unit" : "Hrs",
+              "pricePerUnit" : {
+                "USD" : "0.0400000000"
+              },
+              "appliesTo" : [ ]
+            }
+          },
+          "termAttributes" : { }
+        }
+      }
+    }
+  }
+}

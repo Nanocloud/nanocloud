@@ -43,4 +43,11 @@
   {{input type="checkbox" checked=configController.autoLogoff}}
   <label for="cbox2">Logoff after closing VDI</label>
 </div>
-
+{{#if isAws}}
+  <div class="form-group row">
+    <div class="col-sm-2">
+      <p class="confirm-input-item color-primary">Set a credit limit to users using AWS:</p>
+    </div>
+    <div class="col-sm-2">{{input-confirm type="string" value=configController.creditLimit}}</div>
+  </div>
+{{/if}}

@@ -63,6 +63,12 @@ module.exports = {
       .then((machines) => {
         return res.ok([machines]);
       })
-      .catch((err) => res.negotiate(err));
+      .catch((err) =>  {
+        if (err === 'Exceeded credit') {
+          return res.send(402, err);
+        } else {
+          return res.negotiate(err);
+        }
+      });
   }
 };

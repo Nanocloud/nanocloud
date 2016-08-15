@@ -64,6 +64,7 @@ module.exports = {
     autoLogoff: false,
     defaultGroup: '',
     awsCache: 0,
+    creditLimit: '',
 
     iaas: 'manual',
     machinePoolSize: 1,

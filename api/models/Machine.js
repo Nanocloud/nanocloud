@@ -64,6 +64,9 @@ module.exports = {
     plazaport: {
       type: 'integer'
     },
+    flavor: {
+      type: 'string'
+    },
     user: {
       model: 'user',
       unique: true

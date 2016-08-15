@@ -464,103 +464,127 @@ module.exports = function() {
 
     it('Admins should be able to get connection out of every app', function(done) {
 
-      nano.request(sails.hooks.http.app)
-        .get('/api/apps/connections')
-        .set(nano.adminLogin())
-        .expect(200)
-        .expect((res) => {
-          expect(res.body.data).to.have.length(3);
-        })
-        .expect((res) => {
+      MachineService.getMachineForUser({
+        id: nano.adminId()
+      })
+        .then((machine) => {
+          nano.request(sails.hooks.http.app)
+            .get('/api/apps/connections')
+            .set(nano.adminLogin())
+            .expect(200)
+            .expect((res) => {
+              expect(res.body.data).to.have.length(3);
+            })
+            .expect((res) => {
+              expect(res.body.data).to.include({
+                'type': 'apps',
+                'id': app1,
+                'attributes': {
+                  'hostname': '127.0.0.1',
+                  'port': 3389,
+                  'username': 'Administrator',
+                  'password': null,
+                  'remote-app': '',
+                  'protocol': 'rdp',
+                  'app-name': 'app1',
+                  'machine-id': machine.id,
+                  'machine-type': null,
+                  'machine-driver':null
+                }
+              });
+              expect(res.body.data).to.include({
+                'type': 'apps',
+                'id': app2,
+                'attributes': {
+                  'hostname': '127.0.0.1',
+                  'port': 3389,
+                  'username': 'Administrator',
+                  'password': null,
+                  'remote-app': '',
+                  'protocol': 'rdp',
+                  'app-name': 'app2',
+                  'machine-id': machine.id,
+                  'machine-type': null,
+                  'machine-driver':null
+                }
+              });
+              expect(res.body.data).to.include({
+                'type': 'apps',
+                'id': nano.desktopId(),
+                'attributes': {
+                  'hostname': '127.0.0.1',
+                  'port': 3389,
+                  'username': 'Administrator',
+                  'password': null,
+                  'remote-app': '',
+                  'protocol': 'rdp',
+                  'app-name': 'Desktop',
+                  'machine-id': machine.id,
+                  'machine-type': null,
+                  'machine-driver':null
+                }
+              });
 
-          expect(res.body.data).to.include({
-            'type': 'apps',
-            'id': app1,
-            'attributes': {
-              'hostname': '127.0.0.1',
-              'port': 3389,
-              'username': 'Administrator',
-              'password': null,
-              'remote-app': '',
-              'protocol': 'rdp',
-              'app-name': 'app1'
-            }
-          });
-          expect(res.body.data).to.include({
-            'type': 'apps',
-            'id': app2,
-            'attributes': {
-              'hostname': '127.0.0.1',
-              'port': 3389,
-              'username': 'Administrator',
-              'password': null,
-              'remote-app': '',
-              'protocol': 'rdp',
-              'app-name': 'app2'
-            }
-          });
-          expect(res.body.data).to.include({
-            'type': 'apps',
-            'id': nano.desktopId(),
-            'attributes': {
-              'hostname': '127.0.0.1',
-              'port': 3389,
-              'username': 'Administrator',
-              'password': null,
-              'remote-app': '',
-              'protocol': 'rdp',
-              'app-name': 'Desktop'
-            }
-          });
-
-        })
-        .then(() => {
-          return done();
+            })
+            .then(() => {
+              return done();
+            });
         });
     });
 
     it('Regular users should be able to get connections out of their apps', function(done) {
 
-      nano.request(sails.hooks.http.app)
-        .get('/api/apps/connections')
-        .set({
-          'Authorization': 'Bearer ' + someguytoken
-        })
-        .expect(200)
-        .expect((res) => {
-          expect(res.body.data).to.have.length(2);
-        })
-        .expect((res) => {
+      MachineService.getMachineForUser({
+        id: someguy
+      })
+        .then((machine) => {
+          nano.request(sails.hooks.http.app)
+            .get('/api/apps/connections')
+            .set({
+              'Authorization': 'Bearer ' + someguytoken
+            })
+            .expect(200)
+            .expect((res) => {
+              expect(res.body.data).to.have.length(2);
+            })
+            .expect((res) => {
 
-          expect(res.body.data).to.include({
-            'type': 'apps',
-            'id': app1,
-            'attributes': {
-              'hostname': '127.0.0.1',
-              'port': 3389,
-              'username': 'Administrator',
-              'password': null,
-              'remote-app': '',
-              'protocol': 'rdp',
-              'app-name': 'app1'
-            }
-          });
-          expect(res.body.data).to.include({
-            'type': 'apps',
-            'id': app2,
-            'attributes': {
-              'hostname': '127.0.0.1',
-              'port': 3389,
-              'username': 'Administrator',
-              'password': null,
-              'remote-app': '',
-              'protocol': 'rdp',
-              'app-name': 'app2'
-            }
-          });
-        })
-        .then(() => {
-          return done();
+              expect(res.body.data).to.include({
+                'type': 'apps',
+                'id': app1,
+                'attributes': {
+                  'hostname': '127.0.0.1',
+                  'port': 3389,
+                  'username': 'Administrator',
+                  'password': null,
+                  'remote-app': '',
+                  'protocol': 'rdp',
+                  'app-name': 'app1',
+                  'machine-id': machine.id,
+                  'machine-type': null,
+                  'machine-driver':null
+                }
+              });
+              expect(res.body.data).to.include({
+                'type': 'apps',
+                'id': app2,
+                'attributes': {
+                  'hostname': '127.0.0.1',
+                  'port': 3389,
+                  'username': 'Administrator',
+                  'password': null,
+                  'remote-app': '',
+                  'protocol': 'rdp',
+                  'app-name': 'app2',
+                  'machine-id': machine.id,
+                  'machine-type': null,
+                  'machine-driver':null
+                }
+              });
+            })
+            .then(() => {
+              return done();
+            });
         });
     });
   });

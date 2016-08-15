@@ -20,7 +20,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* globals Machine, Image */
+/* globals Machine, Image, UserService */
 
 const Promise = require('bluebird');
 const uuid = require('node-uuid');
@@ -43,6 +43,38 @@ class DummyDriver extends BaseDriver {
    */
   initialize() {
     this._machines = {};
+    this.dummyPrice = new Promise((resolve) => {
+      return resolve({
+        products : {
+          SUPPEZST6XFGKCM2 : {
+            sku : 'SUPPEZST6XFGKCM2',
+            productFamily : 'Compute Instance',
+            attributes : {
+              servicecode : 'AmazonEC2',
+              location : 'EU (Frankfurt)',
+              locationType : 'AWS Region',
+              instanceType : 't2.small',
+              instanceFamily : 'General purpose',
+              vcpu : '1',
+              physicalProcessor : 'Intel Xeon Family',
+              clockSpeed : 'Up to 3.3 GHz',
+              memory : '2 GiB',
+              storage : 'EBS only',
+              networkPerformance : 'Low to Moderate',
+              processorArchitecture : '32-bit or 64-bit',
+              tenancy : 'Shared',
+              operatingSystem : 'Windows',
+              licenseModel : 'License Included',
+              usagetype : 'EUC1-BoxUsage:t2.small',
+              operation : 'RunInstances:0002',
+              preInstalledSw : 'NA',
+              processorFeatures : 'Intel AVX; Intel Turbo',
+              price : '0.04'
+            }
+          }
+        }
+      });
+    });
 
     var FakePlaza = http.createServer((req, res) => {
       res.writeHead(200, {'Content-Type': 'application/json'});
@@ -111,7 +143,7 @@ class DummyDriver extends BaseDriver {
     this._machines[machine.id] = machine;
     return new Promise((resolve, reject) => {
       Machine.create(machine)
-      .then(resolve, reject);
+        .then(resolve, reject);
     });
   }
 
@@ -150,6 +182,53 @@ class DummyDriver extends BaseDriver {
             return images.pop();
           });
       });
+  }
+
+  /**
+   * Calculate credit used by a user
+   *
+   * @method getUserCredit
+   * @param {user} user User to calculate credit usage from
+   * @return {Promise[number]}
+   */
+  getUserCredit(user) {
+
+    return this.dummyPrice.then((price) => {
+      return new Promise((resolve, reject) => {
+        var finalPrice = 0;
+        let history = [];
+        UserService.getUserHistory(user, 'aws')
+          .then((machineHistory) => {
+
+            /**
+             * Here we retrieve all the machines keys of the
+             * history we retrived before, matching with machines type
+             */
+            history = machineHistory;
+
+            var prod = Object.keys(price.products);
+
+            history.forEach((element) => {
+              prod.forEach((key) => {
+                if (price.products[key].attributes.instanceType === element.type) {
+                  element.time = element.time * price.products[key].attributes.price;
+                }
+              });
+            });
+          })
+          .then(() => {
+            history.forEach((element) => {
+              finalPrice += element.time;
+            });
+          })
+          .then(() => {
+            return resolve(parseFloat(finalPrice.toFixed(4)));
+          })
+          .catch((err) => {
+            return reject(err);
+          });
+      });
+    });
   }
 }
 
