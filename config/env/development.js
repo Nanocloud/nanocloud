@@ -93,6 +93,16 @@ module.exports = {
     awsPrivateKey: '~/.ssh/id_rsa',
     awsImage: 'ami-09e61366',
     awsFlavor: 't2.medium',
-    awsMachineUsername: 'Administrator'
+    awsMachineUsername: 'Administrator',
+
+    openstackUsername:  '',
+    openstackPassword: '',
+    openstackAuthUrl: '',
+    openstackRegion: 'RegionOne',
+    openstackImage: '',
+    openstackFlavor: 'm1.medium',
+    openstackSecurityGroups: ["default"],
+    openstackMachineUsername: 'Administrator',
+    openstackMachinePassword: ''
   }
 };
