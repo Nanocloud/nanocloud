@@ -30,6 +30,6 @@ export default TooltipsterComponent.extend({
 
   currentStatus: Ember.computed('status', function() {
     var status = this.get('status');
-    return status ? status : "online";
+    return status ? status : 'online';
   })
 });

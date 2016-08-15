@@ -39,33 +39,33 @@ module.exports = {
   create: function(req, res) {
 
     var user = req.body.data.attributes;
-    user["id"] = uuid.v4();
-    user["isAdmin"] = false;
+    user.id = uuid.v4();
+    user.isAdmin = false;
 
     User.findOne({
-      "email": user["email"] 
+      email: user.email
     })
     .then((userResponse) => {
       if (userResponse === undefined) {
         return PendingUser.findOne({
-          "email": user["email"] 
+          email: user.email
         });
       } else {
-        throw new Error("User already exist");
+        throw new Error('User already exist');
       }
     })
     .then((pendingUserResponse) => {
       if (pendingUserResponse === undefined) {
         return ConfigService.get('host');
       } else {
-        throw new Error("User already exist");
+        throw new Error('User already exist');
       }
     })
     .then((configuration) => {
       var host = configuration.host;
       var to =  user.email;
       var subject = 'Nanocloud - Verify your email address';
-      var message = 'Hello ' + user["first-name"] + ' ' + user["last-name"] + ',<br> please verify your email address by clicking this link: '+
+      var message = 'Hello ' + user['first-name'] + ' ' + user['last-name'] + ',<br> please verify your email address by clicking this link: '+
           '<a href="'+host+'/#/activate/'+user.id+'">Activate my account</a>';
 
       return EmailService.sendMail(to, subject, message)
@@ -78,9 +78,9 @@ module.exports = {
     })
     .catch((err) => {
       if (err.code === 'ECONNECTION') {
-        return res.serverError("Cannot connect to SMTP server");
+        return res.serverError('Cannot connect to SMTP server');
       } else if (err.message === 'User already exist') {
-        return res.badRequest("User already exist");
+        return res.badRequest('User already exist');
       }
       return res.negotiate(err);
     });
@@ -94,20 +94,20 @@ module.exports = {
     .then((conf) => {
       expirationDays = conf.expirationDate;
       return PendingUser.findOne({
-        "id": pendingUserID
+        id: pendingUserID
       });
     })
     .then((user) => {
       if (!user) {
         return res.notFound('No user found');
       }
-      user['expirationDate'] = moment().add(expirationDays, 'days').unix();
+      user.expirationDate = moment().add(expirationDays, 'days').unix();
       User.create(user)
       .then(() => {
-          return PendingUser.destroy({
-            "id": pendingUserID
-          });
-        })
+        return PendingUser.destroy({
+          id: pendingUserID
+        });
+      })
       .then(() => {
         return res.ok(user);
       });
@@ -115,5 +115,5 @@ module.exports = {
     .catch(() => {
       return res.notFound('An error occured while retrieving user');
     });
-  } 
+  }
 };

@@ -32,26 +32,26 @@ export default Ember.Controller.extend({
   modelIsEmpty: Ember.computed.empty('items'),
   formatSessionLabel: Ember.computed('items', function() {
     if (this.get('items').get('length') > 1) {
-      return "sessions";
+      return 'sessions';
     }
-    return "session";
+    return 'session';
   }),
   sortableTableConfig: {
 
     filteringIgnoreCase: true,
     messageConfig: {
-      searchLabel: "Search",
+      searchLabel: 'Search',
     },
 
     customIcons: {
-      "sort-asc": "fa fa-caret-up",
-      "sort-desc": "fa fa-caret-down",
-      "caret": "fa fa-minus",
-      "column-visible": "fa fa-minus",
+      'sort-asc': 'fa fa-caret-up',
+      'sort-desc': 'fa fa-caret-down',
+      caret: 'fa fa-minus',
+      'column-visible': 'fa fa-minus',
     },
 
     customClasses: {
-      "pageSizeSelectWrapper": "pagination-number"
+      pageSizeSelectWrapper: 'pagination-number'
     }
   },
 
@@ -87,63 +87,63 @@ export default Ember.Controller.extend({
 
   columns: [
     {
-      "propertyName": "user",
-      "title": "User",
-      "disableFiltering": true,
-      "filterWithSelect": false,
+      propertyName: 'user',
+      title: 'User',
+      disableFiltering: true,
+      filterWithSelect: false,
     },
     {
-      "propertyName": "application",
-      "title": "Application",
-      "disableFiltering": true,
-      "filterWithSelect": false,
+      propertyName: 'application',
+      title: 'Application',
+      disableFiltering: true,
+      filterWithSelect: false,
     },
     {
-      "propertyName": "machineDriver",
-      "title": "Driver",
-      "disableFiltering": true,
-      "filterWithSelect": false,
+      propertyName: 'machineDriver',
+      title: 'Driver',
+      disableFiltering: true,
+      filterWithSelect: false,
     },
     {
-      "propertyName": "machineId",
-      "title": "Machine ID",
-      "disableFiltering": true,
-      "filterWithSelect": false,
+      propertyName: 'machineId',
+      title: 'Machine ID',
+      disableFiltering: true,
+      filterWithSelect: false,
     },
     {
-      "propertyName": "machineSize",
-      "title": "Machine Size",
-      "disableFiltering": true,
-      "filterWithSelect": false,
+      propertyName: 'machineSize',
+      title: 'Machine Size',
+      disableFiltering: true,
+      filterWithSelect: false,
     },
     {
-      "propertyName": "start",
-      "title": "Start Date",
-      "disableFiltering": true,
-      "filterWithSelect": false,
+      propertyName: 'start',
+      title: 'Start Date',
+      disableFiltering: true,
+      filterWithSelect: false,
     },
     {
-      "propertyName": "end",
-      "title": "End Date",
-      "disableFiltering": true,
-      "filterWithSelect": false,
+      propertyName: 'end',
+      title: 'End Date',
+      disableFiltering: true,
+      filterWithSelect: false,
     },
     {
-      "propertyName": "duration",
-      "title": "Total duration",
-      "disableFiltering": true,
-      "filterWithSelect": false,
-      "template": "protected/histories/index/table/history-list/duration",
+      propertyName: 'duration',
+      title: 'Total duration',
+      disableFiltering: true,
+      filterWithSelect: false,
+      template: 'protected/histories/index/table/history-list/duration',
     }
   ],
 
   downloadCsvLink: Ember.computed(function() {
     let content = this.get('downloadCSVService').getCsvBase64(this.get('sessionService.access_token'), this.get('items'));
-    return "data:text/csv;base64," + content;
+    return 'data:text/csv;base64,' + content;
   }),
 
   downloadCsvFilename: Ember.computed(function() {
     let current_date = window.moment(new Date()).format('YYYY-MM-DD');
-    return "nanocloud-history-" + current_date;
+    return 'nanocloud-history-' + current_date;
   })
 });

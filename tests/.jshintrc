@@ -62,7 +62,7 @@
   "worker": false,
   "wsh": false,
   "yui": false,
-  "mocha": false,
+  "mocha": true,
 
   "nomen": false,
   "onevar": false,

@@ -28,12 +28,12 @@ const nodemailer  = require('nodemailer');
 const stubTransport = require('nodemailer-stub-transport');
 
 /**
- * Send a email and return a promise 
+ * Send a email and return a promise
  * @method sendMail
  * @public
  * @param {String} receiver email address
  * @param {String} subject
- * @param {String} email content 
+ * @param {String} email content
  * @return {Promise[Object]} A promise that resolves nodeMailer.sendMail
  */
 function sendMail(to, subject, message) {
@@ -58,7 +58,7 @@ function sendMail(to, subject, message) {
 
       // verifying smtpConfig before sending a mail
       if (verified_transporter !== false) {
-        return verified_transporter 
+        return verified_transporter
           .then(() => {
             return sendMailOption(transporter);
           });

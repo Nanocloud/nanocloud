@@ -31,7 +31,7 @@ export default Ember.Route.extend({
 
   configuration: Ember.inject.service('configuration'),
   beforeModel(transition) {
-    if (transition.queryParams.app) {  
+    if (transition.queryParams.app) {
       this.set('directLinkParams', transition.queryParams);
     }
     if (this.get('session.isAuthenticated') === false) {

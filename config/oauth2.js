@@ -22,11 +22,11 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-/* globals RefreshToken, AccessToken, User */
+/* globals sails, RefreshToken, AccessToken, User */
 
 var oauth2orize         = require('oauth2orize'),
-    passport            = require('passport'),
-    trustedClientPolicy = require('../api/policies/isTrustedClient.js');
+  passport            = require('passport'),
+  trustedClientPolicy = require('../api/policies/isTrustedClient.js');
 
 // Create OAuth 2.0 server
 var server = oauth2orize.createServer();
@@ -65,7 +65,7 @@ server.exchange(oauth2orize.exchange.password(function(user, username, password,
           if(err) {
             return done(err);
           } else {
-            return done(null, accessToken.token, refreshToken.token, { 'expires_in': sails.config.oauth.tokenLife });
+            return done(null, accessToken.token, refreshToken.token, { expires_in: sails.config.oauth.tokenLife });
           }
         });
       }
@@ -99,7 +99,7 @@ server.exchange(oauth2orize.exchange.refreshToken(function(client, refreshToken,
                 if(err) {
                   return done(err);
                 } else {
-                  done(null, accessToken.token, refreshToken.token, { 'expires_in': sails.config.oauth.tokenLife });
+                  done(null, accessToken.token, refreshToken.token, { expires_in: sails.config.oauth.tokenLife });
                 }
               });
             }
@@ -123,8 +123,8 @@ module.exports = {
 
                  if (req.body.grant_type !== 'password' && req.body.grant_type !== 'refresh_token') {
                    return res.json({
-                       error: 'invalid_request',
-                       error_description: 'grant_type is missing'
+                     error: 'invalid_request',
+                     error_description: 'grant_type is missing'
                    });
                  }
 
@@ -135,7 +135,7 @@ module.exports = {
                  res.set('Content-Type', 'application/json;charset=UTF-8');
 
                  // If request is a refresh_token renewal, let's fork the flow
-                 if (req.body.grant_type === "refresh_token") {
+                 if (req.body.grant_type === 'refresh_token') {
                    var tokenFunction = server.token();
 
                    return tokenFunction(req, res, (err) => {

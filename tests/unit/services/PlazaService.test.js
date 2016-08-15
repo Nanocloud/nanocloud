@@ -22,20 +22,18 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-// jshint mocha:true
-
-/* global ConfigService,PlazaService,StorageService,User */
+/* global ConfigService, PlazaService, StorageService, User */
 
 const expect = require('chai').expect;
-const filename = "PlazaService.test.js";
+const filename = 'PlazaService.test.js';
 var filesize = 0;
 
-describe("PlazaService", function() {
+describe('PlazaService', function() {
 
   before(function(done) {
-    ConfigService.set("storageAddress", "localhost")
+    ConfigService.set('storageAddress', 'localhost')
     .then(() => {
-      return ConfigService.set("storagePort", 9090);
+      return ConfigService.set('storagePort', 9090);
     })
     .then(() => {
       return done();
@@ -44,7 +42,7 @@ describe("PlazaService", function() {
 
   describe('Exec simple command', function() {
     it('Should return success', (done) => {
-      return PlazaService.exec("localhost", 9090, ["ls", "-l"], "")
+      return PlazaService.exec('localhost', 9090, ['ls', '-l'], '')
       .then((res) => {
         expect(res.success).to.equal(true);
         done();
@@ -56,7 +54,7 @@ describe("PlazaService", function() {
     it('Should upload file', (done) => {
 
       User.findOne({
-        id: "aff17b8b-bf91-40bf-ace6-6dfc985680bb"
+        id: 'aff17b8b-bf91-40bf-ace6-6dfc985680bb'
       })
       .then((user) => {
         return StorageService.findOrCreate(user);
@@ -64,13 +62,13 @@ describe("PlazaService", function() {
       .then((storage) => {
         let file = {
           filename: filename,
-          fd: "./tests/unit/services/" + filename
+          fd: './tests/unit/services/' + filename
         };
         return PlazaService.upload(storage, file);
       })
       .then((res) => {
         expect(res.statusCode).to.equal(200);
-        expect(res.headers["content-length"]).to.equal('0');
+        expect(res.headers['content-length']).to.equal('0');
         done();
       });
     });
@@ -80,13 +78,13 @@ describe("PlazaService", function() {
     it('Should return a list of file', (done) => {
 
       User.findOne({
-        id: "aff17b8b-bf91-40bf-ace6-6dfc985680bb"
+        id: 'aff17b8b-bf91-40bf-ace6-6dfc985680bb'
       })
       .then((user) => {
         return StorageService.findOrCreate(user);
       })
       .then((storage) => {
-        return PlazaService.files(storage, "/home/" + storage.username);
+        return PlazaService.files(storage, '/home/' + storage.username);
       })
       .then((files) => {
         expect(files.data.length).to.equal(1);
@@ -104,13 +102,13 @@ describe("PlazaService", function() {
     it('Should return content of file', (done) => {
 
       User.findOne({
-        id: "aff17b8b-bf91-40bf-ace6-6dfc985680bb"
+        id: 'aff17b8b-bf91-40bf-ace6-6dfc985680bb'
       })
       .then((user) => {
         return StorageService.findOrCreate(user);
       })
       .then((storage) => {
-        return PlazaService.download(storage, "/home/" + storage.username + "/" + filename);
+        return PlazaService.download(storage, '/home/' + storage.username + '/' + filename);
       })
       .then((res) => {
         expect(res.headers['content-type']).to.equal('application/javascript');

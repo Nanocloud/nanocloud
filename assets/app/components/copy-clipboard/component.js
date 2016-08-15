@@ -27,7 +27,7 @@ import Ember from 'ember';
 export default Ember.Component.extend({
   actions: {
     copyTextToClipboard(text) {
-      var textArea = document.createElement("textarea");
+      var textArea = document.createElement('textarea');
       textArea.value = text;
       document.body.appendChild(textArea);
       textArea.select();

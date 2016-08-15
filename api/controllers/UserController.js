@@ -31,14 +31,14 @@ module.exports = {
 
   find: function(req, res) {
 
-    if (req.allParams()['me'] === "true") {
+    if (req.allParams().me === 'true') {
       var me = JsonApiService.serialize('users', req.user);
 
       return res.send(me);
     }
 
     return User.find()
-      .populate("groups")
+      .populate('groups')
       .then((res.ok))
       .catch(res.negotiate);
   }

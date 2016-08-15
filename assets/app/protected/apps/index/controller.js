@@ -49,7 +49,7 @@ let App = Ember.Object.extend({
           .then(() => {
           })
           .catch(() => {
-            this.toast.error("Cannot start application");
+            this.toast.error('Cannot start application');
           })
           .finally(() => {
             this.set('remoteSession.plazaHasFinishedLoading', true);
@@ -80,18 +80,18 @@ export default Ember.Controller.extend({
 
     filteringIgnoreCase: true,
     messageConfig: {
-      searchLabel: "Search",
+      searchLabel: 'Search',
     },
 
     customIcons: {
-      "sort-asc": "fa fa-caret-up",
-      "sort-desc": "fa fa-caret-down",
-      "caret": "fa fa-minus",
-      "column-visible": "fa fa-minus",
+      'sort-asc': 'fa fa-caret-up',
+      'sort-desc': 'fa fa-caret-down',
+      caret: 'fa fa-minus',
+      'column-visible': 'fa fa-minus',
     },
 
     customClasses: {
-      "pageSizeSelectWrapper": "pagination-number"
+      pageSizeSelectWrapper: 'pagination-number'
     }
   },
 
@@ -116,14 +116,14 @@ export default Ember.Controller.extend({
   columns: function() {
 
     return [
-        {
-          "propertyName": "name",
-          "title": "Name",
-          "disableFiltering": true,
-          "filterWithSelect": false,
-          "disableSorting": true,
-          "template": "protected/apps/index/table/package-list/name"
-        },
+      {
+        propertyName: 'name',
+        title: 'Name',
+        disableFiltering: true,
+        filterWithSelect: false,
+        disableSorting: true,
+        template: 'protected/apps/index/table/package-list/name'
+      },
     ];
   }.property(),
 
@@ -142,7 +142,7 @@ export default Ember.Controller.extend({
             this.toggleProperty('showSingleTab');
           }
           else {
-            this.toast.error("Could not find a virtual machine to start the VDI");
+            this.toast.error('Could not find a virtual machine to start the VDI');
             rej();
           }
         })

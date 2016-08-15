@@ -35,8 +35,8 @@ export default Ember.Controller.extend({
       this.set('loadState', 1);
       this.set('userHasSubmitted', true);
       this.model
-        .validate({ on: ["password"] })
-        .then(({ m, validations }) => {
+        .validate({ on: ['password'] })
+        .then(({ validations }) => {
           if (validations.get('isInvalid') === true) {
             return this.toast.error('Please enter valid informations');
           }
@@ -44,11 +44,11 @@ export default Ember.Controller.extend({
           this.model
           .save()
           .then(() => {
-            this.toast.success("Your password has been updated.", "Please log in now");
+            this.toast.success('Your password has been updated.', 'Please log in now');
             this.transitionToRoute('login');
           },
           (err) => {
-            this.toast.error(err.errors[0].detail, "Please try again with another token.");
+            this.toast.error(err.errors[0].detail, 'Please try again with another token.');
             return err.responseJSON;
           });
         });

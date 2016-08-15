@@ -1,0 +1,8 @@
+assets/tmp/**
+assets/dist/**
+assets/vendor/**
+assets/node_modules/**
+assets/bower_components/**
+node_modules/**
+plaza/vendor
+tests/**

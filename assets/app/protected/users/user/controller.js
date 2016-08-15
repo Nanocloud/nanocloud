@@ -38,23 +38,23 @@ export default Ember.Controller.extend({
     removeDone: function() {
       this.get('model').destroyRecord()
         .then(() => {
-          this.toast.success("User have been deleted");
+          this.toast.success('User have been deleted');
           this.transitionToRoute('protected.users.index');
         }, (err) => {
-          this.toast.error(err, "User have not been deleted");
+          this.toast.error(err, 'User have not been deleted');
         });
     },
 
     toggleEditPassword: function() {
-      this.set('model.password', "");
-      this.set('passwordConfirmation', "");
+      this.set('model.password', '');
+      this.set('passwordConfirmation', '');
     },
 
     updatePrivilege: function(defer) {
       let model = this.get('model');
       let is_admin = model.toggleProperty('isAdmin');
       model.validate({ on: ['isadmin'] })
-        .then(({ m, validations }) => {
+        .then(({ validations }) => {
 
           if (validations.get('isInvalid') === true) {
             this.toast.error(this.get('model.validations.attrs.isadmin.messages'));
@@ -62,24 +62,24 @@ export default Ember.Controller.extend({
           }
 
           this.model.save()
-            .then(() => {
-              this.send('refreshModel');
-              if (is_admin === true) {
-                this.toast.success('Administration rights have been granted');
-              }
-              else {
-                this.toast.success('Administration rights have been revoked');
-              }
-            }, () => {
-              this.toast.error("Administration rights have not been granted");
-            });
+          .then(() => {
+            this.send('refreshModel');
+            if (is_admin === true) {
+              this.toast.success('Administration rights have been granted');
+            }
+            else {
+              this.toast.success('Administration rights have been revoked');
+            }
+          }, () => {
+            this.toast.error('Administration rights have not been granted');
+          });
         });
     },
 
     changeEmail: function(defer) {
       this.get('model')
         .validate({ on: ['email'] })
-        .then(({ m, validations }) => {
+        .then(({ validations }) => {
 
           if (validations.get('isInvalid') === true) {
             this.toast.error(this.get('model.validations.attrs.email.messages'));
@@ -93,7 +93,7 @@ export default Ember.Controller.extend({
               this.toast.success('Email has been updated successfully');
             }, () => {
               defer.reject();
-              this.toast.error("Email has not been updated");
+              this.toast.error('Email has not been updated');
             });
         });
     },
@@ -102,7 +102,7 @@ export default Ember.Controller.extend({
 
       this.get('model')
         .validate({ on: ['firstName'] })
-        .then(({ m, validations }) => {
+        .then(({ validations }) => {
 
           if (validations.get('isInvalid') === true) {
             this.toast.error(this.get('model.validations.attrs.firstname.messages'));
@@ -116,7 +116,7 @@ export default Ember.Controller.extend({
               this.toast.success('First name has been updated successfully');
             }, () => {
               defer.reject();
-              this.toast.error("First name has not been updated");
+              this.toast.error('First name has not been updated');
             });
         });
     },
@@ -125,12 +125,12 @@ export default Ember.Controller.extend({
 
       this.get('model')
         .validate({ on: ['lastName'] })
-        .then(({ m, validations }) => {
+        .then(({ validations }) => {
 
           if (validations.get('isInvalid') === true) {
             this.toast.error(this.get('model.validations.attrs.lastname.messages'));
             return defer.reject(this.get('model.validations.attrs.lastname.messages'));
-		  }
+          }
 
           this.model.save()
             .then(() => {
@@ -139,7 +139,7 @@ export default Ember.Controller.extend({
               this.toast.success('Last name has been updated successfully');
             }, () => {
               defer.reject();
-              this.toast.error("Last name has not been updated");
+              this.toast.error('Last name has not been updated');
             });
         });
     },
@@ -148,7 +148,7 @@ export default Ember.Controller.extend({
 
       this.get('model')
         .validate({ on: ['expirationDate'] })
-        .then(({ m, validations }) => {
+        .then(({ validations }) => {
 
           if (validations.get('isInvalid') === true) {
             this.toast.error(this.get('model.validations.attrs.expirationDate.messages'));
@@ -158,9 +158,8 @@ export default Ember.Controller.extend({
           let timestamp = (expirationDays > 0) ?
             (window.moment().add(expirationDays, 'days').unix()) : (0);
 
-          if (this.get('model.expirationDays.length') > 3 ||
-              expirationDays < 0) {
-            this.toast.error("Expiration date has not been updated");
+          if (this.get('model.expirationDays.length') > 3 || expirationDays < 0) {
+            this.toast.error('Expiration date has not been updated');
             return defer.reject();
           }
 
@@ -172,16 +171,16 @@ export default Ember.Controller.extend({
               this.toast.success('Expiration date has been updated successfully');
             }, () => {
               defer.reject();
-              this.toast.error("Expiration date has not been updated");
+              this.toast.error('Expiration date has not been updated');
             });
-		});
-	},
+        });
+    },
 
     changePassword: function(defer) {
 
       this.get('model')
         .validate({ on: ['password'] })
-        .then(({ m, validations }) => {
+        .then(({ validations }) => {
 
           if (validations.get('isInvalid') === true) {
             this.toast.error(this.get('model.validations.attrs.password.messages'));
@@ -189,8 +188,8 @@ export default Ember.Controller.extend({
           }
 
           if (this.get('model.password') !== this.get('passwordConfirmation')) {
-            this.toast.error("Password doesn't match confirmation");
-            return defer.reject("Password does not match confirmation");
+            this.toast.error('Password doesn\'t match confirmation');
+            return defer.reject('Password does not match confirmation');
           }
 
           this.model.save()
@@ -200,7 +199,7 @@ export default Ember.Controller.extend({
               this.toast.success('Password has been updated successfully');
             }, () => {
               defer.reject();
-              this.toast.error("Password has not been updated");
+              this.toast.error('Password has not been updated');
             });
         });
     }

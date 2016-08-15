@@ -44,8 +44,8 @@ export default Ember.Component.extend({
 
   tooltipMessage: function() {
     if (this.get('userIsConnected') === true) {
-      return "User is online";
+      return 'User is online';
     }
-    return "User is offline";
+    return 'User is offline';
   }.property('userIsConnected'),
 });

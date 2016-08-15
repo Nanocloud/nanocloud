@@ -22,15 +22,15 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-// jshint mocha:true
+/* globals sails */
 
 var nano = require('./lib/nanotest');
 
 module.exports = function() {
 
-  describe("User limitation", function() {
+  describe('User limitation', function() {
 
-    describe("Create user with in future expiration date", function() {
+    describe('Create user with in future expiration date', function() {
 
       it('Should return created user', function(done) {
 
@@ -39,10 +39,10 @@ module.exports = function() {
           .send({
             data: {
               attributes: {
-                'first-name': "Future",
-                'last-name': "Date",
-                'email': "futuredate@nanocloud.com",
-                'password': "nanocloud",
+                'first-name': 'Future',
+                'last-name': 'Date',
+                email: 'futuredate@nanocloud.com',
+                password: 'nanocloud',
                 'is-admin': false,
                 'expiration-date': 1543681605
               },
@@ -59,22 +59,22 @@ module.exports = function() {
         nano.request(sails.hooks.http.app)
           .post('/oauth/token')
           .send({
-            "username": "futuredate@nanocloud.com",
-            "password": "nanocloud",
-            "grant_type": "password"
+            username: 'futuredate@nanocloud.com',
+            password: 'nanocloud',
+            grant_type: 'password'
           })
         .set('Authorization', 'Basic ' + new Buffer('9405fb6b0e59d2997e3c777a22d8f0e617a9f5b36b6565c7579e5be6deb8f7ae:9050d67c2be0943f2c63507052ddedb3ae34a30e39bbbbdab241c93f8b5cf341').toString('base64'))
           .expect(200)
           .expect((res) => {
             if (res.body.token_type !== 'Bearer') {
-              throw new Error("token_type should be Bearer");
+              throw new Error('token_type should be Bearer');
             }
           })
-        .end(done);
+          .end(done);
       });
     });
 
-    describe("Create user with in past expiration date", function() {
+    describe('Create user with in past expiration date', function() {
 
       it('Should return created user', function(done) {
 
@@ -83,10 +83,10 @@ module.exports = function() {
           .send({
             data: {
               attributes: {
-                'first-name': "Past",
-                'last-name': "Date",
-                'email': "pastdate@nanocloud.com",
-                'password': "nanocloud",
+                'first-name': 'Past',
+                'last-name': 'Date',
+                email: 'pastdate@nanocloud.com',
+                password: 'nanocloud',
                 'is-admin': false,
                 'expiration-date': 1
               },
@@ -102,11 +102,11 @@ module.exports = function() {
         nano.request(sails.hooks.http.app)
           .post('/oauth/token')
           .send({
-            "username": "pastdate@nanocloud.com",
-            "password": "nanocloud",
-            "grant_type": "password"
+            username: 'pastdate@nanocloud.com',
+            password: 'nanocloud',
+            grant_type: 'password'
           })
-        .set('Authorization', 'Basic ' + new Buffer('9405fb6b0e59d2997e3c777a22d8f0e617a9f5b36b6565c7579e5be6deb8f7ae:9050d67c2be0943f2c63507052ddedb3ae34a30e39bbbbdab241c93f8b5cf341').toString('base64'))
+          .set('Authorization', 'Basic ' + new Buffer('9405fb6b0e59d2997e3c777a22d8f0e617a9f5b36b6565c7579e5be6deb8f7ae:9050d67c2be0943f2c63507052ddedb3ae34a30e39bbbbdab241c93f8b5cf341').toString('base64'))
           .end(done);
       });
     });

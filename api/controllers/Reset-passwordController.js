@@ -35,7 +35,7 @@
 /* globals User */
 
 const uuid          = require('node-uuid');
-const bcrypt        = require("bcryptjs");
+const bcrypt        = require('bcryptjs');
 
 module.exports = {
   create: function(req, res) {
@@ -47,21 +47,21 @@ module.exports = {
 
     // find user via his email address
     if (!user.email) {
-      return res.badRequest("Email can not be empty");
+      return res.badRequest('Email can not be empty');
     }
     User.findOne({
-      "email": user.email
+      email: user.email
     })
     // generate new reset password token
     .then((user) => {
       if (!user) {
-        throw new Error("No user found");
+        throw new Error('No user found');
       }
       token = uuid.v4();
 
       return ResetPassword.create({
-        "email": user.email,
-        "id": token
+        email: user.email,
+        id: token
       });
     })
     .then(() => {
@@ -70,11 +70,11 @@ module.exports = {
     // send him reset password link
     .then((conf) => {
       let subject = 'Nanocloud - Reset your password';
-      let message = "Hello,<br>" +
-        "We received a request to reset your password.<br>" +
-        "<a href='"+conf.host+"/#/reset-password/"+token+"'>" +
-        "Reset my password</a><br><br><i>" +
-        "If you ignore this message your password won't be changed.</i>";
+      let message = 'Hello,<br>' +
+        'We received a request to reset your password.<br>' +
+        '<a href=\''+conf.host+'/#/reset-password/'+token+'\'>' +
+        'Reset my password</a><br><br><i>' +
+        'If you ignore this message your password won\'t be changed.</i>';
 
       // mail sent here
       return EmailService.sendMail(user.email, subject, message);
@@ -83,10 +83,10 @@ module.exports = {
       return res.json({meta: {}});
     })
     .catch((err) => {
-      if (err.message === "No user found") {
+      if (err.message === 'No user found') {
         return res.notFound(err.message);
       } else if (err.code === 'ECONNECTION') {
-        return res.serverError("Please check out your SMTP configuration");
+        return res.serverError('Please check out your SMTP configuration');
       }
       return res.negotiate(err);
     });
@@ -100,7 +100,7 @@ module.exports = {
 
     // find user
     ResetPassword.findOne({
-      "id": token
+      id: token
     })
     .then((tokenFound) => {
       if (!tokenFound) {
@@ -108,7 +108,7 @@ module.exports = {
       }
       token = tokenFound;
       return User.findOne({
-        "email": token.email
+        email: token.email
       });
     })
     // update his password
@@ -116,7 +116,7 @@ module.exports = {
       if (!user) {
         throw new Error('No user found');
       } else if (!dataReq.password) {
-        throw new Error("Password can not be empty");
+        throw new Error('Password can not be empty');
       }
 
       let hash = bcrypt.hashSync(dataReq.password, 10);

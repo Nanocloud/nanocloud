@@ -83,64 +83,64 @@ export default Ember.ArrayProxy.extend({
     }
 
     switch (prop) {
-      case 'minor.length':
+    case 'minor.length':
 
-        if (finalLen < contentLen) {
+      if (finalLen < contentLen) {
           // an minor item has been added
 
-          for (let i = 0; i < minorLen; ++i) {
-            let item = minor.objectAt(i);
-            let idx = content.indexOf(item);
+        for (let i = 0; i < minorLen; ++i) {
+          let item = minor.objectAt(i);
+          let idx = content.indexOf(item);
 
-            if (idx !== -1) {
-              this.removeAt(idx);
-              break;
-            }
+          if (idx !== -1) {
+            this.removeAt(idx);
+            break;
           }
-        } else {
+        }
+      } else {
           // a minor item has been removed
 
-          for (let i = 0; i < minorLen; ++i) {
-            let item = minor.objectAt(i);
-            let idx = content.indexOf(item);
+        for (let i = 0; i < minorLen; ++i) {
+          let item = minor.objectAt(i);
+          let idx = content.indexOf(item);
 
-            if (idx === -1) {
-              this.pushObject(item);
-              break;
-            }
+          if (idx === -1) {
+            this.pushObject(item);
+            break;
           }
         }
+      }
 
-        break;
+      break;
 
-      case 'major.length':
-        if (finalLen < contentLen) {
+    case 'major.length':
+      if (finalLen < contentLen) {
           // a major item has been removed
 
-          for (let i = 0; i < contentLen; ++i) {
-            let item = content.objectAt(i);
-            let idx = major.indexOf(item);
+        for (let i = 0; i < contentLen; ++i) {
+          let item = content.objectAt(i);
+          let idx = major.indexOf(item);
 
-            if (idx === -1) {
-              this.removeAt(idx);
-              break;
-            }
-          }
-        } else {
-          // a major item has been added
-
-          for (let i = 0; i < contentLen; ++i) {
-            let item = major.objectAt(i);
-            let idx = content.indexOf(item);
-
-            if (idx === -1) {
-              this.pushObject(idx);
-              break;
-            }
+          if (idx === -1) {
+            this.removeAt(idx);
+            break;
           }
         }
+      } else {
+          // a major item has been added
 
-        break;
+        for (let i = 0; i < contentLen; ++i) {
+          let item = major.objectAt(i);
+          let idx = content.indexOf(item);
+
+          if (idx === -1) {
+            this.pushObject(idx);
+            break;
+          }
+        }
+      }
+
+      break;
     }
   })
 });

@@ -41,9 +41,8 @@ module.exports = {
   _getApps(user) {
 
     return new Promise((resolve, reject) => {
-
       return App.query({
-          text: `SELECT DISTINCT
+        text: `SELECT DISTINCT
                  "app".id,
                  "app".alias,
                  "app"."displayName",
@@ -53,10 +52,10 @@ module.exports = {
                  LEFT JOIN "group" on appgroup.group = "group".id
                  LEFT JOIN "usergroup" on usergroup.group = "group".id
                  WHERE usergroup.user = $1::varchar OR $2::boolean = true`,
-          values: [
-              user.id,
-              user.isAdmin
-            ]
+        values: [
+          user.id,
+          user.isAdmin
+        ]
       }, (err, apps) => {
 
         if (err) {
@@ -99,9 +98,9 @@ module.exports = {
                 port: 3389,
                 username: machine.username,
                 password: machine.password,
-                "remote-app": '',
+                'remote-app': '',
                 protocol: 'rdp',
-                "app-name": app.alias
+                'app-name': app.alias
               });
             });
 

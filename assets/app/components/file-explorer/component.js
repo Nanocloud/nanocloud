@@ -42,7 +42,7 @@ export default Ember.Component.extend({
 
     this.reset();
     this.loadDirectory();
-   
+
   }.on('becameVisible'),
 
   selectFile(file) {
@@ -102,26 +102,26 @@ export default Ember.Component.extend({
     }
     return (path);
   },
-    
+
   pathToString() {
-    
+
     var data = this.get('history');
     var offset = this.get('history_offset');
-    var path = "";
+    var path = '';
     for (var i = 0; i <= offset; i++) {
-      path += data[i] + "\\";
+      path += data[i] + '\\';
     }
     return (path);
   },
 
   publishSelectedFile() {
 
-    let name = this.get('selectedFile').get('name').replace(/\.[^/.]+$/, "");
+    let name = this.get('selectedFile').get('name').replace(/\.[^/.]+$/, '');
 
     let m = this.get('store').createRecord('application', {
       alias: name,
-      displayName: name, 
-      collectionName: "collection",
+      displayName: name,
+      collectionName: 'collection',
       path: this.fullPath(),
     });
 
@@ -130,7 +130,7 @@ export default Ember.Component.extend({
       .then(() => {
         this.set('isPublishing', false);
         this.toggleProperty('isVisible');
-        this.toast.success("Your application has been published successfully");
+        this.toast.success('Your application has been published successfully');
         if (this.get('publishDone')) {
           this.sendAction('publishDone');
         }
@@ -138,7 +138,7 @@ export default Ember.Component.extend({
         this.set('isPublishing', false);
         this.set('publishError', true);
         this.set('selectedFile', null);
-        this.toast.error(error.errors[0].status + " : " + error.errors[0].title);
+        this.toast.error(error.errors[0].status + ' : ' + error.errors[0].title);
       });
   },
 
@@ -147,7 +147,7 @@ export default Ember.Component.extend({
   },
 
   reset() {
-    this.set('history', [ "C:" ]);
+    this.set('history', [ 'C:' ]);
     this.set('history_offset', 0);
     this.set('selectedFile', null);
   },
