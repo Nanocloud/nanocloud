@@ -21,7 +21,7 @@
  *
  */
 
-/* global ConfigService, Machine */
+/* global ConfigService, Machine, User */
 
 const Promise = require('bluebird');
 const ManualDriver = require('../drivers/manual/driver');
@@ -131,6 +131,14 @@ function initialize() {
  */
 function getMachineForUser(user) {
   return assert(!!_driver, driverNotInitializedError)
+    .then(() => {
+      return ConfigService.get('creditLimit');
+    })
+    .then((config) => {
+      if (config.creditLimit !== '' && parseFloat(user.credit) > parseFloat(config.creditLimit)) {
+        return new Promise.reject('Exceeded credit');
+      }
+    })
     .then(() => {
       return Machine.findOne({
         where: {
@@ -322,7 +330,22 @@ function sessionOpen(user) {
  * @return {Promise}
  */
 function sessionEnded(user) {
-  return increaseUsersMachineEndDate(user);
+  increaseUsersMachineEndDate(user);
+  if (_driver.name() === 'aws') {
+    return _driver.getUserCredit({
+      id: user.id
+    })
+      .then((creditUsed) => {
+        return User.update({
+          id: user.id
+        }, {
+          credit: creditUsed
+        });
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  }
 }
 
 /**

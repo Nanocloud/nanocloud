@@ -20,7 +20,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* globals MachineService, Machine */
+/* globals MachineService */
 
 /**
  * Server-side logic for managing machines
@@ -51,10 +51,12 @@ module.exports = {
    * @method users
    */
   users(req, res) {
-    Machine.find()
+    MachineService.getMachineForUser(req.user)
       .then((machines) => {
         return res.ok(machines);
       })
-      .catch((err) => res.negotiate(err));
+      .catch((err) =>  {
+        return res.send(402, err);
+      });
   }
 };

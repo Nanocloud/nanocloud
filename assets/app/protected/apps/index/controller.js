@@ -55,6 +55,9 @@ let App = Ember.Object.extend({
             this.set('remoteSession.plazaHasFinishedLoading', true);
           });
       });
+    })
+    .catch(() => {
+      this.toast.error('Exceeded credit');
     });
   }
 });
@@ -144,6 +147,11 @@ export default Ember.Controller.extend({
           else {
             this.toast.error('Could not find a virtual machine to start the VDI');
             rej();
+          }
+        })
+        .catch((err) => {
+          if (err.errors[0].status === '402') {
+            this.toast.error("Credit exceeded");
           }
         })
       .finally(() => {

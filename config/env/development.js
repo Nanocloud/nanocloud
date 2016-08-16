@@ -64,9 +64,12 @@ module.exports = {
     autoLogoff: false,
     defaultGroup: '',
     awsCache: 0,
+    sessionDuration: 600,
+    creditLimit: '0.001',
 
     iaas: 'manual',
     machinePoolSize: 1,
+    price: {},
 
     sessionDuration: 600, // 10 minutes
     machinesName: 'Nanocloud Exec Server',

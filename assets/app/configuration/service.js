@@ -43,7 +43,8 @@ export default Ember.Service.extend({
     'title',
     'favIconPath',
     'logoPath',
-    'primaryColor'
+    'primaryColor',
+    'creditLimit'
   ],
   keyToBeRetrievedAsString: Ember.computed('keyToBeRetrieved', function() {
     let params = this.get('keyToBeRetrieved');

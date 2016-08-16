@@ -25,18 +25,78 @@
  * @help        :: See http://sailsjs.org/#!/documentation/concepts/Controllers
  */
 
-/* global MachineService, JsonApiService */
+/* global MachineService, JsonApiService, History */
 
 module.exports = {
   create(req, res) {
     req.body = JsonApiService.deserialize(req.body);
 
-    if (req.body.data.attributes['end-date'] === '') {
-      MachineService.sessionOpen(req.user);
-    } else {
-      MachineService.sessionEnded(req.user);
-    }
+    return this.createRecord(req, res);
+  },
 
-    return JsonApiService.createRecord(req, res);
+  createRecord(req, res) {
+    var data = req.body.data.attributes || {};
+
+    if (req.allParams().id) {
+      data.id = req.allParams().id;
+    }
+    History.create(data)
+      .then( (newInstance) => {
+
+        return History.findOne(newInstance.id)
+          .then((newRecord) => {
+
+            return res.created(newRecord);
+          })
+          .catch((err) => {
+            return res.negotiate(err);
+          });
+      })
+      .then(() => {
+        if (data.endDate === '') {
+          MachineService.sessionOpen(req.user);
+        }
+      })
+      .catch((err) => {
+        console.log('error');
+        console.log(err);
+      });
+  },
+
+  update(req, res) {
+    req.body = JsonApiService.deserialize(req.body);
+
+    return this.updateOneRecord(req, res);
+  },
+
+  updateOneRecord(req, res) {
+    var data = req.body.data.attributes || {};
+    var id = req.options.id || (req.options.where && req.options.where.id) || req.allParams().id;
+
+    if (req.allParams().id) {
+      data.id = req.allParams().id;
+    }
+    History.update(id, data)
+      .then((records) => {
+        if (!records || !records.length || records.length > 1) {
+          req._sails.log.warn('Unexpected output from `' + History.globalId + '.update`.');
+        }
+
+        var updatedRecord = records[0];
+
+        if (updatedRecord === undefined) {
+          return res.notFound();
+        }
+
+        return res.ok(updatedRecord);
+      })
+      .then(() => {
+        if (data.endDate !== '') {
+          MachineService.sessionEnded(req.user);
+        }
+      })
+      .catch((err) => {
+        console.log(err);
+      });
   }
 };
