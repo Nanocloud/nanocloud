@@ -6,8 +6,6 @@ RUN apt-get update && \
 
 COPY smb.conf /etc/samba/smb.conf
 
-EXPOSE 138/udp
-EXPOSE 139
 EXPOSE 445
 EXPOSE 445/udp
 EXPOSE 9090
