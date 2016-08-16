@@ -65,7 +65,7 @@ services:
     networks:
       - nanocloud
     volumes:
-      - plaza:/go/src/github.com/Nanocloud/community/plaza/
+      - plaza:/go/src/github.com/Nanocloud/nanocloud/plaza/
 
   guacamole-client:
     build: ./guacamole-client

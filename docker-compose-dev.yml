@@ -51,7 +51,7 @@ services:
       - GOARCH=amd64
     network_mode: host
     volumes:
-      - plaza:/go/src/github.com/Nanocloud/community/plaza/
+      - plaza:/go/src/github.com/Nanocloud/nanocloud/plaza/
 
   guacamole-client:
     image: nanocloud/guacamole-client

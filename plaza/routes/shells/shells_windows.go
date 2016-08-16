@@ -28,7 +28,7 @@ import (
 	"encoding/json"
 	"io/ioutil"
 
-	"github.com/Nanocloud/community/plaza/processmanager"
+	"github.com/Nanocloud/nanocloud/plaza/processmanager"
 	"github.com/labstack/echo"
 )
 
