@@ -31,9 +31,9 @@ if [ "${COMMAND}" = "docker" ]; then
         -e "GOARCH=${GOARCH}" \
         -i --name plaza nanocloud/plaza ./build.sh
     if [ "${GOOS}" = "windows" ]; then
-      docker cp plaza:/go/src/github.com/Nanocloud/community/plaza/plaza.exe .
+      docker cp plaza:/go/src/github.com/Nanocloud/nanocloud/plaza/plaza.exe .
     else
-      docker cp plaza:/go/src/github.com/Nanocloud/community/plaza/plaza .
+      docker cp plaza:/go/src/github.com/Nanocloud/nanocloud/plaza/plaza .
     fi
     docker kill plaza
     docker rm plaza

@@ -24,7 +24,7 @@
 
 package main
 
-import "github.com/Nanocloud/community/plaza/router"
+import "github.com/Nanocloud/nanocloud/plaza/router"
 
 func main() {
 	router.Start()

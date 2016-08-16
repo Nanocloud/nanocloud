@@ -30,7 +30,7 @@ import (
 	"os"
 	"sync"
 
-	"github.com/Nanocloud/community/plaza/windows"
+	"github.com/Nanocloud/nanocloud/plaza/windows"
 	log "github.com/Sirupsen/logrus"
 )
 

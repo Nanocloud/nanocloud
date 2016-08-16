@@ -30,7 +30,7 @@ import (
 	"io/ioutil"
 	"net/http"
 
-	"github.com/Nanocloud/community/plaza/processmanager"
+	"github.com/Nanocloud/nanocloud/plaza/processmanager"
 	log "github.com/Sirupsen/logrus"
 	"github.com/labstack/echo"
 )

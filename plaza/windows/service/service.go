@@ -33,7 +33,7 @@ import (
 	"runtime"
 	"time"
 
-	"github.com/Nanocloud/community/plaza/router"
+	"github.com/Nanocloud/nanocloud/plaza/router"
 	log "github.com/Sirupsen/logrus"
 	"golang.org/x/sys/windows/svc"
 	"golang.org/x/sys/windows/svc/eventlog"

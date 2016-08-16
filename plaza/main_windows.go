@@ -37,9 +37,9 @@ import (
 	"strings"
 	"syscall"
 
-	"github.com/Nanocloud/community/plaza/router"
-	"github.com/Nanocloud/community/plaza/windows"
-	"github.com/Nanocloud/community/plaza/windows/service"
+	"github.com/Nanocloud/nanocloud/plaza/router"
+	"github.com/Nanocloud/nanocloud/plaza/windows"
+	"github.com/Nanocloud/nanocloud/plaza/windows/service"
 	"github.com/Sirupsen/logrus"
 )
 
