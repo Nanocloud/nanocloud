@@ -51,15 +51,17 @@ module.exports = {
 
     return PlazaService.exec(
       values.hostname,
-      values.port,
-      ['useradd', values.username, '--create-home', '--groups', 'users'],
-      ''
-    )
-    .then(() => {
-      return next();
-    })
-    .catch((err) => {
-      return next(err);
-    });
+      values.port, {
+        command: ['useradd',
+                  values.username,
+                  '--create-home',
+                  '--groups',
+                  'users'
+                 ]
+      })
+      .then(() => {
+        return next();
+      })
+      .catch(next);
   }
 };

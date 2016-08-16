@@ -23,7 +23,7 @@
 
 const Promise = require('bluebird');
 
-/* globals App, MachineService */
+/* globals App, MachineService, JsonApiService, PlazaService */
 
 /**
  * Controller of apps resource.
@@ -76,6 +76,40 @@ module.exports = {
       .catch((err) => {
         return res.negotiate(err);
       });
+  },
+
+  update(req, res) {
+
+    let applicationData = JsonApiService.deserialize(req.body.data);
+
+    App.update({
+      id: req.allParams().id
+    }, applicationData.attributes)
+      .then((applications) => {
+
+        let application = applications.pop();
+
+        if (application.state === 'running') {
+          return MachineService.getMachineForUser(req.user)
+            .then((machine) => {
+              return PlazaService.exec(machine.ip, machine.plazaport, {
+                command: [
+                  application.filePath
+                ],
+                username: machine.username
+              });
+            })
+            .then(() => {
+              return res.ok(application);
+            });
+        } else {
+          return res.ok(application);
+        }
+      })
+      .catch((err) => {
+        return res.negotiate(err);
+      });
+
   },
 
   /**

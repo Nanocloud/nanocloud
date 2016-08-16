@@ -32,21 +32,23 @@ describe('PlazaService', function() {
 
   before(function(done) {
     ConfigService.set('storageAddress', 'localhost')
-    .then(() => {
-      return ConfigService.set('storagePort', 9090);
-    })
-    .then(() => {
-      return done();
-    });
+      .then(() => {
+        return ConfigService.set('storagePort', 9090);
+      })
+      .then(() => {
+        return done();
+      });
   });
 
   describe('Exec simple command', function() {
     it('Should return success', (done) => {
-      return PlazaService.exec('localhost', 9090, ['ls', '-l'], '')
-      .then((res) => {
-        expect(res.success).to.equal(true);
-        done();
-      });
+      return PlazaService.exec('localhost', 9090, {
+        command: ['ls', '-l']
+      })
+        .then((res) => {
+          expect(res.success).to.equal(true);
+          done();
+        });
     });
   });
 
@@ -56,21 +58,21 @@ describe('PlazaService', function() {
       User.findOne({
         id: 'aff17b8b-bf91-40bf-ace6-6dfc985680bb'
       })
-      .then((user) => {
-        return StorageService.findOrCreate(user);
-      })
-      .then((storage) => {
-        let file = {
-          filename: filename,
-          fd: './tests/unit/services/' + filename
-        };
-        return PlazaService.upload(storage, file);
-      })
-      .then((res) => {
-        expect(res.statusCode).to.equal(200);
-        expect(res.headers['content-length']).to.equal('0');
-        done();
-      });
+        .then((user) => {
+          return StorageService.findOrCreate(user);
+        })
+        .then((storage) => {
+          let file = {
+            filename: filename,
+            fd: './tests/unit/services/' + filename
+          };
+          return PlazaService.upload(storage, file);
+        })
+        .then((res) => {
+          expect(res.statusCode).to.equal(200);
+          expect(res.headers['content-length']).to.equal('0');
+          done();
+        });
     });
   });
 
@@ -80,21 +82,21 @@ describe('PlazaService', function() {
       User.findOne({
         id: 'aff17b8b-bf91-40bf-ace6-6dfc985680bb'
       })
-      .then((user) => {
-        return StorageService.findOrCreate(user);
-      })
-      .then((storage) => {
-        return PlazaService.files(storage, '/home/' + storage.username);
-      })
-      .then((files) => {
-        expect(files.data.length).to.equal(1);
+        .then((user) => {
+          return StorageService.findOrCreate(user);
+        })
+        .then((storage) => {
+          return PlazaService.files(storage, '/home/' + storage.username);
+        })
+        .then((files) => {
+          expect(files.data.length).to.equal(1);
 
-        let file = files.data[0];
-        expect(file.attributes.name).to.equal(filename);
+          let file = files.data[0];
+          expect(file.attributes.name).to.equal(filename);
 
-        filesize = files.data[0].attributes.size;
-        done();
-      });
+          filesize = files.data[0].attributes.size;
+          done();
+        });
     });
   });
 
@@ -104,18 +106,18 @@ describe('PlazaService', function() {
       User.findOne({
         id: 'aff17b8b-bf91-40bf-ace6-6dfc985680bb'
       })
-      .then((user) => {
-        return StorageService.findOrCreate(user);
-      })
-      .then((storage) => {
-        return PlazaService.download(storage, '/home/' + storage.username + '/' + filename);
-      })
-      .then((res) => {
-        expect(res.headers['content-type']).to.equal('application/javascript');
-        expect(res.headers['content-disposition']).to.equal('attachment; filename=' + filename + '');
-        expect(res.headers['content-length']).to.equal(filesize.toString());
-        done();
-      });
+        .then((user) => {
+          return StorageService.findOrCreate(user);
+        })
+        .then((storage) => {
+          return PlazaService.download(storage, '/home/' + storage.username + '/' + filename);
+        })
+        .then((res) => {
+          expect(res.headers['content-type']).to.equal('application/javascript');
+          expect(res.headers['content-disposition']).to.equal('attachment; filename=' + filename + '');
+          expect(res.headers['content-length']).to.equal(filesize.toString());
+          done();
+        });
     });
   });
 });

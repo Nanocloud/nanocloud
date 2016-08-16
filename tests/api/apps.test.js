@@ -23,13 +23,135 @@
  */
 
 // jshint mocha:true
-/* globals sails, App, AccessToken, User, Group */
+/* globals sails, App, AccessToken, User, Group, MachineService, Machine */
 
 var nano = require('./lib/nanotest');
 var chai = require('chai');
 var expect = chai.expect;
+var http = require('http');
 
 module.exports = function() {
+  describe('Plaza app launch', function() {
+
+    let fakePlaza = null;
+    let appId = '9282fd13-5df0-4cf6-a101-ae507f75ab47';
+    let appOpened = false; // Use by fake plaza to hold application status
+    let originalFakePlazaPort = null;
+
+    const expectedSchema = {
+      type: 'object',
+      properties: {
+        'alias': {type: 'string'},
+        'display-name': {type: 'string'},
+        'file-path': {type: 'string'},
+        'state': {type: 'string'},
+        'created-at': {type: 'string'},
+        'updated-at': {type: 'string'}
+      },
+      required: ['alias', 'display-name', 'file-path', 'state', 'created-at', 'updated-at'],
+      additionalProperties: false
+    };
+
+    before('Launch fake plaza', function(done) {
+      fakePlaza = http.createServer((req, res) => {
+        res.writeHead(200, {'Content-Type': 'application/json'});
+
+        var body = [];
+        req.on('error', function(err) {
+          console.error(err);
+        }).on('data', function(chunk) {
+          body.push(chunk);
+        }).on('end', function() {
+          body = Buffer.concat(body).toString();
+
+          if (req.url === '/exec') {
+            appOpened = JSON.parse(body);
+            res.end();
+          }
+
+          return res.end();
+        });
+      }).listen(0);
+
+      App.create({
+        id: appId,
+        alias: 'fake',
+        displayName: 'Fake Application',
+        filePath: 'C:\\fake.exe'
+      })
+        .then(() => {
+          return MachineService.getMachineForUser({
+            id: nano.adminId()
+          });
+        })
+        .then((machine) => {
+          originalFakePlazaPort = machine.plazaport;
+
+          return Machine.update({
+            id: machine.id
+          }, {
+            plazaport: fakePlaza.address().port
+          });
+        })
+        .then(() => {
+          return done();
+        });
+    });
+
+    after('Remove created application', function(done) {
+
+      App.destroy(appId)
+        .then(() => {
+          return MachineService.getMachineForUser({
+            id: nano.adminId()
+          });
+        })
+        .then((machine) => {
+
+          return Machine.update({
+            id: machine.id
+          }, {
+            plazaport: originalFakePlazaPort
+          });
+        })
+        .then(() => {
+          return done();
+        });
+    });
+
+    it('Should launch an app when app.state === running', function(done) {
+
+      return nano.request(sails.hooks.http.app)
+        .patch('/api/apps/' + appId)
+        .send({
+          'data': {
+            'id': appId,
+            'attributes': {
+              id: appId,
+              alias: 'fake',
+              displayName: 'Fake Application',
+              filePath: 'C:\\fake.exe',
+              state: 'running'
+            }
+          }
+        })
+        .set(nano.adminLogin())
+        .expect(200)
+        .expect(nano.jsonApiSchema(expectedSchema))
+        .then(() => {
+          expect(appOpened).to.deep.equal({
+            command: [
+                'C:\\fake.exe'
+            ],
+            username: null
+          });
+        })
+        .then(() => {
+          return done();
+        });
+    });
+  });
+
   describe('Group app permission', function() {
 
     let group1 = null;
@@ -190,6 +312,25 @@ module.exports = function() {
         .then(() => {
           return done();
         });
+    });
+
+    after('Cleaning groups', function(done) {
+
+      Group.query('TRUNCATE TABLE public.group', () => {
+        return User.destroy([
+          someguy,
+          someotherguy
+        ])
+          .then(() => {
+            return App.destroy([
+              app1,
+              app2
+            ]);
+          })
+          .then(() => {
+            return done();
+          });
+      });
     });
 
     it('Admins should be able to list all apps', function(done) {
