@@ -49,6 +49,9 @@ module.exports = {
     filePath: {
       type: 'string'
     },
+    state: {
+      type: 'string'
+    },
 
     groups: {
       collection: 'group',

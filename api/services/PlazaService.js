@@ -36,20 +36,19 @@ module.exports = {
    *
    * @param {String} storage hostname
    * @param {string} listening storage port
-   * @param {[]string} commands to execute
+   * @param {Object} query description:
+   * {
+   *   username: '', // User's name the command should be executed by
+   *   wait: true || false, // whether the call should be blocking or not
+   *   command: array(). // array of strings to execute
+   * }
    * @return {Promise} Request to Plaza
    */
-  exec: function(hostname, port, cmd, stdin) {
+  exec: function(hostname, port, query) {
     let options = {
       url: 'http://' + hostname + ':' + port + '/exec',
-      headers: {
-        'Content-Type': 'application/json'
-      },
       json: true,
-      body: {
-        command: cmd,
-        stdin: stdin
-      },
+      body: query,
       method: 'POST'
     };
 

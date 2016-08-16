@@ -92,7 +92,8 @@ module.exports = {
       })
       .then((files) => {
         return res.send(files);
-      });
+      })
+      .catch(res.negotiate);
   },
 
   /**

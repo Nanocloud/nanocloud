@@ -25,6 +25,8 @@
  * @help        :: See http://sailsjs.org/#!/documentation/concepts/Controllers
  */
 
+/* global JsonApiService */
+
 const fs = require('fs');
 const url = require('url');
 const guessType = require('guess-content-type');
@@ -61,5 +63,9 @@ module.exports = {
 
       return fs.createReadStream(emberApp).pipe(res);
     });
+  },
+
+  update: function(req, res) {
+    return JsonApiService.updateMethod(req, res);
   }
 };

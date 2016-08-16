@@ -66,6 +66,11 @@ module.exports.routes = {
   *                                                                          *
   ***************************************************************************/
 
+  'PATCH /api/:model/:id': {
+    controller: 'Nanocloud',
+    action: 'update'
+  },
+
   'GET /machines/users': {
     controller: 'Machine',
     action: 'users'

@@ -31,7 +31,7 @@ const BaseDriver = require('../driver');
 let _plazaPort;
 let _plazaAddress;
 
-let _sessionOpen = false; // Use by fake plaza to hold session status
+let _sessionOpen = false; // Used by fake plaza to hold session status
 
 class DummyDriver extends BaseDriver {
 
