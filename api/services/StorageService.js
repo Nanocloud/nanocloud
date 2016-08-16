@@ -107,10 +107,12 @@ module.exports = {
   checkUploadLimit: function(storage, length) {
     return ConfigService.get('uploadLimit')
       .then((limit) => {
-        return this.storageSize(storage, '', length)
+        return this.storageSize(storage)
           .then((size) => {
+            // size is in KB
+            size = parseInt(length, 10) + parseInt(size, 10) * 1024;
             return new Promise(function(resolve, reject) {
-              // limit['uploadLimit'] is in MB
+              // limit.uploadLimit is in MB
               if (limit.uploadLimit !== 0 && size > limit.uploadLimit * 1048576) {
                 return reject({
                   statusCode: 403,
@@ -126,26 +128,27 @@ module.exports = {
   /**
    * storageSize
    *
-   * Calculate sum of files size recursively
+   * Call du and return sum of files size
    *
    * @param {Object} Storage of user want to upload
-   * @param {string} Directory where we search files
-   * @param {number} Sum of files size
-   * @return {number} Sum of files size
+   * @return {Promise} Sum of files size in KB
    */
-  storageSize: function(storage, dir, sum) {
-    return PlazaService.files(storage, '/home/' + storage.username + '/' + dir)
-      .then((files) => {
-        return new Promise(function(resolve) {
-          for (let i = 0; i < files.data.length; i++) {
-            if (files.data[i].attributes.type === 'directory') {
-              sum += this.storageSize(storage, files.data[i].attributes.name + '/' + dir, 0);
-            } else {
-              sum += files.data[i].attributes.size;
-            }
-          }
-          return resolve(sum);
-        });
+  storageSize: function(storage) {
+    return PlazaService.exec(
+      storage.hostname,
+      storage.port,
+      {
+        username: storage.username,
+        wait: true,
+        command: ['du', '-s', '/home/' + storage.username]
+      }
+    )
+      .then((res) => {
+        if (res.success === false) {
+          return new Error(res.stderr);
+        } else {
+          return res.stdout.split('\t')[0];
+        }
       });
   }
 };
