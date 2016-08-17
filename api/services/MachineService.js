@@ -21,7 +21,7 @@
  *
  */
 
-/* global ConfigService, Machine */
+/* global ConfigService, Machine, Image */
 
 const Promise = require('bluebird');
 const ManualDriver = require('../drivers/manual/driver');
@@ -108,13 +108,22 @@ function initialize() {
 
       _initializing = ConfigService.get('iaas')
         .then((config) => {
-
-          _driver = new (drivers[config.iaas])();
-
-          return _driver.initialize()
+          return Image.findOrCreate({
+            default: true
+          }, {
+            iaasId: null,
+            name: 'Default',
+            buildFrom: null,
+            default: true
+          })
             .then(() => {
-              _updateMachinesPool();
-              return null;
+              _driver = new (drivers[config.iaas])();
+
+              return _driver.initialize()
+                .then(() => {
+                  _updateMachinesPool();
+                  return null;
+                });
             });
         });
 
@@ -171,7 +180,7 @@ function getMachineForUser(user) {
               });
             });
           } else {
-            return res;
+            return Promise.resolve(res);
           }
         });
     });
@@ -350,7 +359,32 @@ function machines() {
     });
 }
 
+/*
+ * Create an image from a machine
+ * The image will be used as default image for future execution servers
+ *
+ * @method createImage
+ * @param {Object} Image object with `buildFrom` attribute set to the machine id to create image from
+ * @return {Promise[Image]} resolves to the new default image
+ */
+function createImage(image) {
+  return _driver.createImage(image);
+}
+
+/*
+ * Return default image to create instance from
+ *
+ * @method getDefaultImage
+ * @return {Promise[Image]} the default image
+ */
+function getDefaultImage() {
+
+  return Image.findOne({
+    default: true
+  });
+}
+
 module.exports = {
   initialize, getMachineForUser, driverName, sessionOpen, sessionEnded,
-  machines
+  machines, createImage, getDefaultImage
 };

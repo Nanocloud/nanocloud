@@ -24,7 +24,7 @@
  * @description :: Driver for Amazon Web Service EC2 Iaas
  */
 
-/* global Machine, ConfigService */
+/* global Machine, MachineService, ConfigService, Image */
 
 const pkgcloud = require('pkgcloud');
 const Promise = require('bluebird');
@@ -47,6 +47,7 @@ class AWSDriver extends Driver {
    *  - awsRegion: The AWS region name
    *  - awsKeyName: The AWS key pair name to use or create
    *  - awsPrivateKey: The location of the AWS private key to use or create
+   *  - awsImage: The image to build Nanocloud executation servers from
    *
    * @method initialize
    * @return {Promise}
@@ -54,7 +55,7 @@ class AWSDriver extends Driver {
   initialize() {
     return ConfigService.get(
       'awsAccessKeyId', 'awsSecretAccessKey', 'awsRegion',
-      'awsKeyName', 'awsPrivateKey'
+      'awsKeyName', 'awsPrivateKey', 'awsImage'
     )
       .then((config) => {
         this._client = pkgcloud.compute.createClient({
@@ -93,7 +94,15 @@ class AWSDriver extends Driver {
                   });
               });
             });
-        });
+        })
+          .then(() => {
+            return Image.update({
+              default: true
+            }, {
+              iaasId: config.awsImage,
+              name: 'AWS default'
+            });
+          });
       });
   }
 
@@ -130,7 +139,6 @@ class AWSDriver extends Driver {
 
   /**
    * Create a new EC2 instance. It uses the `ConfigService` variables:
-   *  - awsImage: AWS EC2 AMI to use
    *  - awsFlavor: AWS EC2 instance type
    *  - plazaURI: The URL from where the instance will download plaza.exe
    *  - awsKeyName: The name of the KeyPair to use for the instance admin
@@ -142,10 +150,13 @@ class AWSDriver extends Driver {
    * @return {Promise[Machine]} The created machine
    */
   createMachine(options) {
-    return ConfigService.get('awsImage', 'awsFlavor', 'plazaURI', 'awsKeyName', 'plazaPort')
+    return ConfigService.get('awsFlavor', 'plazaURI', 'awsKeyName', 'plazaPort')
       .then((config) => {
 
-        const userData = `<powershell>
+        return MachineService.getDefaultImage()
+          .then((image) => {
+
+            const userData = `<powershell>
         REG.exe Add HKLM\\Software\\Microsoft\\ServerManager /V DoNotOpenServerManagerAtLogon /t REG_DWORD /D 0x1 /F
         Set-ExecutionPolicy RemoteSigned -force
         Invoke-WebRequest ${config.plazaURI} -OutFile C:\\plaza.exe
@@ -155,67 +166,93 @@ class AWSDriver extends Driver {
         </powershell>
       `;
 
-        return new Promise((resolve, reject) => {
-          this._client.createServer({
-            name     : options.name,
-            image    : config.awsImage,
-            flavor   : config.awsFlavor,
-            KeyName  : config.awsKeyName,
-            UserData : userData
-          }, (err, server) => {
-            if (err) {
-              return reject(err);
-            } else {
-              return server.refresh((err, server) => {
-
+            return new Promise((resolve, reject) => {
+              this._client.createServer({
+                name     : options.name,
+                image    : image.iaasId,
+                flavor   : config.awsFlavor,
+                KeyName  : config.awsKeyName,
+                UserData : userData
+              }, (err, server) => {
                 if (err) {
                   return reject(err);
-                }
-
-                return this._client.ec2
-                  .waitFor('passwordDataAvailable', {
-                    InstanceId: server.id
-                  }, (err, res) => {
+                } else {
+                  return server.refresh((err, server) => {
 
                     if (err) {
                       return reject(err);
+                    }
+
+                    if (image.password === null) {
+                      return this._client.ec2
+                        .waitFor('passwordDataAvailable', {
+                          InstanceId: server.id
+                        }, (err, res) => {
+
+                          if (err) {
+                            return reject(err);
+                          } else {
+                            return resolve({
+                              server: server,
+                              password: res.PasswordData,
+                              image: image
+                            });
+                          }
+                        });
                     } else {
-                      return resolve({
-                        server: server,
-                        password: res.PasswordData
+                      return this._client.ec2
+                        .waitFor('instanceStatusOk', {
+                          InstanceIds: [server.id]
+                        }, (err) => {
+
+                          if (err) {
+                            return reject(err);
+                          } else {
+                            return resolve({
+                              server: server,
+                              password: image.password,
+                              image: image
+                            });
+                          }
+                        });
+                    }
+                  });
+                }
+              });
+            })
+              .then((res) => {
+                const server = res.server;
+                const password = res.password;
+                const image = res.image;
+                const ip = server.addresses.public[0];
+                const type = this.name();
+
+                return ConfigService.get('awsMachineUsername', 'plazaPort')
+                  .then((config) => {
+
+                    let _createMachine = function(password) {
+                      return Machine.create({
+                        id: server.id,
+                        name: server.name,
+                        type: type,
+                        ip: ip,
+                        username: config.awsMachineUsername,
+                        password: password,
+                        domain: '',
+                        plazaport: config.plazaPort
                       });
+                    };
+
+                    if (image.password) {
+                      return _createMachine(image.password);
+                    } else {
+                      return this._decryptPassword(password)
+                        .then((password) => {
+                          return _createMachine(password);
+                        });
                     }
                   });
               });
-            }
-          });
-        })
-          .then((res) => {
-            const server = res.server;
-            const password = res.password;
-
-
-            return ConfigService.get('awsMachineUsername', 'plazaPort')
-              .then((config) => {
-                return this._decryptPassword(password)
-                  .then((password) => {
-
-                    const ip = server.addresses.public[0];
-
-                    return Machine.create({
-                      id: server.id,
-                      name: server.name,
-                      type: this.name(),
-                      ip: ip,
-                      username: config.awsMachineUsername,
-                      password: password,
-                      domain: '',
-                      plazaport: config.plazaPort
-                    });
-
-                  });
-              });
-
           });
       });
   }
@@ -252,6 +289,68 @@ class AWSDriver extends Driver {
         } else {
           resolve(server);
         }
+      });
+    });
+  }
+
+
+  /*
+   * Create an image from a machine
+   * The image will be used as default image for future execution servers
+   *
+   * @method createImage
+   * @param {Object} Image object with `buildFrom` attribute set to the machine id to create image from
+   * @return {Promise[Image]} resolves to the new default image
+   */
+  createImage(imageToCreate) {
+
+    return new Promise((resolve, reject) => {
+      this._client.ec2.createImage({
+        Name: imageToCreate.name,
+        InstanceId: imageToCreate.buildFrom,
+        NoReboot: true
+      }, (err, image) => {
+
+        if (err) {
+          return reject(err);
+        }
+
+
+        Machine.findOne(imageToCreate.buildFrom)
+          .then((machine) => {
+            this._client.ec2.waitFor('imageAvailable', {
+              ImageIds: [image.ImageId]
+            }, (err) => {
+              if (err) {
+                return reject(err);
+              }
+
+              return Image.update({
+                default: true
+              }, {
+                iaasId: image.ImageId,
+                name: imageToCreate.name,
+                buildFrom: imageToCreate.buildFrom,
+                password: machine.password
+              })
+                .then((images) => {
+
+                  let image = images.pop();
+                  return this._client.ec2
+                    .waitFor('instanceStatusOk', {
+                      InstanceIds: [machine.id]
+                    }, (err) => {
+
+                      if (err) {
+                        return reject(err);
+                      }
+
+                      return resolve(image);
+                    });
+                });
+            });
+          })
+          .catch(reject);
       });
     });
   }

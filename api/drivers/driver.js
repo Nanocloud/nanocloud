@@ -74,6 +74,18 @@ class Driver {
   getServer(/* id */) {
     return Promise.reject(new Error('Driver\'s method "getServer" not implemented'));
   }
+
+  /*
+   * Create an image from a machine
+   * The image will be used as default image for future execution servers
+   *
+   * @method createImage
+   * @param {Object} Image object with `buildFrom` attribute set to the machine id to create image from
+   * @return {Promise[Image]} resolves to the new default image
+   */
+  createImage(/* image */) {
+    return Promise.reject(new Error('Driver\'s method "createImage" not implemented'));
+  }
 }
 
 module.exports = Driver;
