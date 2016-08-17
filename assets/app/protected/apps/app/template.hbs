@@ -1,5 +1,9 @@
 <div class='content-wrapper m-t-2'>
-  <table class="table user-table">
+  <h4 class='m-b-2'>
+    {{#link-to 'protected.apps'}}Applications{{/link-to}} 
+    > {{model.displayName}}
+  </h4>
+  <table class="table detail-table">
     <tbody>
       <tr>
         <th scope="row">Application name</th>
@@ -36,7 +40,7 @@
         <th scope="row">UUID</th>
         <td>
           {{model.id}}
-          {{copy-clipboard class='in-bl' value=model.id title='UUID'}}
+          {{copy-clipboard class='in-bl va-top' value=model.id title='UUID'}}
         </td>
       </tr>
       <tr>

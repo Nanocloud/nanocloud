@@ -81,6 +81,10 @@ h1 {
   color: $blue-default;
 }
 
+.color-success {
+  color: #5eca20;
+}
+
 .error{
   color: red;
 }
@@ -169,6 +173,10 @@ h1 {
   vertical-align: text-bottom;
 }
 
+.va-bl-mid {
+  vertical-align: -webkit-baseline-middle;
+}
+
 .bl {
   display: block;
 }
@@ -220,6 +228,10 @@ h1 {
 
 .offline {
   color: $gray-light;
+}
+
+.white {
+  color: $white;
 }
 
 .centered {

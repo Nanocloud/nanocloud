@@ -20,7 +20,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* globals Machine */
+/* globals Machine, Image */
 
 const Promise = require('bluebird');
 const uuid = require('node-uuid');

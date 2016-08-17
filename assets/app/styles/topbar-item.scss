@@ -16,6 +16,12 @@
   & .material-icons {
     font-size: 16px;
   }
+
+  .content {
+    position: relative;
+    top: 1px;
+    margin-left: 5px;
+  }
 }
 
 .topbar-item.hover-enabled:hover {
@@ -24,4 +30,8 @@
 
 .topbar-item.hover-darker:hover {
   color: $blue-darken;
+}
+
+.topbar-item.hover-lighter:hover {
+  color: $blue-lighten;
 }

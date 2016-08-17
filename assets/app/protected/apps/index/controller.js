@@ -175,6 +175,18 @@ export default Ember.Controller.extend({
         });
         desktop.launch();
       }
-    }
+    },
+
+    toggleFileExplorer() {
+      this.toggleProperty('showFileExplorer');
+    },
+
+    closeFileExplorer() {
+      this.set('showFileExplorer', false);
+    },
+
+    openFileExplorer() {
+      this.set('showFileExplorer', true);
+    },
   }
 });

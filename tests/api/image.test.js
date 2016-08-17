@@ -23,7 +23,7 @@
  */
 
 // jshint mocha:true
-/* globals sails */
+/* globals sails, MachineService */
 
 var nano = require('./lib/nanotest');
 var chai = require('chai');

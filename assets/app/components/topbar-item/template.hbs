@@ -1,4 +1,10 @@
-<div {{ action "clickAction"}} class='centered topbar-item {{ if clickable "clickable" }} {{ if hover-enabled "hover-enabled" }} {{ if hover-darker "hover-darker" }} {{ if adjustIcon "adjustIcon" }}'>
+<div {{ action "clickAction"}} class='centered topbar-item
+  {{ if clickable "clickable" }}
+  {{ if hover-enabled "hover-enabled" }}
+  {{ if hover-darker "hover-darker" }}
+  {{ if hover-lighter "hover-lighter" }}
+  {{ if adjustIcon "adjustIcon" }}
+  '>
   {{#if materialIcon }}
     <i class="material-icons">{{ materialIcon }}</i>
   {{/if}}
@@ -11,5 +17,7 @@
     <span class="{{ if clickable "clickable"}}">{{ textContent }}</span>
   {{/if}}
 
+  <div class='content'> 
   {{ yield }}
+  </div>
 </div>

@@ -22,23 +22,15 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-/* globals MachineService */
+import { moduleForModel, test } from 'ember-qunit';
 
-const uuid = require('node-uuid');
+moduleForModel('image', 'Unit | Model | image', {
+  // Specify the other units that are required for this test.
+  needs: []
+});
 
-module.exports = {
-
-  create: function(req, res) {
-
-    MachineService.getMachineForUser(req.user)
-      .then((machine) => {
-
-        return MachineService.createImage({
-          name: uuid.v4(),
-          buildFrom: machine.id
-        });
-      })
-      .then(res.created)
-      .catch(res.negotiate);
-  }
-};
+test('it exists', function(assert) {
+  let model = this.subject();
+  // let store = this.store();
+  assert.ok(!!model);
+});
