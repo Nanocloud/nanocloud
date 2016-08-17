@@ -33,11 +33,19 @@ module.exports = {
    * @method find
    */
   find(req, res) {
-    MachineService.machines()
-      .then((machines) => {
-        return res.ok(machines);
-      })
-      .catch((err) => res.negotiate(err));
+    if (req.user.isAdmin) {
+      Machine.find()
+        .then((machines) => {
+          return res.ok(machines);
+        })
+        .catch((err) => res.negotiate(err));
+    } else {
+      MachineService.getMachineForUser(req.user)
+        .then((machines) => {
+          return res.ok([machines]);
+        })
+        .catch((err) => res.negotiate(err));
+    }
   },
 
   /**
@@ -51,10 +59,18 @@ module.exports = {
    * @method users
    */
   users(req, res) {
-    Machine.find()
-      .then((machines) => {
-        return res.ok(machines);
-      })
-      .catch((err) => res.negotiate(err));
+    if (req.user.isAdmin) {
+      Machine.find()
+        .then((machines) => {
+          return res.ok(machines);
+        })
+        .catch((err) => res.negotiate(err));
+    } else {
+      MachineService.getMachineForUser(req.user)
+        .then((machines) => {
+          return res.ok([machines]);
+        })
+        .catch((err) => res.negotiate(err));
+    }
   }
 };

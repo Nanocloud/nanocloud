@@ -34,6 +34,7 @@ const testConfig = require('./config.test');
 const testGroup = require('./group.test');
 const testApps = require('./apps.test');
 const testSecurity = require('./security.test');
+const testMachine = require('./machine.test');
 
 var request = require('supertest');
 
@@ -57,3 +58,4 @@ testConfig();
 testGroup();
 testApps();
 testSecurity();
+testMachine();
