@@ -81,7 +81,7 @@ export default DS.Model.extend(Validations, {
   firstName: DS.attr('string'),
   lastName: DS.attr('string'),
   password: DS.attr('string'),
-  signupDate: DS.attr('number'),
+  createdAt: DS.attr('string'),
   expirationDate: DS.attr('number'),
 
   expirationDateInMs: Ember.computed('expirationDate', function() {
