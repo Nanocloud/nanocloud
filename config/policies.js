@@ -61,4 +61,8 @@ module.exports.policies = {
     update: true,
     findOne: true,
   },
+
+  HistoryController : {
+    destroy: false
+  },
 };

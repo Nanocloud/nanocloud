@@ -33,6 +33,7 @@ const testUserLimitation = require('./user-limitation.test');
 const testConfig = require('./config.test');
 const testGroup = require('./group.test');
 const testApps = require('./apps.test');
+const testSecurity = require('./security.test');
 
 var request = require('supertest');
 
@@ -55,3 +56,4 @@ testUserLimitation();
 testConfig();
 testGroup();
 testApps();
+testSecurity();
