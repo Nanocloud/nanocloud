@@ -35,6 +35,17 @@ AWS driver specific
 - AWS_FLAVOR (defaults to t2.medium) size of the virtual machine
 - AWS_MACHINE_USERNAME (defaults to Administrator) administrator account on the machine
 
+Openstack driver specific
+ - OPENSTACK_USERNAME Openstack username
+ - OPENSTACK_PASSWORD Openstack password
+ - OPENSTACK_AUTH_URL Openstack auth URL without version
+ - OPENSTACK_REGION (Defaults to 'RegionOne') Openstack region name
+ - OPENSTACK_IMAGE image to boot Windows execution servers from
+ - OPENSTACK_FLAVOR (defaults to m1.medium) type id of the virtual machine
+ - OPENSTACK_SECURITY_GROUPS (Defaults to default) security groups to apply to the instance, should be an array
+ - OPENSTACK_MACHINE_USERNAME (Defaults to Administrator) Windows account username
+ - OPENSTACK_MACHINE_PASSWORD (Defaults password will generated) Windows account password
+
 Storage specific:
 - STORAGE_ADDRESS (mandatory, defaults to 'localhost') storage service's IP
 - STORAGE_PORT (mandatory, defaults to 9090) storage service's port

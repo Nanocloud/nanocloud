@@ -27,6 +27,7 @@ const Promise = require('bluebird');
 const ManualDriver = require('../drivers/manual/driver');
 const AWSDriver = require('../drivers/aws/driver');
 const DummyDriver = require('../drivers/dummy/driver');
+const OpenstackDriver = require('../drivers/openstack/driver');
 
 /**
  * Service responssible of the machine pool
@@ -39,9 +40,10 @@ const driverAlreadyInitializedError = new Error('Driver already initialized');
 const noMachineFoundError = new Error('No machine found');
 
 const drivers = {
-  manual : ManualDriver,
-  aws    : AWSDriver,
-  dummy  : DummyDriver
+  manual    : ManualDriver,
+  aws       : AWSDriver,
+  dummy     : DummyDriver,
+  openstack : OpenstackDriver
 };
 
 /**
