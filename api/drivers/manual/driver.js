@@ -42,7 +42,7 @@ class ManualDriver extends Driver {
       .then((config) => {
 
         let machines = config.machines.map((machine) => {
-          return Machine.create(machine);
+          return Machine.findOrCreate(machine);
         });
 
         return Promise.all(machines);
