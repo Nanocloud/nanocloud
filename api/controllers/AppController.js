@@ -23,7 +23,7 @@
 
 const Promise = require('bluebird');
 
-/* globals App, MachineService, JsonApiService, PlazaService */
+/* globals App, MachineService, JsonApiService, PlazaService, StorageService */
 
 /**
  * Controller of apps resource.
@@ -90,21 +90,54 @@ module.exports = {
         let application = applications.pop();
 
         if (application.state === 'running') {
-          return MachineService.getMachineForUser(req.user)
+          MachineService.getMachineForUser(req.user)
             .then((machine) => {
               return PlazaService.exec(machine.ip, machine.plazaport, {
                 command: [
                   application.filePath
                 ],
                 username: machine.username
-              });
-            })
-            .then(() => {
-              return res.ok(application);
+              })
+                .then(() => {
+                  return StorageService.findOrCreate(req.user);
+                })
+                .then((storage) => {
+                  return PlazaService.exec(machine.ip, machine.plazaport, {
+                    command: [
+                      `C:\\Windows\\System32\\net.exe`,
+                      'use',
+                      'z:',
+                      `\\\\${storage.hostname}\\${storage.username}`,
+                      `/user:${storage.username}`,
+                      storage.password
+                    ],
+                    wait: true,
+                    hideWindow: true,
+                    username: machine.username
+                  })
+                    .catch(() => {
+                      // User storage is probably already mounted
+                      // Let's ignore the error silently
+                      return Promise.resolve();
+                    });
+                })
+                .then(() => {
+                  return PlazaService.exec(machine.ip, machine.plazaport, {
+                    command: [
+                      `C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe`,
+                      '-Command',
+                      '-'
+                    ],
+                    wait: true,
+                    hideWindow: true,
+                    username: machine.username,
+                    stdin: '$a = New-Object -ComObject shell.application;$a.NameSpace( "Z:\" ).self.name = "Storage"'
+                  });
+                });
             });
-        } else {
-          return res.ok(application);
         }
+
+        return res.ok(application);
       })
       .catch((err) => {
         return res.negotiate(err);
