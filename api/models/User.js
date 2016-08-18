@@ -73,6 +73,16 @@ module.exports = {
     }
   },
 
+  beforeUpdate: function(values, next) {
+
+    if (values.password) {
+      var hash = bcrypt.hashSync(values.password, 10);
+      values.hashedPassword = hash;
+      delete values.password;
+    }
+    next();
+  },
+
   beforeCreate: function(values, next){
 
     if (values.password) {
