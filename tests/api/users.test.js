@@ -34,14 +34,13 @@ module.exports = function() {
       type: 'object',
       properties: {
         email: {type: 'string'},
-        'hashed-password': {type: 'string'},
         'is-admin': {type: 'boolean'},
         'first-name': {type: 'string'},
         'last-name': {type: 'string'},
         'created-at': {type: 'string'},
         'updated-at': {type: 'string'}
       },
-      required: ['email', 'hashed-password', 'is-admin', 'first-name', 'last-name', 'created-at', 'updated-at'],
+      required: ['email', 'is-admin', 'first-name', 'last-name', 'created-at', 'updated-at'],
       additionalProperties: true // expiration date is not mandatory
     };
 
