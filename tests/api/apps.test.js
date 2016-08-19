@@ -143,7 +143,7 @@ module.exports = function() {
             command: [
                 'C:\\fake.exe'
             ],
-            username: null
+            username: 'Administrator'
           });
         })
         .then(() => {
@@ -472,7 +472,7 @@ module.exports = function() {
             'attributes': {
               'hostname': '127.0.0.1',
               'port': 3389,
-              'username': null,
+              'username': 'Administrator',
               'password': null,
               'remote-app': '',
               'protocol': 'rdp',
@@ -485,7 +485,7 @@ module.exports = function() {
             'attributes': {
               'hostname': '127.0.0.1',
               'port': 3389,
-              'username': null,
+              'username': 'Administrator',
               'password': null,
               'remote-app': '',
               'protocol': 'rdp',
@@ -498,7 +498,7 @@ module.exports = function() {
             'attributes': {
               'hostname': '127.0.0.1',
               'port': 3389,
-              'username': null,
+              'username': 'Administrator',
               'password': null,
               'remote-app': '',
               'protocol': 'rdp',
@@ -531,7 +531,7 @@ module.exports = function() {
             'attributes': {
               'hostname': '127.0.0.1',
               'port': 3389,
-              'username': null,
+              'username': 'Administrator',
               'password': null,
               'remote-app': '',
               'protocol': 'rdp',
@@ -544,7 +544,7 @@ module.exports = function() {
             'attributes': {
               'hostname': '127.0.0.1',
               'port': 3389,
-              'username': null,
+              'username': 'Administrator',
               'password': null,
               'remote-app': '',
               'protocol': 'rdp',

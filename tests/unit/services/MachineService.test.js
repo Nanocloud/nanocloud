@@ -26,6 +26,7 @@
 
 const assert = require('chai').assert;
 const request = require('request-promise');
+const Promise = require('bluebird');
 
 describe('Machine Service', () => {
   describe('Broker', () => {
@@ -53,27 +54,34 @@ describe('Machine Service', () => {
             id: 'aff17b8b-bf91-40bf-ace6-6dfc985680bb',
             name: 'Admin'
           })
-          .then(() => {
-            return Machine.count();
-          })
-          .then((machineNbr) => {
-            if (machineNbr !== conf.machinePoolSize + 1) {
-              throw new Error('A new machine should be created');
-            }
-          })
-          .then(() => {
-            return Machine.count({
-              user: null
+            .then(() => {
+              return new Promise((resolve, reject) => {
+                setTimeout(() => {
+                  Machine.count()
+                    .then((machineNbr) => {
+
+                      if (machineNbr !== conf.machinePoolSize + 1) {
+                        return reject('A new machine should be created');
+                      }
+
+                      return resolve();
+                    });
+                }, 10);
+              });
+            })
+            .then(() => {
+              return Machine.count({
+                user: null
+              });
+            })
+            .then((machineNbr) => {
+              if (machineNbr !== conf.machinePoolSize) {
+                throw new Error('One machine should belongs to the admin');
+              }
+            })
+            .then(() => {
+              return done();
             });
-          })
-          .then((machineNbr) => {
-            if (machineNbr !== conf.machinePoolSize) {
-              throw new Error('One machine should belongs to the admin');
-            }
-          })
-          .then(() => {
-            return done();
-          });
         });
       });
     });

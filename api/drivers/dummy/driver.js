@@ -47,7 +47,7 @@ class DummyDriver extends BaseDriver {
     var FakePlaza = http.createServer((req, res) => {
       res.writeHead(200, {'Content-Type': 'application/json'});
 
-      if (req.url === '/sessions/') {
+      if (req.url === '/sessions/Administrator') {
 
         let status = (_sessionOpen === true) ? 'Active' : 'Inactive';
         let data = {
@@ -105,6 +105,7 @@ class DummyDriver extends BaseDriver {
     machine.id = id;
     machine.name = options.name;
     machine.ip = _plazaAddress;
+    machine.username = 'Administrator';
     machine.plazaport = _plazaPort;
 
     this._machines[machine.id] = machine;

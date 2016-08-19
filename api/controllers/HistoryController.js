@@ -31,12 +31,20 @@ module.exports = {
   create(req, res) {
     req.body = JsonApiService.deserialize(req.body);
 
-    if (req.body.data.attributes['end-date'] === '') {
+    if (req.body.data.attributes.endDate === '') {
       MachineService.sessionOpen(req.user);
-    } else {
-      MachineService.sessionEnded(req.user);
     }
 
     return JsonApiService.createRecord(req, res);
+  },
+
+  update(req, res) {
+    req.body = JsonApiService.deserialize(req.body);
+
+    if (req.body.data.attributes.endDate !== '') {
+      MachineService.sessionEnded(req.user);
+    }
+
+    return JsonApiService.updateOneRecord(req, res);
   }
 };
