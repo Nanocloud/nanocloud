@@ -22,7 +22,7 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-/* globals sails */
+/* globals sails, User */
 
 var nano = require('./lib/nanotest');
 
@@ -79,6 +79,45 @@ module.exports = function() {
           .expect(200)
           .expect(nano.jsonApiSchema(expectedSchema))
           .end(done);
+      });
+    });
+
+    describe('Change password', function () {
+      it('Should change password', function(done) {
+        User.findOne({
+          email: 'user@nanocloud.com'
+        })
+          .then((user) => {
+            return nano.request(sails.hooks.http.app)
+              .patch('/api/users/' + user.id)
+              .send({
+                data: {
+                  attributes: {
+                    email: 'user@nanocloud.com',
+                    'first-name': 'Firstname',
+                    'last-name': 'Lastname',
+                    'is-admin': true,
+                    'expiration-date': null,
+                    password: 'essai'
+                  },
+                  type: 'users',
+                  id: user.id,
+                }
+              })
+              .set(nano.adminLogin())
+              .expect(200);
+          })
+          .then(() => {
+            nano.request(sails.hooks.http.app)
+              .post('/oauth/token')
+              .send({
+                username: 'user@nanocloud.com',
+                password: 'essai',
+                grant_type: 'password'
+              })
+              .set('Authorization', 'Basic ' + new Buffer('9405fb6b0e59d2997e3c777a22d8f0e617a9f5b36b6565c7579e5be6deb8f7ae:9050d67c2be0943f2c63507052ddedb3ae34a30e39bbbbdab241c93f8b5cf341').toString('base64'))
+              .expect(200, done);
+          });
       });
     });
   });
