@@ -84,12 +84,12 @@ module.exports = function() {
 
     describe('Change password', function () {
       it('Should change password', function(done) {
-        User.find({
+        User.findOne({
           email: 'user@nanocloud.com'
         })
           .then((user) => {
             return nano.request(sails.hooks.http.app)
-              .patch('/api/users/' + user[0].id)
+              .patch('/api/users/' + user.id)
               .send({
                 data: {
                   attributes: {
@@ -101,7 +101,7 @@ module.exports = function() {
                     password: 'essai'
                   },
                   type: 'users',
-                  id: user[0].id,
+                  id: user.id,
                 }
               })
               .set(nano.adminLogin())
