@@ -39,6 +39,8 @@ a test!
 explanation of why you made the changes you made. For new features make sure to
 explain a standard use case to us.
 
+Before you make a pull request, squash your commits into logical units of work using `git rebase -i` and `git push -f`. A logical unit of work is a consistent set of patches that should be reviewed together: for example, upgrading the version of a vendored dependency and taking advantage of its now available new feature constitute two separate units of work. Implementing a new function and calling it in another file constitute a single logical unit of work.
+
 Syntax:
 
 * Two spaces, no tabs.
