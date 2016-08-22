@@ -170,6 +170,29 @@ module.exports = {
                server.errorHandler()
               );
 
+      app.post('/oauth/revoke',
+        function(req, res) {
+          if (req.body.token_type_hint === 'access_token') {
+            AccessToken.destroy({
+              token: req.body.token
+            })
+              .then(() => {
+                return res.send(200);
+              })
+              .catch((err) => res.negotiate(err));
+          } else if (req.body.token_type_hint === 'refresh_token') {
+            RefreshToken.destroy({
+              token: req.body.token
+            })
+              .then(() => {
+                return res.send(200);
+              })
+              .catch((err) => res.negotiate(err));
+          } else {
+            return res.badRequest('Invalid token type hint');
+          }
+        }
+      );
     }
   }
 };
