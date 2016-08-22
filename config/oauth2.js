@@ -170,6 +170,33 @@ module.exports = {
                server.errorHandler()
               );
 
+      app.post('/oauth/revoke',
+        function(req, res) {
+          if (req.body.token_type_hint === 'access_token') {
+            AccessToken.destroy({
+              token: req.body.token
+            })
+              .then(() => {
+                return res.send(200);
+              })
+              .catch(() => {
+                return res.badRequest();
+              });
+          } else if (req.body.token_type_hint === 'refresh_token') {
+            RefreshToken.destroy({
+              token: req.body.token
+            })
+              .then(() => {
+                return res.send(200);
+              })
+              .catch(() => {
+                return res.badRequest();
+              });
+          } else {
+            return res.badRequest();
+          }
+        }
+      );
     }
   }
 };
