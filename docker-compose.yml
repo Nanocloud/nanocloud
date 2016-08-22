@@ -43,8 +43,6 @@ services:
     build: ./storage
     image: nanocloud/storage
     ports:
-     - 138/udp:138/udp
-     - 139:139
      - 445/udp:445/udp
      - 445:445
      - 9090:9090
