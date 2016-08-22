@@ -1,6 +1,5 @@
 /**
- * Nanocloud turns any traditional software into a cloud solution, without
- * changing or redeveloping existing source code.
+ * Nanocloud turns any traditional software into a cloud solution, without * changing or redeveloping existing source code.
  *
  * Copyright (C) 2016 Nanocloud Software
  *
@@ -44,5 +43,8 @@ export default DS.Model.extend({
   }),
   userFullName: Ember.computed('userFirstname', 'userLastname', function() {
     return this.get('userFirstname') + ' ' + this.get('userLastname');
+  }),
+  isActive: Ember.computed('endDate', function() {
+    return this.get('endDate').toString() === 'Invalid Date';
   })
 });
