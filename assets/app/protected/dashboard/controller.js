@@ -46,8 +46,7 @@ export default Ember.Controller.extend({
   }),
 
   sessions: Ember.computed('model.sessions', 'model.sessions', function() {
-    return this.get('model.sessions')
-      .rejectBy('username', 'Administrator');
+    return this.get('model.sessions');
   }),
 
   machines: Ember.computed('model.machines', 'model.machines', function() {
