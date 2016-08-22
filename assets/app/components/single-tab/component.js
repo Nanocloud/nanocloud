@@ -24,12 +24,18 @@
 
 import Ember from 'ember';
 
+const SAVE_IMAGE_STATE_DEFAULT = 0;
+const SAVE_IMAGE_STATE_LOADING = 1;
+const SAVE_IMAGE_STATE_SUCCESS = 2;
+const SAVE_IMAGE_STATE_ERROR = 3;
+
 export default Ember.Component.extend({
 
   /* global $:false */
   classNames: ['single-tab'],
   remoteSession: Ember.inject.service('remote-session'),
   session: Ember.inject.service('session'),
+  showFileExplorer: false,
 
   connectionName: null,
   logoff: false,
@@ -43,9 +49,11 @@ export default Ember.Component.extend({
   showState: false,
   dragAndDropActive: false,
   windowIsSelected: false,
-  store: Ember.inject.service(),
+  store: Ember.inject.service('store'),
   savePackageModal: false,
   savePackageName: '',
+  saveImagePromptModal: false,
+  saveImageState: SAVE_IMAGE_STATE_DEFAULT,
 
   RECORD_DEFAULT: 0,
   RECORD_WAIT: 1,
@@ -192,6 +200,15 @@ export default Ember.Component.extend({
     }
   }.observes('savePackageModal'),
 
+  handleFileExplorerModalInputs: function() {
+    if (this.get('showFileExplorer')) {
+      this.get('remoteSession').pauseInputs(this.get('connectionName'));
+    }
+    else {
+      this.get('remoteSession').restoreInputs(this.get('connectionName'));
+    }
+  }.observes('showFileExplorer'),
+
   onConnectionNameChange: function() {
   }.observes('connectionName'),
 
@@ -239,7 +256,61 @@ export default Ember.Component.extend({
     return false;
   }),
 
+  saveImage() {
+    this.set('saveImageState', SAVE_IMAGE_STATE_LOADING);
+    this.get('store').createRecord('image', {
+    })
+    .save()
+    .then(() => {
+      this.set('saveImageState', SAVE_IMAGE_STATE_SUCCESS);
+    })
+    .catch(() => {
+      this.set('saveImageState', SAVE_IMAGE_STATE_ERROR);
+    });
+  },
+
+  saveImageStateDefault: Ember.computed.equal('saveImageState', SAVE_IMAGE_STATE_DEFAULT),
+  saveImageStateLoading: Ember.computed.equal('saveImageState', SAVE_IMAGE_STATE_LOADING),
+  saveImageStateSuccess: Ember.computed.equal('saveImageState', SAVE_IMAGE_STATE_SUCCESS),
+  saveImageStateError: Ember.computed.equal('saveImageState', SAVE_IMAGE_STATE_ERROR),
+
   actions: {
+
+    clickOnboardApp() {
+      this.set('onboardApp', true);
+      this.send('toggleSaveImagePrompt');
+    },
+
+    toggleSaveImagePrompt() {
+      this.toggleProperty('saveImagePromptModal');
+    },
+
+    saveImagePromptAnswerNo() {
+      this.toggleProperty('saveImagePromptModal');
+      if (this.get('onboardApp')) {
+        if (this.get('saveImageState') !== SAVE_IMAGE_STATE_ERROR) {
+          this.send('toggleFileExplorer');
+        }
+      }
+      this.set('saveImageState', SAVE_IMAGE_STATE_DEFAULT);
+      this.set('onboardApp', false);
+    },
+
+    saveImagePromptAnswerYes() {
+      this.saveImage();
+    },
+
+    toggleFileExplorer() {
+      this.toggleProperty('showFileExplorer');
+    },
+
+    closeFileExplorer() {
+      this.set('showFileExplorer', false);
+    },
+
+    openFileExplorer() {
+      this.set('showFileExplorer', true);
+    },
 
     retryConnection() {
       this.sendAction('retryConnection', this.get('connectionName'));

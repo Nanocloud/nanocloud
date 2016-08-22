@@ -30,7 +30,7 @@
 $blue-lighter: #f1faff !default;
 $blue-light: #57A9E0 !default;
 $blue-default: #47A0DD !default;
-$blue-lighten: lighten($blue-default, 30%) !default;
+$blue-lighten: lighten($blue-default, 20%) !default;
 $blue-darken: darken($blue-default, 15%) !default;
 $white: #fff !default;
 $red: #FF0000;
@@ -685,4 +685,4 @@ $vdi-download-width:          500px;
 $vdi-clipboard-width:         500px;
 
 // File explorer
-$file-explorer-width:         800px;
+$file-explorer-width:         40%;

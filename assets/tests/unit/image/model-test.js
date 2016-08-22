@@ -22,18 +22,15 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-/* globals Ember */
+import { moduleForModel, test } from 'ember-qunit';
 
-import DS from 'ember-data';
+moduleForModel('image', 'Unit | Model | image', {
+  // Specify the other units that are required for this test.
+  needs: []
+});
 
-export default DS.Model.extend({
-  type: DS.attr('string'),
-  name: DS.attr('string'),
-  size: DS.attr('number'),
-  modTime: DS.attr('date'),
-  isSelected: false,
-  isDir: Ember.computed.equal('type', 'directory'),
-  icon: Ember.computed('isDir', function() {
-    return this.get('isDir') ? 'folder_open' : 'insert_drive_file';
-  })
+test('it exists', function(assert) {
+  let model = this.subject();
+  // let store = this.store();
+  assert.ok(!!model);
 });

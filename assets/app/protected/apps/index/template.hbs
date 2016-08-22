@@ -1,18 +1,22 @@
 <div class='content-wrapper'>
-  {{#if hasDesktop}}
-    {{#if isCheckingMachine}}
-      <div class='action-btn-wrapper'>
+  <h4>
+    {{#link-to 'protected.apps'}}Applications{{/link-to}} 
+  </h4>
+  <div class='action-btn-wrapper m-t-2'>
+    {{#if hasDesktop}}
+      {{#if isCheckingMachine}}
         <button class="btn btn-info">
           {{ fa-icon "spinner" spin=true}}
           <div class="in-bl">Waiting for VM</div>
         </button>
-      </div>
-    {{else}}
-      <div class='action-btn-wrapper'>
+      {{else}}
         <button class="btn btn-primary" {{action "startDesktop"}}>Desktop</button>
-      </div>
+      {{/if}}
     {{/if}}
-  {{/if}}
+    {{#if session.user.isAdmin}}
+      <button class="btn btn-primary" {{action "openFileExplorer"}}>Onboard an application</button>
+    {{/if}}
+  </div>
   {{models-table
     class="sortableTable"
     data=data
@@ -42,5 +46,10 @@
 {{/single-tab}}
 
 {{dim-background show=showFileExplorer preventAction=isPublishing action="toggleFileExplorer"}}
-{{#file-explorer isVisible=showFileExplorer isPublishing=isPublishing}}
+{{#file-explorer
+  isVisible=showFileExplorer
+  isPublishing=isPublishing
+  api="file"
+  action="refreshModel"
+}}
 {{/file-explorer}}

@@ -22,18 +22,23 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-/* globals Ember */
+/* globals MachineService */
 
-import DS from 'ember-data';
+const uuid = require('node-uuid');
 
-export default DS.Model.extend({
-  type: DS.attr('string'),
-  name: DS.attr('string'),
-  size: DS.attr('number'),
-  modTime: DS.attr('date'),
-  isSelected: false,
-  isDir: Ember.computed.equal('type', 'directory'),
-  icon: Ember.computed('isDir', function() {
-    return this.get('isDir') ? 'folder_open' : 'insert_drive_file';
-  })
-});
+module.exports = {
+
+  create: function(req, res) {
+
+    MachineService.getMachineForUser(req.user)
+      .then((machine) => {
+
+        return MachineService.createImage({
+          name: uuid.v4(),
+          buildFrom: machine.id
+        });
+      })
+      .then(res.created)
+      .catch(res.negotiate);
+  }
+};

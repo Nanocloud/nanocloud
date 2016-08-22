@@ -43,6 +43,7 @@ $blue-default:             #006CB6 !default;
 @import "light-bulb";
 @import "user-new";
 @import "confirm-input";
+@import "detail-table";
 
 @include bg-variant('.bg-light', $gray-lighter);
 

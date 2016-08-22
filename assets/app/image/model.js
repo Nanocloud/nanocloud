@@ -22,18 +22,8 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-/* globals Ember */
-
 import DS from 'ember-data';
 
 export default DS.Model.extend({
-  type: DS.attr('string'),
-  name: DS.attr('string'),
-  size: DS.attr('number'),
-  modTime: DS.attr('date'),
-  isSelected: false,
-  isDir: Ember.computed.equal('type', 'directory'),
-  icon: Ember.computed('isDir', function() {
-    return this.get('isDir') ? 'folder_open' : 'insert_drive_file';
-  })
+  name: DS.attr('string')
 });

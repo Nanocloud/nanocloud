@@ -1,5 +1,9 @@
 .sortableTable {
 
+  .btn {
+    z-index: 1 !important;
+  }
+
   .short {
     width: 40px;
     text-align: center;
@@ -36,7 +40,6 @@
     &:active {
       outline: 0;
     }
-
   }
 
   .pagination-number {

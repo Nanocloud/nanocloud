@@ -11,6 +11,7 @@
                   materialIcon="cloud_upload"
                   clickable=true
                   hover-enabled=true
+                  hover-lighter=true
                   class="state-enabled"
                   click="toggleUploadWindow"
                   stateEnabled=uploadIsVisible
@@ -26,6 +27,7 @@
                   materialIcon="cloud_upload"
                   clickable=true
                   hover-enabled=true
+                  hover-lighter=true
                   class="state-disabled"
                   click="toggleUploadWindow"
                   stateEnabled=uploadIsVisible
@@ -41,7 +43,7 @@
               materialIcon="cloud_download"
               clickable=true
               hover-enabled=true
-              hover-darker=false
+              hover-lighter=true
               click="toggleDownloadWindow"
               stateEnabled=downloadIsVisible
               content="Download"
@@ -51,7 +53,7 @@
               materialIcon="content_copy"
               clickable=true
               hover-enabled=true
-              hover-darker=false
+              hover-lighter=true
               size=16
               click="toggleClipboardWindow"
               stateEnabled=clipboardIsVisible
@@ -72,6 +74,7 @@
                 materialIcon="fiber_manual_record"
                 clickable=true
                 hover-enabled=true
+                hover-lighter=true
                 click="toggleRecordWindow"
                 content="Record new application"
                 }}
@@ -105,6 +108,31 @@
           </div>
           <div class="right">
 
+            {{#if session.user.isAdmin}}
+              {{#topbar-item
+                clickable=true
+                class="go-back"
+                hover-enabled=true
+                hover-lighter=true
+                materialIcon="save"
+                click="toggleSaveImagePrompt"
+                content="Minimize VDI"
+              }}
+                <span>Save an image</span>
+              {{/topbar-item}}
+              {{#topbar-item
+                clickable=true
+                class="go-back"
+                hover-enabled=true
+                hover-lighter=true
+                materialIcon="add_circle_outline"
+                click="clickOnboardApp"
+                content="Minimize VDI"
+              }}
+                <span>Onboard an application</span>
+              {{/topbar-item}}
+            {{/if}}
+
             {{#if disconnectBtn}}
               {{#if logoff}}
                 {{ topbar-item
@@ -118,7 +146,7 @@
                   clickable=true
                   class="go-back"
                   hover-enabled=true
-                  hover-darker=true
+                  hover-lighter=true
                   materialIcon="power_settings_new"
                   click="disconnectVDI"
                   content="Disconnect VDI"
@@ -131,7 +159,7 @@
                 clickable=true
                 class="go-back"
                 hover-enabled=true
-                hover-darker=true
+                hover-lighter=true
                 materialIcon="home"
                 click="toggleSingleTab"
                 content="Minimize VDI"
@@ -187,8 +215,15 @@
               </div>
             </div>
           {{/if}}
-
           {{yield (hash disconnectVDI=(action 'disconnectVDI')) }}
+          {{dim-background show=showFileExplorer preventAction=isPublishing action="toggleFileExplorer"}}
+          {{#file-explorer
+            class='vdi-onboard-app-browser'
+            isVisible=showFileExplorer
+            isPublishing=isPublishing
+            api="file"
+          }}
+          {{/file-explorer}}
         </div>
       </div>
     {{/vdi-drag-n-drop}}
@@ -206,6 +241,64 @@
             <button type="button" class="btn btn-secondary" {{action "savePackage"}}>Submit</button>
           </div>
         </div>
+      </div>
+    {{/modal-dialog}}
+  {{/if}}
+  {{#if saveImagePromptModal}}
+    {{#modal-dialog targetAttachment="center"
+                    containerClassNames="modal-dialog"
+                    translucentOverlay=true}}
+      <div class="modal-content">
+        {{#if saveImageStateDefault}}
+        <div class="modal-body">
+          <div class='m-t-1 centered'>
+            <p class='color-primary'>Do you want to save an image?</p>
+          </div>
+          <div class='m-t-1 centered'>
+            <button type="button" class="btn btn-primary" {{action "saveImagePromptAnswerYes"}}>Yes</button>
+            <button type="button" class="m-l-1 btn btn-secondary" {{action "saveImagePromptAnswerNo"}}>No</button>
+          </div>
+        </div>
+        {{else}}
+          {{#if saveImageStateLoading}}
+            <div class="modal-body">
+              <div>
+                {{loading-component square=true}} 
+                <p class='centered color-primary'>Please wait</p>
+              </div>
+            </div>
+          {{else}}
+            {{#if saveImageStateSuccess}}
+              <div class="modal-body">
+                <div>
+                  <div>
+                    <div class='centered'>
+                      {{icon-component class='color-success' size=50 materialIcon="done"}}
+                    </div>
+                    <p class='centered color-primary'>Your image has been saved.</p>
+                  </div>
+                  <div class='centered'>
+                    <button type="button" class="btn btn-primary" {{action "saveImagePromptAnswerNo"}}>Got it!</button>
+                  </div>
+                </div>
+              </div>
+            {{else}}
+              <div class="modal-body">
+                <div>
+                  <div>
+                    <div class='centered'>
+                      {{icon-component class='error' size=50 materialIcon="close"}}
+                    </div>
+                    <p class='centered color-primary'>An error occured</p>
+                  </div>
+                  <div class='centered'>
+                    <button type="button" class="btn btn-primary" {{action "saveImagePromptAnswerNo"}}>Close</button>
+                  </div>
+                </div>
+              </div>
+            {{/if}}
+          {{/if}}
+        {{/if}}
       </div>
     {{/modal-dialog}}
   {{/if}}

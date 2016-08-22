@@ -22,18 +22,32 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-/* globals Ember */
+const uuid = require('node-uuid');
 
-import DS from 'ember-data';
+module.exports = {
 
-export default DS.Model.extend({
-  type: DS.attr('string'),
-  name: DS.attr('string'),
-  size: DS.attr('number'),
-  modTime: DS.attr('date'),
-  isSelected: false,
-  isDir: Ember.computed.equal('type', 'directory'),
-  icon: Ember.computed('isDir', function() {
-    return this.get('isDir') ? 'folder_open' : 'insert_drive_file';
-  })
-});
+  autoPK: false,
+  attributes: {
+    id: {
+      type: 'string',
+      primaryKey: true,
+      defaultsTo: function (){ return uuid.v4(); }
+    },
+    iaasId: {
+      type: 'string'
+    },
+    name: {
+      type: 'string'
+    },
+    buildFrom: {
+      type: 'string' // Actually the id of a machine that used to exist and served as base for this image (null if default image)
+    },
+    default: {
+      type: 'boolean'
+    },
+    password: {
+      type: 'string',
+      defaultsTo: null
+    }
+  }
+};

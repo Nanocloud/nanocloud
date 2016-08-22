@@ -39,8 +39,11 @@ function Driver(sails) {
      * @param {Function} callback The initialize callback
      */
     initialize(callback) {
-      sails.after('hook:config:loaded', () => {
-        MachineService.initialize()
+      sails.after([
+        'hook:config:loaded',
+        'hook:orm:loaded'
+      ], () => {
+        return MachineService.initialize()
           .then(() => {
             const driverName = MachineService.driverName();
 
@@ -52,7 +55,6 @@ function Driver(sails) {
           });
       });
     }
-
   };
 }
 

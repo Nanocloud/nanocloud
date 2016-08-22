@@ -20,7 +20,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* globals Machine */
+/* globals Machine, Image */
 
 const Promise = require('bluebird');
 const uuid = require('node-uuid');
@@ -121,6 +121,34 @@ class DummyDriver extends BaseDriver {
     } else {
       return Promise.reject(new Error('machine not found'));
     }
+  }
+
+  /*
+   * Create an image from a machine
+   * The image will be used as default image for future execution servers
+   *
+   * @method createImage
+   * @param {Object} Image object with `buildFrom` attribute set to the machine id to create image from
+   * @return {Promise[Image]} resolves to the new default image
+   */
+  createImage(imageToCreate) {
+
+    return Machine.findOne(imageToCreate.buildFrom)
+      .then((machine) => {
+
+        return Image.update({
+          default: true
+        }, {
+          iaasId: uuid.v4(),
+          name: imageToCreate.name,
+          buildFrom: imageToCreate.buildFrom,
+          password: machine.password
+        })
+          .then((images) => {
+
+            return images.pop();
+          });
+      });
   }
 }
 

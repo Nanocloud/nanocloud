@@ -29,7 +29,7 @@
  * @help        :: See http://sailsjs.org/#!/documentation/concepts/Controllers
  */
 
-/* globals AccessToken, PlazaService, Storage, StorageService */
+/* globals AccessToken, PlazaService, Storage, StorageService, MachineService */
 
 const Promise = require('bluebird');
 
@@ -84,16 +84,27 @@ module.exports = {
    */
 
   files: function(req, res) {
-    let user = req.user;
 
-    StorageService.findOrCreate(user)
-      .then((storage) => {
-        return PlazaService.files(storage, '/home/' + storage.username);
-      })
-      .then((files) => {
-        return res.send(files);
-      })
-      .catch(res.negotiate);
+    let getFiles;
+
+    if (req.allParams().machines === 'true') {
+      getFiles = MachineService.getMachineForUser(req.user)
+        .then((machine) => {
+          return PlazaService.files({
+            hostname: machine.ip,
+            port: machine.plazaport
+          }, req.allParams().path || 'C:\\');
+        });
+    } else {
+      getFiles = StorageService.findOrCreate(req.user)
+        .then((storage) => {
+          return PlazaService.files(storage, '/home/' + storage.username);
+        });
+    }
+
+    getFiles.then((files) => {
+      return res.send(files);
+    });
   },
 
   /**
