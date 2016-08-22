@@ -22,9 +22,10 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-/* globals sails */
+/* globals sails, AccessToken, RefreshToken, User */
 
 var nano = require('./lib/nanotest');
+const Promise = require('bluebird');
 
 module.exports = function() {
 
@@ -113,6 +114,102 @@ module.exports = function() {
           .expect(nano.isJsonApi)
           .end(done);
       });
+    });
+  });
+
+  describe('Logout', function() {
+    it('Should destroy refresh and access token of the user', function(done) {
+      User.create({
+        'first-name': 'revokeToken',
+        'last-name': 'tokenRevoke',
+        email: 'revoke@token.com',
+        password: 'revokeToken',
+        'is-admin': false,
+        'expiration-date': null
+      })
+        .then(() => {
+          return nano.request(sails.hooks.http.app)
+            .post('/oauth/token')
+            .send({
+              username: 'revoke@token.com',
+              password: 'revokeToken',
+              grant_type: 'password'
+            })
+            .set('Authorization', 'Basic ' + new Buffer('9405fb6b0e59d2997e3c777a22d8f0e617a9f5b36b6565c7579e5be6deb8f7ae:9050d67c2be0943f2c63507052ddedb3ae34a30e39bbbbdab241c93f8b5cf341').toString('base64'))
+            .expect(200);
+        })
+        .then(() => {
+          return User.findOne({
+            email: 'revoke@token.com'
+          });
+        })
+        .then((user) => {
+          return AccessToken.findOne({
+            userId: user.id
+          });
+        })
+        .then((auth) => {
+          return nano.request(sails.hooks.http.app)
+            .post('/oauth/revoke')
+            .send({
+              token_type_hint: 'access_token',
+              token: auth.token.toString()
+            })
+            .set('Authorization', 'Basic ' + new Buffer('9405fb6b0e59d2997e3c777a22d8f0e617a9f5b36b6565c7579e5be6deb8f7ae:9050d67c2be0943f2c63507052ddedb3ae34a30e39bbbbdab241c93f8b5cf341').toString('base64'))
+            .expect(200);
+        })
+        .then(() => {
+          return User.findOne({
+            email: 'revoke@token.com'
+          });
+        })
+        .then((user) => {
+          return RefreshToken.findOne({
+            userId: user.id
+          });
+        })
+        .then((auth) => {
+          return nano.request(sails.hooks.http.app)
+            .post('/oauth/revoke')
+            .send({
+              token_type_hint: 'refresh_token',
+              token: auth.token.toString()
+            })
+            .set('Authorization', 'Basic ' + new Buffer('9405fb6b0e59d2997e3c777a22d8f0e617a9f5b36b6565c7579e5be6deb8f7ae:9050d67c2be0943f2c63507052ddedb3ae34a30e39bbbbdab241c93f8b5cf341').toString('base64'))
+            .expect(200);
+        })
+        .then(() => {
+          return User.findOne({
+            email: 'revoke@token.com'
+          });
+        })
+        .then((user) => {
+          return Promise.props({
+            access: AccessToken.find({
+              userId: user.id
+            }),
+            refresh: RefreshToken.find({
+              userId: user.id
+            })
+          });
+        })
+        .then((res) => {
+          if (res.access.length !== 0) {
+            throw new Error('Access Token should be deleted');
+          } else if (res.refresh.length !== 0) {
+            throw new Error('Refresh Token should be deleted');
+          } else {
+            User.destroy({
+              email: 'revoke@token.com'
+            })
+              .then(() => {
+                done();
+              });
+          }
+        })
+        .catch((err) => {
+          throw new Error(err);
+        });
     });
   });
 };
