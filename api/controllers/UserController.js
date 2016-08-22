@@ -29,6 +29,13 @@
 
 module.exports = {
 
+  findOne: function(req, res) {
+    return User.findOne(req.allParams().id)
+    .populate('groups')
+    .then((res.ok))
+    .catch(res.negotiate);
+  },
+
   find: function(req, res) {
 
     if (req.allParams().me === 'true') {
@@ -39,7 +46,7 @@ module.exports = {
 
     return User.find()
       .populate('groups')
-      .then((res.ok))
+      .then(res.ok)
       .catch(res.negotiate);
   }
 };

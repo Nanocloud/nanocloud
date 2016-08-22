@@ -116,11 +116,12 @@ passport.use(new BearerStrategy(
       User.findOne({
         id: token.userId
       })
-        .exec(function (err, user) {
-          User.findOne({
-            id: token.userId
-          },done(err,user,info));
-        });
+      .populate('groups')
+      .exec(function (err, user) {
+        User.findOne({
+          id: token.userId
+        },done(err,user,info));
+      });
     });
   }
 ));
