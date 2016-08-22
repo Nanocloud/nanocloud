@@ -91,6 +91,8 @@ export default Ember.Component.extend({
   classNames: ['vdi-drag-n-drop'],
   classNameBindings: ['show:state-show:state-hide'],
   session: Ember.inject.service('session'),
+  store: Ember.inject.service('store'),
+  configuration: Ember.inject.service('configuration'),
 
   progress: Ember.computed('queue.@each.uploading', 'queue.@each.progress', function() {
     let q = this.get('queue');
@@ -137,19 +139,39 @@ export default Ember.Component.extend({
     this.startDownload(event.dataTransfer.files);
   },
 
+  checkUploadLimit(fileSize) {
+    return this.get('store').query('file', { filename: './' })
+      .then((res) => {
+        let sum = parseInt(res.meta.storageSize, 10) * 1024 + parseInt(fileSize, 10);
+        let max = parseInt(this.get('configuration.uploadLimit'), 10) * 1048576;
+        if (sum > max && max !== 0) {
+          return false;
+        } else {
+          return true;
+        }
+      });
+  },
+
   startDownload(files){
     let q = this.get('queue');
 
-    for (let i = 0; i < files.length; i++) {
-      let f = FileUploader.create({
-        file: files[i],
-        token: this.get('session.access_token')
-      });
-      f.one('completed', this, this.completeNotif);
-      f.one('forbidden', this, this.limitNotif);
-      f.one('canceled', this, this.abortNotif);
-      q.pushObject(f);
-    }
+    Array.prototype.forEach.call(files, (file) => {
+      this.checkUploadLimit(file.size)
+        .then((res) => {
+          if (res) {
+            let f = FileUploader.create({
+              file: file,
+              token: this.get('session.access_token')
+            });
+            f.one('completed', this, this.completeNotif);
+            f.one('forbidden', this, this.limitNotif);
+            f.one('canceled', this, this.abortNotif);
+            q.pushObject(f);
+          } else {
+            this.limitNotif();
+          }
+        });
+    });
   },
 
   removeCompleteDownload() {
