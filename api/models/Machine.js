@@ -85,7 +85,7 @@ module.exports = {
         protocol: 'http',
         hostname: this.ip,
         port: this.plazaport,
-        pathname: '/sessions/'
+        pathname: '/sessions/' + this.username
       });
 
       return request.getAsync(plazaAddr).then((res) => {

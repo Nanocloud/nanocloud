@@ -170,10 +170,8 @@ function getMachineForUser(user) {
                 }
 
                 if (res.rows.length) {
-                  return _updateMachinesPool()
-                    .then(() => {
-                      return resolve(res.rows[0]);
-                    });
+                  _updateMachinesPool();
+                  return resolve(res.rows[0]);
                 }
 
                 return reject(noMachineFoundError);
