@@ -68,6 +68,11 @@ export default Ember.Controller.extend({
 
   columns: [
     {
+      propertyName: 'id',
+      title: 'ID',
+      disableFiltering: true,
+    },
+    {
       propertyName: 'name',
       title: 'Name',
       disableFiltering: true,
