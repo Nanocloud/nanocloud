@@ -40,7 +40,8 @@ module.exports = {
    * {
    *   username: '', // User's name the command should be executed by
    *   wait: true || false, // whether the call should be blocking or not
-   *   command: array(). // array of strings to execute
+   *   hideWindow: true || false, // whether the application should be run in background or not
+   *   command: array(). // argument list to execute. Behaves like argv
    * }
    * @return {Promise} Request to Plaza
    */

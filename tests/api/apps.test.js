@@ -29,13 +29,14 @@ var nano = require('./lib/nanotest');
 var chai = require('chai');
 var expect = chai.expect;
 var http = require('http');
+const Promise = require('bluebird');
 
 module.exports = function() {
   describe('Plaza app launch', function() {
 
     let fakePlaza = null;
     let appId = '9282fd13-5df0-4cf6-a101-ae507f75ab47';
-    let appOpened = false; // Use by fake plaza to hold application status
+    let appOpened = []; // Use by fake plaza to hold application status
     let originalFakePlazaPort = null;
 
     const expectedSchema = {
@@ -65,7 +66,7 @@ module.exports = function() {
           body = Buffer.concat(body).toString();
 
           if (req.url === '/exec') {
-            appOpened = JSON.parse(body);
+            appOpened.push(JSON.parse(body));
             res.end();
           }
 
@@ -139,11 +140,17 @@ module.exports = function() {
         .expect(200)
         .expect(nano.jsonApiSchema(expectedSchema))
         .then(() => {
-          expect(appOpened).to.deep.equal({
-            command: [
-                'C:\\fake.exe'
-            ],
-            username: 'Administrator'
+          return new Promise((resolve) => {
+            setTimeout(() => {
+              expect(appOpened).to.deep.include({
+                command: [
+                  'C:\\fake.exe'
+                ],
+                username: 'Administrator'
+              });
+
+              return resolve();
+            }, 10);
           });
         })
         .then(() => {

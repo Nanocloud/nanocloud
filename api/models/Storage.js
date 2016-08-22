@@ -57,7 +57,20 @@ module.exports = {
                   '--create-home',
                   '--groups',
                   'users'
-                 ]
+                 ],
+        wait: true
+      })
+      .then(() => {
+        return PlazaService.exec(
+          values.hostname,
+          values.port, {
+            command: ['smbpasswd',
+                      '-a',
+                      values.username
+                     ],
+            stdin: values.password + '\n' + values.password,
+            wait: true
+          });
       })
       .then(() => {
         return next();
