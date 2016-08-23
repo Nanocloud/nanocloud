@@ -26,7 +26,7 @@ import Ember from 'ember';
 
 export default Ember.Controller.extend({
   loadState: false,
-  user: Ember.computed('model.users', () => {
+  user: Ember.computed('model.users', function() {
     var user = this.get('model.users');
     return user ? user.objectAt(0) : null;
   }),
