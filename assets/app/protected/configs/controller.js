@@ -48,7 +48,6 @@ export default Ember.Controller.extend({
     if (this.get('loadState') === true) {
       if (this.get('autoRegister') === false) {
         this.set('defaultGroup', '');
-        this.saveKey(null, 'defaultGroup');
       }
     }
   }.observes('autoRegister'),
@@ -76,7 +75,6 @@ export default Ember.Controller.extend({
       else {
         this.set('defaultGroup', id);
       }
-      this.saveKey(null, 'defaultGroup');
     },
   }
 });

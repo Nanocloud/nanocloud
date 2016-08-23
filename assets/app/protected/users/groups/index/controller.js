@@ -76,13 +76,13 @@ export default Ember.Controller.extend({
     },
     {
       propertyName: 'members',
-      title: 'number of member',
+      title: 'Number of members',
       disableFiltering: true,
       filterWithSelect: false
     },
     {
       propertyName: 'apps',
-      title: 'number of application',
+      title: 'Number of applications',
       disableFiltering: true,
       filterWithSelect: false
     },

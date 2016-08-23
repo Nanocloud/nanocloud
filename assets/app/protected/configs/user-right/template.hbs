@@ -33,13 +33,13 @@
     </ul>
   {{/if}}
   <div class="form-group row">
-    <div class="col-sm-2">
-      <p class="confirm-input-item color-primary">You can enter an expiration date for new users (in days):</p>
+    <div class="col-sm-4">
+      <p class="confirm-input-item color-primary in-bl fl">You can enter an expiration date for new users (in days):</p>
     </div>
     <div class="col-sm-2">{{input-confirm value=configController.expirationDate type="number" min="1"}}</div>
   </div>
 {{/if}}
-<div>
+<div class='m-t-2'>
   {{input type="checkbox" checked=configController.autoLogoff}}
   <label for="cbox2">Logoff after closing VDI</label>
 </div>
