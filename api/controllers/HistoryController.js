@@ -25,58 +25,51 @@
  * @help        :: See http://sailsjs.org/#!/documentation/concepts/Controllers
  */
 
-/* global MachineService, JsonApiService, History */
+/* global Machine, MachineService, JsonApiService, History */
+
+const _= require('lodash');
 
 module.exports = {
   create(req, res) {
     req.body = JsonApiService.deserialize(req.body);
 
-    if (req.body.data.attributes.endDate === '') {
-      MachineService.sessionOpen(req.user);
+    let machineId = _.get(req.body, 'data.attributes.machineId');
+
+    if (!machineId) {
+      return res.badRequest('Invalid machine id');
     }
-    return JsonApiService.createRecord(req, res);
+
+    Machine.findOne(machineId)
+      .then((machine) => {
+        if (req.body.data.attributes.endDate === '') {
+          MachineService.sessionOpen({
+            id: machine.user
+          });
+        }
+
+        return JsonApiService.createRecord(req, res);
+      });
   },
 
   update(req, res) {
+
     req.body = JsonApiService.deserialize(req.body);
 
-    if (req.body.data.attributes.endDate !== '') {
-      MachineService.sessionEnded(req.user);
+    let machineId = _.get(req.body, 'data.attributes.machineId');
+
+    if (!machineId) {
+      return res.badRequest('Invalid machine id');
     }
 
-    return this.updateOneRecord(req, res);
-  },
-
-  updateOneRecord(req, res) {
-    var data = req.body.data.attributes || {};
-    var id = req.options.id || (req.options.where && req.options.where.id) || req.allParams().id;
-
-    if (req.allParams().id) {
-      data.id = req.allParams().id;
-    }
-    History.update(id, data)
-      .then((records) => {
-        if (!records || !records.length || records.length > 1) {
-          res.negotiate('Unexpected output from `' + History.globalId + '.update`.');
+    Machine.findOne(machineId)
+      .then((machine) => {
+        if (req.body.data.attributes.endDate !== '') {
+          MachineService.sessionEnded({
+            id: machine.user
+          });
         }
 
-        var updatedRecord = records[0];
-
-        if (updatedRecord === undefined) {
-          return res.notFound();
-        }
-
-        return res.ok(updatedRecord);
-      })
-      .then(() => {
-        if (data.endDate !== '') {
-          MachineService.sessionEnded(req.user);
-        } else {
-          res.negotiate('No endDate set');
-        }
-      })
-      .catch((err) => {
-        res.negotiate(err);
+        return JsonApiService.updateOneRecord(req, res);
       });
   }
 };

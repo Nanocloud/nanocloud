@@ -36,6 +36,7 @@ const testApps = require('./apps.test');
 const testSecurity = require('./security.test');
 const testMachine = require('./machine.test');
 const testImage = require('./image.test');
+const testHistories = require('./histories.test');
 
 var request = require('supertest');
 
@@ -59,5 +60,6 @@ testConfig();
 testGroup();
 testApps();
 testSecurity();
+testHistories();
 testMachine();
 testImage();
