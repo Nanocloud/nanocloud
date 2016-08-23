@@ -74,7 +74,6 @@ module.exports = function() {
             type: 'pendingusers'
           }
         })
-        .set(nano.adminLogin())
         .expect(201)
         .then(() => {
 
@@ -93,7 +92,6 @@ module.exports = function() {
           // activate user
           return nano.request(sails.hooks.http.app)
             .patch('/api/pendingusers/' + res.body.data[0].id)
-            .set(nano.adminLogin())
             .expect(200)
             .expect(nano.jsonApiSchema(expectedSchema));
         })

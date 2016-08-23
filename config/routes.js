@@ -66,6 +66,15 @@ module.exports.routes = {
   *                                                                          *
   ***************************************************************************/
 
+  /**
+  * PATCH /api/pendingusers/:id should not pass by update in NanocloudController
+  * because we don't want to apply the isAuthorized policy to this specific endpoint.
+  */
+  'PATCH /api/pendingusers/:id': {
+    controller: 'PendingUser',
+    action: 'update'
+  },
+
   'PATCH /api/:model/:id': {
     controller: 'Nanocloud',
     action: 'update'
