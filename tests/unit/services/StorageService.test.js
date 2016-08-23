@@ -88,21 +88,51 @@ describe('Storage Service', function() {
       User.findOne({
         id: 'aff17b8b-bf91-40bf-ace6-6dfc985680bb'
       })
-      .then((user) => {
-        return StorageService.findOrCreate(user);
-      })
-      .then((storage) => {
-        let file = {
-          filename: filename,
-          fd: './tests/unit/services/' + filename
-        };
-        PlazaService.upload(storage, file);
-        StorageService.storageSize(storage, '', 0)
-        .then((sum) => {
-          expect(sum).to.not.equal(0);
-          done();
+        .then((user) => {
+          return StorageService.findOrCreate(user);
+        })
+        .then((storage) => {
+          let file = {
+            filename: filename,
+            fd: './tests/unit/services/' + filename
+          };
+          PlazaService.upload(storage, file);
+          StorageService.storageSize(storage)
+            .then((sum) => {
+              PlazaService.exec(
+                storage.hostname,
+                storage.port,
+                {
+                  username: storage.username,
+                  wait: true,
+                  command: ['mkdir', '/home/' + storage.username + '/mkdirtest']
+                }
+              )
+                .then(() => {
+                  PlazaService.exec(
+                    storage.hostname,
+                    storage.port,
+                    {
+                      username: storage.username,
+                      wait: true,
+                      command: [
+                        'cp',
+                        '/home/' + storage.username + '/' + filename,
+                        '/home/' + storage.username + '/mkdirtest',
+                      ]
+                    }
+                  )
+                    .then(() => {
+                      expect(sum).to.not.equal(0);
+                      StorageService.storageSize(storage)
+                        .then((reqsum) => {
+                          expect(reqsum).to.be.above(sum);
+                          done();
+                        });
+                    });
+                });
+            });
         });
-      });
     });
   });
 

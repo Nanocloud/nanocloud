@@ -98,13 +98,22 @@ module.exports = {
     } else {
       getFiles = StorageService.findOrCreate(req.user)
         .then((storage) => {
-          return PlazaService.files(storage, '/home/' + storage.username);
+          return PlazaService.files(storage, '/home/' + storage.username)
+            .then((files) => {
+              return StorageService.storageSize(storage)
+                .then((size) => {
+                  files.meta = {
+                    storageSize: size
+                  };
+                  return files;
+                });
+            });
         });
     }
-
     getFiles.then((files) => {
       return res.send(files);
-    });
+    })
+      .catch(res.negotiate);
   },
 
   /**
