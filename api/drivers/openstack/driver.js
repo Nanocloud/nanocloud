@@ -73,6 +73,19 @@ class OpenstackDriver extends Driver {
   }
 
   /**
+   * Escape simple quote properly for Powershell compatibility
+   * You'll need to single quote your string in Powershell script
+   *
+   * @method _powershellEscape
+   * @private
+   * @param The string to escape
+   * @return {string} The escaped string
+   */
+  _powershellEscape(string) {
+    return string.split('\'').join('\'\'');
+  }
+
+  /**
    * Create a new Openstack instance. It uses the `ConfigService` variables:
    *  - openstackImage: Image id of the Openstack image
    *  - openstackFlavor: Openstack instance type
@@ -104,11 +117,10 @@ class OpenstackDriver extends Driver {
         } else {
           password = config.openstackMachinePassword;
         }
-        let passwordForWin = _.replace(password, '\'', '\'\'');
 
         let userData = new Buffer(`#ps1_sysnative
         REG.exe Add HKLM\\Software\\Microsoft\\ServerManager /V DoNotOpenServerManagerAtLogon /t REG_DWORD /D 0x1 /F
-        net user '${config.openstackMachineUsername}' '${passwordForWin}'
+        net user '${this._powershellEscape(config.openstackMachineUsername)}' '${this._powershellEscape(password)}'
         Invoke-WebRequest ${config.plazaURI} -OutFile C:\\plaza.exe
         C:\\plaza.exe install
         rm C:\\plaza.exe
