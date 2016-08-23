@@ -25,7 +25,7 @@
  * @help        :: See http://sailsjs.org/#!/documentation/concepts/Controllers
  */
 
-/* global Machine, MachineService, JsonApiService, History */
+/* global Machine, MachineService, JsonApiService */
 
 const _= require('lodash');
 

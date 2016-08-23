@@ -43,6 +43,8 @@ module.exports = function() {
         'end-date': {type: 'string'},
         'machine-id': {type: 'string'},
         'machine-driver': {type: 'string'},
+        'machine-size': {type: 'string'},
+        'machine-type': {type: 'string'},
         'created-at': {type: 'string'},
         'updated-at': {type: 'string'}
       },
@@ -68,7 +70,8 @@ module.exports = function() {
                   'start-date': 'Wed Jul 21 14:10:00 UTC 2016',
                   'end-date': '',
                   'machine-id': machine.id,
-                  'machine-driver': 'dummy'
+                  'machine-driver': 'dummy',
+                  'machine-type': ''
                 },
                 type: 'histories'
               }
