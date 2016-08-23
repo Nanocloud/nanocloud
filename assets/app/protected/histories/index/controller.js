@@ -75,6 +75,7 @@ export default Ember.Controller.extend({
         machineSize: item.get('machineSize'),
         start: window.moment(item.get('startDate')).format('MMMM Do YYYY, h:mm:ss A'),
         end: window.moment(item.get('endDate')).format('MMMM Do YYYY, h:mm:ss A'),
+        isActive: item.get('isActive'),
         duration: item.get('duration') / 1000,
       }));
     });
@@ -123,13 +124,12 @@ export default Ember.Controller.extend({
       filterWithSelect: false,
     },
     {
-      propertyName: 'end',
       title: 'End Date',
       disableFiltering: true,
       filterWithSelect: false,
+      template: 'protected/histories/index/table/history-list/end-date',
     },
     {
-      propertyName: 'duration',
       title: 'Total duration',
       disableFiltering: true,
       filterWithSelect: false,

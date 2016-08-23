@@ -1,1 +1,5 @@
-{{format-duration record.duration}}
+{{#if record.isActive}}
+  <span class='color-success'>Active</span>
+{{else}}
+  {{format-duration record.duration}}
+{{/if}}
