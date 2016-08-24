@@ -66,6 +66,14 @@ module.exports = {
       .catch(() => {
         return res.notFound('An error occured while retrieving config');
       });
+  },
+
+  update: function(req, res) {
+    return res.forbidden();
+  },
+
+  destroy: function(req, res) {
+    return res.forbidden();
   }
 };
 

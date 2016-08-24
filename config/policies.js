@@ -57,6 +57,10 @@ module.exports.policies = {
     find: true
   },
 
+  configController: {
+    create: 'isAdmin'
+  },
+
   PendingUserController: {
     create: true,
     update: true,

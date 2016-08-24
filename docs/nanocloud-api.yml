@@ -38,6 +38,17 @@ paths:
                 type: array
                 items:
                   "$ref": "#/definitions/Configuration"
+        403:
+          description: You are not an admin
+          schema:
+            type: object
+            properties:
+              errors:
+                type: array
+                items:
+                  "$ref": "#/definitions/Errors"
+        500:
+          description: Internal server error when query key is invalid
     post:
       tags:
         - config
@@ -57,9 +68,9 @@ paths:
             type: object
             properties:
               data:
-                "$ref": "#/definitions/Configuration"
-        400:
-          description: Can't decode JSON payload or JSON in wrong format
+                "$ref": "#/definitions/ConfigurationWithDate"
+        403:
+          description: You are not an admin
           schema:
             type: object
             properties:
@@ -67,29 +78,16 @@ paths:
                 type: array
                 items:
                   "$ref": "#/definitions/Errors"
-  /configs/{keyId}:
-    delete:
-      tags:
-        - config
-      parameters:
-        - in: path
-          name: keyId
-          description: Configuration key you want to delete
-          required: true
-          type: string
-          format: uuid
-      summary:
-        Delete specified configuration key
-      responses:
-        200:
-          description: Delete specified key
-          schema:
-            type: object
-            properties:
-              meta:
-                type: object
         500:
-          description: Internal server error when no keyId are set
+          description: Internal server error when a config variable is unknow
+
+# delete should not be accessible
+# Should return forbidden if you are logged in and unauthorized if you are not
+
+# patch is not used in our configuration, post acts like patch.
+# Should return forbidden if you are logged in and unauthorized if you are not
+
+
   /users:
     get:
       tags:
@@ -1009,9 +1007,26 @@ definitions:
             type: string
           value:
             type: string
-          private:
-            type: string
-            
+
+  ConfigurationWithDate:
+     type: object
+     properties:
+       type:
+         type: string
+       id:
+         type: string
+       attributes:
+          type: object
+          properties:
+            value:
+              type: string
+            created-at:
+              type: string
+              format: date-time
+            updated-at:
+              type: string
+              format: date-time
+
   Reset-password-token:
     type: object
     properties:
