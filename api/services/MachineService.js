@@ -171,7 +171,9 @@ function getMachineForUser(user) {
 
                 if (res.rows.length) {
                   _updateMachinesPool();
-                  return resolve(res.rows[0]);
+                  return resolve(Machine.findOne({
+                    id: res.rows[0].id
+                  }));
                 }
 
                 return reject(noMachineFoundError);

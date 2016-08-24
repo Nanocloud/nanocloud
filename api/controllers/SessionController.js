@@ -25,7 +25,7 @@
 const Promise = require('bluebird');
 const _ = require('lodash');
 
-/* globals Machine */
+/* globals Machine, MachineService */
 
 module.exports = {
 
@@ -50,5 +50,19 @@ module.exports = {
           })
           .catch(res.negotiate);
       });
+  },
+
+  disconnect: function(req, res) {
+
+    MachineService.getMachineForUser(req.user)
+      .then((machine) => {
+        return machine.killSession();
+      })
+      .then(() => {
+        return res.json({
+          meta: {}
+        });
+      })
+      .catch((err) => res.negotiate(err));
   }
 };

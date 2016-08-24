@@ -119,6 +119,12 @@ module.exports = {
         });
     },
 
+    /*
+     * Get status information about first session on this machine
+     *
+     * @method isSessionActive
+     * @return {Boolean} True if a session is active on this machine, False otherwise
+     */
     isSessionActive() {
 
       return this.getSessions()
@@ -131,6 +137,31 @@ module.exports = {
             }
           }
           return false;
+        });
+    },
+
+    /*
+     * Kill active session on machine
+     *
+     * @method killSession
+     * @return {String} Message to tell user whether the session has been revoked or not
+     */
+    killSession() {
+      let plazaAddr = url.format({
+        protocol: 'http',
+        hostname: this.ip,
+        port: this.plazaport,
+        pathname: '/sessions/' + this.username
+      });
+
+      return request.deleteAsync(plazaAddr)
+        .then((res) => {
+
+          if (res.statusCode !== 200) {
+            return Promise.reject('Plaza agent did not end user\'s session');
+          }
+
+          return Promise.resolve();
         });
     }
   }

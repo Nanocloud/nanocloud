@@ -34,6 +34,7 @@ const testConfig = require('./config.test');
 const testGroup = require('./group.test');
 const testApps = require('./apps.test');
 const testSecurity = require('./security.test');
+const testSession = require('./session.test');
 const testMachine = require('./machine.test');
 const testImage = require('./image.test');
 
@@ -61,3 +62,4 @@ testApps();
 testSecurity();
 testMachine();
 testImage();
+testSession();

@@ -108,6 +108,11 @@ module.exports.routes = {
   'GET /api/files/download': {
     controller: 'Storage',
     action: 'download'
+  },
+
+  'DELETE /api/sessions': {
+    controller: 'Session',
+    action: 'disconnect'
   }
 
 };
