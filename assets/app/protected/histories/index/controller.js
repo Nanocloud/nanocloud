@@ -72,7 +72,7 @@ export default Ember.Controller.extend({
         application: item.get('connectionId'),
         machineDriver: item.get('machineDriver'),
         machineId: item.get('machineId'),
-        machineSize: item.get('machineSize'),
+        machineSize: item.get('machineType'),
         start: window.moment(item.get('startDate')).format('MMMM Do YYYY, h:mm:ss A'),
         end: window.moment(item.get('endDate')).format('MMMM Do YYYY, h:mm:ss A'),
         isActive: item.get('isActive'),

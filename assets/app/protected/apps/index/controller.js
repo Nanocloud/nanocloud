@@ -39,23 +39,28 @@ let App = Ember.Object.extend({
   launch() {
     this.set('remoteSession.plazaHasFinishedLoading', false);
     this.get('controller')
-    .launchVDI(this.get('model.alias'))
-    .then(() => {
-      let app = this.get('model');
-      app.reload()
+      .launchVDI(this.get('model.alias'))
       .then(() => {
-        app.set('state', 'running');
-        app.save()
+        let app = this.get('model');
+        app.reload()
           .then(() => {
-          })
-          .catch(() => {
-            this.toast.error('Cannot start application');
-          })
-          .finally(() => {
-            this.set('remoteSession.plazaHasFinishedLoading', true);
+            app.set('state', 'running');
+            app.save()
+              .catch(() => {
+                this.toast.error('Cannot start application');
+              })
+              .finally(() => {
+                this.set('remoteSession.plazaHasFinishedLoading', true);
+              });
           });
+      })
+      .catch((err) => {
+        if (err === 'Exceeded credit') {
+          this.toast.error('Exceeded credit');
+        } else {
+          this.toast.error(err);
+        }
       });
-    });
   }
 });
 
@@ -146,9 +151,16 @@ export default Ember.Controller.extend({
             rej();
           }
         })
-      .finally(() => {
-        this.set('isCheckingMachine', false);
-      });
+        .catch((err) => {
+          if (err.errors && err.errors[0].status === '402') {
+            this.toast.error('Credit exceeded');
+          } else {
+            this.toast.error(err);
+          }
+        })
+        .finally(() => {
+          this.set('isCheckingMachine', false);
+        });
     });
   },
 

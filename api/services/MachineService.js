@@ -21,7 +21,7 @@
  *
  */
 
-/* global ConfigService, Machine, Image */
+/* global ConfigService, Machine, Image, User */
 
 const Promise = require('bluebird');
 const ManualDriver = require('../drivers/manual/driver');
@@ -142,6 +142,14 @@ function initialize() {
  */
 function getMachineForUser(user) {
   return assert(!!_driver, driverNotInitializedError)
+    .then(() => {
+      return ConfigService.get('creditLimit');
+    })
+    .then((config) => {
+      if (config.creditLimit !== '' && parseFloat(user.credit) >= parseFloat(config.creditLimit)) {
+        return new Promise.reject('Exceeded credit');
+      }
+    })
     .then(() => {
       return Machine.findOne({
         where: {
@@ -323,6 +331,21 @@ function sessionOpen(user) {
 }
 
 /**
+ * Inform if the driver used support Credit
+ *
+ * @method isUserCreditSupported
+ * @param {}
+ * @return {Boolean}
+ */
+function isUserCreditSupported() {
+  if (_driver.name() === 'aws') {
+    return true;
+  } else {
+    return false;
+  }
+}
+
+/**
  * Inform the broker that the user's session has ended.
  * It basically just call `increaseUsersMachineEndDate`.
  *
@@ -331,6 +354,16 @@ function sessionOpen(user) {
  * @return {Promise}
  */
 function sessionEnded(user) {
+  if (isUserCreditSupported()) {
+    return _driver.getUserCredit(user)
+      .then((creditUsed) => {
+        return User.update({
+          id: user.id
+        }, {
+          credit: creditUsed
+        });
+      });
+  }
   return increaseUsersMachineEndDate(user);
 }
 

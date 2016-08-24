@@ -24,13 +24,14 @@
  * @description :: Driver for Amazon Web Service EC2 Iaas
  */
 
-/* global Machine, MachineService, ConfigService, Image */
+/* global UserService, Machine, MachineService, ConfigService, Image */
 
 const pkgcloud = require('pkgcloud');
 const Promise = require('bluebird');
 const Driver = require('../driver');
 const ursa = require('ursa-purejs');
 const fs = Promise.promisifyAll(require('fs'));
+const request = Promise.promisify(require('request'));
 
 /**
  * Driver for Amazon Web Services EC2 Iaas
@@ -96,6 +97,10 @@ class AWSDriver extends Driver {
             });
         })
           .then(() => {
+            this.priceFile = request('https://pricing.us-east-1.amazonaws.com/offers/v1.0/aws/AmazonEC2/current/index.json');
+            this.getAwsPrice();
+          })
+          .then(() => {
             return Image.update({
               default: true
             }, {
@@ -103,6 +108,76 @@ class AWSDriver extends Driver {
               name: 'AWS default'
             });
           });
+      });
+  }
+
+  /**
+   * Get the aws price
+   * It reduce the AwsPrice Object by deleting useless key
+   * This method set this.awsPrice to a promise that will
+   * resolve to the prices retrieved from AWS
+   *
+   * @method getAwsPrice
+   */
+  getAwsPrice() {
+    let confReg = {
+      'us-east-1': 'US East (N.Virginia)',
+      'us-west-2': 'US West (Oregon)',
+      'ap-southeast-1': 'Asia Pacific (Singapore)',
+      'ap-southeast-2': 'Asia Pacific (Sydney)',
+      'ap-northeast-1': 'Asia Pacific (Tokyo)',
+      'eu-central-1': 'EU (Frankfurt)',
+      'eu-west-1': 'EU (Ireland)'
+    };
+
+    this.priceFile
+      .then((res) => {
+        return Promise.resolve(JSON.parse(res.body));
+      })
+      .then((price) => {
+        this.awsPrice = new Promise((resolve, reject) => {
+          return Promise.props({
+            conf: ConfigService.get('awsRegion'),
+            keyPrice: Object.keys(price.products)
+          })
+            .then((results) => {
+
+              /**
+               * Search all record where location is the user location,
+               * operatingSystem is Windows, with license and without SQL
+               * windows, and delete the other record.
+               */
+
+              results.keyPrice.forEach((element) => {
+                if (price.products[element].attributes.location !== confReg[results.conf.awsRegion] ||
+                  price.products[element].attributes.operatingSystem !== 'Windows' ||
+                  price.products[element].attributes.licenseModel !== 'License Included' ||
+                  price.products[element].attributes.preInstalledSw !== 'NA') {
+                  delete price.products[element];
+                } else {
+
+                  /**
+                   * Take the product key, and search on the terms key, the price of the product.
+                   * Add a price key on the product with the price find
+                   */
+
+                  var firstKey = Object.keys(price.terms.OnDemand[price.products[element].sku])[0];
+                  var secondKey = Object.keys(price.terms.OnDemand[price.products[element].sku][firstKey].priceDimensions)[0];
+                  price.products[element].attributes.price =
+                    price.terms.OnDemand[price.products[element].sku][firstKey].priceDimensions[secondKey].pricePerUnit.USD;
+                }
+              });
+            })
+            .then(() => {
+              delete price.terms;
+            })
+            .then(() => {
+              return resolve(price);
+            })
+            .catch((err) => {
+              return reject(err);
+            });
+        });
       });
   }
 
@@ -227,7 +302,7 @@ class AWSDriver extends Driver {
                 const ip = server.addresses.public[0];
                 const type = this.name();
 
-                return ConfigService.get('awsMachineUsername', 'plazaPort')
+                return ConfigService.get('awsMachineUsername', 'plazaPort', 'awsFlavor')
                   .then((config) => {
 
                     let _createMachine = function(password) {
@@ -235,6 +310,7 @@ class AWSDriver extends Driver {
                         id: server.id,
                         name: server.name,
                         type: type,
+                        flavor: config.awsFlavor,
                         ip: ip,
                         username: config.awsMachineUsername,
                         password: password,
@@ -293,7 +369,6 @@ class AWSDriver extends Driver {
     });
   }
 
-
   /*
    * Create an image from a machine
    * The image will be used as default image for future execution servers
@@ -351,6 +426,58 @@ class AWSDriver extends Driver {
             });
           })
           .catch(reject);
+      });
+    });
+  }
+
+  /**
+   * Calculate credit used by a user
+   *
+   * @method getUserCredit
+   * @param {user} user User to calculate credit usage from
+   * @return {Promise[number]}
+   */
+  getUserCredit(user) {
+
+    return this.awsPrice.then((price) => {
+      return new Promise((resolve, reject) => {
+        var finalPrice = 0;
+        let history = [];
+        UserService.getUserHistory(user, 'aws')
+          .then((machineHistory) => {
+
+            /**
+             * Here we retrieve all the machines keys of the
+             * history we retrived before, matching with machines type
+             */
+            history = machineHistory;
+
+            var prod = Object.keys(price.products);
+
+            history.forEach((element) => {
+              prod.forEach((key) => {
+                if (price.products[key].attributes.instanceType === element.type) {
+                  element.time = element.time * price.products[key].attributes.price;
+                }
+              });
+            });
+          })
+          .then(() => {
+
+            /**
+             * Calculate the price of all machines
+             */
+
+            history.forEach((element) => {
+              finalPrice += element.time;
+            });
+          })
+          .then(() => {
+            return resolve(finalPrice);
+          })
+          .catch((err) => {
+            return reject(err);
+          });
       });
     });
   }

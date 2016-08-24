@@ -86,6 +86,16 @@ class Driver {
   createImage(/* image */) {
     return Promise.reject(new Error('Driver\'s method "createImage" not implemented'));
   }
+  /**
+   * Calculate credit used by a user
+   *
+   * @method getUserCredit
+   * @param {Object} User model
+   * @return {Promise[number]}
+   */
+  getUserCredit(/* user */) {
+    return Promise.reject(new Error('Driver\'s method \'getUserCredit\' not implemented'));
+  }
 }
 
 module.exports = Driver;

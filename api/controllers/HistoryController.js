@@ -25,7 +25,7 @@
  * @help        :: See http://sailsjs.org/#!/documentation/concepts/Controllers
  */
 
-/* global MachineService, JsonApiService */
+/* global MachineService, JsonApiService, History */
 
 module.exports = {
   create(req, res) {
@@ -34,7 +34,6 @@ module.exports = {
     if (req.body.data.attributes.endDate === '') {
       MachineService.sessionOpen(req.user);
     }
-
     return JsonApiService.createRecord(req, res);
   },
 
@@ -45,6 +44,39 @@ module.exports = {
       MachineService.sessionEnded(req.user);
     }
 
-    return JsonApiService.updateOneRecord(req, res);
+    return this.updateOneRecord(req, res);
+  },
+
+  updateOneRecord(req, res) {
+    var data = req.body.data.attributes || {};
+    var id = req.options.id || (req.options.where && req.options.where.id) || req.allParams().id;
+
+    if (req.allParams().id) {
+      data.id = req.allParams().id;
+    }
+    History.update(id, data)
+      .then((records) => {
+        if (!records || !records.length || records.length > 1) {
+          res.negotiate('Unexpected output from `' + History.globalId + '.update`.');
+        }
+
+        var updatedRecord = records[0];
+
+        if (updatedRecord === undefined) {
+          return res.notFound();
+        }
+
+        return res.ok(updatedRecord);
+      })
+      .then(() => {
+        if (data.endDate !== '') {
+          MachineService.sessionEnded(req.user);
+        } else {
+          res.negotiate('No endDate set');
+        }
+      })
+      .catch((err) => {
+        res.negotiate(err);
+      });
   }
 };

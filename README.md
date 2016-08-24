@@ -34,6 +34,7 @@ AWS driver specific
 - AWS_IMAGE (defaults to ami-09e61366, Nanocloud default image)
 - AWS_FLAVOR (defaults to t2.medium) size of the virtual machine
 - AWS_MACHINE_USERNAME (defaults to Administrator) administrator account on the machine
+- CREDIT_LIMIT (defaults empty string) set a credit limit to users using aws
 
 Openstack driver specific
  - OPENSTACK_USERNAME Openstack username

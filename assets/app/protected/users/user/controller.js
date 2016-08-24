@@ -28,6 +28,8 @@ export default Ember.Controller.extend({
 
   store: Ember.inject.service('store'),
   session: Ember.inject.service('session'),
+  configController: Ember.inject.controller('protected.configs'),
+  isAws: Ember.computed.equal('configController.iaas', 'aws'),
   passwordConfirmation: null,
   isMe: Ember.computed('session.user', 'model', function() {
     return this.get('model.id') === this.get('session.user.id');
