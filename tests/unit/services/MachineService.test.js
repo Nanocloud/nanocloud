@@ -24,6 +24,7 @@
 
 /* global MachineService, Machine, ConfigService */
 
+const adminId = 'aff17b8b-bf91-40bf-ace6-6dfc985680bb';
 const assert = require('chai').assert;
 const request = require('request-promise');
 const Promise = require('bluebird');
@@ -51,7 +52,7 @@ describe('Machine Service', () => {
           }
 
           return MachineService.getMachineForUser({
-            id: 'aff17b8b-bf91-40bf-ace6-6dfc985680bb',
+            id: adminId,
             name: 'Admin'
           })
             .then(() => {
@@ -66,7 +67,7 @@ describe('Machine Service', () => {
 
                       return resolve();
                     });
-                }, 10);
+                }, 100);
               });
             })
             .then(() => {
@@ -88,7 +89,7 @@ describe('Machine Service', () => {
 
     it('Should return the same machine for a user', (done) => {
       MachineService.getMachineForUser({
-        id: 'aff17b8b-bf91-40bf-ace6-6dfc985680bb',
+        id: adminId,
         name: 'Admin'
       })
       .then((res) => {
@@ -96,7 +97,7 @@ describe('Machine Service', () => {
         const userMachine = res.id;
 
         MachineService.getMachineForUser({
-          id: 'aff17b8b-bf91-40bf-ace6-6dfc985680bb',
+          id: adminId,
           name: 'Admin'
         })
         .then((res) => {
@@ -108,13 +109,28 @@ describe('Machine Service', () => {
       });
     });
 
+    it('Should return an inactive session', (done) => {
+      MachineService.getMachineForUser({
+        id: adminId,
+        name: 'Admin'
+      })
+      .then((machine) => {
+        return machine.getSessions();
+      })
+      .then((sessions) => {
+        assert.equal(sessions.length, 1);
+        assert.equal(sessions[0].state, 'Inactive');
+        return done();
+      });
+    });
+
     it('Opening a session should update machine endDate', (done) => {
       MachineService.sessionOpen({
-        id: 'aff17b8b-bf91-40bf-ace6-6dfc985680bb'
+        id: adminId
       })
       .then(() => {
         return MachineService.getMachineForUser({
-          id: 'aff17b8b-bf91-40bf-ace6-6dfc985680bb',
+          id: adminId,
           name: 'Admin'
         })
         .then((machine) => {
@@ -131,16 +147,48 @@ describe('Machine Service', () => {
       });
     });
 
+    it('Should return an active session', (done) => {
+      MachineService.getMachineForUser({
+        id: adminId,
+        name: 'Admin'
+      })
+      .then((machine) => {
+        return machine.getSessions();
+      })
+      .then((sessions) => {
+        assert.equal(sessions.length, 1);
+        assert.equal(sessions[0].state, 'Active');
+        return done();
+      });
+    });
+
+    it('Should end the active session', (done) => {
+      MachineService.getMachineForUser({
+        id: adminId,
+        name: 'Admin'
+      })
+      .then((machine) => {
+        return machine.killSession()
+          .then(() => {
+            return machine.isSessionActive();
+          })
+        .then((active) => {
+          assert.isFalse(active);
+          return done();
+        });
+      });
+    });
+
     it('Should terminate machine if no connection occured after the maximum session duration time', (done) => {
       return MachineService.getMachineForUser({
-        id: 'aff17b8b-bf91-40bf-ace6-6dfc985680bb',
+        id: adminId,
         name: 'Admin'
       })
       .then((machine) => {
         return request('http://' + machine.ip + ':' + machine.plazaport + '/sessionClose')
         .then(() => {
           return MachineService.sessionEnded({
-            id: 'aff17b8b-bf91-40bf-ace6-6dfc985680bb'
+            id: adminId
           });
         })
         .then(() => {
@@ -163,7 +211,7 @@ describe('Machine Service', () => {
             .then(() => {
               return done();
             });
-          }, 10); // Give broker time to cleanup instances
+          }, 100); // Give broker time to cleanup instances
         });
       });
     });

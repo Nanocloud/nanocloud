@@ -83,7 +83,14 @@ module.exports = {
       });
     },
 
-    isSessionActive() {
+    /*
+     * Get informations about sessions on this machines
+     *
+     * @method getSessions
+     * @return {Promise[Array]} a promise resolving to an array of session
+     */
+    getSessions() {
+
       let plazaAddr = url.format({
         protocol: 'http',
         hostname: this.ip,
@@ -91,26 +98,74 @@ module.exports = {
         pathname: '/sessions/' + this.username
       });
 
-      return request.getAsync(plazaAddr).then((res) => {
-        let body = res.body;
+      return request.getAsync(plazaAddr)
+        .then((res) => {
+          let body = res.body;
 
-        try {
-          body = JSON.parse(body);
-        } catch (err) {
-          return Promise.reject(err);
-        }
-
-        const data = body.data;
-
-        if (data.length) {
-          const status = data[0][3];
-
-          if (status === 'Active') {
-            return true;
+          try {
+            body = JSON.parse(body);
+          } catch (err) {
+            return Promise.reject(err);
           }
-        }
-        return false;
+
+          let sessions = [];
+          body.data.forEach((session) => {
+            sessions.push({
+              id: uuid.v4(), // id does not matter for session but is required for JSON API
+              username: session[1],
+              state: session[3],
+              userId: this.user
+            });
+          });
+
+          return sessions;
+        });
+    },
+
+    /*
+     * Get status information about first session on this machine
+     *
+     * @method isSessionActive
+     * @return {Boolean} True if a session is active on this machine, False otherwise
+     */
+    isSessionActive() {
+
+      return this.getSessions()
+        .then((sessions) => {
+          if (sessions.length) {
+            const status = sessions[0].state;
+
+            if (status === 'Active') {
+              return true;
+            }
+          }
+          return false;
+        });
+    },
+
+    /*
+     * Kill active session on machine
+     *
+     * @method killSession
+     * @return {String} Message to tell user whether the session has been revoked or not
+     */
+    killSession() {
+      let plazaAddr = url.format({
+        protocol: 'http',
+        hostname: this.ip,
+        port: this.plazaport,
+        pathname: '/sessions/' + this.username
       });
+
+      return request.deleteAsync(plazaAddr)
+        .then((res) => {
+
+          if (res.statusCode !== 200) {
+            return Promise.reject('Plaza agent did not end user\'s session');
+          }
+
+          return Promise.resolve();
+        });
     }
   }
 };

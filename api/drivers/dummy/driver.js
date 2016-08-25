@@ -79,7 +79,7 @@ class DummyDriver extends BaseDriver {
     var FakePlaza = http.createServer((req, res) => {
       res.writeHead(200, {'Content-Type': 'application/json'});
 
-      if (req.url === '/sessions/Administrator') {
+      if (req.url === '/sessions/Administrator' && req.method === 'GET') {
 
         let status = (_sessionOpen === true) ? 'Active' : 'Inactive';
         let data = {
@@ -94,6 +94,8 @@ class DummyDriver extends BaseDriver {
         };
 
         return res.end(JSON.stringify(data));
+      } else if (req.url === '/sessions/Administrator' && req.method === 'DELETE') {
+        _sessionOpen = false;
       } else if (req.url === '/sessionOpen') {
         _sessionOpen = true;
       } else if (req.url === '/sessionClose') {
