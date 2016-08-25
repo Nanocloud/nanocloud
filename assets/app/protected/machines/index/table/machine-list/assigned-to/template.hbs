@@ -1,0 +1,7 @@
+{{#if record.user}}
+  {{#link-to 'protected.users.user' record.user.id}}
+    {{record.user.fullName}}
+  {{/link-to}}
+{{else}}
+  -
+{{/if}}

@@ -51,12 +51,6 @@
           </td>
         </tr>
         <tr>
-          <th scope="row">Machine size</th>
-          <td>
-            {{model.machineSize}}
-          </td>
-        </tr>
-        <tr>
           <th scope="row">Assigned user</th>
           <td>
             {{#if user}}
@@ -65,35 +59,6 @@
               {{/link-to}}
             {{else}}
               None
-            {{/if}}
-          </td>
-        </tr>
-        <tr>
-          <th scope="row">Boot state</th>
-          <td>
-            {{state-machine model.status}}
-          </td>
-        </tr>
-        <tr>
-          <th scope="row">Machine state</th>
-          <td>
-            {{#if displayCountdown}}
-              Shutdown in {{live-countdown class="in-bl" value=model.countdownTimeleft isTime=true}}
-            {{else}}
-              {{model.formattedTimeleft}}
-            {{/if}}
-          </td>
-        </tr>
-        <tr>
-          <th scope="row">Reboot</th>
-          <td>
-            {{#if loadState}}
-              <button type="submit" class="btn btn-info">
-                Reboot
-                {{ fa-icon "spinner" spin=true}}
-              </button>
-            {{else}}
-              <button {{ action "rebootMachine" }} type="submit" class="btn btn-primary">Reboot</button>
             {{/if}}
           </td>
         </tr>

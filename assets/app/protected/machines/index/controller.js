@@ -51,15 +51,10 @@ export default Ember.Controller.extend({
     this.get('items').forEach(function(item) {
       ret.push(Ember.Object.create({
         name: item.get('machineName'),
-        status: item.get('status'),
         id: item.get('id'),
         ip: item.get('ip'),
-        platform: item.get('platform'),
-        machineSize: item.get('machineSize'),
-        displayCountdown: item.get('displayCountdown'),
-        shouldEnableLightBulb: item.get('shouldEnableLightBulb'),
-        countdownTimeleft: item.get('countdownTimeleft'),
-        formattedTimeleft: item.get('formattedTimeleft'),
+        expiration: item.get('expiration'),
+        user: item.get('user'),
       }));
     });
     this.set('data', ret);
@@ -86,30 +81,16 @@ export default Ember.Controller.extend({
       filterWithSelect: false,
     },
     {
-      propertyName: 'status',
-      title: 'Status',
+      title: 'Assigned to',
       disableFiltering: true,
       filterWithSelect: false,
-      template: 'protected/machines/index/table/machine-list/status',
+      template: 'protected/machines/index/table/machine-list/assigned-to',
     },
     {
-      propertyName: 'platform',
-      title: 'Platform',
+      title: 'Expires in',
       disableFiltering: true,
       filterWithSelect: false,
-    },
-    {
-      propertyName: 'machineSize',
-      title: 'Size',
-      disableFiltering: true,
-      filterWithSelect: false,
-    },
-    {
-      propertyName: 'platform',
-      title: 'Boot state',
-      disableFiltering: true,
-      filterWithSelect: false,
-      template: 'protected/machines/index/table/machine-list/boot',
+      template: 'protected/machines/index/table/machine-list/expiration',
     },
   ],
 
