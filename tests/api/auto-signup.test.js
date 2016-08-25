@@ -26,6 +26,7 @@
 
 var nano = require('./lib/nanotest');
 var expect = require('chai').expect;
+const moment = require('moment');
 
 module.exports = function() {
 
@@ -111,6 +112,49 @@ module.exports = function() {
         });
     });
 
+    it('Should create an entry in user table with an expiration date set', function(done) {
+
+      let expirationDateInConfig = 10;
+
+      ConfigService.set('expirationDate', expirationDateInConfig)
+        .then(() => {
+          // adding user to pendinguser table
+          nano.request(sails.hooks.http.app)
+            .post('/api/pendingusers')
+            .send({
+              data: {
+                attributes: userData,
+                type: 'pendingusers'
+              }
+            })
+            .expect(201)
+            .then((res) => {
+
+              // activate user
+              return nano.request(sails.hooks.http.app)
+                .patch('/api/pendingusers/' + res.body.data.id)
+                .expect(200)
+                .expect(nano.jsonApiSchema(expectedSchema));
+            })
+            .then(() => {
+
+              // user has been activated
+              return nano.request(sails.hooks.http.app)
+                .get('/api/users')
+                .set(nano.adminLogin())
+                .expect(200)
+                .expect((res) => {
+                  let expirationDate = res.body.data[2].attributes['expiration-date'];
+
+                  expect(moment(moment.unix(expirationDate)).diff(new Date(), 'days')).to.equal(expirationDateInConfig - 1);
+                });
+            })
+            .then(() => {
+              return done();
+            });
+        });
+    });
+
     it('Should prevent from creating the same user twice', function(done) {
 
       nano.request(sails.hooks.http.app)
@@ -121,12 +165,32 @@ module.exports = function() {
             type: 'pendingusers'
           }
         })
-        .expect(400)
-        .end(done);
+        .expect(201)
+        .then(() => {
+          return nano.request(sails.hooks.http.app)
+            .post('/api/pendingusers')
+            .send({
+              data: {
+                attributes: userData,
+                type: 'pendingusers'
+              }
+            })
+            .expect(400);
+        })
+        .then(() => {
+          return done();
+        });
+
     });
 
     after(function(done) {
-      ConfigService.unset('testMail');
+      ConfigService.unset('testMail')
+        .then(() => {
+          return done();
+        });
+    });
+
+    afterEach(function(done) {
       User.destroy({
         email: userData.email
       })
