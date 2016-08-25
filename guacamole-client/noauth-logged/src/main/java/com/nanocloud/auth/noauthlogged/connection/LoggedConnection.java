@@ -150,11 +150,11 @@ public class LoggedConnection extends SimpleConnection {
     private final Integer port;
     private final String endpoint;
     private ActiveConnectionRecord connection;
-    private String token;
     private String id;
     private String email;
     private String firstname;
     private String lastname;
+    private String machineId;
 
     public ConnectionCleanupTask(ActiveConnectionRecord connection, String token) throws GuacamoleException {
       this.connection = connection;
@@ -164,7 +164,32 @@ public class LoggedConnection extends SimpleConnection {
       hostname = env.getProperty(NoAuthLoggedGuacamoleProperties.NOAUTHLOGGED_SERVERURL, "localhost");
       port = env.getProperty(NoAuthLoggedGuacamoleProperties.NOAUTHLOGGED_SERVERPORT, 80);
       endpoint = env.getProperty(NoAuthLoggedGuacamoleProperties.NOAUTHLOGGED_SERVERENDPOINT, "rpc");
-      this.token = token;
+
+      try {
+
+        URL myUrl = new URL("http://" + hostname + ":" + port + "/api/users?me=true");
+
+        JSONObject jsonResponse = NanocloudHttpConnection.HttpGet("http://" + hostname + ":" + port + "/api/users?me=true", token);
+        JSONObject data = jsonResponse.getJSONObject("data");
+        this.id  = data.getString("id");
+
+        JSONObject dataAttribute = data.getJSONObject("attributes");
+        this.email = dataAttribute.getString("email");
+        this.firstname = dataAttribute.getString("first-name");
+        this.lastname = dataAttribute.getString("last-name");
+
+        JSONObject resp = NanocloudHttpConnection.HttpGet("http://" + hostname + ":" + port + "/api/machines/users", token);
+        JSONArray dataArray = resp.getJSONArray("data");
+        data = dataArray.getJSONObject(0);
+        this.machineId = data.getString("id");
+
+
+      } catch (IOException e) {
+        // TODO Auto-generated catch block
+        e.printStackTrace();
+      } catch (JSONException e) {
+        e.printStackTrace();
+      }
     }
 
     @Override
@@ -175,36 +200,6 @@ public class LoggedConnection extends SimpleConnection {
         return;
 
       try {
-
-        URL myUrl = new URL("http://" + hostname + ":" + port + "/api/users?me=true");
-
-        JSONObject jsonResponse = NanocloudHttpConnection.HttpGet("http://" + hostname + ":" + port + "/api/users?me=true", this.token);
-        JSONObject data = jsonResponse.getJSONObject("data");
-        this.id  = data.getString("id");
-
-        JSONObject dataAttribute = data.getJSONObject("attributes");
-        this.email = dataAttribute.getString("email");
-        this.firstname = dataAttribute.getString("first-name");
-        this.lastname = dataAttribute.getString("last-name");
-
-      } catch (IOException e) {
-        // TODO Auto-generated catch block
-        e.printStackTrace();
-      } catch (JSONException e) {
-        e.printStackTrace();
-      }
-      logger.info("Trying to log history to token : " + this.token + " : " + hostname + ":" + port + "/" + endpoint);
-
-      try {
-        String token = this.token;
-
-        JSONObject resp = NanocloudHttpConnection.HttpGet("http://" + hostname + ":" + port + "/api/machines/users", token);
-        JSONArray dataArray = resp.getJSONArray("data");
-        JSONObject data = dataArray.getJSONObject(0);
-        String machineId = data.getString("id");
-        JSONObject dataAttribute = data.getJSONObject("attributes");
-        String machineDriver = dataAttribute.getString("type");
-        String flavor = dataAttribute.getString("flavor");
 
         URL myUrl = new URL("http://" + hostname + ":" + port + "/" + endpoint + "/" + LoggedConnection.this.historyId);
         HttpURLConnection urlConn = (HttpURLConnection)myUrl.openConnection();
@@ -222,9 +217,9 @@ public class LoggedConnection extends SimpleConnection {
                 .add("connection-id", this.connection.getConnectionName())
                 .add("start-date", this.connection.getStartDate().toString())
                 .add("end-date", new Date().toString())
-                .add("machine-id", machineId)
-                .add("machine-driver", machineDriver)
-                .add("machine-type", flavor)))
+                .add("machine-id", this.machineId)
+                .add("machine-driver", "")
+                .add("machine-type", "")))
           .build();
 
         urlConn.setUseCaches(false);
@@ -254,8 +249,6 @@ public class LoggedConnection extends SimpleConnection {
 
       } catch (IOException e) {
         // TODO Auto-generated catch block
-        e.printStackTrace();
-      } catch (JSONException e) {
         e.printStackTrace();
       }
 
