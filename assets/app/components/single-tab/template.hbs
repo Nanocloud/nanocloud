@@ -60,51 +60,6 @@
               content="Copy / paste"
             }}
 
-            {{#if recordingIsAvailable}}
-              {{#if recordingOnWait}}
-                {{ topbar-item
-                class="go-back"
-                fontAwesome="spinner"
-                fontAwesomeSpin=true
-                }}
-              {{/if}}
-
-              {{#if recordingOnDefault}}
-                {{ topbar-item
-                materialIcon="fiber_manual_record"
-                clickable=true
-                hover-enabled=true
-                hover-lighter=true
-                click="toggleRecordWindow"
-                content="Record new application"
-                }}
-              {{/if}}
-
-              {{#if recordingOnCapturing}}
-                <div {{ action "toggleRecordWindow" }}> 
-                  {{#topbar-item clickable=true}}
-                    <div class='record-blink'></div>
-                  {{/topbar-item }}
-                </div>
-                {{ topbar-item
-                hover-enabled=false
-                textContent="Recording"
-                clickable=false
-                }}
-              {{/if}}
-
-              {{#if recordingOnPackaging}}
-                {{ topbar-item
-                  fontAwesome="spinner"
-                  fontAwesomeSpin=true
-                }}
-                {{ topbar-item
-                  hover-enabled=false
-                  textContent="Packaging"
-                  clickable=false
-                }}
-              {{/if}}
-            {{/if}}
           </div>
           <div class="right">
 
@@ -228,22 +183,6 @@
       </div>
     {{/vdi-drag-n-drop}}
   {{/modal-dialog}}
-  {{#if savePackageModal}}
-    {{#modal-dialog close="toggleModal"
-                    targetAttachment="center"
-                    containerClassNames="modal-dialog"
-                    translucentOverlay=true}}
-      <div class="modal-content">
-        <div class="modal-body">
-          <p class="color-primary indication">Your application has been packaged successfully!</p>
-          <div>
-            {{input class="savePackageInput" type="text" value=savePackageName placeholder="Package name"}}
-            <button type="button" class="btn btn-secondary" {{action "savePackage"}}>Submit</button>
-          </div>
-        </div>
-      </div>
-    {{/modal-dialog}}
-  {{/if}}
   {{#if saveImagePromptModal}}
     {{#modal-dialog targetAttachment="center"
                     containerClassNames="modal-dialog"

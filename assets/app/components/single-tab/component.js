@@ -50,16 +50,8 @@ export default Ember.Component.extend({
   dragAndDropActive: false,
   windowIsSelected: false,
   store: Ember.inject.service('store'),
-  savePackageModal: false,
-  savePackageName: '',
   saveImagePromptModal: false,
   saveImageState: SAVE_IMAGE_STATE_DEFAULT,
-
-  RECORD_DEFAULT: 0,
-  RECORD_WAIT: 1,
-  RECORD_CAPTURING: 2,
-  RECORD_PACKAGING: 3,
-  recordState: 0,
 
   manageOpenedWindow: function() {
     if (this.get('dragAndDropActive') === true) {
@@ -185,21 +177,6 @@ export default Ember.Component.extend({
     return false;
   }),
 
-  becameVisible() {
-    this.set('savePackageModal', false);
-    this.set('savePackageName', '');
-    this.set('recordState', this.get('RECORD_DEFAULT'));
-  },
-
-  handlePackageModalInputs: function() {
-    if (this.get('savePackageModal')) {
-      this.get('remoteSession').pauseInputs(this.get('connectionName'));
-    }
-    else {
-      this.get('remoteSession').restoreInputs(this.get('connectionName'));
-    }
-  }.observes('savePackageModal'),
-
   handleFileExplorerModalInputs: function() {
     if (this.get('showFileExplorer')) {
       this.get('remoteSession').pauseInputs(this.get('connectionName'));
@@ -211,50 +188,6 @@ export default Ember.Component.extend({
 
   onConnectionNameChange: function() {
   }.observes('connectionName'),
-
-  recordingIsAvailable: Ember.computed('session.user.isAdmin', 'connectionName', function() {
-    return (this.get('session.user.isAdmin') === true && this.get('connectionName') === 'Desktop');
-  }),
-
-  isRecording: Ember.computed('topBarItemToggleWindowCollector.record', function() {
-    return this.get('topBarItemToggleWindowCollector.record');
-  }),
-
-  recordBlink: Ember.computed('color', function() {
-    return Ember.String.htmlSafe('color: red;');
-  }),
-
-  setRecordItemInCollector: function() {
-    this.topBarItemToggleWindowCollector.record = false;
-  }.on('init'),
-
-  recordingOnWait: Ember.computed('recordState', function() {
-    if (this.get('recordState') === this.get('RECORD_WAIT')) {
-      return true;
-    }
-    return false;
-  }),
-
-  recordingOnDefault: Ember.computed('recordState', function() {
-    if (this.get('recordState') === this.get('RECORD_DEFAULT')) {
-      return true;
-    }
-    return false;
-  }),
-
-  recordingOnCapturing: Ember.computed('recordState', function() {
-    if (this.get('recordState') === this.get('RECORD_CAPTURING')) {
-      return true;
-    }
-    return false;
-  }),
-
-  recordingOnPackaging: Ember.computed('recordState', function() {
-    if (this.get('recordState') === this.get('RECORD_PACKAGING')) {
-      return true;
-    }
-    return false;
-  }),
 
   saveImage() {
     this.set('saveImageState', SAVE_IMAGE_STATE_LOADING);
@@ -339,122 +272,5 @@ export default Ember.Component.extend({
     toggleDownloadWindow() {
       this.handleToggling('download');
     },
-
-    savePackage() {
-
-      let name = this.get('savePackageName');
-      let app = this.get('currentApplication');
-
-      Ember.$.ajax({
-        type: 'PATCH',
-        headers: {
-          'Content-type': 'application/json',
-          Authorization : 'Bearer ' + this.get('session.access_token'),
-        },
-        url: '/api/apps/' + app.get('id'),
-        data: JSON.stringify({
-          data: {
-            attributes: {
-              'display-name': name,
-            },
-            id: app.get('id'),
-            type: 'apps',
-          }
-        })
-      })
-      .then(() => {
-        this.set('savePackageModal', false);
-        this.toast.success('Packaging successful');
-      }, (() => {
-        this.set('savePackageModal', false);
-        this.toast.error('Couldn\'t give a name to your package');
-      }));
-    },
-
-    toggleRecordWindow() {
-      let getMachine = function() {
-        let promise = new Ember.RSVP.Promise((resolve, reject) => {
-
-          this.get('store').query('machines/user', {})
-            .then((machines) => {
-              if (machines.get('length') === 0) {
-                return reject('Could determine current machine');
-              }
-              let machine = machines.get('firstObject');
-              return resolve(machine);
-            });
-        });
-
-        return promise;
-      }.bind(this);
-
-      var stateBeforeWaiting = this.get('recordState');
-      this.set('recordState', this.get('RECORD_WAIT'));
-
-      if (stateBeforeWaiting === this.get('RECORD_CAPTURING')) {
-        getMachine().then((machine) => {
-          this.set('recordState', this.get('RECORD_PACKAGING'));
-          Ember.$.ajax({
-            type: 'PATCH',
-            'Content-type' : 'application/json',
-            headers: {
-              Authorization : 'Bearer ' + this.get('session.access_token'),
-            },
-            url: '/api/machines/' + machine.get('id'),
-            data: JSON.stringify({
-              data: {
-                attributes: {
-                  id: machine.get('id'),
-                  name: machine.get('name'),
-                  ip: machine.get('ip'),
-                  status: machine.get('status'),
-                  username: machine.get('username'),
-                  platform: machine.get('platform'),
-                  progress: machine.get('progress'),
-                  recording: 'packaging',
-                  timeleft: machine.get('timeleft')
-                },
-                id: machine.get('id'),
-                type: 'machines'
-              }
-            })
-          })
-          .then((data) => {
-            this.set('savePackageModal', true);
-            var currentApplication = this.get('store').createRecord('app', {
-              id: data.included['id'],
-              'collection-name':data.included.attributes['collection-name'],
-              alias: data.included.attributes['alias'],
-              'display-name':data.included.attributes['display-name'],
-              'file-path':data.included.attributes['file-path'],
-              path: data.included.attributes['path'],
-              'icon-content':data.included.attributes['icon-content'],
-              state: data.included.attributes['state'],
-            });
-
-            this.set('currentApplication', currentApplication);
-            this.toast.info('Ending recording');
-            this.set('recordState', this.get('RECORD_DEFAULT'));
-          }, ((reason) => {
-            this.toast.error(reason);
-            this.set('recordState', this.get('RECORD_DEFAULT'));
-          }));
-
-        });
-      } else {
-        getMachine().then((machine) => {
-          machine.set('recording', 'capturing');
-          machine.save()
-            .then(() => {
-              this.set('recordState', this.get('RECORD_CAPTURING'));
-              this.toast.info('Starting recording');
-            })
-            .catch((reason) => {
-              this.set('recordState', this.get('RECORD_DEFAULT'));
-              this.toast.error(reason);
-            });
-        });
-      }
-    }
   }
 });
