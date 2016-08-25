@@ -105,7 +105,7 @@ module.exports = {
         if (!user) {
           return res.notFound('No user found');
         }
-        user.expirationDate = moment().add(expirationDays, 'days').unix();
+        user.expirationDate = (expirationDays) ? moment(new Date()).add(expirationDays, 'days').unix() : null;
         User.create(user)
           .then(() => {
             return PendingUser.destroy({
