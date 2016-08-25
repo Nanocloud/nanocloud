@@ -67,7 +67,7 @@ describe('Machine Service', () => {
 
                       return resolve();
                     });
-                }, 10);
+                }, 100);
               });
             })
             .then(() => {
@@ -211,7 +211,7 @@ describe('Machine Service', () => {
             .then(() => {
               return done();
             });
-          }, 10); // Give broker time to cleanup instances
+          }, 100); // Give broker time to cleanup instances
         });
       });
     });
