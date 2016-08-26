@@ -609,6 +609,7 @@ paths:
       responses:
         200:
           description: File have been uploaded
+
   /groups:
     get:
       tags:
@@ -626,6 +627,15 @@ paths:
                 type: array
                 items:
                   "$ref": "#/definitions/Groups"
+        403:
+          description: You are not an admin
+          schema:
+            type: object
+            properties:
+              errors:
+                type: array
+                items:
+                  "$ref": "#/definitions/Errors"
     post:
       tags:
         - users
@@ -638,17 +648,31 @@ paths:
           description: Groups description
           required: true
           schema:
-            $ref: "#/definitions/Groups"
+              $ref: "#/definitions/GroupsReqPost"
       responses:
-        200:
+        201:
           description: Group created
+          schema:
+            type: object
+            properties:
+              data:
+                "$ref": "#/definitions/Groups"
+        403:
+          description: You are not an admin
+          schema:
+            type: object
+            properties:
+              errors:
+                type: array
+                items:
+                  "$ref": "#/definitions/Errors"
   /groups/{group_id}:
     get:
       tags:
         - users
         - groups
       summary:
-        Get detailed information variables
+        Get detailed information of a group
       parameters:
         - in: path
           name: group_id
@@ -665,11 +689,23 @@ paths:
               data:
                 type: array
                 items:
-                  "$ref": "#/definitions/Groups"
+                  $ref: "#/definitions/GroupsWithRelationships"
               included:
                 type: array
                 items:
-                  "$ref": "#/definitions/User"
+                  type: object
+                  allOf:
+                    - $ref: "#/definitions/User"
+                    - $ref: "#/definitions/Application"
+        403:
+          description: You are not an admin
+          schema:
+            type: object
+            properties:
+              errors:
+                type: array
+                items:
+                  "$ref": "#/definitions/Errors"
     patch:
       tags:
         - users
@@ -679,10 +715,10 @@ paths:
       parameters:
         - in: body
           name: data
-          description: group
+          description: Group description
           required: true
           schema:
-            $ref: "#/definitions/Groups"
+            $ref: "#/definitions/GroupsReqPatch"
         - in: path
           name: group_id
           description: Id of the group
@@ -697,7 +733,23 @@ paths:
               data:
                 type: array
                 items:
-                  "$ref": "#/definitions/Groups"
+                  $ref: "#/definitions/GroupsWithRelationships"
+              included:
+                type: array
+                items:
+                  type: object
+                  allOf:
+                    - $ref: "#/definitions/User"
+                    - $ref: "#/definitions/Application"
+        403:
+          description: You are not an admin
+          schema:
+            type: object
+            properties:
+              errors:
+                type: array
+                items:
+                  "$ref": "#/definitions/Errors"
     delete:
       tags:
         - users
@@ -707,76 +759,27 @@ paths:
       parameters:
         - in: path
           name: group_id
-          description: TODO
+          description: Id of the group to delete
           required: true
           type: string
           format: uuid
       responses:
         200:
           description: Group have been deleted
-  /groups/{group_id}/users:
-    get:
-      tags:
-        - users
-        - groups
-      summary:
-        Get all configuration variables
-      parameters:
-        - in: path
-          name: group_id
-          description: TODO
-          required: true
-          type: string
-          format: uuid
-      responses:
-        200:
-          description: Return all users of the specified group
           schema:
             type: object
             properties:
-              data:
+              meta:
+                type: object
+        403:
+          description: You are not an admin
+          schema:
+            type: object
+            properties:
+              errors:
                 type: array
                 items:
-                  "$ref": "#/definitions/User"
-    post:
-      tags:
-        - users
-        - groups
-      summary:
-        Get all configuration variables
-      parameters:
-        - in: path
-          name: group_id
-          description: TODO
-          required: true
-          type: string
-          format: uuid
-      responses:
-        200:
-          description: Return configuration variables of the specified group
-  /groups/{group_id}/users/{user_id}:
-    delete:
-      tags:
-        - users
-        - groups
-      summary:
-        Remove specified users from specified groups
-      parameters:
-        - in: path
-          name: group_id
-          description: Group from which user will be removed
-          required: true
-          type: string
-          format: uuid
-        - in: path
-          name: user_id
-          description: User which will be removed from group
-          required: true
-          type: string
-          format: uuid
-      responses:
-        200:
-          description: User removed from the group
+                  "$ref": "#/definitions/Errors"
 
   /teams:
     get:
@@ -1225,23 +1228,147 @@ definitions:
             type: string
           id:
             type: string
+            format: uuid
+          created-at:
+            type: string
+            format: date-time
+          updated-at:
+            type: string
+            format: date-time
+
+  GroupsReqPost:
+    type: object
+    properties:
+      type:
+        type: string
+      attributes:
+        type: object
+        properties:
+          name:
+            type: string
       relationships:
         type: object
         properties:
           apps:
             type: object
             properties:
-              type:
-                type: string
-              id:
-                type: string
+              data:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: string
+                      format: uuid
+                    type:
+                      type: string
           members:
             type: object
             properties:
-              type:
-                type: string
-              id:
-                type: string
+              data:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: string
+                      format: uuid
+                    type:
+                      type: string
+
+  GroupsReqPatch:
+    type: object
+    properties:
+      type:
+        type: string
+      id:
+        type: string
+        format: uuid
+      attributes:
+        type: object
+        properties:
+          name:
+            type: string
+      relationships:
+        type: object
+        properties:
+          apps:
+            type: object
+            properties:
+              data:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: string
+                      format: uuid
+                    type:
+                      type: string
+          members:
+            type: object
+            properties:
+              data:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: string
+                      format: uuid
+                    type:
+                      type: string
+
+  GroupsWithRelationships:
+    type: object
+    properties:
+      type:
+        type: string
+      id:
+        type: string
+        format: uuid
+      attributes:
+        type: object
+        properties:
+          name:
+            type: string
+          id:
+            type: string
+          created-at:
+            type: string
+            format: date-time
+          updated-at:
+            type: string
+            format: date-time
+      relationships:
+        type: object
+        properties:
+          apps:
+            type: object
+            properties:
+              data:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: string
+                      format: uuid
+                    type:
+                      type: string
+          members:
+            type: object
+            properties:
+              data:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: string
+                      format: uuid
+                    type:
+                      type: string
 
   Teams:
     type: object

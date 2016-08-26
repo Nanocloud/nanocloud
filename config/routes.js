@@ -80,6 +80,11 @@ module.exports.routes = {
     action: 'update'
   },
 
+  'PATCH /api/groups/:id': {
+    controller: 'Group',
+    action: 'update'
+  },
+
   'PATCH /api/:model/:id': {
     controller: 'Nanocloud',
     action: 'update'
