@@ -75,6 +75,11 @@ module.exports.routes = {
     action: 'update'
   },
 
+  'PATCH /api/reset-passwords/:id': {
+    controller: 'Reset-password',
+    action: 'update'
+  },
+
   'PATCH /api/:model/:id': {
     controller: 'Nanocloud',
     action: 'update'
