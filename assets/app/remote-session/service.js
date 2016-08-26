@@ -91,6 +91,7 @@ export default Ember.Service.extend(Ember.Evented, {
   getSession: function(name, width, height) {
 
     this.set('isError', false);
+    this.notifyPropertyChange('guacToken');
     return this.get('guacToken').then((token) => {
 
       let tunnel = new Guacamole.WebSocketTunnel('/guacamole/websocket-tunnel?' + this._forgeConnectionString(token.authToken, name, width, height));

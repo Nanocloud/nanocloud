@@ -69,6 +69,8 @@ module.exports.policies = {
   },
 
   HistoryController : {
-    destroy: false
+    destroy: false,
+    create: ['isGuacamole'],
+    update: ['isGuacamole']
   },
 };
