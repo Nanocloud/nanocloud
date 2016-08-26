@@ -155,6 +155,59 @@ module.exports = function() {
         });
     });
 
+    it('Should create an entry in user table with no expiration date set', function(done) {
+
+      ConfigService.set('expirationDate', 0) // A value of 0 means not activated
+        .then(() => {
+          // adding user to pendinguser table
+          nano.request(sails.hooks.http.app)
+            .post('/api/pendingusers')
+            .send({
+              data: {
+                attributes: userData,
+                type: 'pendingusers'
+              }
+            })
+            .expect(201)
+            .then((res) => {
+
+              // activate user
+              return nano.request(sails.hooks.http.app)
+                .patch('/api/pendingusers/' + res.body.data.id)
+                .expect(200)
+                .expect(nano.jsonApiSchema(expectedSchema));
+            })
+            .then(() => {
+
+              // user has been activated
+              return nano.request(sails.hooks.http.app)
+                .get('/api/users')
+                .set(nano.adminLogin())
+                .expect(200)
+                .expect((res) => {
+                  let expirationDate = res.body.data[2].attributes['expiration-date'];
+
+                  expect(expirationDate).to.be.equal(null);
+                });
+            })
+            .then(() => {
+
+              return nano.request(sails.hooks.http.app)
+                .post('/oauth/token')
+                .send({
+                  username: userData.email,
+                  password: userData.password,
+                  grant_type: 'password'
+                })
+                .set('Authorization', 'Basic ' + new Buffer('9405fb6b0e59d2997e3c777a22d8f0e617a9f5b36b6565c7579e5be6deb8f7ae:9050d67c2be0943f2c63507052ddedb3ae34a30e39bbbbdab241c93f8b5cf341').toString('base64'))
+                .expect(200);
+            })
+            .then(() => {
+              return done();
+            });
+        });
+    });
+
     it('Should prevent from creating the same user twice', function(done) {
 
       nano.request(sails.hooks.http.app)
