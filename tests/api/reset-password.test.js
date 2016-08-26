@@ -22,7 +22,7 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-/* global sails, ConfigService */
+/* global sails, ConfigService, User */
 
 var nano = require('./lib/nanotest');
 var expect = require('chai').expect;
@@ -31,80 +31,97 @@ module.exports = function() {
 
   describe('Reset password', function() {
 
-    const expectedSchema = {};
+    const userEmail = 'user-test@nanocloud.com';
 
     describe('Create a reset password token', function() {
 
       before(function(done) {
         ConfigService.set('testMail', true)
           .then(() => {
+            return User.create({
+              firstName: 'Firstname',
+              lastName: 'Lastname',
+              email: userEmail,
+              password: 'nanocloud',
+              isAdmin: false
+            });
+          })
+          .then(() => {
             return done();
           });
       });
 
-      it('Should return empty meta', function(done) {
+      it('Should reset password when clicking the reset link', function(done) {
 
-        // create user for testing
-        nano.request(sails.hooks.http.app)
-        .post('/api/users')
-        .send({
-          data: {
-            attributes: {
-              'first-name': 'Firstname',
-              'last-name': 'Lastname',
-              email: 'user-test@nanocloud.com',
-              password: 'nanocloud',
-              'is-admin': false
-            },
-            type: 'users'
-          }
-        })
-        .set(nano.adminLogin())
-        .expect(201)
-
-        // test token creation
-        .then(() => {
-          // adding token to 'reset-password' table
-          return nano.request(sails.hooks.http.app)
+        return nano.request(sails.hooks.http.app)
           .post('/api/reset-passwords')
           .send({
             data: {
               attributes: {
-                email: 'user-test@nanocloud.com',
-                password: null,
+                email: 'user-test@nanocloud.com'
               },
               type: 'reset-password'
             }
           })
-          .set(nano.adminLogin())
           .expect(200)
           .expect({
             meta: {}
           })
           .then(() => {
             // token has been added to 'reset-password' table
-            return (nano.request(sails.hooks.http.app)
-              .get('/api/reset-passwords')
-              .set(nano.adminLogin())
-              .expect(200)
-              .expect(nano.jsonApiSchema(expectedSchema))
-              .expect((res) => {
-                expect(res.body.data[0].attributes.email)
-                  .to.equal('user-test@nanocloud.com');
+            return global['Reset-password'].findOne({
+              email: userEmail
+            })
+              .then((resetPassword) => {
+                expect(resetPassword.email).to.equal('user-test@nanocloud.com');
+
+                return resetPassword.id;
+              });
+          })
+          .then((token) => {
+
+            return nano.request(sails.hooks.http.app)
+              .patch('/api/reset-passwords/' + token)
+              .send({
+                data: {
+                  attributes: {
+                    password: 'newpassword'
+                  },
+                  type: 'reset-password'
+                }
               })
-            );
+              .expect(200)
+              .expect({
+                meta: {}
+              });
+          })
+          .then(() => {
+
+            return nano.request(sails.hooks.http.app)
+              .post('/oauth/token')
+              .send({
+                username: userEmail,
+                password: 'newpassword',
+                grant_type: 'password'
+              })
+              .set('Authorization', 'Basic ' + new Buffer('9405fb6b0e59d2997e3c777a22d8f0e617a9f5b36b6565c7579e5be6deb8f7ae:9050d67c2be0943f2c63507052ddedb3ae34a30e39bbbbdab241c93f8b5cf341').toString('base64'))
+              .expect(200);
+          })
+          .then(() => {
+            return done();
           });
-        })
-        .then(() => {
-          return done();
-        });
       });
     });
 
     after(function(done) {
       ConfigService.unset('testMail')
         .then(() => {
-          return done();
+          User.destroy({
+            email: userEmail
+          })
+            .then(() => {
+              return done();
+            });
         });
     });
   });

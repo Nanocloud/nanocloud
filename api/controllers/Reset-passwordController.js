@@ -22,20 +22,9 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-
-/**
- * Reset-passwordController
- *
- * @description :: Server-side logic for managing resetpasswords
- * @help        :: See http://sailsjs.org/#!/documentation/concepts/Controllers
- */
-
-/* globals ConfigService */
-/* globals EmailService */
-/* globals User */
+/* globals ConfigService, EmailService, User */
 
 const uuid          = require('node-uuid');
-const bcrypt        = require('bcryptjs');
 
 module.exports = {
   create: function(req, res) {
@@ -119,11 +108,10 @@ module.exports = {
         throw new Error('Password can not be empty');
       }
 
-      let hash = bcrypt.hashSync(dataReq.password, 10);
       return User.update({
         id: user.id
       }, {
-        hashedPassword: hash
+        password: dataReq.password
       });
     })
     // destroy the reset password token
@@ -134,7 +122,7 @@ module.exports = {
     })
     // return response
     .then(() => {
-      return res.ok({});
+      return res.json({meta: {}});
     })
     .catch((err) => {
       if (err.message === 'No user found') {

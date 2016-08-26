@@ -65,7 +65,7 @@ module.exports.policies = {
   'Reset-passwordController': {
     create: true,
     update: true,
-    findOne: true,
+    findOne: true
   },
 
   HistoryController : {
