@@ -36,6 +36,8 @@ export function initialize(app) {
     document.title = res.title;
     config.APP.name = res.title;
 
+    config.APP.autoRegister = res.autoRegister;
+
     $('title').text(res.title);
     let favicon = Ember.$('<link rel="shortcut icon">');
     favicon.attr('href', res.favicon);
