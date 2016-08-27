@@ -35,6 +35,7 @@ module.exports = {
   find(req, res) {
     if (req.user.isAdmin) {
       Machine.find()
+        .populate('user')
         .then((machines) => {
           return res.ok(machines);
         })

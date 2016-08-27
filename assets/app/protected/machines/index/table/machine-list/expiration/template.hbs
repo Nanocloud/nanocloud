@@ -1,0 +1,9 @@
+{{#if record.user}}
+  {{#if record.expiration}}
+    {{live-countdown class='color-primary' value=record.expiration isTime=true}}
+  {{else}}
+    This machine will be terminated soon.
+  {{/if}}
+{{else}}
+  -
+{{/if}}
