@@ -23,16 +23,19 @@
  */
 
 import Ember from 'ember';
+import config from 'nanocloud/config/environment';
 
 export default Ember.Controller.extend({
   identification: '',
   password: '',
   configuration: Ember.inject.service('configuration'),
 
+
   reset() {
     this.setProperties({
       identification: '',
-      password: ''
+      password: '',
+      autoRegister: config.APP.autoRegister
     });
   },
 

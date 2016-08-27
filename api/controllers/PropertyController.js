@@ -40,7 +40,7 @@ module.exports = {
   find(req, res) {
 
     ConfigService.get(
-      'title', 'favIconPath', 'logoPath', 'primaryColor'
+      'title', 'favIconPath', 'logoPath', 'primaryColor', 'autoRegister'
     )
     .then((config) => {
 
@@ -63,7 +63,8 @@ module.exports = {
         primaryColor: config.primaryColor,
         title: config.title,
         style: logo + sidebarColor,
-        favicon: favIcon
+        favicon: favIcon,
+        autoRegister: config.autoRegister
       });
     })
     .catch((err) => res.negotiate(err));
