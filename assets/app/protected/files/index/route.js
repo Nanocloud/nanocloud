@@ -38,8 +38,7 @@ export default Ember.Route.extend({
         } else if (err.errors.length === 1 && err.errors[0].code === '000008') {
           this.toast.warning('You need to login once to an application to activate this feature');
           this.transitionTo('protected.files.notactivated');
-        }
-          else {
+        } else {
           return this.send('error', err);
         }
       });
