@@ -251,50 +251,63 @@ class AWSDriver extends Driver {
               }, (err, server) => {
                 if (err) {
                   return reject(err);
-                } else {
-                  return server.refresh((err, server) => {
+                }
+
+                if (image.password === null) {
+                  return this._client.ec2
+                    .waitFor('passwordDataAvailable', {
+                      InstanceId: server.id
+                    }, (err, res) => {
+
+                      if (err) {
+                        return reject(err);
+                      }
+                      return resolve({
+                        server: server,
+                        password: res.PasswordData,
+                        image: image
+                      });
+                    });
+                }
+
+                this._client.ec2
+                  .waitFor('instanceStatusOk', {
+                    InstanceIds: [server.id]
+                  }, (err) => {
 
                     if (err) {
                       return reject(err);
                     }
 
-                    if (image.password === null) {
-                      return this._client.ec2
-                        .waitFor('passwordDataAvailable', {
-                          InstanceId: server.id
-                        }, (err, res) => {
+                    this._client.ec2
+                      .waitFor('systemStatusOk', {
+                        InstanceIds: [server.id]
+                      }, (err) => {
+                        if (err) {
+                          return reject(err);
+                        }
 
-                          if (err) {
-                            return reject(err);
-                          } else {
-                            return resolve({
-                              server: server,
-                              password: res.PasswordData,
-                              image: image
-                            });
-                          }
+                        return resolve({
+                          server: server,
+                          password: image.password,
+                          image: image
                         });
-                    } else {
-                      return this._client.ec2
-                        .waitFor('instanceStatusOk', {
-                          InstanceIds: [server.id]
-                        }, (err) => {
-
-                          if (err) {
-                            return reject(err);
-                          } else {
-                            return resolve({
-                              server: server,
-                              password: image.password,
-                              image: image
-                            });
-                          }
-                        });
-                    }
+                      });
                   });
-                }
               });
             })
+              .then((res) => {
+                return new Promise((resolve, reject) => {
+                  res.server.refresh((err, server) => {
+                    if (err) {
+                      reject(err);
+                    } else {
+                      res.server = server;
+                      resolve(res);
+                    }
+                  });
+                });
+              })
               .then((res) => {
                 const server = res.server;
                 const password = res.password;
