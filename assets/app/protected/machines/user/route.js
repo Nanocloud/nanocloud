@@ -33,7 +33,7 @@ export default Ember.Route.extend({
   model() {
     let machineIndexController = this.controllerFor('protected.machines.user');
     machineIndexController.set('loadState', true);
-    var promise = this.get('store').query('machines/user', {});
+    var promise = this.get('store').query('machine', {});
     promise.then(() => {
     })
       .catch(() => {

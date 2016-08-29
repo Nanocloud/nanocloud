@@ -41,9 +41,12 @@ module.exports = {
         })
         .catch((err) => res.negotiate(err));
     } else {
-      MachineService.getMachineForUser(req.user)
+      Machine.find({
+        user: req.user.id
+      })
+        .populate('user')
         .then((machines) => {
-          return res.ok([machines]);
+          return res.ok(machines);
         })
         .catch((err) => res.negotiate(err));
     }
