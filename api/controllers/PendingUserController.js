@@ -107,6 +107,21 @@ module.exports = {
         }
         user.expirationDate = (expirationDays) ? moment(new Date()).add(expirationDays, 'days').unix() : null;
         User.create(user)
+          .then((user) => {
+            return ConfigService.get('defaultGroup')
+              .then((config) => {
+                return new Promise((resolve) => {
+                  if (config.defaultGroup !== '') {
+                    user.groups.add(config.defaultGroup);
+                    user.save((err) => {
+                      return resolve(err);
+                    });
+                  } else {
+                    return resolve();
+                  }
+                });
+              });
+          })
           .then(() => {
             return PendingUser.destroy({
               id: pendingUserID

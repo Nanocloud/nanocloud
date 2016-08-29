@@ -22,7 +22,7 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-/* globals sails, User, ConfigService */
+/* globals sails, User, ConfigService, Group, UserGroup */
 
 var nano = require('./lib/nanotest');
 var expect = require('chai').expect;
@@ -234,6 +234,80 @@ module.exports = function() {
           return done();
         });
 
+    });
+
+    describe('Signup user should be assigned the default group if any', function() {
+
+      const userData = {
+        'first-name': 'Firstname',
+        'last-name': 'Lastname',
+        email: 'signup2@nanocloud.com',
+        password: 'nanocloud'
+      };
+
+      let groupId = null;
+
+      before('Create default group', function(done) {
+
+        Group.create({
+          name: 'Test group'
+        })
+          .then((group) => {
+            groupId = group.id;
+            return ConfigService.set('defaultGroup', groupId);
+          })
+          .then(() => {
+            return done();
+          });
+      });
+
+      after('Remove default group', function(done) {
+
+        Group.destroy({
+          name: 'Test group'
+        })
+          .then(() => {
+            return ConfigService.set('defaultGroup', '');
+          })
+          .then(() => {
+            return User.destroy({
+              email: userData.email
+            });
+          })
+          .then(() => {
+            return done();
+          });
+      });
+
+      it('should assign default group for user', function(done) {
+        nano.request(sails.hooks.http.app)
+          .post('/api/pendingusers')
+          .send({
+            data: {
+              attributes: userData,
+              type: 'pendingusers'
+            }
+          })
+          .expect(201)
+          .then((res) => {
+            // activate user
+            return nano.request(sails.hooks.http.app)
+              .patch('/api/pendingusers/' + res.body.data.id)
+              .expect(200)
+              .expect(nano.jsonApiSchema(expectedSchema));
+          })
+          .then((res) => {
+            return UserGroup.find({
+              user: res.body.data.id
+            })
+              .then((usergroup) => {
+                expect(usergroup[0].group).to.equal(groupId);
+              });
+          })
+          .then(() => {
+            return done();
+          });
+      });
     });
 
     after(function(done) {
