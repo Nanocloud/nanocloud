@@ -22,16 +22,45 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-/* globals sails, MachineService */
+/* globals sails, User, AccessToken, MachineService */
 
 const nano = require('./lib/nanotest');
 
 module.exports = function() {
 
   describe('Security', function() {
+
+    let token = null;
+
+    before('Generate a regular user and a token', function(done) {
+      User.create({
+        firstName: 'Test',
+        lastName: 'Test',
+        password: 'tests',
+        email: 'test@test.com',
+        isAdmin: false,
+        expirationDate: null,
+      })
+        .then((user) => {
+          return AccessToken.create({
+            userId: user.id
+          });
+        })
+        .then((res) => {
+          token = res.token;
+          return done();
+        });
+    });
+
+    after('Delete created user', function(done) {
+      User.destroy({
+        email: 'test@test.com'
+      })
+        .then(() => done());
+    });
+
     describe('History', function() {
       describe('Create history - Only possible from Guacamole', function() {
-
         it('Should not create history with no token', function(done) {
           nano.request(sails.hooks.http.app)
             .post('/api/histories')
@@ -75,7 +104,7 @@ module.exports = function() {
             .expect(200)
             .end(done);
         });
-    });
+      });
 
       describe('Update history - Only possible from Guacamole', function() {
 
@@ -130,6 +159,191 @@ module.exports = function() {
             .end(done);
         });
       });
+    });
+
+    describe('Config', function() {
+
+      describe('Create config acts like update - Only possible for admins', function() {
+
+        it('Admins should be authorized', function(done) {
+          return nano.request(sails.hooks.http.app)
+            .post('/api/configs')
+            .set(nano.adminLogin())
+            .send({
+              data: {
+                attributes: {
+                  key: 'host',
+                  value: 'localhost'
+                },
+                type: 'configs'
+              }
+            })
+            .expect(200)
+            .end(done);
+        });
+
+        it('Regular users should be forbidden', function(done) {
+          return nano.request(sails.hooks.http.app)
+            .post('/api/configs')
+            .set('Authorization', 'Bearer ' + token)
+            .send({
+              data: {
+                attributes: {
+                  key: 'host',
+                  value: 'localhost'
+                },
+                type: 'configs'
+              }
+            })
+            .expect(403)
+            .end(done);
+        });
+
+        it('Request without authorization should be unauthorized', function(done) {
+          return nano.request(sails.hooks.http.app)
+            .post('/api/configs')
+            .send({
+              data: {
+                attributes: {
+                  key: 'host',
+                  value: 'localhost'
+                },
+                type: 'configs'
+              }
+            })
+            .expect(401)
+            .end(done);
+        });
+
+      });
+
+      describe('Read config - Possible for admins and regular users', function() {
+
+        it('Admins should be authorized', function(done) {
+          return nano.request(sails.hooks.http.app)
+            .get('/api/configs?key=host')
+            .set(nano.adminLogin())
+            .expect(200)
+            .end(done);
+        });
+
+        it('Regular users should be authorized', function(done) {
+          return nano.request(sails.hooks.http.app)
+            .get('/api/configs?key=host')
+            .set('Authorization', 'Bearer ' + token)
+            .expect(200)
+            .end(done);
+        });
+
+        it('Request without authorization should be unauthorized', function(done) {
+          return nano.request(sails.hooks.http.app)
+            .get('/api/configs?key=host')
+            .expect(401)
+            .end(done);
+        });
+      });
+
+      describe('Read one config - Possible for admins and regular users', function() {
+        it('Admins should be authorized', function(done) {
+          return nano.request(sails.hooks.http.app)
+            .get('/api/configs/host')
+            .set(nano.adminLogin())
+            .expect(200)
+            .end(done);
+        });
+
+        it('Regular users should be unauthorized', function(done) {
+          return nano.request(sails.hooks.http.app)
+            .get('/api/configs/host')
+            .set('Authorization', 'Bearer ' + token)
+            .expect(200)
+            .end(done);
+        });
+
+        it('Request without authorization should be unauthorized', function(done) {
+          return nano.request(sails.hooks.http.app)
+            .get('/api/configs/host')
+            .expect(401)
+            .end(done);
+        });
+      });
+
+      describe('Update config - forbidden use create instead', function() {
+
+        it('Admins should be forbidden', function(done) {
+          return nano.request(sails.hooks.http.app)
+            .patch('/api/configs/host')
+            .set(nano.adminLogin())
+            .send({
+              data: {
+                attributes: {
+                  value: 'local',
+                },
+                type: 'configs'
+              }
+            })
+            .expect(403)
+            .end(done);
+        });
+
+        it('Regular users should be forbidden', function(done) {
+          return nano.request(sails.hooks.http.app)
+            .patch('/api/configs/host')
+            .set('Authorization', 'Bearer ' + token)
+            .send({
+              data: {
+                attributes: {
+                  value: 'local',
+                },
+                type: 'configs'
+              }
+            })
+            .expect(403)
+            .end(done);
+        });
+
+        it('Request without authorization should be unauthorized', function(done) {
+          return nano.request(sails.hooks.http.app)
+            .patch('/api/configs/host')
+            .send({
+              data: {
+                attributes: {
+                  value: 'local',
+                },
+                type: 'configs'
+              }
+            })
+            .expect(401)
+            .end(done);
+        });
+      });
+
+      describe('Delete config - forbidden for everyone', function() {
+
+        it('Admins should be forbidden', function(done) {
+          return nano.request(sails.hooks.http.app)
+            .delete('/api/configs/host')
+            .set(nano.adminLogin())
+            .expect(403)
+            .end(done);
+        });
+
+        it('Regular users should be forbidden', function(done) {
+          return nano.request(sails.hooks.http.app)
+            .delete('/api/configs/host')
+            .set('Authorization', 'Bearer ' + token)
+            .expect(403)
+            .end(done);
+        });
+
+        it('Request without authorization should be unauthorized', function(done) {
+          return nano.request(sails.hooks.http.app)
+            .delete('/api/configs/host')
+            .expect(401)
+            .end(done);
+        });
+      });
+
     });
   });
 };
