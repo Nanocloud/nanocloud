@@ -97,10 +97,10 @@ module.exports = function() {
         nano.request(sails.hooks.http.app)
           .get('/api/users')
           .expect(401)
-          .expect(function backendToRespondWithUnauthorized(res) {
-            if (res.text !== 'Unauthorized') {
-              throw new Error('API should respond with 401 Unauthorized if someone try to access /api/* with no access token');
-            }
+          .expect({
+            error: 'access_denied',
+            error_description: 'Invalid User Credentials',
+            status: 401
           })
           .end(done);
       });

@@ -63,10 +63,7 @@ passport.use(
             }
 
             if (!user) {
-              return done(
-                null, false, {
-                  message: 'Unknown user ' + username
-                });
+              return done(null, null);
             }
 
             bcrypt.compare(password, user.hashedPassword, function(err, res){
