@@ -1085,6 +1085,121 @@ paths:
                 items:
                   "$ref": "#/definitions/Errors"
 
+  /pendingusers:
+    post:
+      tags:
+        - pendingusers
+        - users
+      summary:
+        Create a pending user
+      parameters:
+        - in: body
+          name: data
+          description: Pending user description
+          required: true
+          schema:
+            $ref: "#/definitions/PendingusersReq"
+      responses:
+        201:
+          description: Pending user successfully created
+          schema:
+            $ref: "#/definitions/PendingusersRes"
+        400:
+          description: Bad request
+          schema:
+            type: object
+            properties:
+              errors:
+                type: array
+                items:
+                  $ref: "#/definitions/Errors"
+    get:
+      tags:
+        - pendingusers
+        - users
+      summary:
+        Get the list of pending users
+      responses:
+        200:
+          description: List of all pendiing users
+          schema:
+            type: object
+            properties:
+              data:
+                type: array
+                items:
+                  "$ref": "#/definitions/PendingusersRes"
+        401:
+          description: You are not authorized
+          schema:
+            type: object
+            properties:
+              errors:
+                type: array
+                items:
+                  "$ref": "#/definitions/Errors"
+  /pendingusers/{PendingUserId}:
+    get:
+      tags:
+        - pendingusers
+        - users
+      summary:
+        Find one pending user
+      parameters:
+        - in: path
+          name : PendingUserId
+          description: Pending user id to activate
+          required: true
+          type: string
+          format: uuid
+      responses:
+        200:
+          description: Information about one specific pending user
+          schema:
+            type: object
+            properties:
+              data:
+                $ref: "#/definitions/PendingusersRes"
+        401:
+          description: You are not authorized
+          schema:
+            type: object
+            properties:
+              errors:
+                type: array
+                items:
+                  "$ref": "#/definitions/Errors"
+    patch:
+      tags:
+        - pendingusers
+        - users
+      summary:
+        Activate a pending user
+      parameters:
+        - in: path
+          name : PendingUserId
+          description: Pending user id to activate
+          required: true
+          type: string
+          format: uuid
+      responses:
+        200:
+          description: Pending user seccessfull activated
+          schema:
+            type: object
+            properties:
+              data:
+                $ref: "#/definitions/PendingusersRes"
+        404:
+          description: This pending user was not found
+          schema:
+            type: object
+            properties:
+              errors:
+                type: array
+                items:
+                  "$ref": "#/definitions/Errors"
+
 definitions:
   Configuration:
     type: object
@@ -1530,3 +1645,63 @@ definitions:
             type: string
           app_name:
             type: string
+
+  PendingusersReq:
+    type: object
+    properties:
+      type:
+        type: string
+      attributes:
+        type: object
+        properties:
+          created-at:
+            type: string
+            format: date-time
+          credit:
+            type: number
+          email:
+            type: string
+          expiration-date:
+            type: string
+            format: date-time
+          fisrt-name:
+            type: string
+          last-name:
+            type: string
+          password:
+            type: string
+          is-admin:
+            type: boolean
+      relationships:
+        type: object
+        properties:
+          data:
+            type: array
+            items:
+              $ref: "#/definitions/Groups"
+
+  PendingusersRes:
+    type: object
+    properties:
+      type:
+        type: string
+      id:
+        type: string
+        format: uuid
+      attributes:
+        type: object
+        properties:
+          created-at:
+            type: string
+            format: date-time
+          updated-at:
+            type: string
+            format: date-time
+          email:
+            type: string
+          fisrt-name:
+            type: string
+          last-name:
+            type: string
+          is-admin:
+            type: boolean
