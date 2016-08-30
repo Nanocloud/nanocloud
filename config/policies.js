@@ -77,6 +77,12 @@ module.exports.policies = {
     download: 'checkDownloadToken'
   },
 
+  imageController: {
+    create: 'isAdmin',
+    update: false,
+    destroy: false
+  },
+
   PendingUserController: {
     create: true,
     update: true,
