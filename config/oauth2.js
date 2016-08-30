@@ -47,7 +47,11 @@ server.exchange(oauth2orize.exchange.password(function(user, username, password,
       done(err);
     }
     if (!user) {
-      return done(user);
+      return done({
+        error: 'access_denied',
+        error_description: 'Invalid User Credentials',
+        status: 400
+      });
     }
 
     // delete reset password tokens
@@ -122,9 +126,10 @@ module.exports = {
                function(req, res, next) { // If grant_type is invalid, return error
 
                  if (req.body.grant_type !== 'password' && req.body.grant_type !== 'refresh_token') {
-                   return res.json({
+                   return next({
                      error: 'invalid_request',
-                     error_description: 'grant_type is missing'
+                     error_description: 'grant_type is missing',
+                     status: 400
                    });
                  }
 
@@ -156,8 +161,7 @@ module.exports = {
 
                    if (!user) {
 
-                     res.status(400);
-                     return res.json({
+                     return next({
                        error: 'access_denied',
                        error_description: 'Invalid User Credentials'
                      });
@@ -165,6 +169,18 @@ module.exports = {
 
                    next(null, user);
                  })(req, res, next);
+               },
+               function errorHandler(err, req, res, next) {
+
+                 res.status(400);
+                 res.json(err);
+
+                 /*
+                  * We need to actually do something with  this variable in order for jshint not to complain.
+                  * However, We can't just remove it from the signature because express detects error handler
+                  * middlewares because they take 4 parameters
+                  */
+                 return next;
                },
                server.token(),
                server.errorHandler()

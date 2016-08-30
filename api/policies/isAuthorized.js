@@ -38,8 +38,14 @@ module.exports = function(req, res, next) {
 
   return passport.authenticate('bearer', function(err, user) {
 
-    if ((err) || (!user)) {
-      return res.send(401);
+    if (err) {
+      return next(err);
+    } else if (!user) {
+      return next({
+        error: 'access_denied',
+        error_description: 'Invalid User Credentials',
+        status: 401
+      });
     }
 
     delete req.query.access_token;
