@@ -22,7 +22,7 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-/* globals sails, User, AccessToken, MachineService */
+/* globals sails, User, AccessToken, MachineService, Group */
 
 const nano = require('./lib/nanotest');
 
@@ -31,6 +31,7 @@ module.exports = function() {
   describe('Security', function() {
 
     let token = null;
+    let groupId = null;
 
     before('Generate a regular user and a token', function(done) {
       User.create({
@@ -48,6 +49,12 @@ module.exports = function() {
         })
         .then((res) => {
           token = res.token;
+          return Group.create({
+            name: 'group'
+          });
+        })
+        .then((res) => {
+          groupId = res.id;
           return done();
         });
     });
@@ -343,7 +350,189 @@ module.exports = function() {
             .end(done);
         });
       });
+    });
 
+    describe('Group', function() {
+
+      describe('Create group - Only possible for admins', function() {
+
+        it('Admins should be authorized - return created', function(done) {
+          return nano.request(sails.hooks.http.app)
+            .post('/api/groups')
+            .set(nano.adminLogin())
+            .send({
+              data: {
+                attributes: {
+                  name: 'Test'
+                },
+                type: 'groups'
+              }
+            })
+            .expect(201)
+            .end(done);
+        });
+
+        it('Regular users should be forbidden', function(done) {
+          return nano.request(sails.hooks.http.app)
+            .post('/api/groups')
+            .set('Authorization', 'Bearer ' + token)
+            .send({
+              data: {
+                attributes: {
+                  name: 'Test'
+                },
+                type: 'groups'
+              }
+            })
+            .expect(403)
+            .end(done);
+        });
+
+        it('Request without authorization should be unauthorized', function(done) {
+          return nano.request(sails.hooks.http.app)
+            .post('/api/groups')
+            .send({
+              data: {
+                attributes: {
+                  name: 'Test'
+                },
+                type: 'groups'
+              }
+            })
+            .expect(401)
+            .end(done);
+        });
+      });
+
+      describe('Read group - Only possible for admins', function() {
+
+        it('Admins should be authorized', function(done) {
+          return nano.request(sails.hooks.http.app)
+            .get('/api/groups')
+            .set(nano.adminLogin())
+            .expect(200)
+            .end(done);
+        });
+
+        it('Regular users should be forbidden', function(done) {
+          return nano.request(sails.hooks.http.app)
+            .get('/api/groups')
+            .set('Authorization', 'Bearer ' + token)
+            .expect(403)
+            .end(done);
+        });
+
+        it('Request without authorization should be unauthorized', function(done) {
+          return nano.request(sails.hooks.http.app)
+            .get('/api/groups')
+            .expect(401)
+            .end(done);
+        });
+      });
+
+      describe('Read one group - Only possible for admins', function() {
+
+        it('Admins should be authorized', function(done) {
+          return nano.request(sails.hooks.http.app)
+            .get('/api/groups/' + groupId)
+            .set(nano.adminLogin())
+            .expect(200)
+            .end(done);
+        });
+
+        it('Regular users should be forbidden', function(done) {
+          return nano.request(sails.hooks.http.app)
+            .get('/api/groups/' + groupId)
+            .set('Authorization', 'Bearer ' + token)
+            .expect(403)
+            .end(done);
+        });
+
+        it('Request without authorization should be unauthorized', function(done) {
+          return nano.request(sails.hooks.http.app)
+            .get('/api/groups/' + groupId)
+            .expect(401)
+            .end(done);
+        });
+      });
+    });
+
+    describe('Update group', function() {
+
+      it('Admins should be authorized', function(done) {
+        return nano.request(sails.hooks.http.app)
+          .patch('/api/groups/' + groupId)
+          .set(nano.adminLogin())
+          .send({
+            data: {
+              attributes: {
+                name: 'group2'
+              },
+              id: groupId,
+              type: 'groups'
+            }
+          })
+          .expect(200)
+          .end(done);
+      });
+
+      it('Regular users should be forbidden', function(done) {
+        return nano.request(sails.hooks.http.app)
+          .patch('/api/groups/' + groupId)
+          .set('Authorization', 'Bearer ' + token)
+          .send({
+            data: {
+              attributes: {
+                name: 'group2'
+              },
+              id: groupId,
+              type: 'groups'
+            }
+          })
+          .expect(403)
+          .end(done);
+      });
+
+      it('Request without authorization should be unauthorized', function(done) {
+        return nano.request(sails.hooks.http.app)
+          .patch('/api/groups/' + groupId)
+          .send({
+            data: {
+              attributes: {
+                name: 'group2'
+              },
+              id: groupId,
+              type: 'groups'
+            }
+          })
+          .expect(401)
+          .end(done);
+      });
+    });
+
+    describe('Delete config - forbidden for regular users', function() {
+      it('Regular users should be forbidden', function(done) {
+        return nano.request(sails.hooks.http.app)
+          .delete('/api/groups/' + groupId)
+          .set('Authorization', 'Bearer ' + token)
+          .expect(403)
+          .end(done);
+      });
+
+      it('Admins should be authorized', function(done) {
+        return nano.request(sails.hooks.http.app)
+          .delete('/api/groups/' + groupId)
+          .set(nano.adminLogin())
+          .expect(200)
+          .end(done);
+      });
+
+      it('Request without authorization should be unauthorized', function(done) {
+        return nano.request(sails.hooks.http.app)
+          .delete('/api/groups/' + groupId)
+          .expect(401)
+          .end(done);
+      });
     });
   });
 };

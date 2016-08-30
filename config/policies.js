@@ -61,6 +61,14 @@ module.exports.policies = {
     create: 'isAdmin'
   },
 
+  groupController: {
+    create: 'isAdmin',
+    find: 'isAdmin',
+    findOne: 'isAdmin',
+    update: 'isAdmin',
+    destroy: 'isAdmin'
+  },
+
   PendingUserController: {
     create: true,
     update: true,
