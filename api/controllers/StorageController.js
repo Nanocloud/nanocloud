@@ -82,7 +82,6 @@ module.exports = {
    * @method files
    * @public true
    */
-
   files: function(req, res) {
 
     let getFiles;
@@ -122,7 +121,6 @@ module.exports = {
    * @method download
    * @public true
    */
-
   download: function(req, res) {
     let filename = req.query.filename;
     let downloadToken = req.query.token;
@@ -149,21 +147,30 @@ module.exports = {
   /**
    * token create a one hour token for download
    *
-   * @method tokenn
+   * @method token
    * @public true
    */
-
   token: function(req, res) {
     let user = req.user;
     let filename = req.query.filename;
 
     AccessToken.findOne({userId: user.id}, (err, accessToken) => {
       if (err !== null) {
-        res.negotiate(err);
+        return res.negotiate(err);
       }
-      res.send(200, {
+      return res.send(200, {
         token: StorageService.createToken(accessToken, filename)
       });
     });
-  }
+  },
+
+  /**
+   * update is forbidden for everyone
+   *
+   * @method update
+   * @public true
+   */
+  update: function(req, res) {
+    return res.forbidden();
+  },
 };

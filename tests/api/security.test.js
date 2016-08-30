@@ -22,7 +22,7 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-/* globals sails, User, AccessToken, MachineService, Group */
+/* globals sails, User, AccessToken, MachineService, Group, StorageService */
 
 const nano = require('./lib/nanotest');
 
@@ -32,8 +32,11 @@ module.exports = function() {
 
     let token = null;
     let groupId = null;
+    let storageId = null;
+    let filename = 'security.test.js';
+    let downloadToken = null;
 
-    before('Generate a regular user and a token', function(done) {
+    before('Generate a regular user, a token, a group and storage', function(done) {
       User.create({
         firstName: 'Test',
         lastName: 'Test',
@@ -43,6 +46,10 @@ module.exports = function() {
         expirationDate: null,
       })
         .then((user) => {
+          StorageService.findOrCreate(user)
+            .then((storage) => {
+              storageId = storage.id;
+            });
           return AccessToken.create({
             userId: user.id
           });
@@ -532,6 +539,283 @@ module.exports = function() {
           .delete('/api/groups/' + groupId)
           .expect(401)
           .end(done);
+      });
+    });
+
+    describe('Storage', function() {
+
+      describe('Create Storage - not available from api', function() {
+
+        it('Admins should be forbidden', function(done) {
+          return nano.request(sails.hooks.http.app)
+            .post('/api/storages')
+            .set(nano.adminLogin())
+            .expect(403)
+            .end(done);
+        });
+
+        it('Regular users should be forbidden', function(done) {
+          return nano.request(sails.hooks.http.app)
+            .post('/api/storages')
+            .set('Authorization', 'Bearer ' + token)
+            .expect(403)
+            .end(done);
+        });
+
+        it('Request without authorization should be forbidden', function(done) {
+          return nano.request(sails.hooks.http.app)
+            .post('/api/storages')
+            .expect(403)
+            .end(done);
+        });
+      });
+
+      describe('Read all storage - not available from api', function() {
+
+        it('Admins should be forbidden', function(done) {
+          return nano.request(sails.hooks.http.app)
+            .get('/api/storages')
+            .set(nano.adminLogin())
+            .expect(403)
+            .end(done);
+        });
+
+        it('Regular users should be forbidden', function(done) {
+          return nano.request(sails.hooks.http.app)
+            .get('/api/storages')
+            .set('Authorization', 'Bearer ' + token)
+            .expect(403)
+            .end(done);
+        });
+
+        it('Request without authorization should be forbidden', function(done) {
+          return nano.request(sails.hooks.http.app)
+            .get('/api/storages')
+            .expect(403)
+            .end(done);
+        });
+      });
+
+      describe('Read one storage - not available from api', function() {
+
+        it('Admins should be forbidden', function(done) {
+          return nano.request(sails.hooks.http.app)
+            .get('/api/storages/' + storageId)
+            .set(nano.adminLogin())
+            .expect(403)
+            .end(done);
+        });
+
+        it('Regular users should be forbidden', function(done) {
+          return nano.request(sails.hooks.http.app)
+            .get('/api/storages/' + storageId)
+            .set('Authorization', 'Bearer ' + token)
+            .expect(403)
+            .end(done);
+        });
+
+        it('Request without authorization should be forbidden', function(done) {
+          return nano.request(sails.hooks.http.app)
+            .get('/api/storages/' + storageId)
+            .expect(403)
+            .end(done);
+        });
+      });
+
+      describe('Update storage - not available from api', function() {
+
+        it('Admins should be forbidden', function(done) {
+          return nano.request(sails.hooks.http.app)
+            .patch('/api/storages/' + storageId)
+            .set(nano.adminLogin())
+            .send({
+              data: {
+                attributes: {
+                  port: 1111
+                },
+                id: storageId,
+                type: 'storages'
+              }
+            })
+            .expect(403)
+            .end(done);
+        });
+
+        it('Regular users should be forbidden', function(done) {
+          return nano.request(sails.hooks.http.app)
+            .patch('/api/storages/' + storageId)
+            .set('Authorization', 'Bearer ' + token)
+            .send({
+              data: {
+                attributes: {
+                  port: 1111
+                },
+                id: storageId,
+                type: 'storages'
+              }
+            })
+            .expect(403)
+            .end(done);
+        });
+
+        it('Request without authorization should be unauthorized', function(done) {
+          return nano.request(sails.hooks.http.app)
+            .patch('/api/storages/' + storageId)
+            .send({
+              data: {
+                attributes: {
+                  port: 1111
+                },
+                id: storageId,
+                type: 'storages'
+              }
+            })
+            .expect(401)
+            .end(done);
+        });
+      });
+
+      describe('Delete storage - not available from api', function() {
+
+        it('Admins should be forbidden', function(done) {
+          return nano.request(sails.hooks.http.app)
+            .delete('/api/storages/' + storageId)
+            .set(nano.adminLogin())
+            .expect(403)
+            .end(done);
+        });
+
+        it('Regular users should be forbidden', function(done) {
+          return nano.request(sails.hooks.http.app)
+            .delete('/api/storages/' + storageId)
+            .set('Authorization', 'Bearer ' + token)
+            .expect(403)
+            .end(done);
+        });
+
+        it('Request without authorization should be forbidden', function(done) {
+          return nano.request(sails.hooks.http.app)
+            .delete('/api/storages/' + storageId)
+            .expect(403)
+            .end(done);
+        });
+      });
+
+      describe('Upload a file - available for logged in users', function() {
+
+        it('Admins should be authorized', function(done) {
+          return nano.request(sails.hooks.http.app)
+            .post('/api/upload?filename=' + filename)
+            .attach(filename, './tests/api/security.test.js', filename)
+            .set(nano.adminLogin())
+            .expect(200)
+            .end(done);
+        });
+
+        it('Regular users should be authorized', function(done) {
+          return nano.request(sails.hooks.http.app)
+            .post('/api/upload?filename=' + filename)
+            .attach(filename, './tests/api/security.test.js', filename)
+            .set('Authorization', 'Bearer ' + token)
+            .expect(200)
+            .end(done);
+        });
+
+        it('Request without authorization should be unauthorized', function(done) {
+          return nano.request(sails.hooks.http.app)
+            .post('/api/upload?filename=' + filename)
+            .attach(filename, './tests/api/security.test.js', filename)
+            .expect(401)
+            .end(done);
+        });
+      });
+
+      describe('Get a list of file - available for logged in users', function() {
+
+        it('Admins should be authorized', function(done) {
+          return nano.request(sails.hooks.http.app)
+            .get('/api/files')
+            .set(nano.adminLogin())
+            .expect(200)
+            .end(done);
+        });
+
+        it('Regular users should be authorized', function(done) {
+          return nano.request(sails.hooks.http.app)
+            .get('/api/files')
+            .set('Authorization', 'Bearer ' + token)
+            .expect(200)
+            .end(done);
+        });
+
+        it('Request without authorization should be unauthorized', function(done) {
+          return nano.request(sails.hooks.http.app)
+            .get('/api/files')
+            .expect(401)
+            .end(done);
+        });
+      });
+
+      describe('Get a download token - available for logged in users', function() {
+
+        it('Admins should be authorized', function(done) {
+          return nano.request(sails.hooks.http.app)
+            .get('/api/files/token?filename=' + filename)
+            .set(nano.adminLogin())
+            .expect((res) => {
+              downloadToken = res.body.token;
+            })
+            .expect(200)
+            .end(done);
+        });
+
+        it('Regular users should be authorized', function(done) {
+          return nano.request(sails.hooks.http.app)
+            .get('/api/files/token?filename=' + filename)
+            .set('Authorization', 'Bearer ' + token)
+            .expect(200)
+            .end(done);
+        });
+
+        it('Request without authorization should be unauthorized', function(done) {
+          return nano.request(sails.hooks.http.app)
+            .get('/api/files/token?filename=' + filename)
+            .expect(401)
+            .end(done);
+        });
+      });
+
+      describe('Download a file - available only with a valid download token with authorization or not', function() {
+
+        it('Request with a valid download token and authorization should be authorized', function(done) {
+          return nano.request(sails.hooks.http.app)
+            .get('/api/files/download?filename=' + filename + '&token=' + downloadToken)
+            .set(nano.adminLogin())
+            .expect(200)
+            .end(done);
+        });
+
+        it('Request with a valid download token and without authorization should be authorized', function(done) {
+          return nano.request(sails.hooks.http.app)
+            .get('/api/files/download?filename=' + filename + '&token=' + downloadToken)
+            .expect(200)
+            .end(done);
+        });
+
+        it('Request with a fake token should be forbidden', function(done) {
+          return nano.request(sails.hooks.http.app)
+            .get('/api/files/download?filename=' + filename + '&token=1:3a1133a907c373e3ee7121333d3a1ea0de12aa88')
+            .expect(403)
+            .end(done);
+        });
+
+        it('Request with a fake token should be forbidden even with authorization', function(done) {
+          return nano.request(sails.hooks.http.app)
+            .get('/api/files/download?filename=' + filename + '&token=1:3a1133a907c373e3ee7121333d3a1ea0de12aa88')
+            .set(nano.adminLogin())
+            .expect(403)
+            .end(done);
+        });
       });
     });
   });
