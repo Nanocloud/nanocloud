@@ -23,6 +23,7 @@
  */
 
 /* globals sails, User, AccessToken, MachineService, Group */
+/* globals ConfigService */
 
 const nano = require('./lib/nanotest');
 
@@ -455,83 +456,272 @@ module.exports = function() {
             .end(done);
         });
       });
+
+      describe('Update group', function() {
+
+        it('Admins should be authorized', function(done) {
+          return nano.request(sails.hooks.http.app)
+            .patch('/api/groups/' + groupId)
+            .set(nano.adminLogin())
+            .send({
+              data: {
+                attributes: {
+                  name: 'group2'
+                },
+                id: groupId,
+                type: 'groups'
+              }
+            })
+            .expect(200)
+            .end(done);
+        });
+
+        it('Regular users should be forbidden', function(done) {
+          return nano.request(sails.hooks.http.app)
+            .patch('/api/groups/' + groupId)
+            .set('Authorization', 'Bearer ' + token)
+            .send({
+              data: {
+                attributes: {
+                  name: 'group2'
+                },
+                id: groupId,
+                type: 'groups'
+              }
+            })
+            .expect(403)
+            .end(done);
+        });
+
+        it('Request without authorization should be unauthorized', function(done) {
+          return nano.request(sails.hooks.http.app)
+            .patch('/api/groups/' + groupId)
+            .send({
+              data: {
+                attributes: {
+                  name: 'group2'
+                },
+                id: groupId,
+                type: 'groups'
+              }
+            })
+            .expect(401)
+            .end(done);
+        });
+      });
+
+      describe('Delete config - forbidden for regular users', function() {
+        it('Regular users should be forbidden', function(done) {
+          return nano.request(sails.hooks.http.app)
+            .delete('/api/groups/' + groupId)
+            .set('Authorization', 'Bearer ' + token)
+            .expect(403)
+            .end(done);
+        });
+
+        it('Admins should be authorized', function(done) {
+          return nano.request(sails.hooks.http.app)
+            .delete('/api/groups/' + groupId)
+            .set(nano.adminLogin())
+            .expect(200)
+            .end(done);
+        });
+
+        it('Request without authorization should be unauthorized', function(done) {
+          return nano.request(sails.hooks.http.app)
+            .delete('/api/groups/' + groupId)
+            .expect(401)
+            .end(done);
+        });
+      });
     });
 
-    describe('Update group', function() {
+    describe('Pending-user', function() {
 
-      it('Admins should be authorized', function(done) {
-        return nano.request(sails.hooks.http.app)
-          .patch('/api/groups/' + groupId)
-          .set(nano.adminLogin())
-          .send({
-            data: {
-              attributes: {
-                name: 'group2'
-              },
-              id: groupId,
-              type: 'groups'
-            }
-          })
-          .expect(200)
-          .end(done);
+      let adminPendingUser = null;
+      let ruPendingUser = null;
+      let nologPendingUser = null;
+
+      before(function(done) {
+        // it takes time to send a mail with nodemailer
+        this.timeout(10000);
+
+        ConfigService.set('testMail', true)
+          .then(() => {
+            return done();
+          });
       });
 
-      it('Regular users should be forbidden', function(done) {
-        return nano.request(sails.hooks.http.app)
-          .patch('/api/groups/' + groupId)
-          .set('Authorization', 'Bearer ' + token)
-          .send({
-            data: {
-              attributes: {
-                name: 'group2'
-              },
-              id: groupId,
-              type: 'groups'
-            }
-          })
-          .expect(403)
-          .end(done);
+      describe('Create pending user - available for everyone', function() {
+
+        it('Admins should be authorized to create a pending user', function(done) {
+          return nano.request(sails.hooks.http.app)
+            .post('/api/pendingusers')
+            .set(nano.adminLogin())
+            .send({
+              data: {
+                attributes: {
+                  email: 'pending-user1@test.com',
+                  firstName: 'Test',
+                  lastName: 'Test',
+                  password: '123Password'
+                },
+                type: 'pendingusers'
+              }
+            })
+            .expect((res) => {
+              adminPendingUser = res.body.data.id;
+            })
+            .expect(201)
+            .end(done);
+        });
+
+        it('Regular users should be authorized to create a pending user', function(done) {
+          return nano.request(sails.hooks.http.app)
+            .post('/api/pendingusers')
+            .set('Authorization', 'Bearer ' + token)
+            .send({
+              data: {
+                attributes: {
+                  email: 'pending-user2@test.com',
+                  firstName: 'Test',
+                  lastName: 'Test',
+                  password: '123Password'
+                },
+                type: 'pendingusers'
+              }
+            })
+            .expect((res) => {
+              ruPendingUser = res.body.data.id;
+            })
+            .expect(201)
+            .end(done);
+        });
+
+        it('Not logged in user should be authorized to create a pending user', function(done) {
+          return nano.request(sails.hooks.http.app)
+            .post('/api/pendingusers')
+            .send({
+              data: {
+                attributes: {
+                  email: 'pending-user3@test.com',
+                  firstName: 'Test',
+                  lastName: 'Test',
+                  password: '123Password'
+                },
+                type: 'pendingusers'
+              }
+            })
+            .expect((res) => {
+              nologPendingUser = res.body.data.id;
+            })
+            .expect(201)
+            .end(done);
+        });
       });
 
-      it('Request without authorization should be unauthorized', function(done) {
-        return nano.request(sails.hooks.http.app)
-          .patch('/api/groups/' + groupId)
-          .send({
-            data: {
-              attributes: {
-                name: 'group2'
-              },
-              id: groupId,
-              type: 'groups'
-            }
-          })
-          .expect(401)
-          .end(done);
-      });
-    });
+      describe('Get all pending users - Available for logged in user', function() {
 
-    describe('Delete config - forbidden for regular users', function() {
-      it('Regular users should be forbidden', function(done) {
-        return nano.request(sails.hooks.http.app)
-          .delete('/api/groups/' + groupId)
-          .set('Authorization', 'Bearer ' + token)
-          .expect(403)
-          .end(done);
-      });
+        it('Admins should be authorized to get all pending users', function(done) {
+          return nano.request(sails.hooks.http.app)
+            .get('/api/pendingusers')
+            .set(nano.adminLogin())
+            .expect(200)
+            .end(done);
+        });
 
-      it('Admins should be authorized', function(done) {
-        return nano.request(sails.hooks.http.app)
-          .delete('/api/groups/' + groupId)
-          .set(nano.adminLogin())
-          .expect(200)
-          .end(done);
+        it('Regular users should be authorized to get all pending users', function(done) {
+          return nano.request(sails.hooks.http.app)
+            .get('/api/pendingusers')
+            .set('Authorization', 'Bearer ' + token)
+            .expect(200)
+            .end(done);
+        });
+
+        it('Not logged in user should be unauthorized to get all pending users', function(done) {
+          return nano.request(sails.hooks.http.app)
+            .get('/api/pendingusers')
+            .expect(401)
+            .end(done);
+        });
       });
 
-      it('Request without authorization should be unauthorized', function(done) {
-        return nano.request(sails.hooks.http.app)
-          .delete('/api/groups/' + groupId)
-          .expect(401)
-          .end(done);
+      describe('Get a pending user - available for logged in user', function() {
+
+        it('Admins should be authorized to get a pending user', function(done) {
+          return nano.request(sails.hooks.http.app)
+            .get('/api/pendingusers/' + adminPendingUser)
+            .set(nano.adminLogin())
+            .expect(200)
+            .end(done);
+        });
+
+        it('Regular users should be authorized to get pending user', function(done) {
+          return nano.request(sails.hooks.http.app)
+            .get('/api/pendingusers/' + ruPendingUser)
+            .set('Authorization', 'Bearer ' + token)
+            .expect(200)
+            .end(done);
+        });
+
+        it('Not logged in user should be authorized to get a pending user', function(done) {
+          return nano.request(sails.hooks.http.app)
+            .get('/api/pendingusers/' + nologPendingUser)
+            .expect(401)
+            .end(done);
+        });
+      });
+
+      describe('Delete a pending user - not available from api', function() {
+
+        it('Admins should be forbidden', function(done) {
+          return nano.request(sails.hooks.http.app)
+            .delete('/api/pendingusers/' + adminPendingUser)
+            .set(nano.adminLogin())
+            .expect(403)
+            .end(done);
+        });
+
+        it('Regular users should be forbidden', function(done) {
+          return nano.request(sails.hooks.http.app)
+            .delete('/api/pendingusers/' + ruPendingUser)
+            .set('Authorization', 'Bearer ' + token)
+            .expect(403)
+            .end(done);
+        });
+
+        it('Request without authorization should be forbidden', function(done) {
+          return nano.request(sails.hooks.http.app)
+            .delete('/api/pendingusers/' + nologPendingUser)
+            .expect(403)
+            .end(done);
+        });
+      });
+
+      describe('Update/activate a pending user - available for everyone', function() {
+
+        it('Admins should be authorized to activate a pending user', function(done) {
+          return nano.request(sails.hooks.http.app)
+            .patch('/api/pendingusers/' + adminPendingUser)
+            .set(nano.adminLogin())
+            .expect(200)
+            .end(done);
+        });
+
+        it('Regular users should be authorized to activate a pending user', function(done) {
+          return nano.request(sails.hooks.http.app)
+            .patch('/api/pendingusers/' + ruPendingUser)
+            .set('Authorization', 'Bearer ' + token)
+            .expect(200)
+            .end(done);
+        });
+
+        it('Not logged in user should be authorized to activate a pending user', function(done) {
+          return nano.request(sails.hooks.http.app)
+            .patch('/api/pendingusers/' + nologPendingUser)
+            .expect(200)
+            .end(done);
+        });
       });
     });
   });
