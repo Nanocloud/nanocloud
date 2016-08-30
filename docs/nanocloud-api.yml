@@ -1794,3 +1794,32 @@ definitions:
             type: string
           is-admin:
             type: boolean
+
+  Images:
+    type: object
+    properties:
+      type:
+        type: string
+      id:
+        type: string
+        format: uuid
+      attributes:
+        type: object
+        properties:
+          iaas-id:
+            type: string
+            format: uuid
+          name:
+            type: string
+          build-from:
+            type: string
+          default:
+            type: boolean
+          password:
+            type: string
+          created-at:
+            type: string
+            format: date-time
+          updated-at:
+            type: string
+            format: date-time

@@ -1048,9 +1048,144 @@ module.exports = function() {
             .end(done);
         });
       });
+    });
 
+    describe('Images', function() {
 
+      let image = null;
 
+      describe('Create an image - available for admins only', function() {
+
+        it('Admins should be authorized to create an image', function(done) {
+          return nano.request(sails.hooks.http.app)
+            .post('/api/images')
+            .set(nano.adminLogin())
+            .expect((res) => {
+              image = res.body.data.id;
+            })
+            .expect(201)
+            .end(done);
+        });
+
+        it('Regular users should be forbidden to create an image', function(done) {
+          return nano.request(sails.hooks.http.app)
+            .post('/api/images')
+            .set('Authorization', 'Bearer ' + token)
+            .expect(403)
+            .end(done);
+        });
+
+        it('Not logged in user should be unauthorized to create an image', function(done) {
+          return nano.request(sails.hooks.http.app)
+            .post('/api/images')
+            .expect(401)
+            .end(done);
+        });
+      });
+
+      describe('Get all images - available for logged in users', function() {
+
+        it('Admins should be authorized to get all images', function(done) {
+          return nano.request(sails.hooks.http.app)
+            .get('/api/images')
+            .set(nano.adminLogin())
+            .expect(200)
+            .end(done);
+        });
+
+        it('Regular users should be authorized to get all images', function(done) {
+          return nano.request(sails.hooks.http.app)
+            .get('/api/images')
+            .set('Authorization', 'Bearer ' + token)
+            .expect(200)
+            .end(done);
+        });
+
+        it('Not logged in user should be unauthorized to get all images', function(done) {
+          return nano.request(sails.hooks.http.app)
+            .get('/api/images')
+            .expect(401)
+            .end(done);
+        });
+      });
+
+      describe('Get an image - available for logged in users', function() {
+
+        it('Admins should be authorized to get an image', function(done) {
+          return nano.request(sails.hooks.http.app)
+            .get('/api/images/' + image)
+            .set(nano.adminLogin())
+            .expect(200)
+            .end(done);
+        });
+
+        it('Regular users should be authorized to get an image', function(done) {
+          return nano.request(sails.hooks.http.app)
+            .get('/api/images/' + image)
+            .set('Authorization', 'Bearer ' + token)
+            .expect(200)
+            .end(done);
+        });
+
+        it('Not logged in user should be unauthorized to get an image', function(done) {
+          return nano.request(sails.hooks.http.app)
+            .get('/api/images/' + image)
+            .expect(401)
+            .end(done);
+        });
+      });
+
+      describe('Update an image - not available', function() {
+
+        it('Admins should be fobidden to update an image', function(done) {
+          return nano.request(sails.hooks.http.app)
+            .patch('/api/images/' + image)
+            .set(nano.adminLogin())
+            .expect(403)
+            .end(done);
+        });
+
+        it('Regular users should be forbidden to update an image', function(done) {
+          return nano.request(sails.hooks.http.app)
+            .patch('/api/images/' + image)
+            .set('Authorization', 'Bearer ' + token)
+            .expect(403)
+            .end(done);
+        });
+
+        it('Not logged in user should be forbidden to update an image', function(done) {
+          return nano.request(sails.hooks.http.app)
+            .patch('/api/images/' + image)
+            .expect(403)
+            .end(done);
+        });
+      });
+
+      describe('Delete an image - not available', function() {
+
+        it('Admins should be forbidden to delete an image', function(done) {
+          return nano.request(sails.hooks.http.app)
+            .delete('/api/images/' + image)
+            .set(nano.adminLogin())
+            .expect(403)
+            .end(done);
+        });
+
+        it('Regular users should be forbidden to delete an image', function(done) {
+          return nano.request(sails.hooks.http.app)
+            .delete('/api/images/' + image)
+            .set('Authorization', 'Bearer ' + token)
+            .expect(403)
+            .end(done);
+        });
+
+        it('Not logged in user should be forbidden to delete an image', function(done) {
+          return nano.request(sails.hooks.http.app)
+            .delete('/api/images/' + image)
+            .expect(403)
+            .end(done);
+        });
+      });
     });
   });
 };

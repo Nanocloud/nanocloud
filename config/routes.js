@@ -90,6 +90,11 @@ module.exports.routes = {
     action: 'update'
   },
 
+  'PATCH /api/images/:id': {
+    controller: 'Image',
+    action: 'update'
+  },
+
   'PATCH /api/:model/:id': {
     controller: 'Nanocloud',
     action: 'update'
