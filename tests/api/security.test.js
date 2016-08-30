@@ -1320,5 +1320,108 @@ module.exports = function() {
         });
       });
     });
+
+    describe('Nanocloud', function() {
+
+      describe('Create something with Nanocloud controller - not available', function() {
+        it('Should be not found even if user is an admin', function(done) {
+          return nano.request(sails.hooks.http.app)
+            .post('/api/nanoclouds')
+            .set(nano.adminLogin())
+            .expect(404)
+            .end(done);
+        });
+
+        it('Should be not found even if user is a regular user', function(done) {
+          return nano.request(sails.hooks.http.app)
+            .post('/api/nanoclouds')
+            .set('Authorization', 'Bearer ' + token)
+            .expect(404)
+            .end(done);
+        });
+
+        it('Should be not found even if user is not logged in', function(done) {
+          return nano.request(sails.hooks.http.app)
+            .post('/api/nanoclouds')
+            .expect(404)
+            .end(done);
+        });
+      });
+
+      describe('Get something from Nanocloud controller - not available', function() {
+        it('Should be not found even if user is an admin', function(done) {
+          return nano.request(sails.hooks.http.app)
+            .get('/api/nanoclouds')
+            .set(nano.adminLogin())
+            .expect(404)
+            .end(done);
+        });
+
+        it('Should be not found even if user is a regular user', function(done) {
+          return nano.request(sails.hooks.http.app)
+            .get('/api/nanoclouds')
+            .set('Authorization', 'Bearer ' + token)
+            .expect(404)
+            .end(done);
+        });
+
+        it('Should be not found even if user is not logged in', function(done) {
+          return nano.request(sails.hooks.http.app)
+            .get('/api/nanoclouds')
+            .expect(404)
+            .end(done);
+        });
+      });
+
+      describe('Get something scpecific from Nanocloud controller - not available', function() {
+        it('Should be not found even if user is an admin', function(done) {
+          return nano.request(sails.hooks.http.app)
+            .get('/api/nanoclouds/1')
+            .set(nano.adminLogin())
+            .expect(404)
+            .end(done);
+        });
+
+        it('Should be not found even if user is a regular user', function(done) {
+          return nano.request(sails.hooks.http.app)
+            .get('/api/nanoclouds/1')
+            .set('Authorization', 'Bearer ' + token)
+            .expect(404)
+            .end(done);
+        });
+
+        it('Should be not found even if user is not logged in', function(done) {
+          return nano.request(sails.hooks.http.app)
+            .get('/api/nanoclouds/1')
+            .expect(404)
+            .end(done);
+        });
+      });
+
+      describe('Delete something from Nanocloud controller - not available', function() {
+        it('Should be not found even if user is an admin', function(done) {
+          return nano.request(sails.hooks.http.app)
+            .delete('/api/nanoclouds/1')
+            .set(nano.adminLogin())
+            .expect(404)
+            .end(done);
+        });
+
+        it('Should be not found even if user is a regular user', function(done) {
+          return nano.request(sails.hooks.http.app)
+            .delete('/api/nanoclouds/1')
+            .set('Authorization', 'Bearer ' + token)
+            .expect(404)
+            .end(done);
+        });
+
+        it('Should be not found even if user is not logged in', function(done) {
+          return nano.request(sails.hooks.http.app)
+            .delete('/api/nanoclouds/1')
+            .expect(404)
+            .end(done);
+        });
+      });
+    });
   });
 };
