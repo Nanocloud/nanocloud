@@ -58,7 +58,7 @@ let App = Ember.Object.extend({
         if (err === 'Exceeded credit') {
           this.toast.error('Exceeded credit');
         } else {
-          this.toast.error(err);
+          this.send('error', err);
         }
       });
   }
@@ -155,7 +155,7 @@ export default Ember.Controller.extend({
           if (err.errors && err.errors[0].status === '402') {
             this.toast.error('Credit exceeded');
           } else {
-            this.toast.error(err);
+            this.send('error', err);
           }
         })
         .finally(() => {
