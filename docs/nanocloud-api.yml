@@ -593,23 +593,6 @@ paths:
                 type: array
                 items:
                   "$ref": "#/definitions/AccessToken"
-  /upload/{filename}:
-    post:
-      tags:
-        - files
-      summary:
-        Upload a file
-      parameters:
-        - in: path
-          name: filename
-          description: file name
-          required: true
-          type: string
-          format: string
-      responses:
-        200:
-          description: File have been uploaded
-
   /groups:
     get:
       tags:
@@ -950,22 +933,15 @@ paths:
         200:
           description: User removed from the team
 
-  /files{filename}:
+  /files:
     get:
       tags:
         - files
       summary:
-        Get all configuration variables
-      parameters:
-        - in: path
-          name: filename
-          description: Name of the file
-          required: true
-          type: string
-          format: string
+        Get the list of files in user storage
       responses:
         200:
-          description: Return the configuration
+          description: Return the list of files
           schema:
             type: object
             properties:
@@ -973,6 +949,62 @@ paths:
                 type: array
                 items:
                   "$ref": "#/definitions/Files"
+              meta:
+                type: object
+                properties:
+                  storageSize:
+                    type: string
+        401:
+          description: Unauthorized when you are not logged in
+          schema:
+            type: object
+            properties:
+              errors:
+                type: array
+                items:
+                  "$ref": "#/definitions/Errors"
+
+  /files{machines}{path}:
+    get:
+      tags:
+        - files
+      summary:
+        Get the list of files from virtual machine
+      parameters:
+        - in: path
+          name: machines
+          description: Set at true
+          required: true
+          type: string
+          format: string
+        - in: path
+          name: path
+          description: Path to explore
+          required: true
+          type: string
+          format: string
+      responses:
+        200:
+          description: Return the list of files
+          schema:
+            type: object
+            properties:
+              data:
+                type: array
+                items:
+                  "$ref": "#/definitions/Files"
+        401:
+          description: Unauthorized when you are not logged in
+          schema:
+            type: object
+            properties:
+              errors:
+                type: array
+                items:
+                  "$ref": "#/definitions/Errors"
+        500:
+          description: Internal server error when request is not valid
+
   /files/token{filename}:
     get:
       tags:
@@ -988,12 +1020,70 @@ paths:
           format: string
       responses:
         200:
-          description: Return the file name token
+          description: Return a one hour download token valid for the specific file
           schema:
             type: string
             properties:
               token:
                 type: string
+
+  /files/download{filename}{token}:
+    get:
+      tags:
+        - files
+      summary:
+        Download a file
+      parameters:
+        - in: path
+          name: filename
+          description: Name of file to download
+          required: true
+          type: string
+          format: string
+        - in: path
+          name: token
+          description: A valid download token
+          required: true
+          type: string
+          format: string
+      responses:
+        200:
+          description: Successfull download
+        403:
+          description: Download is forbidden
+          schema:
+            type: object
+            properties:
+              errors:
+                type: array
+                items:
+                  "$ref": "#/definitions/Errors"
+
+  /upload/{filename}:
+    post:
+      tags:
+        - files
+      summary:
+        Upload a file
+      parameters:
+        - in: path
+          name: filename
+          description: file name
+          required: true
+          type: string
+          format: string
+      responses:
+        200:
+          description: File have been uploaded
+        400:
+          description: Bad request, no file was uploaded
+          schema:
+            type: object
+            properties:
+              errors:
+                type: array
+                items:
+                  "$ref": "#/definitions/Errors"
 
 definitions:
   Configuration:
