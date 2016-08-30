@@ -54,7 +54,11 @@ module.exports.policies = {
   },
 
   PropertyController: {
-    find: true
+    find: true,
+    findOne: false,
+    update: false,
+    create: false,
+    destroy: false
   },
 
   configController: {
@@ -69,9 +73,24 @@ module.exports.policies = {
     destroy: 'isAdmin'
   },
 
+  storageController: {
+    create: false,
+    find: false,
+    findOne: false,
+    destroy: false,
+    download: 'checkDownloadToken'
+  },
+
+  imageController: {
+    create: 'isAdmin',
+    update: false,
+    destroy: false
+  },
+
   PendingUserController: {
     create: true,
     update: true,
+    destroy: false,
   },
 
   'Reset-passwordController': {
