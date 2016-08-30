@@ -37,7 +37,6 @@ const OpenstackDriver = require('../drivers/openstack/driver');
 
 const driverNotInitializedError = new Error('Driver not initialized');
 const driverAlreadyInitializedError = new Error('Driver already initialized');
-const noMachineFoundError = new Error('No machine found');
 
 const drivers = {
   manual    : ManualDriver,
@@ -184,7 +183,7 @@ function getMachineForUser(user) {
                   }));
                 }
 
-                return reject(noMachineFoundError);
+                return reject('A machine is booting for you. Please retry in one minute.');
               });
             });
           } else {

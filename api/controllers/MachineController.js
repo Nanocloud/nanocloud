@@ -70,6 +70,8 @@ module.exports = {
       .catch((err) =>  {
         if (err === 'Exceeded credit') {
           return res.send(402, err);
+        } else if (err === 'A machine is booting for you. Please retry in one minute.') {
+          res.notFound(err);
         } else {
           return res.negotiate(err);
         }
