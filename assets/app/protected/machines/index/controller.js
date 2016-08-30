@@ -55,6 +55,7 @@ export default Ember.Controller.extend({
         ip: item.get('ip'),
         expiration: item.get('expiration'),
         user: item.get('user'),
+        endDate: item.get('endDate'),
       }));
     });
     this.set('data', ret);

@@ -124,7 +124,7 @@ describe('Machine Service', () => {
       });
     });
 
-    it('Opening a session should update machine endDate', (done) => {
+    it('Opening a session should considere it as active', (done) => {
       MachineService.sessionOpen({
         id: adminId
       })
@@ -134,7 +134,6 @@ describe('Machine Service', () => {
           name: 'Admin'
         })
         .then((machine) => {
-          assert.isNotNull(machine.endDate);
           return request('http://' + machine.ip + ':' + machine.plazaport + '/sessionOpen')
           .then(() => {
             return machine.isSessionActive();
@@ -167,16 +166,16 @@ describe('Machine Service', () => {
         id: adminId,
         name: 'Admin'
       })
-      .then((machine) => {
-        return machine.killSession()
-          .then(() => {
-            return machine.isSessionActive();
-          })
-        .then((active) => {
-          assert.isFalse(active);
-          return done();
+        .then((machine) => {
+          return machine.killSession()
+            .then(() => {
+              return machine.isSessionActive();
+            })
+            .then((active) => {
+              assert.isFalse(active);
+              return done();
+            });
         });
-      });
     });
 
     it('Should terminate machine if no connection occured after the maximum session duration time', (done) => {
@@ -191,28 +190,36 @@ describe('Machine Service', () => {
             id: adminId
           });
         })
-        .then(() => {
-          setTimeout(() => {
+          .then(() => {
             return Machine.findOne({
-              id: machine.id
-            })
-            .then((res) => {
-              assert.isUndefined(res);
-            })
-            .then(() => {
-              return Machine.find({
-                user: null
-              });
-            })
-            .then((machines) => {
-              assert.equal(machines.length, 1);
-              assert.isNull(machines[0].user);
-            })
-            .then(() => {
-              return done();
+              user: adminId
             });
-          }, 100); // Give broker time to cleanup instances
-        });
+          })
+          .then((machine) => {
+            assert.isNotNull(machine.endDate);
+          })
+          .then(() => {
+            setTimeout(() => {
+              return Machine.findOne({
+                id: machine.id
+              })
+                .then((res) => {
+                  assert.isUndefined(res);
+                })
+                .then(() => {
+                  return Machine.find({
+                    user: null
+                  });
+                })
+                .then((machines) => {
+                  assert.equal(machines.length, 1);
+                  assert.isNull(machines[0].user);
+                })
+                .then(() => {
+                  return done();
+                });
+            }, 100); // Give broker time to cleanup instances
+          });
       });
     });
   });

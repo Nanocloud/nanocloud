@@ -42,6 +42,10 @@ export default DS.Model.extend({
     let now = new Date();
     let time = window.moment(this.get('endDate'));
     let res = Math.floor(window.moment.duration(window.moment(time,'DD/MM/YYYY HH:mm:ss').diff(window.moment(now,'DD/MM/YYYY HH:mm:ss')), 'milliseconds').asSeconds());
+
+    if (res < 0) {
+      res = 0;
+    }
     return res;
   }),
 

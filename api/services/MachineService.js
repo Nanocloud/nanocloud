@@ -328,7 +328,12 @@ function _shouldTerminateMachine(machine) {
  * @return {Promise}
  */
 function sessionOpen(user) {
-  return increaseUsersMachineEndDate(user);
+  return getMachineForUser(user)
+    .then((machine) => {
+      machine.endDate = null;
+
+      return Machine.update(machine.id, machine);
+    });
 }
 
 /**
@@ -355,17 +360,23 @@ function isUserCreditSupported() {
  * @return {Promise}
  */
 function sessionEnded(user) {
+
+  let promise = increaseUsersMachineEndDate(user);
+
   if (isUserCreditSupported()) {
-    return _driver.getUserCredit(user)
-      .then((creditUsed) => {
-        return User.update({
-          id: user.id
-        }, {
-          credit: creditUsed
+    promise.then(() => {
+      return _driver.getUserCredit(user)
+        .then((creditUsed) => {
+          return User.update({
+            id: user.id
+          }, {
+            credit: creditUsed
+          });
         });
-      });
+    });
   }
-  return increaseUsersMachineEndDate(user);
+
+  return promise;
 }
 
 /**
