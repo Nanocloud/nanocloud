@@ -1145,5 +1145,138 @@ module.exports = function() {
         });
       });
     });
+
+    describe('Property', function() {
+
+      describe('Create a property - not available', function() {
+
+        it('Admins should be forbidden to create a property', function(done) {
+          return nano.request(sails.hooks.http.app)
+            .post('/api/properties')
+            .set(nano.adminLogin())
+            .expect(403)
+            .end(done);
+        });
+
+        it('Regular users should be forbidden to create a property', function(done) {
+          return nano.request(sails.hooks.http.app)
+            .post('/api/properties')
+            .set('Authorization', 'Bearer ' + token)
+            .expect(403)
+            .end(done);
+        });
+
+        it('Not logged in user should be forbidden to create a property', function(done) {
+          return nano.request(sails.hooks.http.app)
+            .post('/api/properties')
+            .expect(403)
+            .end(done);
+        });
+      });
+
+      describe('Get all properties - available for all users even not logged in user', function() {
+
+        it('Admins should be authorized to get all properties', function(done) {
+          return nano.request(sails.hooks.http.app)
+            .get('/api/properties')
+            .set(nano.adminLogin())
+            .expect(200)
+            .end(done);
+        });
+
+        it('Regular users should be authorized to get all properties', function(done) {
+          return nano.request(sails.hooks.http.app)
+            .get('/api/properties')
+            .set('Authorization', 'Bearer ' + token)
+            .expect(200)
+            .end(done);
+        });
+
+        it('Not logged in user should be authorized to get all properties', function(done) {
+          return nano.request(sails.hooks.http.app)
+            .get('/api/properties')
+            .expect(200)
+            .end(done);
+        });
+      });
+
+      describe('Get a property - available for all users even not logged in user', function() {
+
+        it('Admins should be authorized to get a property', function(done) {
+          return nano.request(sails.hooks.http.app)
+            .get('/api/properties/1')
+            .set(nano.adminLogin())
+            .expect(403)
+            .end(done);
+        });
+
+        it('Regular users should be authorized to get a property', function(done) {
+          return nano.request(sails.hooks.http.app)
+            .get('/api/properties/1')
+            .set('Authorization', 'Bearer ' + token)
+            .expect(403)
+            .end(done);
+        });
+
+        it('Not logged in user should be authorized to get a property', function(done) {
+          return nano.request(sails.hooks.http.app)
+            .get('/api/properties/1')
+            .expect(403)
+            .end(done);
+        });
+      });
+
+      describe('Update a property - not available', function() {
+
+        it('Admins should be forbidden to update a property', function(done) {
+          return nano.request(sails.hooks.http.app)
+            .patch('/api/properties/1')
+            .set(nano.adminLogin())
+            .expect(403)
+            .end(done);
+        });
+
+        it('Regular users  should be forbidden to update a property', function(done) {
+          return nano.request(sails.hooks.http.app)
+            .patch('/api/properties/1')
+            .set('Authorization', 'Bearer ' + token)
+            .expect(403)
+            .end(done);
+        });
+
+        it('Not logged in user should be forbidden to update a property', function(done) {
+          return nano.request(sails.hooks.http.app)
+            .patch('/api/properties/1')
+            .expect(403)
+            .end(done);
+        });
+      });
+
+      describe('Delete a property - not available', function() {
+
+        it('Admins should be forbidden to delete a property', function(done) {
+          return nano.request(sails.hooks.http.app)
+            .delete('/api/properties/1')
+            .set(nano.adminLogin())
+            .expect(403)
+            .end(done);
+        });
+
+        it('Regular users  should be forbidden to delete a property', function(done) {
+          return nano.request(sails.hooks.http.app)
+            .delete('/api/properties/1')
+            .set('Authorization', 'Bearer ' + token)
+            .expect(403)
+            .end(done);
+        });
+
+        it('Not logged in user should be forbidden to delete a property', function(done) {
+          return nano.request(sails.hooks.http.app)
+            .delete('/api/properties/1')
+            .expect(403)
+            .end(done);
+        });
+      });
+    });
   });
 };
