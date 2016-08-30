@@ -58,9 +58,15 @@ module.exports = {
     isAdmin: {
       type: 'boolean'
     },
+
+    toJSON: function() {
+      var obj = this.toObject();
+      delete obj.hashedPassword;
+      return obj;
+    },
   },
 
-  beforeCreate: function(values, next){
+   beforeCreate: function(values, next){
     var hash = bcrypt.hashSync(values.password, 10);
     values.hashedPassword = hash;
     delete values.password;
