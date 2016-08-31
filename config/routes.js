@@ -75,6 +75,11 @@ module.exports.routes = {
     action: 'update'
   },
 
+  'PATCH /api/storage/:id': {
+    controller: 'Storage',
+    action: 'update'
+  },
+
   'PATCH /api/reset-passwords/:id': {
     controller: 'Reset-password',
     action: 'update'
@@ -117,7 +122,7 @@ module.exports.routes = {
 
   'GET /api/files/download': {
     controller: 'Storage',
-    action: 'download'
+    action: 'download',
   },
 
   'DELETE /api/sessions': {

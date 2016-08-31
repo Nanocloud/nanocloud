@@ -593,23 +593,6 @@ paths:
                 type: array
                 items:
                   "$ref": "#/definitions/AccessToken"
-  /upload/{filename}:
-    post:
-      tags:
-        - files
-      summary:
-        Upload a file
-      parameters:
-        - in: path
-          name: filename
-          description: file name
-          required: true
-          type: string
-          format: string
-      responses:
-        200:
-          description: File have been uploaded
-
   /groups:
     get:
       tags:
@@ -950,22 +933,15 @@ paths:
         200:
           description: User removed from the team
 
-  /files{filename}:
+  /files:
     get:
       tags:
         - files
       summary:
-        Get all configuration variables
-      parameters:
-        - in: path
-          name: filename
-          description: Name of the file
-          required: true
-          type: string
-          format: string
+        Get the files list in user storage
       responses:
         200:
-          description: Return the configuration
+          description: Return the files list
           schema:
             type: object
             properties:
@@ -973,6 +949,60 @@ paths:
                 type: array
                 items:
                   "$ref": "#/definitions/Files"
+              meta:
+                type: object
+                properties:
+                  storageSize:
+                    type: string
+        401:
+          description: Unauthorized when you are not logged in
+          schema:
+            type: object
+            properties:
+              errors:
+                type: array
+                items:
+                  "$ref": "#/definitions/Errors"
+
+  /files{machines}{path}:
+    get:
+      tags:
+        - files
+      summary:
+        Get the files list from virtual machine
+      parameters:
+        - in: path
+          name: machines
+          description: Set to true
+          required: true
+          type: string
+          format: string
+        - in: path
+          name: path
+          description: Path to browse
+          required: true
+          type: string
+          format: string
+      responses:
+        200:
+          description: Return the files list
+          schema:
+            type: object
+            properties:
+              data:
+                type: array
+                items:
+                  "$ref": "#/definitions/Files"
+        401:
+          description: Unauthorized when you are not logged in
+          schema:
+            type: object
+            properties:
+              errors:
+                type: array
+                items:
+                  "$ref": "#/definitions/Errors"
+
   /files/token{filename}:
     get:
       tags:
@@ -988,13 +1018,277 @@ paths:
           format: string
       responses:
         200:
-          description: Return the file name token
+          description: Return a one hour download token valid for the specific file
           schema:
             type: string
             properties:
               token:
                 type: string
 
+  /files/download{filename}{token}:
+    get:
+      tags:
+        - files
+      summary:
+        Download a file
+      parameters:
+        - in: path
+          name: filename
+          description: Name of file to download
+          required: true
+          type: string
+          format: string
+        - in: path
+          name: token
+          description: A valid download token
+          required: true
+          type: string
+          format: string
+      responses:
+        200:
+          description: File successfully downloaded
+        403:
+          description: Download is forbidden
+          schema:
+            type: object
+            properties:
+              errors:
+                type: array
+                items:
+                  "$ref": "#/definitions/Errors"
+
+  /upload/{filename}:
+    post:
+      tags:
+        - files
+      summary:
+        Upload a file
+      parameters:
+        - in: path
+          name: filename
+          description: file name
+          required: true
+          type: string
+          format: string
+      responses:
+        200:
+          description: File have been uploaded
+        400:
+          description: Bad request, no file was uploaded
+          schema:
+            type: object
+            properties:
+              errors:
+                type: array
+                items:
+                  "$ref": "#/definitions/Errors"
+
+  /pendingusers:
+    post:
+      tags:
+        - pendingusers
+        - users
+      summary:
+        Create a pending user
+      parameters:
+        - in: body
+          name: data
+          description: Pending user description
+          required: true
+          schema:
+            $ref: "#/definitions/PendingusersReq"
+      responses:
+        201:
+          description: Pending user successfully created
+          schema:
+            $ref: "#/definitions/PendingusersRes"
+        400:
+          description: Bad request
+          schema:
+            type: object
+            properties:
+              errors:
+                type: array
+                items:
+                  $ref: "#/definitions/Errors"
+    get:
+      tags:
+        - pendingusers
+        - users
+      summary:
+        Get the list of pending users
+      responses:
+        200:
+          description: List of all pendiing users
+          schema:
+            type: object
+            properties:
+              data:
+                type: array
+                items:
+                  "$ref": "#/definitions/PendingusersRes"
+        401:
+          description: You are not authorized
+          schema:
+            type: object
+            properties:
+              errors:
+                type: array
+                items:
+                  "$ref": "#/definitions/Errors"
+  /pendingusers/{PendingUserId}:
+    get:
+      tags:
+        - pendingusers
+        - users
+      summary:
+        Find one pending user
+      parameters:
+        - in: path
+          name : PendingUserId
+          description: Pending user id to activate
+          required: true
+          type: string
+          format: uuid
+      responses:
+        200:
+          description: Information about one specific pending user
+          schema:
+            type: object
+            properties:
+              data:
+                $ref: "#/definitions/PendingusersRes"
+        401:
+          description: You are not authorized
+          schema:
+            type: object
+            properties:
+              errors:
+                type: array
+                items:
+                  "$ref": "#/definitions/Errors"
+    patch:
+      tags:
+        - pendingusers
+        - users
+      summary:
+        Activate a pending user
+      parameters:
+        - in: path
+          name : PendingUserId
+          description: Pending user id to activate
+          required: true
+          type: string
+          format: uuid
+      responses:
+        200:
+          description: Pending user seccessfully activated
+          schema:
+            type: object
+            properties:
+              data:
+                $ref: "#/definitions/PendingusersRes"
+        404:
+          description: This pending user was not found
+          schema:
+            type: object
+            properties:
+              errors:
+                type: array
+                items:
+                  "$ref": "#/definitions/Errors"
+
+  /images:
+    post:
+      tags:
+        - images
+      summary:
+        Create an image
+      responses:
+        201:
+          description: Image successfully created
+          schema:
+            type: object
+            properties:
+              data:
+                type: array
+                items:
+                  $ref: "#/definitions/Images"
+        401:
+          description: You are not authorized
+          schema:
+            type: object
+            properties:
+              errors:
+                type: array
+                items:
+                  "$ref": "#/definitions/Errors"
+    get:
+      tags:
+        - images
+      summary:
+        Get all images
+      responses:
+        200:
+          description: List of all images
+          schema:
+            type: object
+            properties:
+              data:
+                type: array
+                items:
+                  $ref: "#/definitions/Images"
+        401:
+          description: You are not authorized
+          schema:
+            type: object
+            properties:
+              errors:
+                type: array
+                items:
+                  "$ref": "#/definitions/Errors"
+  /images/{ImageId}:
+    get:
+      tags:
+        - images
+      summary:
+        Get a specific image
+      parameters:
+        - in: path
+          name : ImageId
+          description: Image id
+          required: true
+          type: string
+          format: uuid
+      responses:
+        200:
+          description: Information about the specific image
+          schema:
+            type: object
+            properties:
+              data:
+                  $ref: "#/definitions/Images"
+        401:
+          description: You are not authorized
+          schema:
+            type: object
+            properties:
+              errors:
+                type: array
+                items:
+                  "$ref": "#/definitions/Errors"
+
+  /properties:
+    get:
+      tags:
+        - properties
+      summary:
+        Get all properties
+      responses:
+        200:
+          description: List of properties
+          schema:
+            $ref: "#/definitions/Properties"
 definitions:
   Configuration:
     type: object

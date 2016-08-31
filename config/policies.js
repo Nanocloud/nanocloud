@@ -69,6 +69,14 @@ module.exports.policies = {
     destroy: 'isAdmin'
   },
 
+  storageController: {
+    create: false,
+    find: false,
+    findOne: false,
+    destroy: false,
+    download: 'checkDownloadToken'
+  },
+
   PendingUserController: {
     create: true,
     update: true,

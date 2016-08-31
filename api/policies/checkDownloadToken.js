@@ -28,7 +28,7 @@ module.exports = function(req, res, next) {
   let filename = req.query.filename;
   let downloadToken = req.query.token;
 
-  AccessToken.findOne({
+  return AccessToken.findOne({
     id: downloadToken.split(':')[0]
   }, (err, accessToken) => {
     if (err !== null) {
@@ -36,9 +36,9 @@ module.exports = function(req, res, next) {
     }
 
     if (StorageService.checkToken(accessToken, downloadToken, filename)) {
-      return next();
+      return next(null);
     } else {
-      return res.negociate(new Error('Invalid download token'));
+      return res.forbidden(new Error('Invalid download token'));
     }
   });
 };
