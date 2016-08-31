@@ -54,7 +54,11 @@ module.exports.policies = {
   },
 
   PropertyController: {
-    find: true
+    find: true,
+    findOne: false,
+    update: false,
+    create: false,
+    destroy: false
   },
 
   configController: {

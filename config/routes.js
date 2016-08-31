@@ -90,6 +90,11 @@ module.exports.routes = {
     action: 'update'
   },
 
+  'PATCH /api/properties/:id': {
+    controller: 'Property',
+    action: 'update'
+  },
+
   'PATCH /api/images/:id': {
     controller: 'Image',
     action: 'update'

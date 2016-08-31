@@ -1289,6 +1289,7 @@ paths:
           description: List of properties
           schema:
             $ref: "#/definitions/Properties"
+
 definitions:
   Configuration:
     type: object
@@ -1823,3 +1824,17 @@ definitions:
           updated-at:
             type: string
             format: date-time
+
+  Properties:
+    type: object
+    properties:
+      primaryColor:
+        type: string
+      title:
+        type: string
+      style:
+        type: string
+      favicon:
+        type: string
+      autoRegister:
+        type: boolean
