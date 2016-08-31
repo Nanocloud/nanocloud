@@ -106,23 +106,9 @@ export default Ember.Controller.extend({
     }
   }.observes('model.@each.countdownTimeleft'),
 
-  machinesController: Ember.inject.controller('protected.machines'),
-  drivers: Ember.computed.alias('machinesController.drivers'),
-
   machines: Ember.computed('model.@each.isNew', 'model.@each.isDeleted', function() {
     return this.get('model').filterBy('isNew', false).filterBy('isDeleted', false);
   }),
-
-  driverName : Ember.computed(function() {
-    let machineDriver =  this.get('drivers');
-    return machineDriver ? machineDriver.objectAt(0).id : null;
-  }),
-
-  isConfigurable : function() {
-    return(this.get('driverName') !== 'qemu' &&
-           this.get('driverName') !== 'manual' &&
-           this.get('driverName') !== 'vmwarefusion');
-  }.property('driverName'),
 
   actions: {
     selectMachine(machine) {
