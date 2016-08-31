@@ -18,20 +18,8 @@
   {{#unless loadState}}
     {{#if modelIsEmpty}}
       <div class="alert alert-info" role="alert">
-        <strong>You are one click way from having your favorite apps accessible from your web browser</strong>
-        <br />
-        Click "Download Windows" to download the Windows Virtual machine that will host your applications
+        <strong>No machines are available.</strong>
       </div>
-
-      {{#if isConfigurable}}
-        {{#link-to 'protected.machines.new' class="btn btn-primary btn-block"}}
-        Create Machine
-        {{/link-to}}
-      {{else}}
-        <button {{action "downloadWindows"}} class='btn btn-primary btn-block'>
-        Create Machine
-        </button>
-      {{/if}}
     {{else}}
       {{models-table
         class="sortableTable"
