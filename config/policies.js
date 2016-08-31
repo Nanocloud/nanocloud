@@ -80,6 +80,8 @@ module.exports.policies = {
   PendingUserController: {
     create: true,
     update: true,
+    find: 'isAdmin',
+    destroy: false,
   },
 
   'Reset-passwordController': {

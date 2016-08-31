@@ -1182,7 +1182,7 @@ paths:
           format: uuid
       responses:
         200:
-          description: Pending user seccessfully activated
+          description: Pending user successfully activated
           schema:
             type: object
             properties:
@@ -1734,3 +1734,63 @@ definitions:
             type: string
           app_name:
             type: string
+
+  PendingusersReq:
+    type: object
+    properties:
+      type:
+        type: string
+      attributes:
+        type: object
+        properties:
+          created-at:
+            type: string
+            format: date-time
+          credit:
+            type: number
+          email:
+            type: string
+          expiration-date:
+            type: string
+            format: date-time
+          fisrt-name:
+            type: string
+          last-name:
+            type: string
+          password:
+            type: string
+          is-admin:
+            type: boolean
+      relationships:
+        type: object
+        properties:
+          data:
+            type: array
+            items:
+              $ref: "#/definitions/Groups"
+
+  PendingusersRes:
+    type: object
+    properties:
+      type:
+        type: string
+      id:
+        type: string
+        format: uuid
+      attributes:
+        type: object
+        properties:
+          created-at:
+            type: string
+            format: date-time
+          updated-at:
+            type: string
+            format: date-time
+          email:
+            type: string
+          fisrt-name:
+            type: string
+          last-name:
+            type: string
+          is-admin:
+            type: boolean
