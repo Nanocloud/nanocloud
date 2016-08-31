@@ -256,12 +256,15 @@ function _createMachine() {
 }
 
 function _terminateMachine(machine) {
-  return Machine.destroy({
-    id: machine.id
-  })
-    .then(() => {
-      return _driver.destroyMachine(machine);
-    });
+
+  if (_driver.destroyMachine) {
+    return _driver.destroyMachine(machine)
+      .then(() => {
+        return Machine.destroy({
+          id: machine.id
+        });
+      });
+  }
 }
 
 /**
@@ -312,7 +315,12 @@ function _shouldTerminateMachine(machine) {
       if (!isActive) {
         const now = new Date();
         if (machine.endDate < now) {
-          _terminateMachine(machine);
+          machine.user = null;
+
+          Machine.update(machine.id, machine)
+            .then(() => {
+              _terminateMachine(machine);
+            });
         }
       }
     });
