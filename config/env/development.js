@@ -63,7 +63,6 @@ module.exports = {
     autoRegister: false,
     autoLogoff: false,
     defaultGroup: '',
-    awsCache: 0,
     creditLimit: '',
 
     iaas: 'manual',

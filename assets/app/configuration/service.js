@@ -39,7 +39,6 @@ export default Ember.Service.extend({
     'smtpSendFrom',
     'host',
     'defaultGroup',
-    'awsCache',
     'title',
     'favIconPath',
     'logoPath',
