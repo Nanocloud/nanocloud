@@ -47,13 +47,12 @@ module.exports = function() {
       properties: {
         'first-name': {type: 'string'},
         'last-name': {type: 'string'},
-        'hashed-password': {type: 'string'},
         email: {type: 'string'},
         'is-admin': {type: 'boolean'},
         'created-at': {type: 'string'},
         'updated-at': {type: 'string'},
       },
-      required: ['first-name', 'last-name', 'hashed-password', 'email', 'is-admin', 'created-at', 'updated-at'],
+      required: ['first-name', 'last-name', 'email', 'is-admin', 'created-at', 'updated-at'],
       additionalProperties: true, // expiration days
     };
 

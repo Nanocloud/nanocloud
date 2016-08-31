@@ -58,6 +58,12 @@ module.exports = {
     isAdmin: {
       type: 'boolean'
     },
+
+    toJSON: function() {
+      var obj = this.toObject();
+      delete obj.hashedPassword;
+      return obj;
+    },
   },
 
   beforeCreate: function(values, next){

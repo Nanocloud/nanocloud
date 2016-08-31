@@ -30,7 +30,7 @@ module.exports = function(req, res, next) {
     } else if (req.user.isAdmin === true) {
       return next(null);
     } else {
-      return res.send(403, 'User unauthorized, is not an admin');
+      return res.send(403, 'User forbidden, is not an admin');
     }
   });
 };

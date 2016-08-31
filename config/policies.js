@@ -54,14 +54,22 @@ module.exports.policies = {
   },
 
   PropertyController: {
-    find: true
+    find: true,
+    findOne: false,
+    update: false,
+    create: false,
+    destroy: false
   },
 
-  configController: {
+  ConfigController: {
     create: 'isAdmin'
   },
 
-  groupController: {
+  SessionController: {
+    find: 'isAdmin'
+  },
+
+  GroupController: {
     create: 'isAdmin',
     find: 'isAdmin',
     findOne: 'isAdmin',
@@ -69,15 +77,33 @@ module.exports.policies = {
     destroy: 'isAdmin'
   },
 
+  storageController: {
+    create: false,
+    find: false,
+    findOne: false,
+    destroy: false,
+    download: 'checkDownloadToken'
+  },
+
+  imageController: {
+    create: 'isAdmin',
+    update: false,
+    destroy: false
+  },
+
   PendingUserController: {
     create: true,
     update: true,
+    find: 'isAdmin',
+    destroy: false,
   },
 
   'Reset-passwordController': {
     create: true,
     update: true,
-    findOne: true
+    findOne: true,
+    find: 'isAdmin',
+    destroy: 'isAdmin'
   },
 
   HistoryController : {
@@ -85,4 +111,20 @@ module.exports.policies = {
     create: ['isGuacamole'],
     update: ['isGuacamole']
   },
+
+  AppController: {
+    create: 'isAdmin',
+    destroy: 'isAdmin'
+  },
+
+  UserController: {
+    create: 'isAdmin',
+    destroy: 'isAdmin'
+  },
+
+  MachineController: {
+    create: false,
+    update: false,
+    destroy: false
+  }
 };

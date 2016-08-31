@@ -75,6 +75,11 @@ module.exports.routes = {
     action: 'update'
   },
 
+  'PATCH /api/storage/:id': {
+    controller: 'Storage',
+    action: 'update'
+  },
+
   'PATCH /api/reset-passwords/:id': {
     controller: 'Reset-password',
     action: 'update'
@@ -85,19 +90,34 @@ module.exports.routes = {
     action: 'update'
   },
 
+  'PATCH /api/properties/:id': {
+    controller: 'Property',
+    action: 'update'
+  },
+
+  'PATCH /api/images/:id': {
+    controller: 'Image',
+    action: 'update'
+  },
+
   'PATCH /api/:model/:id': {
     controller: 'Nanocloud',
     action: 'update'
   },
 
+  'GET /api/apps/connections': {
+    controller: 'App',
+    action: 'connections'
+  },
+
+  'GET /api/apps/:id': {
+    controller: 'App',
+    action: 'findOne'
+  },
+
   'GET /machines/users': {
     controller: 'Machine',
     action: 'users'
-  },
-
-  'GET /apps/connections': {
-    controller: 'App',
-    action: 'connections'
   },
 
   'POST /api/upload': {
@@ -117,7 +137,7 @@ module.exports.routes = {
 
   'GET /api/files/download': {
     controller: 'Storage',
-    action: 'download'
+    action: 'download',
   },
 
   'DELETE /api/sessions': {
