@@ -30,8 +30,7 @@ export default DS.Model.extend({
   ip: DS.attr('string'),
   adminPassword: DS.attr('string'),
   progress: DS.attr('number'),
-  type: DS.belongsTo('machine-type'),
-  driver: DS.belongsTo('machine-driver'),
+  type: DS.attr('string'),
   isUp: Ember.computed('status', function() {
     return this.get('status') === 'up';
   }),

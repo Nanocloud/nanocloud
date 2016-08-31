@@ -22,6 +22,7 @@
  */
 
 const Promise = require('bluebird');
+const _ = require('lodash');
 
 /* globals App, MachineService, JsonApiService, PlazaService, StorageService */
 
@@ -67,6 +68,27 @@ module.exports = {
     });
   },
 
+  findOne(req, res) {
+    if (req.user.isAdmin) {
+      App.findOne({
+        id: req.allParams().id
+      })
+        .then((app) => {
+          return res.ok(app);
+        });
+    } else {
+      this._getApps(req.user)
+        .then((apps) => {
+          apps = apps.rows;
+          var app = _.find(apps, function(element) { return element.id === req.allParams().id; });
+          if (app) {
+            return res.ok(app);
+          }
+          return res.notFound();
+        });
+    }
+  },
+
   find(req, res) {
 
     this._getApps(req.user)
@@ -84,7 +106,7 @@ module.exports = {
 
     App.update({
       id: req.allParams().id
-    }, applicationData.attributes)
+    }, {state: applicationData.attributes.state})
       .then((applications) => {
 
         let application = applications.pop();
@@ -142,7 +164,6 @@ module.exports = {
       .catch((err) => {
         return res.negotiate(err);
       });
-
   },
 
   /**

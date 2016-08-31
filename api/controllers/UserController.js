@@ -29,11 +29,21 @@
 
 module.exports = {
 
+  update: function(req, res) {
+    if (req.user.isAdmin || req.user.id === req.allParams().id) {
+      return JsonApiService.updateOneRecord(req, res);
+    }
+    return res.forbidden();
+  },
+
   findOne: function(req, res) {
-    return User.findOne(req.allParams().id)
-    .populate('groups')
-    .then((res.ok))
-    .catch(res.negotiate);
+    if (req.user.isAdmin || req.user.id === req.allParams().id) {
+      return User.findOne(req.allParams().id)
+        .populate('groups')
+        .then(res.ok)
+        .catch(res.negotiate);
+    }
+    return res.forbidden();
   },
 
   find: function(req, res) {
@@ -44,6 +54,9 @@ module.exports = {
       return res.send(me);
     }
 
+    if (!req.user.isAdmin) {
+      return res.forbidden();
+    }
     return User.find()
       .populate('groups')
       .then(res.ok)

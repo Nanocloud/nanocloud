@@ -1,7 +1,7 @@
 ---
 swagger: '2.0'
 info:
-  version: "1.9.0"
+  version: "2.0.0"
   title: Nanocloud Enterprise API
   description: |
     **Complete Nanocloud enterprise API documentation.**
@@ -101,8 +101,7 @@ paths:
           required: false
       responses:
         200:
-          description: Fetch all users informations without "me" parameter,
-            fetch current user informations with it
+          description: As an admin, get all users or current user if "me" parameter is provided.
           schema:
             type: object
             properties:
@@ -110,6 +109,10 @@ paths:
                 type: array
                 items:
                   "$ref": "#/definitions/User"
+        401:
+          description: Unauthorized when you are not logged in.
+        403:
+          description: Forbidden, if you are a regular user, you don't have permissions
     post:
       tags:
         - users
@@ -117,9 +120,16 @@ paths:
         Create a user account.
         If connected as an administrator the user is directly created as standard user.
         If you aren't connected, API create a pending account and send a mail to activate him (auto-registration must be enabled)
+      parameters:
+        - in: body
+          name: body
+          required: true
+          description: Data to send for create a user, email is required
+          schema:
+            $ref: "#/definitions/UserCreate"
       responses:
         201:
-          description: Create a user account
+          description: If you are admin, create a user account
           schema:
             type: object
             properties:
@@ -136,6 +146,10 @@ paths:
                 type: array
                 items:
                   "$ref": "#/definitions/Errors"
+        403:
+          description: Forbidden, if you are a regular user, you don't have permissions
+        401:
+          description: Unauthorized when you are not logged in
   /users/{id}:
     get:
       tags:
@@ -145,7 +159,7 @@ paths:
       parameters:
         - in: path
           name: id
-          description: TODO
+          description: Return current user's data
           required: true
           type: string
           format: uuid
@@ -159,6 +173,10 @@ paths:
                 type: array
                 items:
                   "$ref": "#/definitions/User"
+        403:
+          description: Forbidden, regular users can't access other user informations
+        401:
+          description: Unauthorized when you are not logged in
     patch:
       tags:
         - users
@@ -167,7 +185,7 @@ paths:
       parameters:
         - in: path
           name: id
-          description: TODO
+          description: Modify the user associated to this id
           required: true
           type: string
           format: uuid
@@ -181,6 +199,11 @@ paths:
                 type: array
                 items:
                   "$ref": "#/definitions/User"
+        403:
+          description: Forbidden, regular users can't modify other user informations
+        401:
+          description: Unauthorized when you are not logged in
+        
     delete:
       tags:
         - users
@@ -203,12 +226,16 @@ paths:
                 type: array
                 items:
                   "$ref": "#/definitions/User"
+        403:
+          description: Forbidden, regular users can't delete other user
+        401:
+          description: Unauthorized when you are not logged in
   /apps:
     get:
       tags:
         - applications
       summary:
-        Get all applications
+        Get all applications if you are an admin, and accessible application for regular users
       responses:
         200:
           description: Get applications
@@ -219,6 +246,8 @@ paths:
                 type: array
                 items:
                   "$ref": "#/definitions/Application"
+        401:
+          description: Unauthorized when you are not logged in
     post:
       tags:
         - applications
@@ -226,14 +255,16 @@ paths:
         Save an application
       responses:
         200:
-          description: Return all applications
+          description: Return the created app
           schema:
             type: object
             properties:
               data:
-                type: array
-                items:
-                  "$ref": "#/definitions/Application"
+                "$ref": "#/definitions/ApplicationCreated"
+        403:
+          description: If you do not have the permission to save an application
+        401:
+          description: Unauthorized
   /apps/{app_id}:
     get:
       tags:
@@ -254,7 +285,11 @@ paths:
             type: object
             properties:
               data:
-                "$ref": "#/definitions/Application"
+                "$ref": "#/definitions/ApplicationCreated"
+        403:
+          description: Don't have the permission to see this application
+        401:
+          description: Unauthorized when you are not logged in
     patch:
       tags:
         - applications
@@ -263,7 +298,7 @@ paths:
       parameters:
         - in: path
           name: app_id
-          description: TODO
+          description: Update the application's informations
           required: true
           type: string
           format: uuid
@@ -274,7 +309,11 @@ paths:
             type: object
             properties:
               data:
-                "$ref": "#/definitions/Application"
+                "$ref": "#/definitions/ApplicationCreated"
+        403:
+          description: Don't have the permission to update this application
+        401:
+          description: Unauthorized when you are not logged in
     delete:
       tags:
         - applications
@@ -290,6 +329,10 @@ paths:
       responses:
         200:
           description: Delete the specified application
+        403:
+          description: Don't have the permission to delete this application
+        401:
+          description: Unauthorized when you are not logged in
   /apps/connections:
     get:
       tags:
@@ -305,8 +348,11 @@ paths:
             type: object
             properties:
               data:
-                "$ref": "#/definitions/Connections"
-
+                type: array
+                items:
+                  "$ref": "#/definitions/Connections"
+        401:
+          description: Unauthorized when you are not logged in
   /sessions:
     get:
       tags:
@@ -324,6 +370,10 @@ paths:
                 type: array
                 items:
                   "$ref": "#/definitions/Session"
+        401:
+          description: Unauthorized
+        403:
+          description: Forbidden, accessible to admin only
         500:
           description: When listing machines failed
     delete:
@@ -334,6 +384,8 @@ paths:
       responses:
         200:
           description: Session has correctly been disconnected
+        401:
+          description: Unauthorized
         500:
           description: Something went terribly wrong
 
@@ -374,7 +426,7 @@ paths:
         - users
         - password
       summary:
-        Delete user's token for resetting its password
+        Create a reset password id for the future reset
       parameters:
         - in: body
           name: data
@@ -383,24 +435,50 @@ paths:
             $ref: "#/definitions/Reset-password-token"
       responses:
         200:
-          description: Delete the token
+          description: User added to the reset-password table
+        404:
+          description: User not found
+        500:
+          description: Internal server error, probably bad smtp server configuration
+    get:
+      tags:
+        - users
+        - password
+      summary:
+        Return all requests of reset-password
+      responses:
+        200:
+          description: Return all requests
+        403:
+          description: Forbidden, only admin can list all requests
+        401:
+          description: Unauthorized when you are not logged in
   /reset-password-tokens/{id}:
     get:
       tags:
         - users
         - password
       summary:
-        Get user's token for resetting its password
+        Get user's reset-password request's id
       parameters:
         - in: path
           name: id
-          description: TODO
+          description: Reset-password request's id
           required: true
           type: string
           format: uuid
       responses:
         200:
-          description: Return user's token
+          description: Return user's reset-password informations
+          schema:
+            type: object
+            properties:
+              data:
+                type: array
+                items:
+                  "$ref": "#/definitions/Reset-password-token"
+        404:
+          description: No reset-password requests have been found for this user.
     patch:
       tags:
         - users
@@ -410,13 +488,43 @@ paths:
       parameters:
         - in: path
           name: id
-          description: TODO
+          description: Reset-password request's id
+          required: true
+          type: string
+          format: uuid
+        - in: body
+          name: data
+          description: New password
+          required: true
+          schema:
+            $ref: "#/definitions/Reset-password-token"
+      responses:
+        200:
+          description: Reset password
+        404:
+          description: No irequest of reseting with this email/id
+    delete:
+      tags:
+        - users
+        - password
+      summary:
+        Delete a request of reset-password
+      parameters:
+        - in: path
+          name: id
+          description: Reset-password request's id
           required: true
           type: string
           format: uuid
       responses:
         200:
-          description: Reset password
+          description: Delete the request
+        404:
+          description: No request found
+        401:
+          description: Unauthorized when you are not logged in
+        403:
+          description: Forbidden, only admin can delete a request
   /machines:
     get:
       tags:
@@ -425,7 +533,7 @@ paths:
         Get all machines
       responses:
         200:
-          description: Machine running
+          description: Machine running for the user (all machines for admins)
           schema:
             type: object
             properties:
@@ -433,21 +541,16 @@ paths:
                 type: array
                 items:
                   "$ref": "#/definitions/Machines"
+        401:
+          description: Unauthorized when you are not logged in
     post:
       tags:
         - machines
       summary:
         Create a new machine
       responses:
-        200:
-          description: New machine ready to be used
-          schema:
-            type: object
-            properties:
-              data:
-                type: array
-                items:
-                  "$ref": "#/definitions/Machines"
+        403:
+          description: Forbidden, no users are allowed to create machines
   /machines/users:
     get:
       tags:
@@ -465,6 +568,8 @@ paths:
                 type: array
                 items:
                   "$ref": "#/definitions/Machines"
+        401:
+          description: Unauthorized if no token without an access token
   /machines/{id}:
     get:
       tags:
@@ -488,6 +593,8 @@ paths:
                 type: array
                 items:
                   "$ref": "#/definitions/Machines"
+        403:
+          description: Forbidden for regular users trying to access machines not assigned to them.
     patch:
       tags:
         - machines
@@ -501,15 +608,10 @@ paths:
           type: string
           format: uuid
       responses:
-        200:
-          description: Modify the specified machine
-          schema:
-            type: object
-            properties:
-              data:
-                type: array
-                items:
-                  "$ref": "#/definitions/Machines"
+        401:
+          description: Unauthorized if no token without an access token.
+        403:
+          description: Forbidden, no users are allowed to modify machines properties
     delete:
       tags:
         - machines
@@ -523,29 +625,8 @@ paths:
           type: string
           format: uuid
       responses:
-        200:
-          description: Delete the specified machine, and terminate her
-          schema:
-            type: object
-            properties:
-              data:
-                type: array
-                items:
-                  "$ref": "#/definitions/Machines"
-  /machine-drivers:
-    get:
-      tags:
-        - machines
-      summary:
-        Get all available machine driver
-      responses:
-        200:
-          description: Get all drivers for the machine
-          schema:
-            type: object
-            properties:
-              data:
-                type: string
+        403:
+          description: Forbidden, no users are allowed to delete machines
   /:
     get:
       summary:
@@ -1337,11 +1418,6 @@ definitions:
             type: string
           password:
             type: string
-          token:
-            type: string
-          userid:
-            type: string
-            
 
   Errors:
     type: object
@@ -1361,19 +1437,47 @@ definitions:
       attributes:
         type: object
         properties:
-          email:
+          credit:
             type: string
-          activated:
-            type: boolean
-          is-admin:
-            type: boolean
           first-name:
             type: string
           last-name:
             type: string
-          signup-date:
+          email:
+            type: string
+          is-admin:
+            type: boolean
+          expiration-date:
             type: number
-            format: float
+            format: integer
+          created-at:
+            type: string
+          updated-at:
+            type: string
+
+  UserCreate:
+    type: object
+    properties:
+      type:
+        type: string
+      attributes:
+        type: object
+        properties:
+          credit:
+            type: string
+          first-name:
+            type: string
+          last-name:
+            type: string
+          email:
+            type: string
+          password:
+            type: string
+          is-admin:
+            type: boolean
+          expiration-date:
+            type: number
+            format: integer
 
   Application:
     type: object
@@ -1385,45 +1489,37 @@ definitions:
       attributes:
         type: object
         properties:
-          collection-name:
-            type: string
           alias:
             type: string
           display-name:
             type: string
           file-path:
             type: string
-          path:
-            type: string
-          icon-content:
-            type: string
-          publication-date:
-            type: string
-      relationships:
+            
+  ApplicationCreated:
+    type: object
+    properties:
+      type:
+        type: string
+      id:
+        type: string
+      attributes:
         type: object
         properties:
-          groups:
-            type: array
-            items:
-              type: object
-              properties:
-                type:
-                  type: string
-                id:
-                  type: string
-          teams:
-            type: array
-            items:
-              type: object
-              properties:
-                type:
-                  type: string
-                id:
-                  type: string
-      included:
-        type: array
-        items:
-          "$ref": "#/definitions/Groups"
+          alias:
+            type: string
+          display-name:
+            type: string
+          file-path:
+            type: string
+          state:
+            type: string
+          created-at:
+            type: string
+            format: date-time
+          updated-at:
+            type: string
+            format: date-time
 
   Session:
     type: object
@@ -1435,8 +1531,6 @@ definitions:
       attributes:
         type: object
         properties:
-          session-name:
-            type: string
           username:
             type: string
           state:
@@ -1479,25 +1573,26 @@ definitions:
       attributes:
         type: object
         properties:
-          id:
-            type: string
           name:
+            type: string
+          type:
             type: string
           ip:
             type: string
-          Type:
-            type: string
-          status:
-            type: string
           username:
             type: string
-          AdminPassword:
+          password:
             type: string
-          platform:
+          domain:
             type: string
-          progress:
-            type: number
-            format: int
+          end-date:
+            type: string
+          plazaport:
+            type: string
+          flavor:
+            type: string
+          user:
+            type: string
 
   AccessToken:
     type: object
@@ -1722,6 +1817,12 @@ definitions:
         type: object
         properties:
           hostname:
+            type: string
+          machine-id:
+            type: string
+          machine-type:
+            type: string
+          machine-driver:
             type: string
           port:
             type: string

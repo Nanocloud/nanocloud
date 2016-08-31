@@ -23,7 +23,7 @@
  */
 
 /* globals sails, User, AccessToken, MachineService, Group */
-/* globals ConfigService, StorageService */
+/* globals ConfigService, StorageService, Machine */
 
 const nano = require('./lib/nanotest');
 
@@ -32,9 +32,12 @@ module.exports = function() {
   describe('Security', function() {
 
     let token = null;
-    let groupId = null;
+    let userId = null;
 
     before('Generate a regular user, a token, a group and storage', function(done) {
+
+      ConfigService.set('testMail', true);
+
       User.create({
         firstName: 'Test',
         lastName: 'Test',
@@ -44,19 +47,13 @@ module.exports = function() {
         expirationDate: null,
       })
         .then((user) => {
+          userId = user.id;
           return AccessToken.create({
             userId: user.id
           });
         })
-
         .then((res) => {
           token = res.token;
-          return Group.create({
-            name: 'group'
-          });
-        })
-        .then((res) => {
-          groupId = res.id;
           return done();
         });
     });
@@ -65,7 +62,15 @@ module.exports = function() {
       User.destroy({
         email: 'test@test.com'
       })
-        .then(() => done());
+        .then(() => {
+          AccessToken.destroy({
+            userId: userId
+          });
+        })
+        .then(() => {
+          return done();
+        });
+      ConfigService.unset('testMail');
     });
 
     describe('History', function() {
@@ -253,6 +258,7 @@ module.exports = function() {
       });
 
       describe('Read one config - Possible for admins and regular users', function() {
+
         it('Admins should be authorized', function(done) {
           return nano.request(sails.hooks.http.app)
             .get('/api/configs/host')
@@ -349,6 +355,230 @@ module.exports = function() {
           return nano.request(sails.hooks.http.app)
             .delete('/api/configs/host')
             .expect(401)
+            .end(done);
+        });
+      });
+    });
+
+    describe('api/apps', function() {
+      let appId = null;
+      let localGroupId = null;
+
+      after('Delete the created group', function(done) {
+        Group.destroy({
+          id: localGroupId
+        })
+          .then(() => {
+            done();
+          });
+      });
+
+      describe('Create an app - only admins', function() {
+
+        it('Admins should be authorized', function(done) {
+          return nano.request(sails.hooks.http.app)
+            .post('/api/apps')
+            .set(nano.adminLogin())
+            .send({
+              data: {
+                attributes: {
+                  alias: 'tempo',
+                  'collection-name': 'tempo',
+                  'display-name': 'tempo',
+                  'file-path': 'C:\\Windows\\System32\\notepad.exe'
+                },
+                type: 'apps'
+              }
+            })
+            .expect(201)
+            .expect((res) => {
+              appId = res.body.data.id;
+              Group.create({
+                name: 'groupTest',
+                members: {
+                  id: userId
+                },
+                apps: {
+                  id: res.body.data.id
+                }
+              })
+                .then((group) => {
+                  localGroupId = group.id;
+                });
+            })
+            .end(done);
+        });
+
+        it('Regular users should be unauthorized', function(done) {
+          return nano.request(sails.hooks.http.app)
+            .post('/api/apps')
+            .set('Authorization', 'Bearer ' + token)
+            .send({
+              data: {
+                attributes: {
+                  alias: 'tempo',
+                  'collection-name': 'tempo',
+                  'display-name': 'tempo',
+                  'file-path': 'C:\\Windows\\System32\\notepad.exe'
+                },
+                type: 'apps'
+              }
+            })
+            .expect(403)
+            .end(done);
+        });
+
+        it('Request without authorization should be unauthorized', function(done) {
+          return nano.request(sails.hooks.http.app)
+            .post('/api/apps')
+            .send({
+              data: {
+                attributes: {
+                  alias: 'tempo',
+                  'collection-name': 'tempo',
+                  'display-name': 'tempo',
+                  'file-path': 'C:\\Windows\\System32\\notepad.exe'
+                },
+                type: 'apps'
+              }
+            })
+            .expect(401)
+            .end(done);
+        });
+      });
+
+      describe('Get apps - only logged in users', function() {
+
+        it('Admins should be authorized', function(done) {
+          return nano.request(sails.hooks.http.app)
+            .get('/api/apps')
+            .set(nano.adminLogin())
+            .expect(200)
+            .end(done);
+        });
+
+        it('Regular users should be authorized', function(done) {
+          return nano.request(sails.hooks.http.app)
+            .get('/api/apps')
+            .set('Authorization', 'Bearer ' + token)
+            .expect(200)
+            .end(done);
+        });
+
+        it('Request without authorization should be unauthorized', function(done) {
+          return nano.request(sails.hooks.http.app)
+            .get('/api/apps')
+            .expect(401)
+            .end(done);
+        });
+      });
+
+      describe('Get a specific app - only for admins and owners of this app', function() {
+
+        it('Admins should be authorized to see all apps', function(done) {
+          return nano.request(sails.hooks.http.app)
+            .get('/api/apps/' + appId)
+            .set(nano.adminLogin())
+            .expect(200)
+            .end(done);
+        });
+
+        it('Regular users should be authorized if his group have this associated app', function(done) {
+          return nano.request(sails.hooks.http.app)
+            .get('/api/apps/' + appId)
+            .set('Authorization', 'Bearer ' + token)
+            .expect(200)
+            .end(done);
+        });
+
+        it('Regular users should be unauthorized to see app of other group', function(done) {
+          return nano.request(sails.hooks.http.app)
+            .get('/api/apps/' + nano.adminId())
+            .set('Authorization', 'Bearer ' + token)
+            .expect(404)
+            .end(done);
+        });
+
+        it('Request without authorization should be unauthorized', function(done) {
+          return nano.request(sails.hooks.http.app)
+            .get('/api/apps/' + appId)
+            .expect(401)
+            .end(done);
+        });
+      });
+
+      describe('Update a specific app - logged in users', function() {
+
+        it('Admin users should be authorized', function(done) {
+          return nano.request(sails.hooks.http.app)
+            .patch('/api/apps/' + appId)
+            .set(nano.adminLogin())
+            .send({
+              data: {
+                attributes: {
+                  alias: 'essai'
+                },
+                type: 'apps'
+              }
+            })
+            .expect(200)
+            .end(done);
+        });
+
+        it('Regular users should be authorized', function(done) {
+          return nano.request(sails.hooks.http.app)
+            .patch('/api/apps/' + appId)
+            .set('Authorization', 'Bearer ' + token)
+            .send({
+              data: {
+                attributes: {
+                  alias: 'reza'
+                },
+                type: 'apps'
+              }
+            })
+            .expect(200)
+            .end(done);
+        });
+
+        it('Request without authorization should be unauthorized', function(done) {
+          return nano.request(sails.hooks.http.app)
+            .patch('/api/apps/' + appId)
+            .send({
+              data: {
+                attributes: {
+                  alias: 'test'
+                },
+                type: 'apps'
+              }
+            })
+            .expect(401)
+            .end(done);
+        });
+      });
+
+      describe('Delete an app - only admins', function() {
+
+        it('Regular users should be unauthorized', function(done) {
+          return nano.request(sails.hooks.http.app)
+            .delete('/api/apps/' + appId)
+            .set('Authorization', 'Bearer ' + token)
+            .expect(403)
+            .end(done);
+        });
+
+        it('Request without authorization should be unauthorized', function(done) {
+          return nano.request(sails.hooks.http.app)
+            .delete('/api/apps/' + appId)
+            .expect(401)
+            .end(done);
+        });
+
+        it('Admins should be authorized', function(done) {
+          return nano.request(sails.hooks.http.app)
+            .delete('/api/apps/' + appId)
+            .set(nano.adminLogin())
+            .expect(200)
             .end(done);
         });
       });
@@ -453,7 +683,6 @@ module.exports = function() {
             .expect(200)
             .end(done);
         });
-
         it('Regular users should be forbidden', function(done) {
           return nano.request(sails.hooks.http.app)
             .get('/api/groups/' + groupId)
@@ -544,6 +773,269 @@ module.exports = function() {
           return nano.request(sails.hooks.http.app)
             .delete('/api/groups/' + groupId)
             .expect(401)
+            .end(done);
+        });
+      });
+    });
+
+    describe('api/machines', function() {
+      let machineId1 = null;
+      let machineId = null;
+
+      before('Set two machines for tests', function(done){
+
+        Machine.create([{
+          name: 'cdr',
+          type: 't2.medium',
+          ip: '1.1.1.1',
+          username: 'Administrator',
+          password: 'secret'
+        },
+        {
+          name: 'cdr1',
+          type: 't2.medium',
+          ip: '1.1.1.2',
+          username: 'Administrator',
+          password: 'secret'
+        }])
+          .then((machines) => {
+            machineId = machines[0].id;
+            machineId1 = machines[1].id;
+          })
+          .then(() => {
+            return done();
+          });
+      });
+
+      after('Clean this machines', function(done) {
+        Machine.query('DELETE FROM machine WHERE "ip"=\'1.1.1.1\' OR "ip"=\'1.1.1.2\'', done);
+      });
+
+      describe('Create a machine (POST)', function() {
+
+        it('Admins should be unauthorized', function(done) {
+          return nano.request(sails.hooks.http.app)
+            .post('/api/machines')
+            .send({
+              data: {
+                attributes: {
+                  name: 'essai',
+                  type: 't2.medium',
+                  ip: '1.1.1.1',
+                  username: 'Administrator',
+                  password: 'essai',
+                  user: nano.adminId()
+                },
+                type: 'machines'
+              }
+            })
+            .expect(403)
+            .end(done);
+        });
+
+        it('Regular users should be unauthorized', function(done) {
+          return nano.request(sails.hooks.http.app)
+            .post('/api/machines')
+            .set('Authorization', 'Bearer ' + token)
+            .send({
+              data: {
+                attributes: {
+                  name: 'essai',
+                  type: 't2.medium',
+                  ip: '1.1.1.1',
+                  username: 'Administrator',
+                  password: 'essai',
+                  user: userId
+                },
+                type: 'machines'
+              }
+            })
+            .expect(403)
+            .end(done);
+        });
+
+        it('Request without authorization should be unauthorized', function(done) {
+          return nano.request(sails.hooks.http.app)
+            .post('/api/machines')
+            .send({
+              data: {
+                attributes: {
+                  name: 'essai',
+                  type: 't2.medium',
+                  ip: '1.1.1.1',
+                  username: 'Administrator',
+                  password: 'essai',
+                },
+                type: 'machines'
+              }
+            })
+            .expect(403)
+            .end(done);
+        });
+      });
+
+      describe('Get users machines - Only logged in users', function() {
+
+        it('Admins should be authorized', function(done) {
+          return nano.request(sails.hooks.http.app)
+            .get('/api/machines')
+            .set(nano.adminLogin())
+            .expect(200)
+            .end(done);
+        });
+
+        it('Regular users should be authorized', function(done) {
+          return nano.request(sails.hooks.http.app)
+            .get('/api/machines')
+            .set('Authorization', 'Bearer ' + token)
+            .expect(200)
+            .end(done);
+        });
+
+        it('Request without authorization should be unauthorized', function(done) {
+          return nano.request(sails.hooks.http.app)
+            .get('/api/machines')
+            .expect(401)
+            .end(done);
+        });
+      });
+
+      describe('Get user machines - only machines assigned to this user', function() {
+
+        it('Admins should be authorized', function(done) {
+          return nano.request(sails.hooks.http.app)
+            .get('/api/machines/users')
+            .set(nano.adminLogin())
+            .expect(200)
+            .end(done);
+        });
+
+        it('Regular users should be authorized', function(done) {
+          return nano.request(sails.hooks.http.app)
+            .get('/api/machines/users')
+            .set('Authorization', 'Bearer ' + token)
+            .expect(200)
+            .end(done);
+        });
+
+        it('Request without authorization should be unauthorized', function(done) {
+          return nano.request(sails.hooks.http.app)
+            .get('/api/machines/users')
+            .expect(401)
+            .end(done);
+        });
+      });
+
+      describe('Get a specific machine', function() {
+
+        it('Admins should be authorized', function(done) {
+          return nano.request(sails.hooks.http.app)
+            .get('/api/machines/' + machineId)
+            .set(nano.adminLogin())
+            .expect(200)
+            .end(done);
+        });
+
+        it('Regular users should be unauthorized', function(done) {
+          return nano.request(sails.hooks.http.app)
+            .get('/api/machines/' + machineId)
+            .set('Authorization', 'Bearer ' + token)
+            .expect(403)
+            .end(done);
+        });
+
+        it('Request without authorization should be unauthorized', function(done) {
+          return nano.request(sails.hooks.http.app)
+            .get('/api/machines/' + machineId)
+            .expect(401)
+            .end(done);
+        });
+      });
+
+      describe('Update a specific machine', function() {
+
+        it('Admin users should be unauthorized', function(done) {
+          return nano.request(sails.hooks.http.app)
+            .patch('/api/machines/' + machineId)
+            .set(nano.adminLogin())
+            .send({
+              data: {
+                attributes: {
+                  name: 'azer',
+                  type: 't2.medium',
+                  ip: '1.1.1.1',
+                  username: 'Administrator',
+                  password: 'essai',
+                },
+                type: 'machines'
+              }
+            })
+            .expect(403)
+            .end(done);
+        });
+
+        it('Regular users should be unauthorized', function(done) {
+          return nano.request(sails.hooks.http.app)
+            .patch('/api/machines/' + machineId)
+            .set('Authorization', 'Bearer ' + token)
+            .send({
+              data: {
+                attributes: {
+                  name: 'azer',
+                  type: 't2.medium',
+                  ip: '1.1.1.1',
+                  username: 'Administrator',
+                  password: 'essai',
+                },
+                type: 'machines'
+              }
+            })
+            .expect(403)
+            .end(done);
+        });
+
+        it('Request without authorization should be unauthorized', function(done) {
+          return nano.request(sails.hooks.http.app)
+            .patch('/api/machines/' + machineId)
+            .send({
+              data: {
+                attributes: {
+                  name: 'azer',
+                  type: 't2.medium',
+                  ip: '1.1.1.1',
+                  username: 'Administrator',
+                  password: 'essai',
+                },
+                type: 'machines'
+              }
+            })
+            .expect(401)
+            .end(done);
+        });
+      });
+
+      describe('Delete a machine', function() {
+
+        it('Admins should be unauthorized', function(done) {
+          return nano.request(sails.hooks.http.app)
+            .delete('/api/machines/' + machineId)
+            .set(nano.adminLogin())
+            .expect(403)
+            .end(done);
+        });
+
+        it('Regular users should be unauthorized', function(done) {
+          return nano.request(sails.hooks.http.app)
+            .delete('/api/machines/' + machineId)
+            .set('Authorization', 'Bearer ' + token)
+            .expect(403)
+            .end(done);
+        });
+
+        it('Request without authorization should be unauthorized', function(done) {
+          return nano.request(sails.hooks.http.app)
+            .delete('/api/machines/' + machineId)
+            .expect(403)
             .end(done);
         });
       });
@@ -823,7 +1315,7 @@ module.exports = function() {
         });
       });
 
-      describe('Download a file - available only with a valid download token with authorization or not', function() {
+      describe('Download a file - available only with a valid download token either with authorization or not', function() {
 
         it('Request with a valid download token and authorization should be authorized', function(done) {
           return nano.request(sails.hooks.http.app)
@@ -862,20 +1354,6 @@ module.exports = function() {
       let adminPendingUser = null;
       let ruPendingUser = null;
       let nologPendingUser = null;
-
-      before(function(done) {
-        ConfigService.set('testMail', true)
-          .then(() => {
-            return done();
-          });
-      });
-
-      after(function(done) {
-        ConfigService.set('testMail', false)
-          .then(() => {
-            return done();
-          });
-      });
 
       describe('Create pending user - available for everyone', function() {
 
@@ -1419,6 +1897,529 @@ module.exports = function() {
           return nano.request(sails.hooks.http.app)
             .delete('/api/nanoclouds/1')
             .expect(404)
+            .end(done);
+        });
+      });
+    });
+
+    describe('Users', function() {
+      let aUserId = null;
+
+      describe('Create a user - only admins', function() {
+
+        it('Admins should be authorized', function(done) {
+          return nano.request(sails.hooks.http.app)
+            .post('/api/users')
+            .set(nano.adminLogin())
+            .send({
+              data: {
+                attributes: {
+                  'first-name': 'aaaa',
+                  'last-name': 'aaaa',
+                  password: 'aaaaaaaa',
+                  email: 'a@a.a',
+                  'is-admin': false,
+                  'expiration-date': 0
+                },
+                type: 'users'
+              }
+            })
+            .expect(201)
+            .expect((res) => {
+              aUserId = res.body.data.id;
+            })
+            .end(done);
+        });
+
+        it('Regular users should be unauthorized', function(done) {
+          return nano.request(sails.hooks.http.app)
+            .post('/api/users')
+            .set('Authorization', 'Bearer ' + token)
+            .send({
+              data: {
+                attributes: {
+                  'first-name': 'bbbb',
+                  'last-name': 'bbbb',
+                  password: 'bbbbbbbbb',
+                  email: 'b@b.b',
+                  'is-admin': false,
+                  'expiration-date': 0
+                },
+                type: 'users'
+              }
+            })
+            .expect(403)
+            .end(done);
+        });
+
+        it('Request without authorization should be unauthorized', function(done) {
+          return nano.request(sails.hooks.http.app)
+            .post('/api/users')
+            .send({
+              data: {
+                attributes: {
+                  'first-name': 'cccc',
+                  'last-name': 'cccc',
+                  password: 'cccccccc',
+                  email: 'c@c.c',
+                  'is-admin': false,
+                  'expiration-date': 0
+                },
+                type: 'users'
+              }
+            })
+            .expect(401)
+            .end(done);
+        });
+      });
+
+      describe('Get users - only admins', function() {
+
+        it('Admins should be authorized', function(done) {
+          return nano.request(sails.hooks.http.app)
+            .get('/api/users')
+            .set(nano.adminLogin())
+            .expect(200)
+            .end(done);
+        });
+
+        it('Regular users should be unauthorized', function(done) {
+          return nano.request(sails.hooks.http.app)
+            .get('/api/users')
+            .set('Authorization', 'Bearer ' + token)
+            .expect(403)
+            .end(done);
+        });
+
+        it('Request without authorization should be unauthorized', function(done) {
+          return nano.request(sails.hooks.http.app)
+            .get('/api/users')
+            .expect(401)
+            .end(done);
+        });
+      });
+
+      describe('Get the actual user - only logged in users', function() {
+
+        it('Admins should be authorized', function(done) {
+          return nano.request(sails.hooks.http.app)
+            .get('/api/users?me=true')
+            .set(nano.adminLogin())
+            .expect(200)
+            .end(done);
+        });
+
+        it('Regular users should be authorized', function(done) {
+          return nano.request(sails.hooks.http.app)
+            .get('/api/users?me=true')
+            .set('Authorization', 'Bearer ' + token)
+            .expect(200)
+            .end(done);
+        });
+
+        it('Request without authorization should be unauthorized', function(done) {
+          return nano.request(sails.hooks.http.app)
+            .get('/api/users?me=true')
+            .expect(401)
+            .end(done);
+        });
+      });
+
+      describe('Get a specific user - only logged in users', function() {
+
+        it('Admins should be authorized to see other user', function(done) {
+          return nano.request(sails.hooks.http.app)
+            .get('/api/users/' + userId)
+            .set(nano.adminLogin())
+            .expect(200)
+            .end(done);
+        });
+
+        it('Regular users should be authorized if it\'s their id', function(done) {
+          return nano.request(sails.hooks.http.app)
+            .get('/api/users/' + userId)
+            .set('Authorization', 'Bearer ' + token)
+            .expect(200)
+            .end(done);
+        });
+
+        it('Regular users should be unauthorized to see other user account', function(done) {
+          return nano.request(sails.hooks.http.app)
+            .get('/api/users/' + nano.adminId())
+            .set('Authorization', 'Bearer ' + token)
+            .expect(403)
+            .end(done);
+        });
+
+        it('Request without authorization should be unauthorized', function(done) {
+          return nano.request(sails.hooks.http.app)
+            .get('/api/users/' + userId)
+            .expect(401)
+            .end(done);
+        });
+      });
+
+      describe('Update a specific user - only logged in users', function() {
+
+        it('Admin users should be authorized', function(done) {
+          return nano.request(sails.hooks.http.app)
+            .patch('/api/users/' + userId)
+            .set(nano.adminLogin())
+            .send({
+              data: {
+                attributes: {
+                  name: 'azer'
+                },
+                type: 'users'
+              }
+            })
+            .expect(200)
+            .end(done);
+        });
+
+        it('Regular users should be authorized if it\'s their account', function(done) {
+          return nano.request(sails.hooks.http.app)
+            .patch('/api/users/' + userId)
+            .set('Authorization', 'Bearer ' + token)
+            .send({
+              data: {
+                attributes: {
+                  name: 'reza'
+                },
+                type: 'users'
+              }
+            })
+            .expect(200)
+            .end(done);
+        });
+
+        it('Regular users should be unauthorized if it\'s not their account', function(done) {
+          return nano.request(sails.hooks.http.app)
+            .patch('/api/users/' + nano.adminId())
+            .set('Authorization', 'Bearer ' + token)
+            .send({
+              data: {
+                attributes: {
+                  name: 'essai'
+                },
+                type: 'users'
+              }
+            })
+            .expect(403)
+            .end(done);
+        });
+
+        it('Request without authorization should be unauthorized', function(done) {
+          return nano.request(sails.hooks.http.app)
+            .patch('/api/users/' + userId)
+            .send({
+              data: {
+                attributes: {
+                  name: 'test'
+                },
+                type: 'users'
+              }
+            })
+            .expect(401)
+            .end(done);
+        });
+      });
+
+      describe('Delete a user - only for admins', function() {
+
+        it('Admins should be authorized', function(done) {
+          return nano.request(sails.hooks.http.app)
+            .delete('/api/users/' + aUserId)
+            .set(nano.adminLogin())
+            .expect(200)
+            .end(done);
+        });
+
+        it('Regular users should be unauthorized', function(done) {
+          return nano.request(sails.hooks.http.app)
+            .delete('/api/users/' + userId)
+            .set('Authorization', 'Bearer ' + token)
+            .expect(403)
+            .end(done);
+        });
+
+        it('Request without authorization should be unauthorized', function(done) {
+          return nano.request(sails.hooks.http.app)
+            .delete('/api/users/' + userId)
+            .expect(401)
+            .end(done);
+        });
+      });
+    });
+
+    describe('api/reset-password', function() {
+      let resetPasswordId = null;
+      let allRequests = [];
+
+      before('Create a request of reset password', function(done) {
+        global['Reset-password'].create({
+          email: 'test@test.com'
+        })
+          .then((request) => {
+            resetPasswordId = request.id;
+            done();
+          });
+      });
+
+      describe('Create a reset password request - accessible to everyone', function() {
+
+        it('Admins should be authorized', function(done) {
+          return nano.request(sails.hooks.http.app)
+            .post('/api/reset-passwords')
+            .set(nano.adminLogin())
+            .send({
+              data: {
+                attributes: {
+                  email: 'test@test.com'
+                },
+                type: 'reset-passwords'
+              }
+            })
+            .expect(200)
+            .end(done);
+        });
+
+        it('Regular users should authorized', function(done) {
+          return nano.request(sails.hooks.http.app)
+            .post('/api/reset-passwords')
+            .set('Authorization', 'Bearer ' + token)
+            .send({
+              data: {
+                attributes: {
+                  email: 'test@test.com'
+                },
+                type: 'reset-passwords'
+              }
+            })
+            .expect(200)
+            .end(done);
+        });
+
+        it('Request without authorization should authorized', function(done) {
+          return nano.request(sails.hooks.http.app)
+            .post('/api/reset-passwords')
+            .send({
+              data: {
+                attributes: {
+                  email: 'test@test.com'
+                },
+                type: 'reset-passwords'
+              }
+            })
+            .expect(200)
+            .end(done);
+        });
+      });
+
+      describe('Get all requests of reset password - only admins', function() {
+
+        it('Admins should be authorized', function(done) {
+          return nano.request(sails.hooks.http.app)
+            .get('/api/reset-passwords')
+            .set(nano.adminLogin())
+            .expect(200)
+            .end(done);
+        });
+
+        it('Regular users should be unauthorized', function(done) {
+          return nano.request(sails.hooks.http.app)
+            .get('/api/reset-passwords')
+            .set('Authorization', 'Bearer ' + token)
+            .expect(403)
+            .end(done);
+        });
+
+        it('Request without authorization should be unauthorized', function(done) {
+          return nano.request(sails.hooks.http.app)
+            .get('/api/reset-passwords')
+            .expect(401)
+            .end(done);
+        });
+      });
+
+      describe('Get a specific request - accessible to everyone', function() {
+
+        it('Admins should be authorized to see all apps', function(done) {
+          return nano.request(sails.hooks.http.app)
+            .get('/api/reset-passwords/' + resetPasswordId)
+            .set(nano.adminLogin())
+            .expect(200)
+            .end(done);
+        });
+
+        it('Regular users should be authorized', function(done) {
+          return nano.request(sails.hooks.http.app)
+            .get('/api/reset-passwords/' + resetPasswordId)
+            .set('Authorization', 'Bearer ' + token)
+            .expect(200)
+            .end(done);
+        });
+
+        it('Request without authorization should be authorized', function(done) {
+          return nano.request(sails.hooks.http.app)
+            .get('/api/reset-passwords/' + resetPasswordId)
+            .expect(200)
+            .end(done);
+        });
+      });
+
+      describe('Update a specific request of reset password - accessible to everyone', function() {
+
+        before('retrieve the created request', function(done) {
+          global['Reset-password'].find({
+            id: {
+              '!': resetPasswordId
+            }
+          })
+            .then((res) => {
+              allRequests = res;
+              return done();
+            });
+        });
+
+        it('Admin users should be authorized', function(done) {
+          return nano.request(sails.hooks.http.app)
+            .patch('/api/reset-passwords/' + allRequests[0].id)
+            .set(nano.adminLogin())
+            .send({
+              data: {
+                attributes: {
+                  email: 'test@test.com',
+                  password: 'aaaaaaaa'
+                },
+                type: 'reset-passwords'
+              }
+            })
+            .expect(200)
+            .end(done);
+        });
+
+        it('Regular users should be authorized', function(done) {
+          return nano.request(sails.hooks.http.app)
+            .patch('/api/reset-passwords/' + allRequests[1].id)
+            .set('Authorization', 'Bearer ' + token)
+            .send({
+              data: {
+                attributes: {
+                  email: 'test@test.com',
+                  password: 'bbbbbbbb'
+                },
+                type: 'reset-passwords'
+              }
+            })
+            .expect(200)
+            .end(done);
+        });
+
+        it('Request without authorization should be authorized', function(done) {
+          return nano.request(sails.hooks.http.app)
+            .patch('/api/reset-passwords/' + allRequests[2].id)
+            .send({
+              data: {
+                attributes: {
+                  email: 'test@test.com',
+                  password: 'bbbbbbbb'
+                },
+                type: 'reset-passwords'
+              }
+            })
+            .expect(200)
+            .end(done);
+        });
+      });
+
+      describe('Delete a request of reset password - only admins', function() {
+
+        it('Admins should be authorized', function(done) {
+          return nano.request(sails.hooks.http.app)
+            .delete('/api/reset-passwords/' + resetPasswordId)
+            .set(nano.adminLogin())
+            .expect(200)
+            .end(done);
+        });
+
+        it('Regular users should be unauthorized', function(done) {
+          return nano.request(sails.hooks.http.app)
+            .delete('/api/reset-passwords/' + allRequests[0].id)
+            .set('Authorization', 'Bearer ' + token)
+            .expect(403)
+            .end(done);
+        });
+
+        it('Request without authorization should be unauthorized', function(done) {
+          return nano.request(sails.hooks.http.app)
+            .delete('/api/reset-passwords/' + allRequests[0].id)
+            .expect(401)
+            .end(done);
+        });
+      });
+    });
+
+    describe('api/sessions', function() {
+
+      before('clear', function(done) {
+        MachineService.getMachineForUser({id: userId})
+          .then(() => {
+            MachineService.getMachineForUser({id: nano.adminId()});
+          })
+          .then(() => {
+            done();
+          });
+      });
+
+      describe('List all sessions (GET)', function () {
+
+        it('Admin should be authorized', function(done) {
+          nano.request(sails.hooks.http.app)
+            .get('/api/sessions')
+            .set(nano.adminLogin())
+            .expect(200)
+            .end(done);
+        });
+
+        it('Regular users should be unauthorized', function(done) {
+          nano.request(sails.hooks.http.app)
+            .get('/api/sessions')
+            .set('Authorization', 'Bearer ' + token)
+            .expect(403)
+            .end(done);
+        });
+
+        it('Unauthenticate users should be unauthorized', function(done) {
+          nano.request(sails.hooks.http.app)
+            .get('/api/sessions')
+            .expect(401)
+            .end(done);
+        });
+      });
+
+      describe('DELETE all open sessions', function () {
+
+        it('Admin should be authorized', function(done) {
+          nano.request(sails.hooks.http.app)
+            .delete('/api/sessions')
+            .set(nano.adminLogin())
+            .expect(200)
+            .end(done);
+        });
+
+        it('Regular users should be authorized', function(done) {
+          nano.request(sails.hooks.http.app)
+            .delete('/api/sessions')
+            .set('Authorization', 'Bearer ' + token)
+            .expect(200)
+            .end(done);
+        });
+
+        it('Unauthenticate users token should be unauthorized', function(done) {
+          nano.request(sails.hooks.http.app)
+            .delete('/api/sessions')
+            .expect(401)
             .end(done);
         });
       });

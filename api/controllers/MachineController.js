@@ -53,10 +53,24 @@ module.exports = {
   },
 
   /**
-   * @method create
+   * @method findOne
    */
-  create(req, res) {
-    return res.ok(MachineService.create(req.body));
+  findOne(req, res) {
+    Machine.findOne({
+      id: req.params.id
+    })
+      .then((machine) => {
+        if (req.user.isAdmin || machine.user === req.user.id) {
+          return res.ok(machine);
+        } else {
+          return res.forbidden();
+        }
+      })
+      .catch((err) => res.negotiate(err));
+  },
+
+  update(req, res) {
+    return res.forbidden();
   },
 
   /**

@@ -105,14 +105,19 @@ module.exports.routes = {
     action: 'update'
   },
 
+  'GET /api/apps/connections': {
+    controller: 'App',
+    action: 'connections'
+  },
+
+  'GET /api/apps/:id': {
+    controller: 'App',
+    action: 'findOne'
+  },
+
   'GET /machines/users': {
     controller: 'Machine',
     action: 'users'
-  },
-
-  'GET /apps/connections': {
-    controller: 'App',
-    action: 'connections'
   },
 
   'POST /api/upload': {

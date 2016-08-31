@@ -61,11 +61,15 @@ module.exports.policies = {
     destroy: false
   },
 
-  configController: {
+  ConfigController: {
     create: 'isAdmin'
   },
 
-  groupController: {
+  SessionController: {
+    find: 'isAdmin'
+  },
+
+  GroupController: {
     create: 'isAdmin',
     find: 'isAdmin',
     findOne: 'isAdmin',
@@ -97,7 +101,9 @@ module.exports.policies = {
   'Reset-passwordController': {
     create: true,
     update: true,
-    findOne: true
+    findOne: true,
+    find: 'isAdmin',
+    destroy: 'isAdmin'
   },
 
   HistoryController : {
@@ -105,4 +111,20 @@ module.exports.policies = {
     create: ['isGuacamole'],
     update: ['isGuacamole']
   },
+
+  AppController: {
+    create: 'isAdmin',
+    destroy: 'isAdmin'
+  },
+
+  UserController: {
+    create: 'isAdmin',
+    destroy: 'isAdmin'
+  },
+
+  MachineController: {
+    create: false,
+    update: false,
+    destroy: false
+  }
 };
