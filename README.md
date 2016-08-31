@@ -2,8 +2,6 @@
 
 [![Build Status](https://travis-ci.org/Nanocloud/nanocloud.svg?branch=master)](https://travis-ci.org/Nanocloud/nanocloud) [![Code Climate](https://codeclimate.com/github/Nanocloud/nanocloud/badges/gpa.svg)](https://codeclimate.com/github/Nanocloud/nanocloud)
 
-**Next version of Nanocloud is still in heavy develoment**
-
 # Run
 
 Nanocloud relies on Docker containers to run its stack.
@@ -13,44 +11,60 @@ docker-compose build
 docker-compose up
 ````
 
-Some environment variable are expected to be set in `config.env`:
-- IAAS (mandatory) currently only "manual" and "aws" are implemented
-- HOST (mandatory, defaults to localhost) nanocloud's host 
-- SMTP_SERVER_HOST host to send email
-- SMTP_SERVER_PORT (defaults to 25) port for the SMTP server
-- SMTP_LOGIN login for the SMTP server
-- SMTP_PASSWORD password for the SMTP server
-- SMTP_SEND_FROM (defaults to mail@nanocloud.com) nanocloud's sender
+Some configuration variable are expected to be set in `config/env/development.js`:
+- iaas (mandatory) currently only "manual" and "aws" are implemented
+- host (mandatory, defaults to localhost) nanocloud's host
+- expirationDate (Defaults to 0 (deactivated)) number of days a user account should remain active
+- autoRegister (Defaults to false) user can signup to the platform
+- autoLogoff (Defaults to false) VDI sessions are signed off automatically
+- defaultGroup (Defaults to empty string (no default group)) id of the group users should be attached to automatically
+- machinePoolSize (Defaults to 1) the number of machine to provision in advance ready to accept users
+- machinesName (Defaults to 'Nanocloud Exec Server') default name for machines
+- plazaURI (Defaults to https://s3-eu-west-1.amazonaws.com/nanocloud/plaza/1.0.0/windows/amd64/plaza.exe) URL to download plaza from
+- plazaPort (Defaults to 9090) port to communicate with plaza
+
+SMTP configuration:
+- smtpServerHost host to send email
+- smtpServerPort (defaults to 25) port for the SMTP server
+- smtpLogin login for the SMTP server
+- smtpPassword password for the SMTP server
+- smtpSendFrom (defaults to mail@nanocloud.com) nanocloud's sender
+
+Look and feel:
+- title (defaults to Nanocloud) page title
+- favIconPath (defaults to favicon.ico) relative path from `assets/dist`
+- logoPath (defaults to `/assets/images/logo.png`) relative path from `assets/dist` (URL works)
+- primaryColor (defaults to #006CB6) primary color to use
 
 Manual driver specific:
-- MACHINES (array) Array of machine object to statically insert in the database
+- machines (array) Array of machine object to statically insert in the database
 
-AWS driver specific
-- AWS_REGION region where machines will appear
-- AWS_ACCESS_KEY_ID KeyId
-- AWS_SECRET_ACCESS_KEY Private key
-- AWS_KEY_NAME Private key name
-- AWS_PRIVATE_KEY (defaults to /tmp/id_rsa) path to where the key will be stored
-- AWS_IMAGE (defaults to ami-09e61366, Nanocloud default image)
-- AWS_FLAVOR (defaults to t2.medium) size of the virtual machine
-- AWS_MACHINE_USERNAME (defaults to Administrator) administrator account on the machine
-- CREDIT_LIMIT (defaults empty string) set a credit limit to users using aws
+AWS driver specific:
+- awsRegion region where machines will spawn
+- awsAccessKeyId AWS key id
+- awsSecretAccessKey AWS private key
+- awsKeyName private key name
+- awsPrivateKey (Defaults to /opt/back/id_rsa) path to where the key will be stored
+- awsImage (Defaults to ami-09e61366) Nanocloud's execution servers default image)
+- awsFlavor (Defaults to t2.medium) size of virtual machines
+- awsMachineUsername (Defaults to Administrator) administrator account on the machine
+- creditLimit (Defaults empty string) set a credit limit to users (aws only)
 
-Openstack driver specific
- - OPENSTACK_USERNAME Openstack username
- - OPENSTACK_PASSWORD Openstack password
- - OPENSTACK_AUTH_URL Openstack auth URL without version
- - OPENSTACK_REGION (Defaults to 'RegionOne') Openstack region name
- - OPENSTACK_IMAGE image to boot Windows execution servers from
- - OPENSTACK_FLAVOR (defaults to m1.medium) type id of the virtual machine
- - OPENSTACK_SECURITY_GROUPS (Defaults to default) security groups to apply to the instance, should be an array
- - OPENSTACK_MACHINE_USERNAME (Defaults to Administrator) Windows account username
- - OPENSTACK_MACHINE_PASSWORD (Defaults password will generated) Windows account password
+Openstack driver specific:
+ - openstackUsername username to connect to openstack
+ - openstackPassword password to connect to openstack
+ - openstackAuthUrl url of the openstack's API (example: https://identity.example.com:5000)
+ - openstackRegion (Defaults to 'RegionOne') region name to use on openstack
+ - openstackImage if of the image to boot Windows execution servers from
+ - openstackFlavor (defaults to m1.medium) flavor for the virtual machine
+ - openstackSecurityGroups (Defaults to ['default']) array of security groups to apply to the instance
+ - openstackMachineUsername (Defaults to Administrator) windows account username
+ - openstackMachinePassword (Defaults empty, password will generated) windows account password
 
-Storage specific:
-- STORAGE_ADDRESS (mandatory, defaults to 'localhost') storage service's IP
-- STORAGE_PORT (mandatory, defaults to 9090) storage service's port
-- UPLOAD_LIMIT (defaults 0 (desactivated)) upload limit, in MB, for each user
+Storage configuration:
+- storageAddress (mandatory, defaults to 'localhost') storage service's IP
+- storagePort (mandatory, defaults to 9090) storage service's port
+- uploadLimit (defaults 0 (deactivate)) upload limit, in MB, for each user
 
 Once loaded, Nanocloud will be accessible on **localhost**.
 
@@ -80,12 +94,15 @@ This will run all tests defined in `./tests/test-all.sh`.
 Alternativelly, tests can be run individually:
 
 - `make test-api` to test the API
-- `make test-jshint` to analyse code for errors and warnings
+- `make test-units` to run unit tests
+- `make test-linter` to analyse code for errors and warnings
+- `make test-licenses` to check for licenses headers
 
 Some environment variables can be set to customize tests:
-- TEST_MAIL (boolean, defaults to false) load stub email transporter for testing purpose
+- testMail (boolean, defaults to false) load stub email transporter for testing purpose
 
 **API tests expects a postgres database up and running on localhost**
+**Some tests may require storage and frontend to be up as well**
 
 ## Licence
 

@@ -78,7 +78,7 @@ module.exports = {
      * {
      *   name: "Machine name",
      *   type: "manual",
-     *   ip: "0.0.0.0"
+     *   ip: "0.0.0.0",
      *   username: "Administrator",
      *   password: "secret"
      * }
@@ -90,7 +90,7 @@ module.exports = {
     awsSecretAccessKey: '',
     awsRegion: '',
     awsKeyName: '',
-    awsPrivateKey: '~/.ssh/id_rsa',
+    awsPrivateKey: '/opt/back/id_rsa',
     awsImage: 'ami-09e61366',
     awsFlavor: 't2.medium',
     awsMachineUsername: 'Administrator',
