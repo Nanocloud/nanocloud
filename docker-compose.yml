@@ -98,8 +98,7 @@ services:
     restart: always
 
   postgres:
-    build: ./postgres
-    image: nanocloud/postgres
+    image: postgres:9.5.3
     environment:
       - PGDATA=/var/lib/postgresql/data/pgdata
       - POSTGRES_USER=nanocloud
