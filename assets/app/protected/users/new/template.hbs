@@ -1,8 +1,14 @@
-<div class="m-t-2">
+<div class="m-t-1">
+  <p class="color-primary indication in-bl">
+    <span class="text">
+      All your users are displayed in this page. You can click on one name to display its configuration page.
+    </span>
+  </p>
   <h4>
-    {{#link-to 'protected.users' }}
-      Users 
-    {{/link-to}} - Create a new user
+    {{#link-to 'protected.users' }}Users{{/link-to}}
+    <div class='in-bl va-tb'>
+      {{icon-component class="va-sub" materialIcon="navigate_next"}} Create a new user
+    </div>
  </h4>
   <div class="user-new content-wrapper form m-t-1">
     <form {{action 'add' on='submit'}}>

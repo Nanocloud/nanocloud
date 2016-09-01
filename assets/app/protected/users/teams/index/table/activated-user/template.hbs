@@ -1,0 +1,12 @@
+{{#if record.isActivated}}
+  {{icon-component class="va-sub color-primary" materialIcon="checkbox"}}
+  <div class='va-tb in-bl color-primary'>
+    Activated
+  </div>
+{{else}}
+  {{icon-component class="va-sub color-wait" materialIcon="remove"}}
+  <div class='va-sup in-bl color-wait'>
+    Waiting for activation
+  </div>
+{{/if}}
+

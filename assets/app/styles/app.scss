@@ -44,6 +44,9 @@ $blue-default:             #006CB6 !default;
 @import "user-new";
 @import "confirm-input";
 @import "detail-table";
+@import "teams-focus-input";
+@import "inputs";
+@import "specific/teams-index";
 
 @include bg-variant('.bg-light', $gray-lighter);
 

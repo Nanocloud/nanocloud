@@ -40,11 +40,12 @@ export default Ember.Controller.extend({
       });
   },
 
-  modelIsEmpty: Ember.computed.empty('items', 'items'),
+  modelIsEmpty: Ember.computed.empty('model'),
 
   sortableTableConfig: {
 
     filteringIgnoreCase: true,
+
     messageConfig: {
       searchLabel: 'Search',
     },
@@ -59,27 +60,6 @@ export default Ember.Controller.extend({
     customClasses: {
       pageSizeSelectWrapper: 'pagination-number'
     }
-  },
-
-  setData: function() {
-    if (!this.get('items')) {
-      return;
-    }
-    var ret = Ember.A([]);
-    this.get('items').forEach((item) => {
-
-      if (!item.get('isNew')){
-        ret.push(Ember.Object.create({
-          id: item.get('id'),
-          fullname: item.get('fullName'),
-          email: item.get('email'),
-          type: item.get('type'),
-          online: null,
-        }));
-      }
-    });
-    this.set('data', ret);
-    return ret;
   },
 
   columns: [

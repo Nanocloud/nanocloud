@@ -42,10 +42,29 @@ services:
   storage:
     build: ./storage
     image: nanocloud/storage
+    environment:
+     - PLAZA_PORT=9090
     ports:
      - 445/udp:445/udp
      - 445:445
      - 9090:9090
+    networks:
+      - nanocloud
+    depends_on:
+      - plaza
+    volumes:
+      - plaza:/opt/plaza
+    restart: always
+
+  storage-team:
+    build: ./storage
+    image: nanocloud/storage
+    environment:
+     - PLAZA_PORT=9091
+    ports:
+     - 445/udp:445/udp
+     - 445:445
+     - 9091:9091
     networks:
       - nanocloud
     depends_on:

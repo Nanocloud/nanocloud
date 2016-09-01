@@ -862,6 +862,17 @@ paths:
                 type: array
                 items:
                   "$ref": "#/definitions/Teams"
+        403:
+          description: You are not an admin
+          schema:
+            type: object
+            properties:
+              errors:
+                type: array
+                items:
+                  "$ref": "#/definitions/Errors"
+        401:
+          description: Unauthorized when you are not logged in
     post:
       tags:
         - users
@@ -878,6 +889,17 @@ paths:
       responses:
         200:
           description: Team created
+        400:
+          description: You already belong to a team
+          schema:
+            type: object
+            properties:
+              errors:
+                type: array
+                items:
+                  "$ref": "#/definitions/Errors"
+        401:
+          description: Unauthorized when you are not logged in
   /teams/{team_id}:
     get:
       tags:
@@ -906,113 +928,17 @@ paths:
                 type: array
                 items:
                   "$ref": "#/definitions/User"
-    patch:
-      tags:
-        - users
-        - teams
-      summary:
-        Modify a specific team details
-      parameters:
-        - in: body
-          name: data
-          description: team
-          required: true
-          schema:
-            $ref: "#/definitions/Teams"
-        - in: path
-          name: team_id
-          description: Id of the team
-          required: true
-          type: string
-      responses:
-        200:
-          description: Modify the team name
+        403:
+          description: You are not an admin or not the team member for the team we are trying to fetch
           schema:
             type: object
             properties:
-              data:
+              errors:
                 type: array
                 items:
-                  "$ref": "#/definitions/Teams"
-    delete:
-      tags:
-        - users
-        - teams
-      summary:
-        Delete specified team
-      parameters:
-        - in: path
-          name: team_id
-          description: TODO
-          required: true
-          type: string
-          format: uuid
-      responses:
-        200:
-          description: Team have been deleted
-  /teams/{team_id}/users:
-    get:
-      tags:
-        - users
-        - teams
-      summary:
-        Get all configuration variables
-      parameters:
-        - in: path
-          name: team_id
-          description: TODO
-          required: true
-          type: string
-          format: uuid
-      responses:
-        200:
-          description: Return all users of the specified team
-          schema:
-            type: object
-            properties:
-              data:
-                type: array
-                items:
-                  "$ref": "#/definitions/User"
-    post:
-      tags:
-        - users
-        - teams
-      summary:
-        Get all configuration variables
-      parameters:
-        - in: path
-          name: team_id
-          description: TODO
-          required: true
-          type: string
-          format: uuid
-      responses:
-        200:
-          description: Return configuration variables of the specified team
-  /teams/{team_id}/users/{user_id}:
-    delete:
-      tags:
-        - users
-        - teams
-      summary:
-        Remove specified users from specified teams
-      parameters:
-        - in: path
-          name: team_id
-          description: Team from which user will be removed
-          required: true
-          type: string
-          format: uuid
-        - in: path
-          name: user_id
-          description: User which will be removed from team
-          required: true
-          type: string
-          format: uuid
-      responses:
-        200:
-          description: User removed from the team
+                  "$ref": "#/definitions/Errors"
+        401:
+          description: Unauthorized when you are not logged in
 
   /files:
     get:

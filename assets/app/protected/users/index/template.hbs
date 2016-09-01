@@ -4,19 +4,17 @@
       All your users are displayed in this page. You can click on one name to display its configuration page.
     </span>
   </p>
-  <h4 class='m-t-1'>
-    {{#link-to 'protected.users' }}
-      Users
-    {{/link-to}}
+  <h4>
+    {{#link-to 'protected.users' }}Users{{/link-to}}
     {{#link-to 'protected.users.new' class='btn btn-primary pull-xs-right'}}Add user{{/link-to}}
   </h4>
-  <div class='content-wrapper m-t-1'>
+  <div class='content-wrapper m-t-2'>
     {{#if modelIsEmpty}}
       No entries 
     {{else}}
       {{models-table
         class="sortableTable"
-        data=data
+        data=model
         columns=columns
         showColumnsDropdown=false
         filteringIgnoreCase=sortableTableConfig.filteringIgnoreCase

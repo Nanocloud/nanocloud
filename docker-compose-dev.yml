@@ -38,6 +38,19 @@ services:
     image: nanocloud/storage
     network_mode: host
     container_name: "storage"
+    environment:
+      - PLAZA_PORT=9090
+    volumes:
+      - plaza:/opt/plaza
+    depends_on:
+      - plaza
+
+  storage-team:
+    image: nanocloud/storage
+    network_mode: host
+    container_name: "storage-team"
+    environment:
+      - PLAZA_PORT=9091
     volumes:
       - plaza:/opt/plaza
     depends_on:

@@ -27,14 +27,10 @@
 
 /* globals User, JsonApiService */
 
-module.exports = {
+const Promise = require('bluebird');
+const _= require('lodash');
 
-  update: function(req, res) {
-    if (req.user.isAdmin || req.user.id === req.allParams().id) {
-      return JsonApiService.updateOneRecord(req, res);
-    }
-    return res.forbidden();
-  },
+module.exports = {
 
   findOne: function(req, res) {
     if (req.user.isAdmin || req.user.id === req.allParams().id) {
@@ -59,6 +55,45 @@ module.exports = {
     }
     return User.find()
       .populate('groups')
+      .then(res.ok)
+      .catch(res.negotiate);
+  },
+
+  update: function(req, res) {
+
+    req.body = JsonApiService.deserialize(req.body);
+
+    if (req.user.id === req.allParams().id) {
+
+      return User.findOne(req.user.id)
+        .then((currentUser) => {
+          _.set(req.body, 'data.attributes.isAdmin', currentUser.isAdmin);
+          _.set(req.body, 'data.attributes.isTeamAdmin', currentUser.isTeamAdmin);
+
+          return JsonApiService.updateOneRecord(req, res);
+        });
+    }
+
+    if (req.user.isAdmin) {
+      return JsonApiService.updateOneRecord(req, res);
+    }
+
+    return User.findOne(req.allParams().id)
+      .populate('groups')
+      .then((userToUpdate) => {
+        if (req.user.isTeamAdmin === false || req.user.team.id !== userToUpdate.team.id) {
+          return Promise.reject({
+            status: 403,
+            detail: 'You need to be an administrator or team admin to perform this operation'
+          });
+        }
+
+        return User.update({
+          id: req.allParams().id
+        }, {
+          isTeamAdmin: _.get(req.body, 'data.attributes.isTeamAdmin') || false
+        });
+      })
       .then(res.ok)
       .catch(res.negotiate);
   }

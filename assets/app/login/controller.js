@@ -29,6 +29,7 @@ export default Ember.Controller.extend({
   identification: '',
   password: '',
   configuration: Ember.inject.service('configuration'),
+  teamModal: false,
 
 
   reset() {

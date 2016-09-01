@@ -126,5 +126,11 @@ module.exports.policies = {
     create: false,
     update: false,
     destroy: false
+  },
+
+  TeamController: {
+    find: 'isAdmin',
+    update: false,
+    destroy: false
   }
 };

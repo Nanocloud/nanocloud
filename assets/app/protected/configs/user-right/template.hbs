@@ -1,7 +1,9 @@
 <h5 class="m-t-1">User rights</h5>
-<div class="m-t-1">
-  {{input type="checkbox" checked=configController.autoRegister}}
-  <label for="cbox2">User can register himself</label>
+<div class="checkbox">
+  <label>
+    {{input type="checkbox" checked=configController.autoRegister}}
+    User can register himself
+  </label>
 </div>
 {{#if configController.autoRegister}}
   {{log model}}
@@ -39,9 +41,11 @@
     <div class="col-sm-2">{{input-confirm value=configController.expirationDate type="number" min="1"}}</div>
   </div>
 {{/if}}
-<div class='m-t-2'>
-  {{input type="checkbox" checked=configController.autoLogoff}}
-  <label for="cbox2">Logoff after closing VDI</label>
+<div class="checkbox">
+  <label>
+    {{input type="checkbox" checked=configController.autoLogoff}}
+    Logoff after closing VDI
+  </label>
 </div>
 {{#if isAws}}
   <div class="form-group row">
@@ -51,3 +55,9 @@
     <div class="col-sm-2">{{input-confirm type="string" value=configController.creditLimit}}</div>
   </div>
 {{/if}}
+<div class="checkbox">
+  <label>
+    {{input type="checkbox" checked=configController.teamEnabled}}
+    Enable team
+  </label>
+</div>

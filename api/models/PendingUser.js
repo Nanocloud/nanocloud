@@ -59,11 +59,19 @@ module.exports = {
       type: 'boolean'
     },
 
+    isTeamAdmin: {
+      type: 'boolean'
+    },
+
+    team: {
+      model: 'team'
+    },
+
     toJSON: function() {
       var obj = this.toObject();
       delete obj.hashedPassword;
       return obj;
-    },
+    }
   },
 
   beforeCreate: function(values, next){

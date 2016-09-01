@@ -3,7 +3,7 @@
 		{{#link-to 'protected.machines.user' }}Machines{{/link-to}}
   </h4>
   <span class="icon_link clickable noselect" {{ action "refreshModel" }}>
-    {{icon-component class='va-tb' size=19 materialIcon="autorenew" spin=loadState content="Refresh machine list"}}
+    {{icon-component class='va-sub' size=19 materialIcon="autorenew" spin=loadState content="Refresh machine list"}}
   </span>
   {{#if needRefresh}}
     <div class='refresh-notification indication in-bl'>

@@ -42,6 +42,9 @@ Router.map(function() {
         });
         this.route('new');
       });
+      this.route('teams', function() {
+        this.route('new');
+      });
     });
     this.route('machines', function() {
       this.route('user');

@@ -31,6 +31,7 @@
 const Promise = require('bluebird');
 const uuid    = require('node-uuid');
 const moment  = require('moment');
+const _       = require('lodash');
 
 module.exports = {
 
@@ -59,7 +60,6 @@ module.exports = {
 
         return Promise.reject(new Error('User already exists'));
       })
-
       .then((configuration) => {
         var host = configuration.host;
         var to =  user.email;
@@ -73,7 +73,14 @@ module.exports = {
           .then((message) => {
             return EmailService.sendMail(to, subject, message)
               .then(() => {
-                return PendingUser.create(JsonApiService.deserialize(user));
+                let userToAdd = JsonApiService.deserialize(user);
+                let teamId = _.get(req.body, 'data.relationships.team.data.id');
+
+                if (teamId) {
+                  userToAdd.team = teamId;
+                }
+
+                return PendingUser.create(userToAdd);
               })
               .then((created_user) => {
                 return res.created(created_user);

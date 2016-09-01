@@ -29,7 +29,7 @@
  * @help        :: See http://sailsjs.org/#!/documentation/concepts/Controllers
  */
 
-/* globals AccessToken, PlazaService, Storage, StorageService, MachineService */
+/* globals AccessToken, ConfigService, MachineService, PlazaService, Storage, StorageService, Team */
 
 const Promise = require('bluebird');
 
@@ -94,6 +94,25 @@ module.exports = {
             port: machine.plazaport
           }, req.allParams().path || 'C:\\');
         });
+    } else if (req.allParams().teams === 'true') {
+      if (! req.user.team) {
+        return res.send({data: []});
+      }
+      getFiles = Team.findOne(req.user.team)
+        .then((team) => {
+          if (team === undefined) {
+            return res.badRequest('Cannot find the team you belong to');
+          }
+
+          return ConfigService.get('teamStorageAddress', 'teamStoragePort')
+            .then((config) => {
+              return PlazaService.files({
+                hostname: config.teamStorageAddress,
+                port: config.teamStoragePort
+              }, '/home/' + team.username);
+            });
+        })
+        .catch(res.negotiate);
     } else {
       getFiles = StorageService.findOrCreate(req.user)
         .then((storage) => {

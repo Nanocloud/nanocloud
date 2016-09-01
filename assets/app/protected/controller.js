@@ -26,11 +26,38 @@ import Ember from 'ember';
 import config from 'nanocloud/config/environment';
 
 export default Ember.Controller.extend({
+  session: Ember.inject.service('session'),
   applicationController: Ember.inject.controller('application'),
+  configuration: Ember.inject.service('configuration'),
   routeName: Ember.computed.alias('applicationController.currentRouteName'),
   connectionName: null,
+  teamModal: false,
+  teamIsEmpty: Ember.computed.empty('session.user.team'),
+  hasTeam: Ember.computed('session.user.team', function() {
+    return !Ember.isNone(this.get('session.user.team.name'));
+  }),
+  hasNoTeam: Ember.computed('session.user.team', function() {
+    return this.get('session.user.team') !== undefined;
+  }),
+  steamEnabled: Ember.computed('configuration.deferred', function() {
+    return this.get('configuration.teamEnabled');
+  }),
+  teamEnabled: Ember.computed.readOnly('configuration.teamEnabled'),
+  isNotAdmin: Ember.computed.not('session.user.isAdmin'),
+  isTeamAdmin: Ember.computed.oneWay('session.user.isTeamAdmin'),
+  isAdmin: Ember.computed.oneWay('session.user.isAdmin'),
+  showModal: Ember.computed.and('teamModal', 'hasNoTeam', 'teamEnabled', 'isNotAdmin'),
+  isAdminOrTeamAdmin: Ember.computed.or('isAdmin', 'isTeamAdmin'),
 
-  session: Ember.inject.service('session'),
+  setup() {
+    this.get('configuration').loadData()
+    .then(() => {
+      if (this.get('showModal')) {
+        this.transitionToRoute('protected.users.teams.index');
+      }
+    });
+  },
+
   name: config.APP.name,
   version: config.APP.version,
 
@@ -64,6 +91,22 @@ export default Ember.Controller.extend({
   }),
 
   actions: {
+
+    closeModal() {
+      this.set('teamModal', false);
+    },
+
+    createTeam() {
+      this.get('teamModel').save()
+        .then(() => {
+          this.toast.success('Team has been created successfully');
+          this.send('closeModal');
+        })
+        .catch(() => {
+          this.toast.error('An error occured. Team has not been created');
+        });
+    },
+
     toggleSidebar() {
       this.toggleProperty('showSidebar');
     },

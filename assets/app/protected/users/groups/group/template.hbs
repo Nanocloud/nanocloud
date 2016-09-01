@@ -1,7 +1,13 @@
 <div class='m-t-2'>
   <h4>
-    {{#link-to 'protected.users.groups'}}Groups{{/link-to}} > 
-    {{#link-to 'protected.users.groups.group' model.id}}{{ model.name }}{{/link-to}} > {{selectedTab}}
+    {{#link-to 'protected.users.groups'}}Groups{{/link-to}}
+    <div class='in-bl'>
+      {{icon-component class="va-sub" materialIcon="navigate_next"}}
+    </div>
+    {{#link-to 'protected.users.groups.group' model.id}}{{ model.name }}{{/link-to}}
+    <div class='in-bl'>
+      {{icon-component class="va-sub" materialIcon="navigate_next"}}
+    </div> {{selectedTab}}
   </h4>
   <nav class="m-y-2 navbar navbar-light bg-light">
     <ul class="nav navbar-nav">

@@ -25,9 +25,16 @@
 import Ember from 'ember';
 
 export default Ember.Route.extend({
+  session: Ember.inject.service(),
   model() {
     return Ember.RSVP.hash({
       groups: this.store.findAll('group', { reload: true })
     });
+  },
+  beforeModel() {
+    if (!this.get('session.user.isAdmin')) {
+      this.toast.error('Permission denied');
+      this.transitionTo('protected.dashboard');
+    }
   }
 });

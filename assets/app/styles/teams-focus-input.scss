@@ -1,0 +1,17 @@
+.teams-focus-input {
+  padding: 20px 20px 10px 20px;
+  position: relative;
+  right: 20px;
+  z-index: 9999;
+  background-color: $white;
+  border-radius:2px;
+  width: 40%;
+  min-width: 500px;
+}
+
+@media (max-width: 600px) {
+  .teams-focus-input {
+    min-width: auto;
+    width: 350px;
+  }
+}
