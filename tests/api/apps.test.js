@@ -150,7 +150,7 @@ module.exports = function() {
               });
 
               return resolve();
-            }, 10);
+            }, 100);
           });
         })
         .then(() => {
