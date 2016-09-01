@@ -24,6 +24,7 @@ package router
 
 import (
 	"net/http"
+	"os"
 
 	"github.com/Nanocloud/nanocloud/plaza/routes/about"
 	"github.com/Nanocloud/nanocloud/plaza/routes/apps"
@@ -92,6 +93,10 @@ func Start() {
 		)
 	})
 
-	log.Info("Listenning on port: 9090")
-	e.Run(":9090")
+	port := os.Getenv("PLAZA_PORT")
+	if (port == "") {
+		port = "9090"
+	}
+	log.Info("Listenning on port: " + port)
+	e.Run(":" + port)
 }
