@@ -41,9 +41,16 @@ module.exports = {
     user.id = uuid.v4();
     user.isAdmin = false;
 
-    User.findOne({
-      email: user.email
-    })
+    ConfigService.get('autoRegister')
+      .then((conf) => {
+        let autoRegister = conf.autoRegister;
+        if (autoRegister === false) {
+          return Promise.reject(new Error('Self registration is not enabled'));
+        }
+        return User.findOne({
+          email: user.email
+        });
+      })
       .then((userResponse) => {
         if (!userResponse) {
           return PendingUser.findOne({
@@ -88,11 +95,13 @@ module.exports = {
           });
       })
       .catch((err) => {
-        if (err.code === 'ECONNECTION') {
+        if (err.code === 'ECONNECTION' || err.code === 'EAUT') {
           return res.serverError('Cannot connect to SMTP server');
-        } else if (err.message === 'User already exists') {
-          return res.badRequest('User already exists');
+        } else if (err.message === 'User already exists' ||
+          err.message === 'Self registration is not enabled') {
+          return res.badRequest(err.message);
         }
+
         return res.negotiate(err);
       });
   },
