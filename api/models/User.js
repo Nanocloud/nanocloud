@@ -57,10 +57,18 @@ module.exports = {
       unique: true
     },
     isAdmin: {
-      type: 'boolean'
+      type: 'boolean',
+      defaultsTo: false
     },
     expirationDate: {
       type: 'integer'
+    },
+    isTeamAdmin: {
+      type: 'boolean',
+      defaultsTo: false
+    },
+    team: {
+      model: 'team'
     },
 
     groups: {

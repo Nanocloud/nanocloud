@@ -38,6 +38,7 @@ const testSession = require('./session.test');
 const testMachine = require('./machine.test');
 const testImage = require('./image.test');
 const testHistories = require('./histories.test');
+const testTeam = require('./team.test');
 
 var request = require('supertest');
 
@@ -64,4 +65,5 @@ testHistories();
 testMachine();
 testImage();
 testSession();
+testTeam();
 testSecurity();

@@ -24,7 +24,7 @@
 const Promise = require('bluebird');
 const _ = require('lodash');
 
-/* globals App, MachineService, JsonApiService, PlazaService, StorageService */
+/* globals App, ConfigService, MachineService, JsonApiService, PlazaService, StorageService, Team */
 
 /**
  * Controller of apps resource.
@@ -153,12 +153,48 @@ module.exports = {
                     wait: true,
                     hideWindow: true,
                     username: machine.username,
-                    stdin: '$a = New-Object -ComObject shell.application;$a.NameSpace( "Z:\" ).self.name = "Storage"'
+                    stdin: '$a = New-Object -ComObject shell.application;$a.NameSpace( "Z:\" ).self.name = "Personal Storage"'
                   });
+                })
+                .then(() => {
+                  if (req.user.team) {
+                    Team.findOne(req.user.team)
+                      .then((team) => {
+                        return ConfigService.get('teamStorageAddress')
+                          .then((config) => {
+                            let command = [
+                              `C:\\Windows\\System32\\net.exe`,
+                              'use',
+                              'y:',
+                              `\\\\${config.teamStorageAddress}\\${team.username}`,
+                              `/user:${team.username}`,
+                              team.password
+                            ];
+                            return PlazaService.exec(machine.ip, machine.plazaport, {
+                              command: command,
+                              wait: true,
+                              hideWindow: true,
+                              username: machine.username
+                            });
+                          });
+                      })
+                      .then(() => {
+                        return PlazaService.exec(machine.ip, machine.plazaport, {
+                          command: [
+                            `C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe`,
+                            '-Command',
+                            '-'
+                          ],
+                          wait: true,
+                          hideWindow: true,
+                          username: machine.username,
+                          stdin: '$a = New-Object -ComObject shell.application;$a.NameSpace( "Y:\" ).self.name = "Team"'
+                        });
+                      });
+                  }
                 });
             });
         }
-
         return res.ok(application);
       })
       .catch((err) => {

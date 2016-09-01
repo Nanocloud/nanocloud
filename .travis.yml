@@ -28,6 +28,7 @@ before_script:
   - sudo cp -nr /go/src/github.com/Nanocloud/nanocloud/plaza/vendor/* /go/src/
   - cd /go/src/github.com/Nanocloud/nanocloud/plaza && GOOS=linux GOARCH=amd64 ./build.sh
   - sudo /go/src/github.com/Nanocloud/nanocloud/plaza/plaza &
+  - sudo PLAZA_PORT=9091 /go/src/github.com/Nanocloud/nanocloud/plaza/plaza &
   - cd /home/travis/build/Nanocloud/nanocloud
   - npm install
   - cd assets && npm install && bower install && ./node_modules/ember-cli/bin/ember build --environment=production && cd ../

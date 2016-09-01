@@ -56,12 +56,17 @@ module.exports = {
     smtpPassword: '',
     smtpSendFrom: 'mail@nanocloud.com',
     testMail: false,
+
     storageAddress: 'localhost',
     storagePort: 9090,
+    teamStorageAddress: 'localhost',
+    teamStoragePort: 9091,
+
     uploadLimit: 0,
     expirationDate: 0,
     autoRegister: false,
     autoLogoff: false,
+    teamEnabled: false,
     defaultGroup: '',
     creditLimit: '',
 

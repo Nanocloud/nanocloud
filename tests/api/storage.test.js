@@ -112,5 +112,18 @@ module.exports = function() {
       });
     });
 
+    describe('Get user\'s team\'s files', function() {
+      it('Should return an empty list (no team)', function(done) {
+        nano.request(sails.hooks.http.app)
+        .get('/api/files?teams=true')
+        .set(nano.adminLogin())
+        .expect(200)
+        .expect(nano.jsonApiSchema(fileSchema))
+        .expect((res) => {
+          expect(res.body.data.length).to.equal(0);
+        })
+        .end(done);
+      });
+    });
   });
 };
