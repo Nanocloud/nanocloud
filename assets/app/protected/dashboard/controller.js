@@ -50,9 +50,7 @@ export default Ember.Controller.extend({
   }),
 
   machines: Ember.computed('model.machines', 'model.machines', function() {
-    var machines = this.get('model.machines')
-      .filterBy('status', 'up');
-    return machines;
+    return this.get('model.machines');
   }),
 
   activator: function() {
