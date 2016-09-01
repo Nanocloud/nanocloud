@@ -23,7 +23,7 @@
  */
 
 /* globals sails, User, AccessToken, MachineService, Group */
-/* globals ConfigService, StorageService, Machine */
+/* globals ConfigService, StorageService, Machine, Team */
 
 const nano = require('./lib/nanotest');
 
@@ -2420,6 +2420,338 @@ module.exports = function() {
           nano.request(sails.hooks.http.app)
             .delete('/api/sessions')
             .expect(401)
+            .end(done);
+        });
+      });
+    });
+
+    describe('Teams', function() {
+
+      let team1;
+      let team2;
+      let user1;
+      let user2;
+      /*
+       * Create teams and users following this configuration:
+       *
+       * Team1. Admin is team admin. User1 is member
+       * Team2, User2 is team admin
+       */
+      before('Create team and team admins', function(done) {
+
+        Team.create({
+          name: 'Team1'
+        })
+          .then((team) => {
+            team1 = team;
+
+            return Team.create({
+              name: 'Team2'
+            });
+          })
+          .then((team) => {
+            team2 = team;
+
+            return User.create({
+              email: 'user1@nanocloud.com',
+              isTeamAdmin: false,
+              team: team1.id,
+              isAdmin: false
+            });
+          })
+          .then((user) => {
+            user1 = user;
+
+            return User.create({
+              email: 'user2@nanocloud.com',
+              isTeamAdmin: true,
+              team: team2.id,
+              isAdmin: false
+            });
+          })
+          .then((user) => {
+            user2 = user;
+
+            return User.update(nano.adminId(), {
+              isTeamAdmin: true,
+              team: team1.id
+            });
+          })
+          .then(() => {
+            return AccessToken.create({
+              userId: user1.id
+            });
+          })
+          .then((tokenUser1) => {
+            user1.token = tokenUser1.token;
+
+            return AccessToken.create({
+              userId: user2.id
+            });
+          })
+          .then((tokenUser2) => {
+            user2.token = tokenUser2.token;
+          })
+          .then(() => {
+            return done();
+          });
+      });
+
+      after('Cleaning created teams and users', function(done) {
+
+        User.destroy([
+          user1.id,
+          user2.id
+        ])
+          .then(() => {
+            return AccessToken.destroy({
+              token: [user1.token, user2.token]
+            });
+          })
+          .then(() => {
+            return Team.destroy([
+              team1.token,
+              team2.token
+            ]);
+          })
+          .then(() => {
+            return done();
+          });
+      });
+
+      describe('List all teams - Only available for admins', function() {
+
+        it('Admin should be authorized', function(done) {
+          nano.request(sails.hooks.http.app)
+            .get('/api/teams')
+            .set(nano.adminLogin())
+            .expect(200)
+            .end(done);
+        });
+
+        it('Regular users should be unauthorized', function(done) {
+          nano.request(sails.hooks.http.app)
+            .get('/api/teams')
+            .set('Authorization', 'Bearer ' + token)
+            .expect(403)
+            .end(done);
+        });
+
+        it('Unauthenticate users token should be unauthorized', function(done) {
+          nano.request(sails.hooks.http.app)
+            .get('/api/teams')
+            .expect(401)
+            .end(done);
+        });
+      });
+
+      describe('Get one team - Allowed for admins and regular users if member of the team', function() {
+
+        it('Admin should be authorized if they are team admins', function(done) {
+          nano.request(sails.hooks.http.app)
+            .get('/api/teams/' + team1.id)
+            .set(nano.adminLogin())
+            .expect(200)
+            .end(done);
+        });
+
+        it('Admin should be authorized even if they are not team admins', function(done) {
+          nano.request(sails.hooks.http.app)
+            .get('/api/teams/' + team2.id)
+            .set(nano.adminLogin())
+            .expect(200)
+            .end(done);
+        });
+
+        it('Regular users should be authorized if team member', function(done) {
+          nano.request(sails.hooks.http.app)
+            .get('/api/teams/' + team1.id)
+            .set('Authorization', 'Bearer ' + user1.token)
+            .expect(200)
+            .end(done);
+        });
+
+        it('Regular users should be unauthorized if not member', function(done) {
+          nano.request(sails.hooks.http.app)
+            .get('/api/teams/' + team1.id)
+            .set('Authorization', 'Bearer ' + user2.token)
+            .expect(403)
+            .end(done);
+        });
+
+        it('Unauthenticate users token should be unauthorized', function(done) {
+          nano.request(sails.hooks.http.app)
+            .get('/api/teams/' + team1.id)
+            .expect(401)
+            .end(done);
+        });
+      });
+
+      describe('Create a team - available for logged in users', function() {
+
+        let user3;
+
+        before('create temporary user', function(done) {
+
+          User.create({
+            email: 'user3@nanocloud.com',
+            team: null,
+            isTeamAdmin: false,
+            isAdmin: false
+          })
+            .then((user) => {
+              user3 = user;
+
+              return AccessToken.create({
+                userId: user3.id
+              });
+            })
+            .then((user3Token) => {
+              user3.token = user3Token.token;
+            })
+            .then(() => {
+              return done();
+            });
+        });
+
+        beforeEach('Clean user3', function(done) {
+
+          User.update(user3.id, {
+            team: null,
+            isTeamAdmin: false,
+            isAdmin: false
+          })
+            .then(() => {
+              return done();
+            });
+        });
+
+        after('Removing temporary user', function(done) {
+
+          User.destroy(user3.id)
+            .then(() => {
+              return AccessToken.destroy({
+                token: user3.token
+              });
+            })
+            .then(() => {
+              return done();
+            });
+        });
+
+        it('Admin should be authorized', function(done) {
+
+          User.update(user3.id, {
+            isAdmin: true
+          })
+            .then(() => {
+              nano.request(sails.hooks.http.app)
+                .post('/api/teams')
+                .send({
+                  data: {
+                    attributes: {
+                      name: 'test'
+                    }
+                  }
+                })
+                .set('Authorization', 'Bearer ' + user3.token)
+                .expect(201);
+            })
+            .then(() => {
+              return Team.destroy({
+                name: 'test'
+              });
+            })
+            .then(() => {
+              return done();
+            });
+        });
+
+        it('Regular users should be authorized', function(done) {
+          nano.request(sails.hooks.http.app)
+            .post('/api/teams')
+            .send({
+              data: {
+                attributes: {
+                  name: 'test'
+                }
+              }
+            })
+            .set('Authorization', 'Bearer ' + user3.token)
+            .expect(201)
+            .then(() => {
+              return Team.destroy({
+                name: 'test'
+              });
+            })
+            .then(() => {
+              return done();
+            });
+        });
+
+        it('Unauthenticate users token should be unauthorized', function(done) {
+          nano.request(sails.hooks.http.app)
+            .post('/api/teams')
+            .send({
+              data: {
+                attributes: {
+                  name: 'test'
+                }
+              }
+            })
+            .expect(401)
+            .end(done);
+        });
+      });
+
+      describe('Update teams - not accessible from the API', function() {
+
+        it('Admin should be unauthorized', function(done) {
+          nano.request(sails.hooks.http.app)
+            .patch('/api/teams/' + team1.id)
+            .set(nano.adminLogin())
+            .expect(403)
+            .end(done);
+        });
+
+        it('Regular users should be unauthorized', function(done) {
+          nano.request(sails.hooks.http.app)
+            .patch('/api/teams/' + team1.id)
+            .set('Authorization', 'Bearer ' + token)
+            .expect(403)
+            .end(done);
+        });
+
+        it('Unauthenticate users token should be unauthorized', function(done) {
+          nano.request(sails.hooks.http.app)
+            .patch('/api/teams/' + team1.id)
+            .expect(401)
+            .end(done);
+        });
+      });
+
+      describe('Delete teams - not accessible from the API', function() {
+
+        it('Admin should be unauthorized', function(done) {
+          nano.request(sails.hooks.http.app)
+            .delete('/api/teams/' + team1.id)
+            .set(nano.adminLogin())
+            .expect(403)
+            .end(done);
+        });
+
+        it('Regular users should be unauthorized', function(done) {
+          nano.request(sails.hooks.http.app)
+            .delete('/api/teams/' + team1.id)
+            .set('Authorization', 'Bearer ' + token)
+            .expect(403)
+            .end(done);
+        });
+
+        it('Unauthenticate users token should be unauthorized', function(done) {
+          nano.request(sails.hooks.http.app)
+            .delete('/api/teams/' + team1.id)
+            .expect(403)
             .end(done);
         });
       });

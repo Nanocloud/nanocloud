@@ -105,6 +105,11 @@ module.exports.routes = {
     action: 'update'
   },
 
+  'PATCH /api/teams/:id': {
+    controller: 'Team',
+    action: 'update'
+  },
+
   'GET /api/apps/connections': {
     controller: 'App',
     action: 'connections'

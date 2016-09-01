@@ -34,7 +34,7 @@ module.exports = {
     const body = JsonApiService.deserialize(req.body);
 
     if (user.team) {
-      return res.negotiate(new Error('You already belong to a team'));
+      return res.badRequest('You already belong to a team');
     }
 
     let team = {
@@ -89,5 +89,28 @@ module.exports = {
       .then((teams) => {
         res.send(JsonApiService.serialize('teams', [teams]));
       });
+  },
+
+  findOne(req, res) {
+
+    let teamId = req.allParams().id;
+
+    if (req.user.isAdmin === false && req.user.team !== teamId) {
+      return res.forbidden();
+    }
+
+    let request = Team.findOne(teamId);
+
+    if (req.user.isAdmin === true || req.user.isTeamAdmin) {
+      request = request.populate('members').populate('pendingMembers');
+    }
+
+    return request
+      .then(res.ok)
+      .catch(res.negotiate);
+  },
+
+  update: function(req, res) {
+    return res.forbidden();
   }
 };
