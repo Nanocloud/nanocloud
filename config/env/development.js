@@ -76,11 +76,12 @@ module.exports = {
      *
      * Array of objects Machine:
      * {
-     *   name: "Machine name",
-     *   type: "manual",
-     *   ip: "0.0.0.0",
-     *   username: "Administrator",
-     *   password: "secret"
+     *   name: 'Machine name',
+     *   type: 'manual',
+     *   ip: '0.0.0.0',
+     *   username: 'Administrator',
+     *   password: 'secret',
+     *   plazaport: 9090
      * }
      */
     machines: [],
