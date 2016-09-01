@@ -25,10 +25,25 @@
 import Ember from 'ember';
 
 export default Ember.Controller.extend({
+  configuration: Ember.inject.service('configuration'),
+  setup() {
+    this.get('configuration').loadData();
+  },
   applicationController: Ember.inject.controller('application'),
+  routeName: Ember.computed.oneWay('applicationController.currentRouteName'),
 
-  activeTab: Ember.computed('applicationController.currentRouteName', function() {
-    let name = this.get('applicationController.currentRouteName');
-    return (name.indexOf('protected.users.') === 0 && name.indexOf('.groups') !== 15);
-  })
+  groupTab: Ember.computed('applicationController.currentRouteName', function() {
+    return (this.get('routeName').indexOf('protected.users.groups') === 0);
+  }),
+
+  teamTab: Ember.computed('applicationController.currentRouteName', function() {
+    return (this.get('routeName').indexOf('protected.users.teams') === 0);
+  }),
+
+  userTab: Ember.computed('groupTab', 'teamTab', function() {
+    return (
+      this.get('groupTab') === false &&
+      this.get('teamTab') === false
+    );
+  }),
 });

@@ -1,0 +1,124 @@
+{{dim-background show=dimBackground click=(action 'closeFocusModeTeams')}}
+{{#if protectedController.isAdminOrTeamAdmin}}
+  <p class="color-primary indication m-t-1">
+    <span class="text">
+    {{icon-component class='va-mid color-primary' size=22 materialIcon="error"}}
+    You can create a new member by clicking on 'Create a new user'.
+    </span>
+  </p>
+{{/if}}
+
+{{#unless protectedController.hasTeam}}
+<div class="teams-focus-input group in-bl {{if dimBackground 'focus' }}">
+
+  {{#if dimBackground}}
+    <div class='close-btn pull-xs-right'>
+      {{ icon-component
+        materialIcon="close"
+        clickable=true
+        hover-enabled=true
+        click=(action "closeFocusModeTeams")
+      }}
+    </div>
+  {{/if}}
+
+  <h4>
+    {{#link-to 'protected.users.teams' }}
+      Teams
+    {{/link-to}}
+  </h4>
+
+  <p class="color-primary in-bl m-t-1">
+    <span class="text">
+      Looks like you don't have a team yet.<br>You can create one by filling this area then press enter.
+    </span>
+  </p>
+  <form {{action "createTeam" on="submit"}}>
+    <div class="form-group row m-t-1">
+      <div class="col-sm-6 col-lg-8">
+        {{nano-input
+          class="color-primary input-pattern-underline"
+          type="text"
+          placeholder="(ex: Team Cook)"
+          autofocus=protectedController.isNotAdmin
+          value=model.name
+          isFocused=focusModeTeams
+        }}
+      </div>
+      <div class="col-sm-2">
+        {{#if loadState}}
+          <button type="button" class="publish-btn btn btn-info">In progress {{ fa-icon "spinner" spin=true}}</button>
+        {{else}}
+          <button type="submit" class="create-team-btn btn btn-primary">
+            Create
+          </button>
+        {{/if}}
+      </div>
+    </div>
+  </form>
+</div>
+{{/unless}}
+<div class='m-t-2'>
+  {{#if protectedController.isAdminOrTeamAdmin}}
+    {{#if protectedController.hasTeam}}
+      <h4>
+          {{#link-to 'protected.users.teams.new' class='btn btn-primary pull-xs-right'}}Create a new user{{/link-to}}
+      </h4>
+    {{/if}}
+    {{#each teams as |team|}}
+      <h4 class='m-t-1 m-b-1 color-primary'> Teams
+        <div class='in-bl'>
+          {{icon-component class="va-sub" materialIcon="navigate_next"}} {{team.name}}
+        </div>
+      </h4>
+      {{models-table
+        class="sortableTable"
+        data=team.allMembers
+        columns=columns
+        showColumnsDropdown=false
+        filteringIgnoreCase=sortableTableConfig.filteringIgnoreCase
+        customMessages=sortableTableConfig.messageConfig
+        customIcons=sortableTableConfig.customIcons
+        customClasses=sortableTableConfig.customClasses
+        useNumericPagination=true
+        multipleColumnsSorting=false
+      }}
+    {{/each}}
+    <div class="clearfix"></div>
+  {{/if}}
+</div>
+
+{{#if protectedController.hasTeam}}
+  <div id="team-file-page">
+    <h4>
+      {{#link-to 'protected.users.teams' }}
+        Team files
+      {{/link-to}}
+    </h4>
+
+    <p class="color-primary indication m-t-1">
+      <span class="text">
+      {{icon-component class='va-mid color-success' size=22 materialIcon="done"}}
+      You are a member of the {{session.user.team.name}} team.
+      </span>
+    </p>
+
+    {{#if modelIsEmpty}}
+      There is no file
+    {{else}}
+      {{models-table
+        class="sortableTable"
+          data=teamFiles
+          filteringIgnoreCase=sortableTableConfig.filteringIgnoreCase
+          columns=fileColumns
+          showColumnsDropdown=false
+          customMessages=sortableTableConfig.messageConfig
+          customIcons=sortableTableConfig.customIcons
+          customClasses=sortableTableConfig.customClasses
+          useNumericPagination=true
+          multipleColumnsSorting=false
+      }}
+    {{/if}}
+    <div class="clearfix"></div>
+  </div>
+{{/if}}

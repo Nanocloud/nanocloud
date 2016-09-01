@@ -25,11 +25,13 @@
 import Ember from 'ember';
 
 export default Ember.Route.extend({
-  setupController() {
+  configuration: Ember.inject.service(),
+  setupController(controller) {
     this.get('configuration').loadData();
+    controller.setup();
+    controller.set('teamModel', this.store.createRecord('team', {}));
   },
 
-  configuration: Ember.inject.service('configuration'),
   beforeModel(transition) {
     if (transition.queryParams.app) {
       this.set('directLinkParams', transition.queryParams);

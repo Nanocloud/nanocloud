@@ -1,5 +1,5 @@
 <fieldset class="form-group {{ if isInvalid "has-danger" }} {{ if isValid "has-success"}}">
-  {{input class='form-control' focus-in="toggleFocus" focus-out="toggleFocus" type=type placeholder=placeholder value=value}}
+  {{input class='form-control' focus-in="toggleFocus" focus-out="toggleFocus" type=type placeholder=placeholder value=value focusIn=(action "focusIn") focusOut=(action "focusOut") }}
 
   {{#if showMessage}}
     <div class="error">

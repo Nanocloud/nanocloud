@@ -26,12 +26,13 @@ import Ember from 'ember';
 
 export default Ember.Component.extend({
 
-  dots: Ember.computed('size', function() {
-    var arr = Ember.A([]);
-    let size = this.get('size') ? this.get('size') : 3;
-    for ( var i = 0; i < size; i++) {
-      arr.pushObject(0);
+  didInsertElement() {
+    if (this.get('size')) {
+      Ember.$(this.get('element')).find('.bounce').css('width', this.get('size'));
+      Ember.$(this.get('element')).find('.bounce').css('height', this.get('size'));
     }
-    return arr;
-  })
+    if (this.get('color')) {
+      Ember.$(this.get('element')).find('.bounce').css('backgroundColor', this.get('color'));
+    }
+  }
 });

@@ -1,0 +1,34 @@
+<div class="m-t-1">
+  <p class="color-primary indication in-bl">
+    <span class="text">
+      Please fill this form to create a new user to your team.
+    </span>
+  </p>
+  <h4>
+    {{#link-to 'protected.users.teams' }}Team{{team.name}}{{/link-to}}
+    <div class='in-bl'>
+      {{icon-component class="va-sub" materialIcon="navigate_next"}} New user
+    </div>
+  </h4>
+  <div class='user-new content-wrapper m-t-1'>
+    <form {{action 'submitForm' on='submit'}}>
+      {{nano-input hideError=userHasSubmitted placeholder='Firstname' model=model valuePath="firstName" autofocus=true }}
+      {{nano-input hideError=userHasSubmitted placeholder='Lastname' model=model valuePath="lastName"}}
+      {{nano-input hideError=userHasSubmitted placeholder='Email address' model=model valuePath="email"}}
+      {{nano-input hideError=userHasSubmitted placeholder='Password' type="password" model=model valuePath="password"}}
+      {{nano-input hideError=userHasSubmitted placeholder='Password confirmation' type="password" model=model valuePath="passwordConfirmation"}}
+      {{nano-input hideError=userHasSubmitted placeholder='Days left before expiration' model=model valuePath="expirationDate"}}
+
+      {{#if loadState}}
+        <button type="submit" class="btn btn-info btn-block text-uppercase">
+          Create
+          {{ fa-icon "spinner" spin=true}}
+        </button>
+      {{else}}
+        <button type="submit" class="btn btn-primary btn-block text-uppercase">Create</button>
+      {{/if}}
+    </form>
+
+    <div class="clearfix"></div>
+  </div>
+</div>

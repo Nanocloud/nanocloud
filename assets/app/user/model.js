@@ -96,6 +96,7 @@ export default DS.Model.extend(Validations, {
     let email = this.get('email');
     return email ? email : 'Unknown user';
   }.property('firstName', 'lastName'),
+
   isNotAdmin: function() {
     return !this.get('isAdmin');
   }.property(),
@@ -103,5 +104,8 @@ export default DS.Model.extend(Validations, {
   type: Ember.computed('isAdmin', 'isAdmin', function() {
     return this.get('isAdmin') ? 'Administrator' : 'Regular user';
   }),
-  groups: DS.hasMany('group')
+
+  team: DS.belongsTo(),
+  groups: DS.hasMany('group'),
+  isTeamAdmin: DS.attr('boolean')
 });

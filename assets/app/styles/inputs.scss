@@ -1,0 +1,13 @@
+.input-pattern-underline {
+
+  .form-control {
+    box-shadow: none;
+    border: 1px solid #fff;
+    border-bottom: 1px solid #ececec;
+    padding: 5px 5px 3px 5px;
+
+    &:focus {
+      border-bottom: 1px solid $blue-default;
+    }
+  }
+}

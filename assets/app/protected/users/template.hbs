@@ -1,13 +1,23 @@
 <div class='section'>
   {{#if session.user.isAdmin}}
-      <ul class="nav nav-pills">
+    <div>
+      <ul class="nav nav-pills in-bl va-mid">
         <li class="nav-item">
-          {{#link-to 'protected.users.index' class='nav-link' active=activeTab}}Users{{/link-to}}
+          {{#link-to 'protected.users.index' class='nav-link' active=userTab}}Users{{/link-to}}
         </li>
         <li class="nav-item">
-          {{#link-to 'protected.users.groups' class='nav-link'}}Groups{{/link-to}}
+          {{#link-to 'protected.users.groups' class='nav-link' active=groupTab}}Groups{{/link-to}}
         </li>
+        {{#if configuration.teamEnabled}}
+          <li class="nav-item">
+            {{#link-to 'protected.users.teams' class='nav-link' active=teamTab}}Teams{{/link-to}}
+          </li>
+        {{/if}}
       </ul>
+      {{#if isLoading}}
+        {{icon-component class='va-tt color-primary' size=19 materialIcon="autorenew" spin=true}}
+      {{/if}}
+    </div>
   {{/if}}
   {{outlet}}
 </div>

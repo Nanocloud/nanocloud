@@ -32,6 +32,7 @@ export default Ember.Component.extend({
   focus: false,
   type: 'text',
   validation: null,
+  isFocused: false,
 
   didInsertElement() {
     if (this.get('autofocus') === true) {
@@ -61,6 +62,12 @@ export default Ember.Component.extend({
   showMessage: Ember.computed.oneWay('isInvalid'),
 
   actions: {
+    focusIn: function() {
+      this.set('isFocused', true);
+    },
+    focusOut: function() {
+      this.set('isFocused', false);
+    },
     toggleFocus: function() {
       this.toggleProperty('focus');
     }
