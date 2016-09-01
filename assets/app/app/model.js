@@ -37,7 +37,7 @@ const Validations = buildValidations({
 
 export default DS.Model.extend(Validations, {
   state: DS.attr('string'),
-  publicationDate: DS.attr('string'),
+  createdAt: DS.attr('string'),
   groups: DS.hasMany('group'),
   alias: DS.attr('string'),
   collectionName: DS.attr('string'),
