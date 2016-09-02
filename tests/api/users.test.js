@@ -100,6 +100,11 @@ module.exports = function() {
                     'expiration-date': null,
                     password: 'essai'
                   },
+                  relationships: {
+                    team: {
+                      data: null
+                    }
+                  },
                   type: 'users',
                   id: user.id,
                 }
