@@ -39,7 +39,10 @@ function Config(sails) {
      * @param {Function} done Callback of the initialization
      */
     initialize(done) {
-      sails.after('hook:orm:loaded', () => {
+      sails.after([
+        'hook:migration:completed',
+        'hook:orm:loaded'
+      ], () => {
         ConfigService.init()
         .then(() => {
           sails.emit('hook:config:loaded');

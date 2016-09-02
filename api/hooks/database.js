@@ -22,44 +22,31 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-/* globals AccessToken */
+/* globals KnexService */
 
-var sails = require('sails');
+/**
+ * @module hooks
+ * @class Database
+ * @param {Object} sails The sails application
+ */
+function Database(sails) {
+  return {
 
-process.env.IAAS = 'dummy';
-process.env.TESTING = true;
-
-before(function(done) {
-
-  // Increase the Mocha timeout so that Sails has enough time to lift.
-  this.timeout(20000);
-
-  sails.lift({
-    models: {
-      migrate: 'safe'
+    /**
+     * Initialize the hook
+     *
+     * @method initialize
+     * @param {Function} done Callback of the initialization
+     */
+    initialize(done) {
+      KnexService.initialize()
+        .then(() => {
+          done();
+          sails.emit('hook:migration:completed');
+        })
+        .catch(done);
     }
-  }, function(err) {
+  };
+}
 
-    if (err) {
-      throw new Error(err);
-    }
-
-    // Here is loaded administrator token
-    AccessToken.create({
-      userId: 'aff17b8b-bf91-40bf-ace6-6dfc985680bb',
-      token: 'admintoken'
-    }, function(err) {
-
-      if (err) {
-        return done(err);
-      }
-
-      return done(err, sails);
-    });
-  });
-});
-
-after(function(done) {
-  // here you can clear fixtures, etc.
-  sails.lower(done);
-});
+module.exports = Database;
