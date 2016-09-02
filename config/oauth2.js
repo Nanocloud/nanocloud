@@ -36,22 +36,10 @@ server.exchange(oauth2orize.exchange.password(function(user, username, password,
 
   User.findOne({
     email: username,
-    or: [
-      { expirationDate: { '>' : Math.floor(new Date() / 1000)  } },
-      { expirationDate: null },
-      { expirationDate: 0 }
-    ]
   }, function(err, user) {
 
     if (err) {
       done(err);
-    }
-    if (!user) {
-      return done({
-        error: 'access_denied',
-        error_description: 'Invalid User Credentials',
-        status: 400
-      });
     }
 
     // delete reset password tokens

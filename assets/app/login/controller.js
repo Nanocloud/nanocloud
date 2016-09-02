@@ -49,8 +49,12 @@ export default Ember.Controller.extend({
         'authenticator:oauth2',
         identification,
         password
-      ).catch(() => {
-        this.toast.error('Invalid credentials');
+      ).catch((err) => {
+        if (err.error_description === 'This account is expired') {
+          this.toast.error('This account is expired');
+        } else {
+          this.toast.error('Invalid credentials');
+        }
       });
     }
   }

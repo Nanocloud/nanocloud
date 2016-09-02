@@ -98,7 +98,7 @@ module.exports = function() {
           .end(done);
       });
 
-      it('Should return login error', function(done) {
+      it('Should return the expired account error message', function(done) {
         nano.request(sails.hooks.http.app)
           .post('/oauth/token')
           .send({
@@ -107,6 +107,12 @@ module.exports = function() {
             grant_type: 'password'
           })
           .set('Authorization', 'Basic ' + new Buffer('9405fb6b0e59d2997e3c777a22d8f0e617a9f5b36b6565c7579e5be6deb8f7ae:9050d67c2be0943f2c63507052ddedb3ae34a30e39bbbbdab241c93f8b5cf341').toString('base64'))
+          .expect(400)
+          .expect((res) => {
+            if (res.body.error_description !== 'This account is expired') {
+              throw new Error('Error message is not appropriate');
+            }
+          })
           .end(done);
       });
     });

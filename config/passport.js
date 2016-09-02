@@ -68,10 +68,20 @@ passport.use(
 
             bcrypt.compare(password, user.hashedPassword, function(err, res){
               if(err){
-                return done(err, null);
+                return done(err);
               } else {
                 if (!res) {
-                  return done( null, false, { message: 'Invalid password' });
+                  return done({
+                    error: 'access_denied',
+                    error_description: 'Invalid user credentials',
+                    status: 400
+                  });
+                } else if (user.expirationDate < Math.floor(new Date() / 1000) && user.expirationDate !== null) {
+                  return done({
+                    error: 'access_denied',
+                    error_description: 'This account is expired',
+                    status: 400
+                  });
                 } else {
                   return done(null, user);
                 }
