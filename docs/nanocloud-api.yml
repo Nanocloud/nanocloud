@@ -1371,6 +1371,26 @@ paths:
           schema:
             $ref: "#/definitions/Properties"
 
+  /oauth/token:
+    get:
+      tags:
+        - oauth
+      summary:
+        Return a token from a valid username/password
+      parameters:
+        - in: body
+          name: data
+          description: Login credentials
+          required: true
+          schema:
+            $ref: "#/definitions/Login"
+      responses:
+        400:
+          description: Your credentials are not valid or your account expired
+          schema:
+            $ref: "#/definitions/LoginErrors"
+
+
 definitions:
   Configuration:
     type: object
@@ -1939,3 +1959,23 @@ definitions:
         type: string
       autoRegister:
         type: boolean
+
+  Login:
+    type: object
+    properties:
+      username:
+        type: string
+      password:
+        type: string
+      grant_type:
+        type: string
+
+  LoginErrors:
+    type: object
+    properties:
+      error:
+        type: string
+      error_description:
+        type: string
+      status:
+        type: number
