@@ -44,7 +44,10 @@ module.exports = {
       type: 'string'
     },
     displayName: {
-      type: 'string'
+      type: 'string',
+      required: true,
+      minLength: 2,
+      maxLength: 255
     },
     filePath: {
       type: 'string'
