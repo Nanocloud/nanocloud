@@ -103,10 +103,11 @@ module.exports = {
   update(req, res) {
 
     let applicationData = JsonApiService.deserialize(req.body.data);
+    let attributes = applicationData.attributes;
 
     App.update({
       id: req.allParams().id
-    }, {state: applicationData.attributes.state})
+    }, (req.user.isAdmin) ? attributes : {state: attributes.state})
       .then((applications) => {
 
         let application = applications.pop();

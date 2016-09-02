@@ -31,19 +31,6 @@ export default Ember.Controller.extend({
     return window.moment(new Date(this.get('model.publicationDate'))).format('MMMM Do YYYY, h:mm:ss A');
   }),
 
-  saveAppName: function() {
-    if (Ember.isPresent( this.get('model').changedAttributes().displayName)) {
-      this.get('model').save()
-      .then(() => {
-        this.toast.success('Application name has been updated successfully!');
-      })
-      .catch((reason) => {
-        this.toast.error(reason.errors[0].title);
-        this.get('model').rollbackAttributes();
-      });
-    }
-  }.observes('model.displayName'),
-
   preventDeletion: Ember.computed('appNameConfirm', 'model.displayName', function() {
     return this.get('appNameConfirm') !== this.get('model.displayName');
   }),
@@ -68,6 +55,28 @@ export default Ember.Controller.extend({
           this.toast.error(reason.errors[0].title);
         });
       }
+    },
+
+    saveAppName: function(defer) {
+      this.get('model').validate({ on: ['displayName'] })
+        .then(({ validations }) => {
+
+          if (validations.get('isInvalid') === true) {
+            this.toast.error(this.get('model.validations.attrs.displayName.messages'));
+            return defer.reject(this.get('model.validations.attrs.displayName.messages'));
+          }
+
+          this.get('model').save()
+            .then(() => {
+              defer.resolve();
+              this.toast.success('Application name has been updated successfully!');
+            })
+            .catch(() => {
+              defer.reject();
+              this.toast.error('Application name has not been updated');
+              this.get('model').rollbackAttributes();
+            });
+        });
     },
   }
 });

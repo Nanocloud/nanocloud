@@ -8,7 +8,15 @@
       <tr>
         <th scope="row">Application name</th>
         <td>
-          {{input-confirm class="application-name-input" value=model.displayName}}
+          {{#edit-text
+          type="text"
+          confirmation=false
+          textInput=model.displayName
+          textInputPlaceholder="Application name"
+          onClose="saveAppName"
+          }}
+            {{model.displayName}}
+          {{/edit-text}}
         </td>
       </tr>
       <tr>
