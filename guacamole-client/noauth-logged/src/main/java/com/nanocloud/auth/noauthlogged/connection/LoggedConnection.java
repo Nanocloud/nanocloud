@@ -81,6 +81,7 @@ public class LoggedConnection extends SimpleConnection {
       String machineId = data.getString("id");
       dataAttribute = data.getJSONObject("attributes");
       String machineDriver = dataAttribute.getString("type");
+      String flavor = dataAttribute.getString("flavor");
 
       URL myUrl = new URL("http://" + hostname + ":" + port + "/" + endpoint);
       HttpURLConnection urlConn = (HttpURLConnection)myUrl.openConnection();
@@ -101,7 +102,7 @@ public class LoggedConnection extends SimpleConnection {
               .add("end-date", "")
               .add("machine-id", machineId)
               .add("machine-driver", machineDriver)
-              .add("machine-type", "")))
+              .add("machine-type", flavor)))
         .build();
 
       urlConn.setUseCaches(false);
@@ -183,7 +184,6 @@ public class LoggedConnection extends SimpleConnection {
         data = dataArray.getJSONObject(0);
         this.machineId = data.getString("id");
 
-
       } catch (IOException e) {
         // TODO Auto-generated catch block
         e.printStackTrace();
@@ -217,9 +217,7 @@ public class LoggedConnection extends SimpleConnection {
                 .add("connection-id", this.connection.getConnectionName())
                 .add("start-date", this.connection.getStartDate().toString())
                 .add("end-date", new Date().toString())
-                .add("machine-id", this.machineId)
-                .add("machine-driver", "")
-                .add("machine-type", "")))
+                .add("machine-id", this.machineId)))
           .build();
 
         urlConn.setUseCaches(false);

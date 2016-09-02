@@ -24,7 +24,7 @@
  * @description :: Driver for Amazon Web Service EC2 Iaas
  */
 
-/* global UserService, Machine, MachineService, ConfigService, Image */
+/* global Machine, MachineService, ConfigService, Image */
 
 const pkgcloud = require('pkgcloud');
 const Promise = require('bluebird');
@@ -456,7 +456,7 @@ class AWSDriver extends Driver {
       return new Promise((resolve, reject) => {
         var finalPrice = 0;
         let history = [];
-        UserService.getUserHistory(user, 'aws')
+        user.getHistory('aws')
           .then((machineHistory) => {
 
             /**

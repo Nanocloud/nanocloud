@@ -20,7 +20,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* globals Machine, Image, UserService */
+/* globals Machine, Image */
 
 const Promise = require('bluebird');
 const uuid = require('node-uuid');
@@ -199,7 +199,7 @@ class DummyDriver extends BaseDriver {
       return new Promise((resolve, reject) => {
         var finalPrice = 0;
         let history = [];
-        UserService.getUserHistory(user, 'aws')
+        user.getHistory('aws')
           .then((machineHistory) => {
 
             /**

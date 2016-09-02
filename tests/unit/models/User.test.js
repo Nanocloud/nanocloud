@@ -24,27 +24,34 @@
 
 // jshint mocha:true
 
-/* global UserService, History */
+/* global History, User */
 
 describe('User Service', () => {
+  let adminUser = null;
+
   describe('getUserHistory', () => {
     before('Clean History database', function(done) {
-      History.query('TRUNCATE TABLE public.history', done);
+      History.query('TRUNCATE TABLE public.history', () => {});
+      User.findOne({
+        id: 'aff17b8b-bf91-40bf-ace6-6dfc985680bb'
+      })
+        .then((user) => {
+          adminUser = user;
+          return done();
+        });
     });
 
     it('Should return an empty array', (done) => {
-      UserService.getUserHistory({
-          id: 'aff17b8b-bf91-40bf-ace6-6dfc985680bb',
-          createdAt: '2016-06-20 10:00:00+00'
-      }, 'aws')
+      adminUser.getHistory('aws')
         .then((his) => {
           if (his.length !== 0) {
             return done(new Error('History should be empty'));
           } else {
             this.newDate = new Date();
+            this.newDate.setDate(this.newDate.getDay() + 1);
             this.newDate.setHours(0);
             this.newDate.setMinutes(5);
-            History.create([{
+            return History.create([{
               userId: 'aff17b8b-bf91-40bf-ace6-6dfc985680bb',
               connectionId: 'Desktop',
               startDate: this.newDate.toString(),
@@ -65,16 +72,17 @@ describe('User Service', () => {
               machineId: 'g5362974-a8df-4ed6-89f5-99093b145999',
               machineDriver: 'aws',
               machineType: 't2.medium'
-            }], done);
+            }])
+              .then(() => {
+                return done();
+              });
           }
         });
     });
 
     it('Should return a valid timer', (done) => {
-      UserService.getUserHistory({
-        id: 'aff17b8b-bf91-40bf-ace6-6dfc985680bb',
-        createdAt: '2016-06-20 10:00:00+00'
-      }, 'aws')
+
+      adminUser.getHistory('aws')
         .then((his) => {
           if (his.length !== 1) {
             return done(new Error('It should found an history'));
@@ -86,6 +94,7 @@ describe('User Service', () => {
             })
               .then(() => {
                 var end = new Date();
+                end.setDate(end.getDay() + 1);
                 end.setHours(1);
                 end.setMinutes(0);
                 History.create({
@@ -105,10 +114,7 @@ describe('User Service', () => {
     });
 
     it('Should return correct history timer', (done) => {
-      return UserService.getUserHistory({
-        id: 'aff17b8b-bf91-40bf-ace6-6dfc985680bb',
-        createdAt: '2016-06-20 10:00:00+00'
-      }, 'aws')
+      adminUser.getHistory('aws')
         .then((his) => {
           if (his.length !== 1) {
             return done(new Error('It should found an history'));
@@ -118,6 +124,7 @@ describe('User Service', () => {
             return done(new Error('Bad time returned'));
           } else {
             var end = new Date();
+            end.setDate(end.getDay() + 1);
             end.setHours(1);
             end.setMinutes(0);
             return History.create({
@@ -134,10 +141,7 @@ describe('User Service', () => {
           }
         })
         .then(() => {
-          return UserService.getUserHistory({
-            id: 'aff17b8b-bf91-40bf-ace6-6dfc985680bb',
-            createdAt: '2016-06-20 10:00:00+00'
-          }, 'aws');
+          return adminUser.getHistory('aws');
         })
         .then((his) => {
           if (his.length !== 2) {
@@ -153,15 +157,20 @@ describe('User Service', () => {
             var end2 = new Date();
             var end3 = new Date();
 
+            start2.setDate(start2.getDay() + 1);
             start2.setHours(2);
             start2.setMinutes(5);
+            start3.setDate(start3.getDay() + 1);
             start3.setHours(5);
             start3.setMinutes(5);
             end.setHours(1);
+            end.setDate(end.getDay() + 1);
             end.setMinutes(0);
             end2.setHours(4);
+            end2.setDate(end2.getDay() + 1);
             end2.setMinutes(0);
             end3.setHours(8);
+            end3.setDate(end3.getDay() + 1);
             end3.setMinutes(0);
 
             return History.create([{
@@ -211,10 +220,7 @@ describe('User Service', () => {
           }
         })
         .then(() => {
-          return UserService.getUserHistory({
-            id: 'aff17b8b-bf91-40bf-ace6-6dfc985680bb',
-            createdAt: '2016-06-20 10:00:00+00'
-          }, 'aws');
+          return adminUser.getHistory('aws');
         })
         .then((his) => {
           if (his.length !== 2) {
