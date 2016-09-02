@@ -35,7 +35,7 @@ module.exports = function() {
 
     afterEach('Cleaning database', function(done) {
 
-      Group.query('TRUNCATE TABLE public.group', done);
+      Group.query('DELETE FROM public.group', done);
     });
 
     const expectedSchema = {

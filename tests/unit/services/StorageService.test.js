@@ -55,7 +55,8 @@ describe('Storage Service', function() {
         expect(storage.port).to.equal('9090');
         expect(storage.user).to.equal('aff17b8b-bf91-40bf-ace6-6dfc985680bb');
         done();
-      });
+      })
+      .catch(done);
     });
   });
 

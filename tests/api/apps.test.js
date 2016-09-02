@@ -155,7 +155,8 @@ module.exports = function() {
         })
         .then(() => {
           return done();
-        });
+        })
+        .catch(done);
     });
   });
 
@@ -323,7 +324,7 @@ module.exports = function() {
 
     after('Cleaning groups', function(done) {
 
-      Group.query('TRUNCATE TABLE public.group', () => {
+      Group.query('DELETE FROM public.group', () => {
         return User.destroy([
           someguy,
           someotherguy
