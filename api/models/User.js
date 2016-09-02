@@ -20,11 +20,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* globals Group */
+/* globals Group, History */
 
 const bcrypt = require('bcryptjs');
 const uuid   = require('node-uuid');
 const _      = require('lodash');
+const Promise = require('bluebird');
+const moment = require('moment');
 
 module.exports = {
 
@@ -82,6 +84,120 @@ module.exports = {
       delete obj.password;
       delete obj.hashedPassword;
       return obj;
+    },
+
+    /**
+     * Return time of use of all machines of the user
+     *
+     * @param {object} user The user we need for get the history
+     * @param {object} driver The driver used by the user
+     * @return {Promise[array[object]]}
+     */
+    getHistory: function(driver) {
+      const historyQuery = Promise.promisify(History.query);
+      let duration = [];
+      let machines = [];
+
+      return historyQuery({
+        text: 'SELECT "startDate", "endDate", "machineId", "machineType" FROM history WHERE "userId" = $1 AND "machineDriver" = $2 ORDER BY "machineId", "startDate"',
+        values: [this.id, driver]
+      })
+        .then((allHistories) => {
+          var thisMonthStart = new Date(this.createdAt);
+          thisMonthStart.setMonth(thisMonthStart.getMonth() + moment(new Date()).diff(moment(thisMonthStart), 'Month'));
+
+          /**
+           * Concatenate histories if their hours charged times overlap
+           * It assign the current time to the empty endDate properties
+           */
+
+          allHistories = allHistories.rows;
+          allHistories.forEach((element) => {
+            element.startDate = new Date (element.startDate);
+
+            /**
+             * If the history start date is not on the actual month,
+             * it doesn't take count of it
+             */
+
+            if (element.startDate >= thisMonthStart) {
+              if (!element.endDate || element.endDate === '') {
+                element.endDate = new Date();
+              } else {
+                element.endDate = new Date(element.endDate);
+              }
+              var listedMachines = machines.filter((machine) => {
+                return machine.id === element.machineId;
+              });
+
+              /**
+               * If the machine alreadly exist on machines array, we calculate
+               * if the current history startDate overlap with one of the previous
+               * history of this machine.
+               */
+
+              if (listedMachines.length === 0) {
+                machines.push({
+                  id: element.machineId,
+                  type: element.machineType,
+                  start: [element.startDate],
+                  end: [element.endDate]
+                });
+              } else {
+
+                /**
+                 * If no history overlaps with the current history, it pushes it to the
+                 * machine history array.
+                 */
+
+                if (!_.some(listedMachines[0].start, (start, index) => {
+                  var diff = moment(listedMachines[0].end[index]).diff(moment(start), 'hours');
+                  if ((moment(listedMachines[0].end[index]).diff(moment(start), 'second') % 3600) !== 0) {
+                    diff += 1;
+                  }
+                  if (element.startDate < start.setHours(start.getHours() + diff)) {
+                    start.setHours(start.getHours() - diff);
+                    if (element.endDate > listedMachines[0].end[index]) {
+                      listedMachines[0].end[index] = element.endDate;
+                    }
+                    return true;
+                  }
+                  start.setHours(start.getHours() - diff);
+                  return false;
+                })) {
+                  listedMachines[0].start.push(element.startDate);
+                  listedMachines[0].end.push(element.endDate);
+                }
+              }
+            }
+          });
+        })
+        .then(() => {
+
+          /**
+           * Calcul the total hours used for all machines
+           */
+
+          machines.forEach((element) => {
+            var totalDiff = 0;
+            element.start.forEach((el, index) => {
+              var start = moment(el);
+              var end = moment(element.end[index]);
+              totalDiff = totalDiff + end.diff(start, 'hours');
+              if ((end.diff(start, 'second') % 3600) !== 0) {
+                totalDiff += 1;
+              }
+            });
+
+            duration.push({
+              type: element.type,
+              time: totalDiff
+            });
+          });
+        })
+        .then(() => {
+          return duration;
+        });
     }
   },
 

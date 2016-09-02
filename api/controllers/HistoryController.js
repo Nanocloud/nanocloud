@@ -25,7 +25,7 @@
  * @help        :: See http://sailsjs.org/#!/documentation/concepts/Controllers
  */
 
-/* global Machine, MachineService, JsonApiService */
+/* global Machine, MachineService, JsonApiService, User */
 
 const _= require('lodash');
 
@@ -59,17 +59,22 @@ module.exports = {
 
     if (!machineId) {
       return res.badRequest('Invalid machine id');
+    } else if (req.body.data.attributes.endDate === '') {
+      return res.badRequest('Invalid end date');
     }
 
     Machine.findOne(machineId)
       .then((machine) => {
-        if (req.body.data.attributes.endDate !== '') {
-          MachineService.sessionEnded({
-            id: machine.user
-          });
-        }
-
+        return User.findOne({
+          id: machine.user
+        });
+      })
+      .then((user) => {
+        MachineService.sessionEnded(user);
         return JsonApiService.updateOneRecord(req, res);
+      })
+      .catch((err) => {
+        return res.negotiate(err);
       });
   }
 };

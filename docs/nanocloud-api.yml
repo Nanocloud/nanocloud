@@ -420,6 +420,8 @@ paths:
                 type: array
                 items:
                   "$ref": "#/definitions/Histories"
+        400:
+          description: Bad resquest, machineId or endDate is invalid
   /reset-password-tokens:
     post:
       tags:
@@ -1487,6 +1489,12 @@ definitions:
           start-date:
             type: string
           end-date:
+            type: string
+          machineId:
+            type: string
+          machineDriver:
+            type: string
+          machineType:
             type: string
 
   Machines:

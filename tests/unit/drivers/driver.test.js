@@ -22,7 +22,7 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-/* global History */
+/* global History, User */
 
 const DummyDriver = require('../../../api/drivers/dummy/driver');
 let _driver = null;
@@ -32,6 +32,7 @@ process.env.machinePoolSize = 3;
 process.env.sessionDuration = 0;
 
 describe('Dummy driver', () => {
+  let adminUser = null;
   describe('getUserCredit', () => {
     before('clean history database', function(done) {
       History.query('TRUNCATE TABLE public.history', () => {
@@ -39,13 +40,16 @@ describe('Dummy driver', () => {
           _driver.initialize();
           done();
       });
+      User.findOne({
+        id: 'aff17b8b-bf91-40bf-ace6-6dfc985680bb'
+      })
+        .then((user) => {
+          adminUser = user;
+        });
     });
 
     it('Should return 0', (done) => {
-      _driver.getUserCredit({
-        id : 'aff17b8b-bf91-40bf-ace6-6dfc985680bb',
-        createdAt: '2016-06-20 10:00:00+00'
-      }, 'aws')
+      _driver.getUserCredit(adminUser)
         .then((price) => {
           if (price !== 0) {
             return done(new Error('Bad price returned'));
@@ -58,8 +62,10 @@ describe('Dummy driver', () => {
     it('Should return a coherent price', (done) => {
       var start = new Date();
       var end = new Date();
+      start.setDate(start.getDay() + 1);
       start.setHours(0);
       start.setMinutes(5);
+      end.setDate(end.getDay() + 1);
       end.setHours(1);
       end.setMinutes(0);
       History.create({
@@ -74,10 +80,7 @@ describe('Dummy driver', () => {
         machineType: 't2.small'
       })
         .then(() => {
-          return _driver.getUserCredit({
-            id: 'aff17b8b-bf91-40bf-ace6-6dfc985680bb',
-            createdAt: '2016-06-20 10:00:00+00'
-          }, 'aws');
+          return _driver.getUserCredit(adminUser);
         })
         .then((price) => {
           if (price !== 0.04) {
@@ -96,16 +99,22 @@ describe('Dummy driver', () => {
       var end2 = new Date();
       var end3 = new Date();
 
+      start.setDate(start.getDay() + 1);
       start.setHours(0);
+      start2.setDate(start2.getDay() + 1);
       start2.setHours(2);
       start3.setHours(5);
       start.setMinutes(5);
+      start3.setDate(start3.getDay() + 1);
       start2.setMinutes(5);
       start3.setMinutes(5);
+      end.setDate(end.getDay() + 1);
       end.setHours(1);
+      end2.setDate(end2.getDay() + 1);
       end2.setHours(4);
       end3.setHours(8);
       end.setMinutes(0);
+      end3.setDate(end3.getDay() + 1);
       end2.setMinutes(0);
       end3.setMinutes(0);
 
@@ -143,10 +152,7 @@ describe('Dummy driver', () => {
         machineType: 't2.small'
       }])
         .then(() => {
-          return _driver.getUserCredit({
-            id: 'aff17b8b-bf91-40bf-ace6-6dfc985680bb',
-            createdAt: '2016-06-20 10:00:00+00'
-          }, 'aws');
+          return _driver.getUserCredit(adminUser);
         })
         .then((price) => {
           if (price !== (6 * 0.04)) {
