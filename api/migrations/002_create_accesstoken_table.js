@@ -22,44 +22,19 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-/* globals AccessToken */
-
-var sails = require('sails');
-
-process.env.IAAS = 'dummy';
-process.env.TESTING = true;
-
-before(function(done) {
-
-  // Increase the Mocha timeout so that Sails has enough time to lift.
-  this.timeout(20000);
-
-  sails.lift({
-    models: {
-      migrate: 'safe'
-    }
-  }, function(err) {
-
-    if (err) {
-      throw new Error(err);
-    }
-
-    // Here is loaded administrator token
-    AccessToken.create({
-      userId: 'aff17b8b-bf91-40bf-ace6-6dfc985680bb',
-      token: 'admintoken'
-    }, function(err) {
-
-      if (err) {
-        return done(err);
-      }
-
-      return done(err, sails);
-    });
+function up(knex) {
+  return knex.schema.createTable('accesstoken', (table) => {
+    table.increments();
+    table.string('userId').references('user.id').onDelete('CASCADE').onUpdate('CASCADE');
+    table.string('token');
+    table.string('scope');
+    table.dateTime('createdAt');
+    table.dateTime('updatedAt');
   });
-});
+}
 
-after(function(done) {
-  // here you can clear fixtures, etc.
-  sails.lower(done);
-});
+function down(knex) {
+  return knex.schema.dropTable('accesstoken');
+}
+
+module.exports = { up, down };

@@ -34,18 +34,26 @@ process.env.sessionDuration = 0;
 describe('Dummy driver', () => {
   let adminUser = null;
   describe('getUserCredit', () => {
-    before('clean history database', function(done) {
-      History.query('TRUNCATE TABLE public.history', () => {
-          _driver = new (DummyDriver)();
-          _driver.initialize();
-          done();
+    before('clean history database', (done) => {
+      History.query('DELETE FROM public.history', (err) => {
+        if (err) {
+          done(err);
+          return ;
+        }
+
+        _driver = new DummyDriver();
+        _driver.initialize()
+        .then(() => {
+          return User.findOne({
+            id: 'aff17b8b-bf91-40bf-ace6-6dfc985680bb'
+          })
+            .then((user) => {
+              adminUser = user;
+              done();
+            });
+        })
+        .catch(done);
       });
-      User.findOne({
-        id: 'aff17b8b-bf91-40bf-ace6-6dfc985680bb'
-      })
-        .then((user) => {
-          adminUser = user;
-        });
     });
 
     it('Should return 0', (done) => {
@@ -161,9 +169,7 @@ describe('Dummy driver', () => {
             done();
           }
         })
-        .catch((err) => {
-          return done(new Error(err));
-        });
+        .catch(done);
     });
   });
 });
