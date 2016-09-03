@@ -23,12 +23,14 @@
 /*
  * Pass to next middleware only if incoming request comes from Guacamole
  * For now we consider a request to originate from Guacamole if req.host is set to
- * "localhost:1337" which is the case for guacamole because it directly targets
+ * "localhost:1337" or "backend:1337" which is the case for guacamole because it directly targets
  * the backend without passing through the proxy
  */
 module.exports = function(req, res, next) {
 
-  if (req.get('host') === 'localhost:1337') {
+  let host = req.get('host');
+
+  if (host === 'localhost:1337' || host === 'backend:1337') {
     return next(null);
   }
 
