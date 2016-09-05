@@ -30,6 +30,9 @@ module.exports = function(defaults) {
   var app = new EmberApp(defaults, {
     // Add options here
 
+    fingerprint: {
+      exclude: ['logo']
+    },
     emberCliFontAwesome: {
       useScss: true, // for ember-cli-sass
       useLess: false // for ember-cli-less
