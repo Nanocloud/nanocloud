@@ -47,6 +47,7 @@ module.exports = {
         if (autoRegister === false) {
           return Promise.reject(new Error('Self registration is not enabled'));
         }
+
         return User.findOne({
           email: user.email
         });
