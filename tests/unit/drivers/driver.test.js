@@ -70,10 +70,10 @@ describe('Dummy driver', () => {
     it('Should return a coherent price', (done) => {
       var start = new Date();
       var end = new Date();
-      start.setDate(start.getDay() + 1);
+      start.setDate(start.getDate() + 1);
       start.setHours(0);
       start.setMinutes(5);
-      end.setDate(end.getDay() + 1);
+      end.setDate(end.getDate() + 1);
       end.setHours(1);
       end.setMinutes(0);
       History.create({
@@ -107,22 +107,22 @@ describe('Dummy driver', () => {
       var end2 = new Date();
       var end3 = new Date();
 
-      start.setDate(start.getDay() + 1);
+      start.setDate(start.getDate() + 1);
       start.setHours(0);
-      start2.setDate(start2.getDay() + 1);
+      start2.setDate(start2.getDate() + 1);
       start2.setHours(2);
       start3.setHours(5);
       start.setMinutes(5);
-      start3.setDate(start3.getDay() + 1);
+      start3.setDate(start3.getDate() + 1);
       start2.setMinutes(5);
       start3.setMinutes(5);
-      end.setDate(end.getDay() + 1);
+      end.setDate(end.getDate() + 1);
       end.setHours(1);
-      end2.setDate(end2.getDay() + 1);
+      end2.setDate(end2.getDate() + 1);
       end2.setHours(4);
       end3.setHours(8);
       end.setMinutes(0);
-      end3.setDate(end3.getDay() + 1);
+      end3.setDate(end3.getDate() + 1);
       end2.setMinutes(0);
       end3.setMinutes(0);
 

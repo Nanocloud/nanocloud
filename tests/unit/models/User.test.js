@@ -48,7 +48,7 @@ describe('User Service', () => {
             return done(new Error('History should be empty'));
           } else {
             this.newDate = new Date();
-            this.newDate.setDate(this.newDate.getDay() + 1);
+            this.newDate.setDate(this.newDate.getDate() + 1);
             this.newDate.setHours(0);
             this.newDate.setMinutes(5);
             return History.create([{
@@ -94,7 +94,7 @@ describe('User Service', () => {
             })
               .then(() => {
                 var end = new Date();
-                end.setDate(end.getDay() + 1);
+                end.setDate(end.getDate() + 1);
                 end.setHours(1);
                 end.setMinutes(0);
                 History.create({
@@ -124,7 +124,7 @@ describe('User Service', () => {
             return done(new Error('Bad time returned'));
           } else {
             var end = new Date();
-            end.setDate(end.getDay() + 1);
+            end.setDate(end.getDate() + 1);
             end.setHours(1);
             end.setMinutes(0);
             return History.create({
@@ -157,20 +157,20 @@ describe('User Service', () => {
             var end2 = new Date();
             var end3 = new Date();
 
-            start2.setDate(start2.getDay() + 1);
+            start2.setDate(start2.getDate() + 1);
             start2.setHours(2);
             start2.setMinutes(5);
-            start3.setDate(start3.getDay() + 1);
+            start3.setDate(start3.getDate() + 1);
             start3.setHours(5);
             start3.setMinutes(5);
             end.setHours(1);
-            end.setDate(end.getDay() + 1);
+            end.setDate(end.getDate() + 1);
             end.setMinutes(0);
             end2.setHours(4);
-            end2.setDate(end2.getDay() + 1);
+            end2.setDate(end2.getDate() + 1);
             end2.setMinutes(0);
             end3.setHours(8);
-            end3.setDate(end3.getDay() + 1);
+            end3.setDate(end3.getDate() + 1);
             end3.setMinutes(0);
 
             return History.create([{
