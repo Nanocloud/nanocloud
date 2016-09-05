@@ -1,0 +1,7 @@
+735a736
+> #define FreeRDP_SupportDisplayControl    5059
+1275c1276,1277
+< 	UINT64 padding5184[5184 - 5059]; /* 5059 */
+---
+>   ALIGN64 BOOL SupportDisplayControl;
+> 	UINT64 padding5184[5185 - 5060]; /* 5059 */

@@ -75,7 +75,7 @@ services:
     restart: always
 
   guacd:
-    image: glyptodon/guacd:0.9.9
+    image: nanocloud/guacd
     network_mode: host
     container_name: "guacd"
 
