@@ -38,6 +38,9 @@ module.exports = function() {
 
       ConfigService.set('testMail', true)
         .then(() => {
+          return ConfigService.set('autoRegister', true);
+        })
+        .then(() => {
           return done();
         });
     });
@@ -255,6 +258,9 @@ module.exports = function() {
             groupId = group.id;
             return ConfigService.set('defaultGroup', groupId);
           })
+					.then(() => {
+						return ConfigService.set('autoRegister', true);
+					})
           .then(() => {
             return done();
           });
@@ -309,11 +315,34 @@ module.exports = function() {
       });
     });
 
+		it('Should not create an entry in pending user table', function(done) {
+
+			ConfigService.set('autoRegister', false)
+				.then(() => {
+					// adding user to pendinguser table
+					nano.request(sails.hooks.http.app)
+						.post('/api/pendingusers')
+						.send({
+							data: {
+								attributes: userData,
+								type: 'pendingusers'
+							}
+						})
+						.expect(400)
+						.then (() => {
+							return done();
+						});
+				});
+		});
+
     after(function(done) {
       ConfigService.unset('testMail')
         .then(() => {
-          return done();
-        });
+					return ConfigService.set('autoRegister', true);
+        })
+				.then(() => {
+					return done();
+				});
     });
 
     afterEach(function(done) {
