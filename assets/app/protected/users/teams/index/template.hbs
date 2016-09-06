@@ -8,56 +8,56 @@
   </p>
 {{/if}}
 
-{{#unless protectedController.hasTeam}}
-<div class="teams-focus-input group in-bl {{if dimBackground 'focus' }}">
+{{#if protectedController.hasNoTeam}}
+  <div class="teams-focus-input group in-bl {{if dimBackground 'focus' }}">
 
-  {{#if dimBackground}}
-    <div class='close-btn pull-xs-right'>
-      {{ icon-component
-        materialIcon="close"
-        clickable=true
-        hover-enabled=true
-        click=(action "closeFocusModeTeams")
-      }}
-    </div>
-  {{/if}}
-
-  <h4>
-    {{#link-to 'protected.users.teams' }}
-      Teams
-    {{/link-to}}
-  </h4>
-
-  <p class="color-primary in-bl m-t-1">
-    <span class="text">
-      Looks like you don't have a team yet.<br>You can create one by filling this area then press enter.
-    </span>
-  </p>
-  <form {{action "createTeam" on="submit"}}>
-    <div class="form-group row m-t-1">
-      <div class="col-sm-6 col-lg-8">
-        {{nano-input
-          class="color-primary input-pattern-underline"
-          type="text"
-          placeholder="(ex: Team Cook)"
-          autofocus=protectedController.isNotAdmin
-          value=model.name
-          isFocused=focusModeTeams
+    {{#if dimBackground}}
+      <div class='close-btn pull-xs-right'>
+        {{ icon-component
+          materialIcon="close"
+          clickable=true
+          hover-enabled=true
+          click=(action "closeFocusModeTeams")
         }}
       </div>
-      <div class="col-sm-2">
-        {{#if loadState}}
-          <button type="button" class="publish-btn btn btn-info">In progress {{ fa-icon "spinner" spin=true}}</button>
-        {{else}}
-          <button type="submit" class="create-team-btn btn btn-primary">
-            Create
-          </button>
-        {{/if}}
+    {{/if}}
+
+    <h4>
+      {{#link-to 'protected.users.teams' }}
+        Teams
+      {{/link-to}}
+    </h4>
+
+    <p class="color-primary in-bl m-t-1">
+      <span class="text">
+        Looks like you don't have a team yet.<br>You can create one by filling this area then press enter.
+      </span>
+    </p>
+    <form {{action "createTeam" on="submit"}}>
+      <div class="form-group row m-t-1">
+        <div class="col-sm-6 col-lg-8">
+          {{nano-input
+            class="color-primary input-pattern-underline"
+            type="text"
+            placeholder="(ex: Team Cook)"
+            autofocus=protectedController.isNotAdmin
+            value=model.name
+            isFocused=focusModeTeams
+          }}
+        </div>
+        <div class="col-sm-2">
+          {{#if loadState}}
+            <button type="button" class="publish-btn btn btn-info">In progress {{ fa-icon "spinner" spin=true}}</button>
+          {{else}}
+            <button type="submit" class="create-team-btn btn btn-primary">
+              Create
+            </button>
+          {{/if}}
+        </div>
       </div>
-    </div>
-  </form>
-</div>
-{{/unless}}
+    </form>
+  </div>
+{{/if}}
 <div class='m-t-2'>
   {{#if protectedController.isAdminOrTeamAdmin}}
     {{#if protectedController.hasTeam}}

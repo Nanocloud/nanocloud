@@ -36,11 +36,8 @@ export default Ember.Controller.extend({
   hasTeam: Ember.computed('session.user.team', function() {
     return !Ember.isNone(this.get('session.user.team.name'));
   }),
-  hasNoTeam: Ember.computed('session.user.team', function() {
-    return this.get('session.user.team') !== undefined;
-  }),
-  steamEnabled: Ember.computed('configuration.deferred', function() {
-    return this.get('configuration.teamEnabled');
+  hasNoTeam: Ember.computed('session.user.team.name', function() {
+    return Ember.isNone(this.get('session.user.team.name'));
   }),
   teamEnabled: Ember.computed.readOnly('configuration.teamEnabled'),
   isNotAdmin: Ember.computed.not('session.user.isAdmin'),
@@ -51,11 +48,11 @@ export default Ember.Controller.extend({
 
   setup() {
     this.get('configuration').loadData()
-    .then(() => {
-      if (this.get('showModal')) {
-        this.transitionToRoute('protected.users.teams.index');
-      }
-    });
+      .then(() => {
+        if (this.get('showModal')) {
+          this.transitionToRoute('protected.users.teams.index');
+        }
+      });
   },
 
   name: config.APP.name,
