@@ -32,7 +32,7 @@ export default Ember.Route.extend({
     });
   },
   beforeModel() {
-    if (!this.get('session.user.isAdmin')) {
+    if (!this.get('session').get('user').get('isAdmin')) {
       this.toast.error('Permission denied');
       this.transitionTo('protected.dashboard');
     }
