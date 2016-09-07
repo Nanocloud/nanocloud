@@ -68,14 +68,16 @@
           {{/unless}}
 
           {{#unless session.user.isAdmin}}
-            <li>
-                {{#link-to 'protected.users.teams'}}
-                <span class="icon">
-                    <i class="material-icons">assignment_ind</i>
-                </span>
-                Team
-                {{/link-to}}
-            </li>
+            {{#if teamEnabled}}
+              <li>
+                  {{#link-to 'protected.users.teams'}}
+                  <span class="icon">
+                      <i class="material-icons">assignment_ind</i>
+                  </span>
+                  Team
+                  {{/link-to}}
+              </li>
+            {{/if}}
           {{/unless}}
 
           {{#if session.user.isAdmin}}
