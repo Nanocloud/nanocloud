@@ -312,7 +312,7 @@ class AWSDriver extends Driver {
                 const server = res.server;
                 const password = res.password;
                 const image = res.image;
-                const ip = server.addresses.public[0];
+                const ip = server.addresses.public[0] || server.addresses.private[0];
                 const type = this.name();
 
                 return ConfigService.get('awsMachineUsername', 'plazaPort', 'awsFlavor')
