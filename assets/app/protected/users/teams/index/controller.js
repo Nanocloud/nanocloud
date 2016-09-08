@@ -162,8 +162,52 @@ export default Ember.Controller.extend({
         });
     },
 
+    toggleUserSetting(user) {
+      this.send('togglePopup', user);
+    },
+
+    closePopup(user) {
+      user.set('teamOptionIsOpen', false);
+    },
+
+    openPopup(user) {
+      user.set('teamOptionIsOpen', true);
+    },
+
+    togglePopup(user) {
+      user.toggleProperty('teamOptionIsOpen');
+    },
+
     closeFocusModeTeams() {
       this.set('focusModeTeams', false);
+    },
+
+    toAdminTeam(user) {
+      user.set('isTeamAdmin', true);
+      user.save()
+        .then(() => {
+          this.toast.success(user.get('fullName') + ' has been promoted to team admin');
+        })
+        .catch(() => {
+          this.toast.error('An error occurred while setting a team member team admin. Please try again.');
+        })
+        .finally(() => {
+          this.send('closePopup', user);
+        });
+    },
+
+    toRegularUser(user) {
+      user.set('isTeamAdmin', false);
+      user.save()
+        .then(() => {
+          this.toast.success(user.get('fullName') + ' is now a regular user');
+        })
+        .catch(() => {
+          this.toast.error('An error occurred while setting a team admin team member. Please try again.');
+        })
+        .finally(() => {
+          this.send('closePopup', user);
+        });
     }
   }
 });
