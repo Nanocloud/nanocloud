@@ -101,6 +101,7 @@ module.exports = {
     awsFlavor: 't2.medium',
     awsMachineUsername: 'Administrator',
     awsMachinePassword: '',
+    awsMachineSubnet: '',
 
     openstackUsername:  '',
     openstackPassword: '',
