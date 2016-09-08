@@ -22,32 +22,27 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-import Ember from 'ember';
+import { moduleForComponent, test } from 'ember-qunit';
+import hbs from 'htmlbars-inline-precompile';
 
-export default Ember.Component.extend({
-  classNames: ['dim-background'],
-  classNameBindings: ['show:state-show:state-hide'],
-  opacity: 0.6,
-  duration: 200,
+moduleForComponent('popup-component', 'Integration | Component | popup component', {
+  integration: true
+});
 
-  animation: function() {
-    if (this.get('show')) {
-      Ember.$(this.get('element')).velocity('stop').velocity({ opacity: this.get('opacity')}, {
-        easing: 'easeOutQuart',
-        duration: this.get('duration')
-      });
-    }
-    else {
-      Ember.$(this.get('element')).velocity('stop').velocity({ opacity: 0}, {
-        easing: 'easeOutQuart',
-        duration: this.get('duration'),
-      });
-    }
-  }.observes('show'),
+test('it renders', function(assert) {
+  // Set any properties with this.set('myProperty', 'value');
+  // Handle any actions with this.on('myAction', function(val) { ... });
 
-  click: function() {
-    if (!this.get('preventAction')) {
-      this.sendAction();
-    }
-  },
+  this.render(hbs`{{popup-component}}`);
+
+  assert.equal(this.$().text().trim(), '');
+
+  // Template block usage:
+  this.render(hbs`
+    {{#popup-component}}
+      template block text
+    {{/popup-component}}
+  `);
+
+  assert.equal(this.$().text().trim(), 'template block text');
 });

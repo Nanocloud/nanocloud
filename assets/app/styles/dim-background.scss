@@ -1,10 +1,9 @@
 .dim-background {
-  @extend .transition-enabled;
   position: fixed;
   width: 100%;
   left: 0;
   height: 100%;
-  background-color: rgba(0, 0, 0, 0.59);
+  background-color: #000;
   top: 0;
   z-index: 1;
 

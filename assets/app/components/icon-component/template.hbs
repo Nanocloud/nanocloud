@@ -1,7 +1,8 @@
 {{#if materialIcon }}
-  <i class="icon-element material-icons {{if spin 'spin'}}">{{ materialIcon }}</i>
+  <i class='icon-element material-icons {{if spin "spin"}}' {{action "userClickPopup"}}>{{ materialIcon }}</i>
 {{/if}}
 
 {{#if fontAwesome }}
   {{ fa-icon fontAwesome spin=fontAwesomeSpin}}
 {{/if}}
+{{yield}}
