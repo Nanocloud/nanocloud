@@ -22,63 +22,67 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-/* globals ConfigService, EmailService, User */
+/* globals ConfigService, EmailService, User, TemplateService */
 
-const uuid          = require('node-uuid');
+const uuid = require('node-uuid');
 
 module.exports = {
   create: function(req, res) {
     const ResetPassword = global['Reset-password'];
 
     var token;
-    var user = req.body.data.attributes;
-
+    let user = null;
 
     // find user via his email address
-    if (!user.email) {
+    if (!req.body.data.attributes.email) {
       return res.badRequest('Email can not be empty');
     }
-    User.findOne({
-      email: user.email
+    return User.findOne({
+      email: req.body.data.attributes.email
     })
     // generate new reset password token
-    .then((user) => {
-      if (!user) {
-        throw new Error('No user found');
-      }
-      token = uuid.v4();
+      .then((usr) => {
+        if (!usr) {
+          throw new Error('No user found');
+        }
+        user = usr;
+        token = uuid.v4();
 
-      return ResetPassword.create({
-        email: user.email,
-        id: token
-      });
-    })
-    .then(() => {
-      return ConfigService.get('host');
-    })
+        return ResetPassword.create({
+          email: user.email,
+          id: token
+        });
+      })
+      .then(() => {
+        return ConfigService.get('host');
+      })
     // send him reset password link
-    .then((conf) => {
-      let subject = 'Nanocloud - Reset your password';
-      let message = 'Hello,<br>' +
-        'We received a request to reset your password.<br>' +
-        '<a href=\''+conf.host+'/#/reset-password/'+token+'\'>' +
-        'Reset my password</a><br><br><i>' +
-        'If you ignore this message your password won\'t be changed.</i>';
+      .then((configuration) => {
+        let host = configuration.host;
+        let subject = 'Nanocloud - Reset your password';
+        let to = user.email;
 
-      // mail sent here
-      return EmailService.sendMail(user.email, subject, message);
-    })
-    .then(() => {
-      return res.json({meta: {}});
-    })
-    .catch((err) => {
-      if (err.message === 'No user found') {
-        return res.notFound(err.message);
-      } else if (err.code === 'ECONNECTION') {
-        return res.serverError('Please check out your SMTP configuration');
-      }
-      return res.negotiate(err);
-    });
+        return TemplateService.render('reset-password-email', {
+          firstName: user.firstName,
+          lastName: user.lastName,
+          resetLink: `http://${host}/#/reset-password/${token}`
+        })
+          .then((message) => {
+            // mail sent here
+            return EmailService.sendMail(to, subject, message);
+          });
+      })
+      .then(() => {
+        return res.json({meta: {}});
+      })
+      .catch((err) => {
+        if (err.message === 'No user found') {
+          return res.notFound(err.message);
+        } else if (err.code === 'ECONNECTION') {
+          return res.serverError('Please check out your SMTP configuration');
+        }
+        return res.negotiate(err);
+      });
   },
 
   update: function(req, res) {
