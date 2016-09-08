@@ -49,6 +49,7 @@ class AWSDriver extends Driver {
    *  - awsKeyName: The AWS key pair name to use or create
    *  - awsPrivateKey: The location of the AWS private key to use or create
    *  - awsImage: The image to build Nanocloud executation servers from
+   *  - awsMachinePassword: The password associated with the administrator account
    *
    * @method initialize
    * @return {Promise}
@@ -56,7 +57,7 @@ class AWSDriver extends Driver {
   initialize() {
     return ConfigService.get(
       'awsAccessKeyId', 'awsSecretAccessKey', 'awsRegion',
-      'awsKeyName', 'awsPrivateKey', 'awsImage'
+      'awsKeyName', 'awsPrivateKey', 'awsImage', 'awsMachinePassword'
     )
       .then((config) => {
         this._client = pkgcloud.compute.createClient({
@@ -105,7 +106,8 @@ class AWSDriver extends Driver {
               default: true
             }, {
               iaasId: config.awsImage,
-              name: 'AWS default'
+              name: 'AWS default',
+              password: config.awsMachinePassword || null
             });
           });
       });
