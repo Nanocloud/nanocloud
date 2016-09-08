@@ -23,45 +23,13 @@
  */
 
 import Ember from 'ember';
-import TooltipsterComponent from 'ember-cli-tooltipster/components/tool-tipster';
 
-export default TooltipsterComponent.extend({
-  classNames: ['icon-component'],
-  classNameBindings: [
-    'hover-enabled:hover-enabled',
-    'hover-darker:hover-darker',
-    'hover-lighter:hover-lighter',
-    'clickable:clickable',
-  ],
-  popup: false,
-  isOpen: false,
-  showPopup: Ember.computed.and('popup', 'isOpen'),
-
-  didInsertElement() {
-    Ember.$(this.get('element')).find('.icon-element').css('font-size', this.get('size'));
-  },
+export default Ember.Component.extend({
+  classNames: ['popup-component'],
 
   actions: {
-    clickAction() {
-      this.sendAction('click');
-    },
-
-    togglePopup() {
-      this.toggleProperty('isOpen');
-    },
-
-    openPopup() {
-      this.set('isOpen', true);
-    },
-
     closePopup() {
-      this.set('isOpen', false);
+      this.sendAction('close');
     },
-
-    userClickPopup() {
-      if (this.get('popup')) {
-        this.send('togglePopup');
-      }
-    }
   }
 });

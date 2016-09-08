@@ -1,5 +1,10 @@
 .icon-component {
+  position: relative;
   display: inline-block;
+}
+
+.icon-component.clickable i {
+  cursor: pointer;
 }
 
 .icon-component.hover-enabled:hover i {
@@ -10,6 +15,6 @@
   color: $blue-darken;
 }
 
-.icon-component.clickable i {
-  cursor: pointer;
+.icon-component.hover-lighter:hover i {
+  color: $blue-lighten;
 }

@@ -94,7 +94,9 @@ module.exports = {
           isTeamAdmin: _.get(req.body, 'data.attributes.isTeamAdmin') || false
         });
       })
-      .then(res.ok)
+      .then((users) => {
+        return res.ok(users.pop());
+      })
       .catch(res.negotiate);
   }
 };

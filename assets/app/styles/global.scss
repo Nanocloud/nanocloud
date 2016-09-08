@@ -197,6 +197,10 @@ h1 {
   display: flex;
 }
 
+.rel {
+  position: relative;
+}
+
 .abs {
   position: absolute;
 }
@@ -228,6 +232,10 @@ h1 {
 
 .clickable {
   cursor: pointer;
+}
+
+.unclickable {
+  cursor: default;
 }
 
 .online {
