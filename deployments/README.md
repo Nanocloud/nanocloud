@@ -4,6 +4,8 @@ This directory is a collection of tools to deploy Nanocloud.
 
 ## Install with ansible
 
+### Dependencies
+
 You need ansible 1.9 or above to use this installation
 
 Install dependencies
@@ -18,7 +20,7 @@ ansible-galaxy install franklinkim.docker-compose
 
 ### Configure
 
-Configure where *ansible* will deploy your installation by modifying
+Configure where *ansible* will deploy your installation by modifying the
 *ansible_hosts* file.
 
 ```
@@ -26,8 +28,8 @@ Configure where *ansible* will deploy your installation by modifying
 api ansible_host=127.0.0.1
 ```
 
-In this file, you can specify several server and give name to them to deploy
-multiple instance of nanocoud:
+In this file, you can specify several servers and give name to them to deploy
+multiple instances of Nanocloud:
 
 ```
 [nanocloud]
@@ -35,8 +37,15 @@ api-instance1 ansible_host=10.0.0.2
 api-customerX ansible_host=10.0.0.3
 ```
 
+You can change hosts username to use in *nanocloud.yml*:
+
+```
+- hosts: all
+  remote_user: your-username-here
+```
+
 Use the file *deployments/roles/nanocloud/files/nanocloud/config.env* to
-override configuration variable like you should normally do with *config.env*
+override configuration variable like you should normally do with the *config.env*
 file
 
 ### Run
@@ -49,10 +58,10 @@ ansible-playbook nanocloud.yml
 
 ## Run multiple instance on a same host
 
-Script *deploy-pr.sh* is here to help you deploy a specific Github Pull Request
-on any environement without closing another instance.
+The script *deploy-pr.sh* is here to help you deploy a specific Github Pull Request
+on any environment in parallel.
 
-You can deploy several PR in a single machine. Each deployment will have its
+You can deploy several PR on a single machine. Each deployment will have its
 own *database*, *frontend*, *backend* and *guacamole-client*.
 
 To use it, run the following command:
@@ -61,7 +70,7 @@ To use it, run the following command:
 ./deployments/deploy-pr.sh ${PR_NUMBER}
 ```
 
-And if the remote is note called *origin* you can specify another name:
+And if the remote is not called *origin* you can specify another name:
 
 ```
 ./deployments/deploy-pr.sh 175 base
