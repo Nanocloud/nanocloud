@@ -72,15 +72,14 @@ module.exports = {
       .then((configuration) => {
         var host = configuration.host;
         var to =  user.email;
-        var subject = 'Nanocloud - Verify your email address';
 
-        return TemplateService.render('activation-email', {
+        return TemplateService.render('activation', {
           firstName: user['first-name'],
           lastName: user['last-name'],
           activationLink: `http://${host}/#/activate/${user.token}`
         })
-          .then((message) => {
-            return EmailService.sendMail(to, subject, message)
+          .then((template) => {
+            return EmailService.sendMail(to, template.subject, template.content)
               .then(() => {
                 let userToAdd = JsonApiService.deserialize(user);
                 let teamId = _.get(req.body, 'data.relationships.team.data.id');
