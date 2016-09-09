@@ -100,6 +100,7 @@ module.exports = {
     awsImage: 'ami-09e61366',
     awsFlavor: 't2.medium',
     awsMachineUsername: 'Administrator',
+    awsMachinePassword: '',
 
     openstackUsername:  '',
     openstackPassword: '',
