@@ -1,0 +1,31 @@
+<div class="histories section">
+  <h4>
+    Broker log
+  </h4>
+  <p class="color-primary indication">
+    Broker log gives you information about the broker.
+    <p class="m-t-1 m-b-0">
+      <button {{ action "refreshModel" }} class="btn btn-info">Reload</button>
+    </p>
+  </p>
+  <div class='content-wrapper m-t-2'>
+    {{#if modelIsEmpty}}
+      No entries
+    {{else}}
+      {{models-table
+        class="sortableTable"
+        data=data
+        columns=columns
+        showColumnsDropdown=false
+        filteringIgnoreCase=sortableTableConfig.filteringIgnoreCase
+        customMessages=sortableTableConfig.messageConfig
+        customIcons=sortableTableConfig.customIcons
+        customClasses=sortableTableConfig.customClasses
+        useNumericPagination=true
+        multipleColumnsSorting=false
+      }}
+    {{/if}}
+    <div class="clearfix"></div>
+  </div>
+
+</div>

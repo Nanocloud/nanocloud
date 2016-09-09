@@ -66,6 +66,7 @@ Router.map(function() {
       this.route('other-setting');
       this.route('look-and-feel');
     });
+    this.route('brokerlog', function() {});
   });
 
   this.route('login');
