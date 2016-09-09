@@ -112,6 +112,17 @@
               {{/link-to}}
             </li>
           {{/if}}
+
+          {{#if session.user.isAdmin}}
+            <li>
+              {{#link-to 'protected.brokerlog'}}
+                <span class="icon">
+                  <i class="material-icons">timeline</i>
+                </span>
+                Broker Log
+              {{/link-to}}
+            </li>
+          {{/if}}
         </ul>
       </div>
       <div class="bottom-nav">

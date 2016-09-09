@@ -23,7 +23,7 @@
  */
 
 /* globals sails, User, AccessToken, MachineService, Group */
-/* globals ConfigService, StorageService, Machine, Team */
+/* globals ConfigService, StorageService, Machine, Team, BrokerLog */
 
 const nano = require('./lib/nanotest');
 
@@ -2355,6 +2355,205 @@ module.exports = function() {
           return nano.request(sails.hooks.http.app)
             .delete('/api/reset-passwords/' + allRequests[0].id)
             .expect(401)
+            .end(done);
+        });
+      });
+    });
+
+    describe('api/brokerlogs', function() {
+      let BrokerLogId = null;
+
+      before('Create a broker log', function(done) {
+        BrokerLog.create({
+          machineId: 'i-54654',
+          state: 'Created'
+        })
+          .then((log) => {
+            BrokerLogId = log.id;
+            done();
+          });
+      });
+
+      describe('List all broker logs (GET)', function () {
+
+        it('Admin should be authorized', function(done) {
+          nano.request(sails.hooks.http.app)
+            .get('/api/brokerlogs')
+            .set(nano.adminLogin())
+            .expect(200)
+            .end(done);
+        });
+
+        it('Regular users should be forbidden', function(done) {
+          nano.request(sails.hooks.http.app)
+            .get('/api/brokerlogs')
+            .set('Authorization', 'Bearer ' + token)
+            .expect(403)
+            .end(done);
+        });
+
+        it('Unauthenticate users should be unauthorized', function(done) {
+          nano.request(sails.hooks.http.app)
+            .get('/api/brokerlogs')
+            .expect(401)
+            .end(done);
+        });
+      });
+
+      describe('Create a broker log', function () {
+
+        it('Admin should be forbidden', function(done) {
+          nano.request(sails.hooks.http.app)
+            .post('/api/brokerlogs')
+            .send({
+              data: {
+                attributes: {
+                  'machine-id': 'i-14654',
+                  state: 'Created'
+                },
+                type: 'brokerlog'
+              }
+            })
+            .set(nano.adminLogin())
+            .expect(403)
+            .end(done);
+        });
+
+        it('Regular users should be forbidden', function(done) {
+          nano.request(sails.hooks.http.app)
+            .post('/api/brokerlogs')
+            .send({
+              data: {
+                attributes: {
+                  'machine-id': 'i-14654',
+                  state: 'Created'
+                },
+                type: 'brokerlog'
+              }
+            })
+            .set('Authorization', 'Bearer ' + token)
+            .expect(403)
+            .end(done);
+        });
+
+        it('Unauthenticate users token should be forbidden', function(done) {
+          nano.request(sails.hooks.http.app)
+            .post('/api/brokerlogs')
+            .send({
+              data: {
+                attributes: {
+                  'machine-id': 'i-14654',
+                  state: 'Created'
+                },
+                type: 'brokerlog'
+              }
+            })
+            .expect(403)
+            .end(done);
+        });
+      });
+
+      describe('find a specific broker log', function () {
+
+        it('Admin should be authorized', function(done) {
+          nano.request(sails.hooks.http.app)
+            .get('/api/brokerlogs/' + BrokerLogId)
+            .set(nano.adminLogin())
+            .expect(200)
+            .end(done);
+        });
+
+        it('Regular users should be forbidden', function(done) {
+          nano.request(sails.hooks.http.app)
+            .get('/api/brokerlogs/' + BrokerLogId)
+            .set('Authorization', 'Bearer ' + token)
+            .expect(403)
+            .end(done);
+        });
+
+        it('Unauthenticate users token should be unauthorized', function(done) {
+          nano.request(sails.hooks.http.app)
+            .get('/api/brokerlogs/' + BrokerLogId)
+            .expect(401)
+            .end(done);
+        });
+      });
+
+      describe('Update a broker log', function () {
+
+        it('Admin should be forbidden', function(done) {
+          nano.request(sails.hooks.http.app)
+            .patch('/api/brokerlogs/' + BrokerLogId)
+            .send({
+              data: {
+                attributes: {
+                  'machine-id': 'i-14654',
+                  state: 'DELETED'
+                },
+                type: 'brokerlog'
+              }
+            })
+            .set(nano.adminLogin())
+            .expect(403)
+            .end(done);
+        });
+
+        it('Regular users should be forbidden', function(done) {
+          nano.request(sails.hooks.http.app)
+            .patch('/api/brokerlogs/' + BrokerLogId)
+            .send({
+              data: {
+                attributes: {
+                  'machine-id': 'i-14654',
+                  state: 'DELETED'
+                },
+                type: 'brokerlog'
+              }
+            })
+            .set('Authorization', 'Bearer ' + token)
+            .expect(403)
+            .end(done);
+        });
+
+        it('Unauthenticate users token should be unauthorized', function(done) {
+          nano.request(sails.hooks.http.app)
+            .patch('/api/brokerlogs/' + BrokerLogId)
+            .send({
+              data: {
+                attributes: {
+                  'machine-id': 'i-14654',
+                  state: 'DELETED'
+                },
+                type: 'brokerlog'
+              }
+            })
+            .expect(401)
+            .end(done);
+        });
+      });
+
+      describe('DELETE broker log', function () {
+
+        it('Admin should be forbidden', function(done) {
+          nano.request(sails.hooks.http.app)
+            .delete('/api/brokerlogs/' + BrokerLogId)
+            .set(nano.adminLogin())
+            .expect(403)
+            .end(done);
+        });
+
+        it('Regular users should be forbidden', function(done) {
+          nano.request(sails.hooks.http.app)
+            .delete('/api/brokerlogs/' + BrokerLogId)
+            .set('Authorization', 'Bearer ' + token)
+            .expect(403)
+            .end(done);
+        });
+
+        it('Unauthenticate users token should be forbidden', function(done) {
+          nano.request(sails.hooks.http.app)
+            .delete('/api/brokerlogs/' + BrokerLogId)
+            .expect(403)
             .end(done);
         });
       });

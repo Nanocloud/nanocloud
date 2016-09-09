@@ -132,5 +132,11 @@ module.exports.policies = {
     find: 'isAdmin',
     update: false,
     destroy: false
+  },
+
+  BrokerLogController: {
+    '*': false,
+    find: 'isAdmin',
+    findOne: 'isAdmin'
   }
 };

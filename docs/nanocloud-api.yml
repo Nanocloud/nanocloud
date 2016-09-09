@@ -1317,7 +1317,25 @@ paths:
           description: Your credentials are not valid or your account expired
           schema:
             $ref: "#/definitions/LoginErrors"
-
+            
+  /brokerlog:
+    get:
+      tags:
+        - brokerlog
+      summary:
+        Return all logs of the broker
+      responses:
+        200:
+          description: List all broker logs
+          schema:
+            type: object
+            properties:
+              data:
+                type: array
+                items:
+                  $ref: "#/definitions/BrokerLog"
+        403:
+          description: Only admin can list broker logs
 
 definitions:
   Configuration:
@@ -1913,3 +1931,18 @@ definitions:
         type: string
       status:
         type: number
+  BrokerLog:
+    type: object
+    properties:
+      user-id:
+        type: string
+      machine-id:
+        type: string
+      machine-driver:
+        type: string
+      machine-flavor:
+        type: string
+      state:
+        type: string
+      pool-size:
+        type: string

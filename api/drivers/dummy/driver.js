@@ -122,7 +122,7 @@ class DummyDriver extends BaseDriver {
    * @return {String} The name of the driver
    */
   name() {
-    return 'dummy driver';
+    return 'dummy';
   }
 
   /*
@@ -138,6 +138,8 @@ class DummyDriver extends BaseDriver {
 
     machine.id = id;
     machine.name = options.name;
+    machine.type = 'dummy';
+    machine.flavor = 'dummy';
     machine.ip = _plazaAddress;
     machine.username = 'Administrator';
     machine.plazaport = _plazaPort;
