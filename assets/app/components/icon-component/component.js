@@ -41,6 +41,10 @@ export default TooltipsterComponent.extend({
     Ember.$(this.get('element')).find('.icon-element').css('font-size', this.get('size'));
   },
 
+  click() {
+    this.sendAction();
+  },
+
   actions: {
     clickAction() {
       this.sendAction('click');

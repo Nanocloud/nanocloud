@@ -27,6 +27,12 @@ import Ember from 'ember';
 export default Ember.Component.extend({
   classNames: ['popup-component'],
 
+  didInsertElement: function() {
+    if (this.get('position') === 'left') {
+      Ember.$(this.get('element')).addClass('left');
+    }
+  },
+
   actions: {
     closePopup() {
       this.sendAction('close');

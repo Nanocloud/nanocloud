@@ -2,9 +2,21 @@
   position: absolute;
   width: 160px;
   top: -13px;
+  z-index: 10;
   margin-right: -180px;
   right: 0;
-  z-index: 10;
+
+  &.left {
+    margin-left: -180px;
+    margin-right: auto;
+    left: 0;
+    right: auto;
+
+    .arrow {
+      left: auto;
+      right: -7px;
+    }
+  }
 
   .arrow {
     width: 15px;
@@ -16,4 +28,5 @@
     z-index: 11;
     transform: rotate(45deg);
   }
+
 }

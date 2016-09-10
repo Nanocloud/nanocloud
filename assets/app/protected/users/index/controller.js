@@ -47,7 +47,8 @@ export default Ember.Controller.extend({
     filteringIgnoreCase: true,
 
     messageConfig: {
-      searchLabel: 'Search',
+      searchLabel: '',
+      searchPlaceholder: 'Search',
     },
 
     customIcons: {
@@ -89,6 +90,47 @@ export default Ember.Controller.extend({
       filterWithSelect: false,
       template: 'protected/users/index/table/user-list/is-online'
     },
+    {
+      title: 'Team',
+      disableFiltering: true,
+      filterWithSelect: false,
+      template: 'protected/users/index/table/user-list/team-setting'
+    },
   ],
 
+  actions: {
+
+    toggleUserSetting(user) {
+      this.send('togglePopup', user);
+    },
+
+    closePopup(user) {
+      user.set('teamOptionIsOpen', false);
+    },
+
+    openPopup(user) {
+      user.set('teamOptionIsOpen', true);
+    },
+
+    togglePopup(user) {
+      user.toggleProperty('teamOptionIsOpen');
+    },
+
+    changeUserTeam(user, team) {
+
+      if (user.get('team.id') === team.id) {
+        user.set('team', null);
+      } else {
+        user.set('team', team);
+      }
+
+      user.save()
+        .then(() => {
+          this.toast.success('This user\'s team setting has been updated.');
+        })
+        .catch(() => {
+          this.toast.error('Looks like an error occured. Please retry in a few seconds.');
+        });
+    }
+  }
 });
