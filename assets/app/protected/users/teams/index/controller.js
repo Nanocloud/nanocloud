@@ -42,7 +42,8 @@ export default Ember.Controller.extend({
 
     filteringIgnoreCase: true,
     messageConfig: {
-      searchLabel: 'Search',
+      searchLabel: '',
+      searchPlaceholder: 'Search',
     },
 
     customIcons: {
@@ -208,6 +209,6 @@ export default Ember.Controller.extend({
         .finally(() => {
           this.send('closePopup', user);
         });
-    }
+    },
   }
 });

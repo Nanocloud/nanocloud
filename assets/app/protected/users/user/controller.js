@@ -35,6 +35,35 @@ export default Ember.Controller.extend({
     return this.get('model.id') === this.get('session.user.id');
   }),
 
+  sortableTableConfig: {
+
+    filteringIgnoreCase: true,
+    messageConfig: {
+      searchLabel: '',
+      searchPlaceholder: 'Search',
+    },
+
+    customIcons: {
+      'sort-asc': 'fa fa-caret-up',
+      'sort-desc': 'fa fa-caret-down',
+      caret: 'fa fa-minus',
+      'column-visible': 'fa fa-minus',
+    },
+
+    customClasses: {
+      pageSizeSelectWrapper: 'pagination-number'
+    }
+  },
+
+  columns: [
+    {
+      title: 'Name',
+      propertyName: 'name',
+      disableFiltering: true,
+      filterWithSelect: false,
+    },
+  ],
+
   actions: {
 
     removeDone: function() {
@@ -75,6 +104,22 @@ export default Ember.Controller.extend({
           }, () => {
             this.toast.error('Administration rights have not been granted');
           });
+        });
+    },
+
+    updateTeamAdmin: function() {
+      let model = this.get('model');
+      model.toggleProperty('isTeamAdmin');
+      model.save()
+        .then(() => {
+          if (this.get('model.isTeamAdmin')) {
+            this.toast.success('This user is now team admin.');
+          } else {
+            this.toast.success('This user is now just a regular team member.');
+          }
+        })
+        .catch(() => {
+          this.toast.error('Looks like an error occurred while setting team privileges. Please retry in a few seconds.');
         });
     },
 

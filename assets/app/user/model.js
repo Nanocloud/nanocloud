@@ -109,4 +109,7 @@ export default DS.Model.extend(Validations, {
   groups: DS.hasMany('group'),
   isTeamAdmin: DS.attr('boolean'),
   teamOptionIsOpen: false,
+  hasTeam: Ember.computed('team.name', function() {
+    return !Ember.isNone(this.get('team.name'));
+  }),
 });

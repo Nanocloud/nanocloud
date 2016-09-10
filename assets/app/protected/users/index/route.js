@@ -28,6 +28,7 @@ export default Ember.Route.extend({
   setupController(controller) {
     this._super(...arguments);
     controller.activator();
+    controller.set('teams', this.store.query('team', {}));
   },
   model() {
     return this.store.findAll('user', { reload: true });
