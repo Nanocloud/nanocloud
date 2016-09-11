@@ -27,7 +27,16 @@ import Ember from 'ember';
 export default Ember.Route.extend({
   setupController(controller) {
     controller.set('passwordConfirmation', '');
-    controller.set('model', this.store.createRecord('user', {}));
     controller.set('userHasSubmitted', false);
+    controller.set('model', this.store.createRecord('user', {}));
+  },
+
+  actions: {
+    willTransition() {
+      let controller = this.controllerFor('protected.users.new');
+      if (!controller.get('model.firstName')) {
+        controller.get('model').deleteRecord();
+      }
+    }
   }
 });

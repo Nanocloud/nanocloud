@@ -9,22 +9,6 @@
         <i class="material-icons va-bottom color-primary">verified_user</i>
         <span class='color-primary'>(Team Admin)</span>
       {{/if}}
-      <span {{ action toggleUserSetting record }}>
-        {{icon-component class='va-sub color-primary clickable fright' hover-darker=true materialIcon='settings' size=16}}
-        {{#if record.teamOptionIsOpen}}
-          {{#popup-component isOpen=record.teamOptionIsOpen close=closePopup }}
-            <div class="list-group">
-              <a href="#" class="list-group-item list-group-item-action unclickable active"><span class='va-tb'>Settings</span></a>
-              {{#if record.isTeamAdmin}}
-                 <a href="#" class="list-group-item list-group-item-action" {{ action toRegularUser record }}>Set regular user</a>
-              {{else}}
-                 <a href="#" class="list-group-item list-group-item-action" {{ action toAdminTeam record }}>Set team admin</a>
-              {{/if}}
-            </div>
-          {{/popup-component}}
-        {{/if}}
-      </span>
     {{/if}}
   {{/if}}
 </div>
-{{dim-background show=record.teamOptionIsOpen action=(action closePopup record) opacity=0.2 duration=500}}

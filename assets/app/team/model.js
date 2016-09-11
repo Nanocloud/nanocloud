@@ -41,7 +41,7 @@ export default DS.Model.extend(Validations, {
   name: DS.attr('string'),
   createdAt: DS.attr('number'),
   updatedAt: DS.attr('number'),
-  members: DS.hasMany(),
+  members: DS.hasMany('user'),
   pendingMembers: DS.hasMany(),
   allMembers: Ember.computed('members', 'pendingMembers', function() {
     let user = Ember.A([]);
