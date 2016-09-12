@@ -220,6 +220,7 @@ class AWSDriver extends Driver {
    *  - plazaURI: The URL from where the instance will download plaza.exe
    *  - awsKeyName: The name of the KeyPair to use for the instance admin
    *  - plazaPort: Port to contact plaza
+   *  - awsMachineSubnet: Subnet's id to apply to machines
    *
    * @method createMachine
    * @param {Object} options The machine options. `options.name`: The name of
@@ -227,7 +228,7 @@ class AWSDriver extends Driver {
    * @return {Promise[Machine]} The created machine
    */
   createMachine(options) {
-    return ConfigService.get('awsFlavor', 'plazaURI', 'awsKeyName', 'plazaPort')
+    return ConfigService.get('awsFlavor', 'plazaURI', 'awsKeyName', 'plazaPort', 'awsMachineSubnet')
       .then((config) => {
 
         return MachineService.getDefaultImage()
@@ -249,7 +250,8 @@ class AWSDriver extends Driver {
                 image    : image.iaasId,
                 flavor   : config.awsFlavor,
                 KeyName  : config.awsKeyName,
-                UserData : userData
+                UserData : userData,
+                subnetId : config.awsMachineSubnet
               }, (err, server) => {
                 if (err) {
                   return reject(err);

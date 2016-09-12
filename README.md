@@ -49,6 +49,7 @@ AWS driver specific:
 - awsFlavor (Defaults to t2.medium) size of virtual machines
 - awsMachineUsername (Defaults to Administrator) administrator account on the machine
 - awsMachinePassword (Defaults to empty string, will be generated if possible) administrator password on the machine
+- awsMachineSubnet (Defaults to empty string, automatic subnet) subnet to assign to the machine
 - creditLimit (Defaults empty string) set a credit limit to users (aws only)
 
 Openstack driver specific:
