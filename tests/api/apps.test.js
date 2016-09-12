@@ -489,8 +489,8 @@ module.exports = function() {
                   'protocol': 'rdp',
                   'app-name': 'app1',
                   'machine-id': machine.id,
-                  'machine-type': null,
-                  'machine-driver':null
+                  'machine-type': 'dummy',
+                  'machine-driver': 'dummy'
                 }
               });
               expect(res.body.data).to.include({
@@ -505,8 +505,8 @@ module.exports = function() {
                   'protocol': 'rdp',
                   'app-name': 'app2',
                   'machine-id': machine.id,
-                  'machine-type': null,
-                  'machine-driver':null
+                  'machine-type': 'dummy',
+                  'machine-driver': 'dummy'
                 }
               });
               expect(res.body.data).to.include({
@@ -521,8 +521,8 @@ module.exports = function() {
                   'protocol': 'rdp',
                   'app-name': 'Desktop',
                   'machine-id': machine.id,
-                  'machine-type': null,
-                  'machine-driver':null
+                  'machine-type': 'dummy',
+                  'machine-driver': 'dummy'
                 }
               });
 
@@ -562,8 +562,8 @@ module.exports = function() {
                   'protocol': 'rdp',
                   'app-name': 'app1',
                   'machine-id': machine.id,
-                  'machine-type': null,
-                  'machine-driver':null
+                  'machine-type': 'dummy',
+                  'machine-driver': 'dummy'
                 }
               });
               expect(res.body.data).to.include({
@@ -578,8 +578,8 @@ module.exports = function() {
                   'protocol': 'rdp',
                   'app-name': 'app2',
                   'machine-id': machine.id,
-                  'machine-type': null,
-                  'machine-driver':null
+                  'machine-type': 'dummy',
+                  'machine-driver': 'dummy'
                 }
               });
             })

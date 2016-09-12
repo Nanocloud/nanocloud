@@ -21,7 +21,7 @@
  *
  */
 
-/* global ConfigService, Machine, Image, User */
+/* global ConfigService, Machine, Image, User, BrokerLog */
 
 const Promise = require('bluebird');
 const ManualDriver = require('../drivers/manual/driver');
@@ -178,12 +178,16 @@ function getMachineForUser(user) {
 
                 if (res.rows.length) {
                   _updateMachinesPool();
-                  return resolve(Machine.findOne({
-                    id: res.rows[0].id
-                  }));
-                }
+                  _createBrokerLog(res.rows[0], 'Assigned')
+                    .then(() => {
+                      return resolve(Machine.findOne({
+                        id: res.rows[0].id
+                      }));
+                    });
+                } else {
 
-                return reject('A machine is booting for you. Please retry in one minute.');
+                  return reject('A machine is booting for you. Please retry in one minute.');
+                }
               });
             });
           } else {
@@ -241,14 +245,21 @@ function _createMachine() {
     .then((config) => {
       const machine = _driver.createMachine({
         name: config.machinesName
-      }).finally(() => {
-        const len = _awaitingMachines.length;
-        for (let i = 0; i < len; i++) {
-          if (_awaitingMachines[i] === machine) {
-            _awaitingMachines.splice(i, 1);
+      })
+        .then((machineCreated) => {
+          _createBrokerLog(machineCreated, 'Created');
+        })
+        .finally(() => {
+          const len = _awaitingMachines.length;
+          for (let i = 0; i < len; i++) {
+            if (_awaitingMachines[i] === machine) {
+              _awaitingMachines.splice(i, 1);
+            }
           }
-        }
-      });
+        })
+        .catch(() => {
+          _createBrokerLog({}, 'Not created');
+        });
 
       _awaitingMachines.push(machine);
       return machine;
@@ -263,6 +274,9 @@ function _terminateMachine(machine) {
         return Machine.destroy({
           id: machine.id
         });
+      })
+      .then(() => {
+        return _createBrokerLog(machine, 'Deleted');
       });
   }
 }
@@ -288,6 +302,11 @@ function _updateMachinesPool() {
           })
             .then((machineNbr) => {
               let i = (config.machinePoolSize + _awaitingMachines.length) - machineNbr;
+              if (i > 0) {
+                _createBrokerLog({
+                  type: _driver.name()
+                }, 'Update machine pool');
+              }
               let machines = [];
               while (i > 0) {
                 machines.push(_createMachine());
@@ -339,8 +358,11 @@ function sessionOpen(user) {
   return getMachineForUser(user)
     .then((machine) => {
       machine.endDate = null;
+      _createBrokerLog(machine, 'Opened')
+        .finally(() => {
+          return Machine.update(machine.id, machine);
+        });
 
-      return Machine.update(machine.id, machine);
     });
 }
 
@@ -383,7 +405,10 @@ function sessionEnded(user) {
         });
     });
   }
-
+  getMachineForUser(user)
+    .then((userMachine) => {
+      _createBrokerLog(userMachine, 'Closed');
+    });
   return promise;
 }
 
@@ -433,6 +458,28 @@ function getDefaultImage() {
   return Image.findOne({
     default: true
   });
+}
+
+/*
+ * Create a new broker log
+ *
+ * @method _createBrokerLog
+ * @param {Machine} the machine to log
+ * @param {string} the state to save (created, deleted, opened, ...)
+ * @return {Promise} created log
+ */
+function _createBrokerLog(machine, state) {
+  return Machine.count()
+    .then((nbrMachines) => {
+      return BrokerLog.create({
+        userId: machine.user,
+        machineId: machine.id,
+        machineDriver: machine.type,
+        machineFlavor: machine.flavor,
+        state: state,
+        poolSize: nbrMachines
+      });
+    });
 }
 
 module.exports = {

@@ -110,6 +110,11 @@ module.exports.routes = {
     action: 'update'
   },
 
+  'PATCH /api/brokerlogs/:id': {
+    controller: 'BrokerLog',
+    action: 'update'
+  },
+
   'GET /api/apps/connections': {
     controller: 'App',
     action: 'connections'
