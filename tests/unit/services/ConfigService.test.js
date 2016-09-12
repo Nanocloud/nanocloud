@@ -22,7 +22,7 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-/* global ConfigService */
+/* global ConfigService, Config */
 
 var Promise = require('bluebird');
 var assert = require('chai').assert;
@@ -105,17 +105,92 @@ describe('Config overridden value in environment', () => {
     sails.config.nanocloud.nanocloudVar = 'default';
     process.env.NANOCLOUD_VAR = 'overridden';
     ConfigService.init()
-    .then(() => {
-      return done();
-    });
+      .then(() => {
+        return done();
+      });
   });
   it('Should retrieve the overridden value', (done) => {
     (function() {
       return ConfigService.get('nanocloudVar')
-      .then((res) => {
-        assert.deepEqual({ nanocloudVar: 'overridden' }, res);
-      });
+        .then((res) => {
+          assert.deepEqual(res, { nanocloudVar: 'overridden' });
+        });
     })()
-    .then(() => done()).catch(done);
+      .then(() => done()).catch(done);
+  });
+});
+
+
+describe('Add new variable in config', () => {
+
+  before(function(done) {
+    sails.config.nanocloud.newVar = 'default';
+    process.env.NEW_VAR = 'newVar';
+    return done();
+  });
+
+  after(function(done) {
+    Config.destroy({
+      key: 'newVar'
+    })
+      .then(()=> {
+        return done();
+      });
+  });
+
+  it('Should init config values in first up', (done) => {
+    ConfigService.init(() => {
+      return ConfigService.get('newVar');
+    })
+      .then((config) => {
+        if (config.newVar === 'newVar') {
+          return done();
+        } else {
+          return new Error('The new config value are not in database');
+        }
+      })
+      .catch((err) => {
+        return (err);
+      });
+  });
+});
+
+describe('Config should not re-init values that already exist each time backend restart', () => {
+
+  before(function(done) {
+    sails.config.nanocloud.newVar = 'default';
+    process.env.NEW_VAR = 'shouldBeChange';
+    ConfigService.init()
+      .then(() => {
+        return ConfigService.set('newVar', 'newValue');
+      })
+      .then(() => {
+        return done();
+      });
+  });
+
+  after(function(done) {
+    Config.destroy({
+      key: 'newVar'
+    })
+      .then(()=> {
+        return done();
+      });
+  });
+
+  it('Should not overwrite config values that already exists', (done) => {
+    ConfigService.init(() => {
+      return ConfigService.get('newVar');
+    })
+      .then((config) => {
+        if (config.newVar === 'newValue') {
+          return done();
+        } else {
+          return new Error('The new config value changed');
+        }
+      })
+      .catch((err) => {
+        return (err);
+      });
   });
 });
