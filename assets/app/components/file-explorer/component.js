@@ -25,18 +25,20 @@
 import Ember from 'ember';
 
 export default Ember.Component.extend({
-  isVisible: false,
+  classNames: ['file-explorer-wrapper'],
+  classBindings: ['noselect', 'transition-enabled-2'],
   publishError: false,
   store: Ember.inject.service('store'),
+  session: Ember.inject.service('session'),
   loadState: false,
 
   loadDirectory() {
-    this.set('selectedFile', null);
     this.set('loadState', true);
-    let loadFilesPromise = this.get('store').query(this.get('api'), {
-      machines: true,
+    let parameters = {
       path: this.get('pathToString')
-    });
+    };
+    parameters[this.get('target')] = true;
+    let loadFilesPromise = this.get('store').query(this.get('api'), parameters);
     this.set('items', loadFilesPromise);
     loadFilesPromise.then(() => {
       this.set('loadState', false);
@@ -47,19 +49,11 @@ export default Ember.Component.extend({
     return (this.pathToArray());
   }),
 
-  becameVisible: function() {
-    this.set('history', [ 'C:' ]);
+  init() {
+    this.set('history', this.get('system') === 'windows' ? ['C:'] : ['']);
     this.set('history_offset', 0);
     this.loadDirectory();
-  },
-
-  selectFile(file) {
-    if (this.get('selectedFile') !== file) {
-      this.set('selectedFile', file);
-    }
-    else {
-      this.set('selectedFile', null);
-    }
+    this._super(...arguments);
   },
 
   selectDir(dir) {
@@ -103,39 +97,24 @@ export default Ember.Component.extend({
   pathToString: Ember.computed('history', 'history_offset', function() {
     let data = this.get('history');
     let offset = this.get('history_offset');
-    let path = data.slice(0, offset + 1).join('\\') + '\\';
+    let separator = this.get('system') === 'windows' ? '\\' : '\/';
+    let path = data.slice(0, offset + 1).join(separator) + separator;
     return path;
   }),
 
-  publishSelectedFile() {
-
-    let name = this.get('selectedFile').get('name').replace(/\.[^/.]+$/, '');
-
-    let m = this.get('store').createRecord('app', {
-      alias: name,
-      displayName: name,
-      collectionName: 'collection',
-      filePath: this.get('pathToString') + this.get('selectedFile.name')
-    });
-
-    this.set('isPublishing', true);
-    m.save()
-      .then(() => {
-        this.set('isPublishing', false);
-        this.toggleProperty('isVisible');
-        this.toast.success('Your application has been published successfully');
-        this.sendAction('action');
-      }, (error) => {
-        this.set('isPublishing', false);
-        this.set('publishError', true);
-        this.set('selectedFile', null);
-        this.toast.error(error.errors[0].status + ' : ' + error.errors[0].title);
+  downloadFile(filename) {
+    let path = this.get('pathToString').substring(1) + filename;
+    Ember.$.ajax({
+      type: 'GET',
+      headers: { Authorization : 'Bearer ' + this.get('session.access_token')},
+      url: '/api/files/token',
+      data: { filename: path }
+    })
+      .then((response) => {
+        let url = '/api/files/download?' + this.get('target') + '=true&filename=' + encodeURIComponent(path) + '&token=' + encodeURIComponent(response.token);
+        window.location.assign(url);
       });
   },
-
-  selectedFilePath: Ember.computed('pathToString', 'selectedFile', function() {
-    return (this.get('pathToString') + this.get('selectedFile').get('name'));
-  }),
 
   actions: {
 
@@ -144,20 +123,12 @@ export default Ember.Component.extend({
       this.loadDirectory();
     },
 
-    toggleFileExplorer() {
-      this.toggleProperty('isVisible');
-    },
-
     clickItem(item) {
       if (item.get('isDir')) {
         this.selectDir(item.get('name'));
       } else {
-        this.selectFile(item);
+        this.downloadFile(item.get('name'));
       }
-    },
-
-    clickPublish() {
-      this.publishSelectedFile();
     },
 
     clickNextBtn() {

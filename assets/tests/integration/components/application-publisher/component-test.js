@@ -22,32 +22,27 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-import Ember from 'ember';
+import { moduleForComponent, test } from 'ember-qunit';
+import hbs from 'htmlbars-inline-precompile';
 
-export default Ember.Route.extend({
-  setupController(controller, model) {
-    controller.set('items', model);
-    controller.setData();
-  },
+moduleForComponent('application-publisher', 'Integration | Component | application publisher', {
+  integration: true
+});
 
-  model() {
-    let machineIndexController = this.controllerFor('protected.machines.user');
-    machineIndexController.set('loadState', true);
-    var promise = this.get('store').query('machine', {});
-    promise.then(() => {
-    })
-      .catch(() => {
-        this.toast.error('Machine list could not be retrieved');
-      })
-      .finally(() => {
-        machineIndexController.set('loadState', false);
-      });
-    return promise;
-  },
+test('it renders', function(assert) {
+  // Set any properties with this.set('myProperty', 'value');
+  // Handle any actions with this.on('myAction', function(val) { ... });
 
-  actions : {
-    refreshModel() {
-      this.refresh();
-    },
-  }
+  this.render(hbs`{{application-publisher}}`);
+
+  assert.equal(this.$().text().trim(), '');
+
+  // Template block usage:
+  this.render(hbs`
+    {{#application-publisher}}
+      template block text
+    {{/application-publisher}}
+  `);
+
+  assert.equal(this.$().text().trim(), 'template block text');
 });
