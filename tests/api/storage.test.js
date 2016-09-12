@@ -74,7 +74,8 @@ module.exports = function() {
         .set(nano.adminLogin())
         .expect(200)
         .expect(nano.jsonApiSchema(fileSchema))
-        .expect((res) => {
+          .expect((res) => {
+            console.log(res.body);
           fileSize = res.body.data[0].attributes.size;
         })
         .end(done);

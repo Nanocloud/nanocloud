@@ -36,6 +36,76 @@ const Promise = require('bluebird');
 module.exports = {
 
   /**
+   * Create a directory in user's storage
+   *
+   * @method upload
+   * @public true
+   */
+  create: function(req, res) {
+    let filename = req.query.filename;
+    let promise = null;
+
+    if (req.allParams().teams === 'true') {
+      promise = Promise.props({
+        user: User.findOne(req.user.id).populate('team'),
+        config: ConfigService.get('teamStorageAddress', 'teamStoragePort')
+      })
+        .then((result) => {
+          return {
+            hostname: result.config.teamStorageAddress,
+            port: result.config.teamStoragePort,
+            username: result.user.team.username
+          };
+        });
+    } else {
+      promise = Storage.findOne({
+        user: req.user.id
+      });
+    }
+
+    promise.then((storage) => {
+      return PlazaService.createDirectory(storage, filename);
+    })
+      .then(res.ok)
+      .catch(res.negotiate);
+  },
+
+  /**
+   * Delete a file or a directory
+   *
+   * @method upload
+   * @public true
+   */
+  destroy: function(req, res) {
+    let filename = req.query.filename;
+    let promise = null;
+
+    if (req.allParams().teams === 'true') {
+      promise = Promise.props({
+        user: User.findOne(req.user.id).populate('team'),
+        config: ConfigService.get('teamStorageAddress', 'teamStoragePort')
+      })
+        .then((result) => {
+          return {
+            hostname: result.config.teamStorageAddress,
+            port: result.config.teamStoragePort,
+            username: result.user.team.username
+          };
+        });
+    } else {
+      promise = Storage.findOne({
+        user: req.user.id
+      });
+    }
+
+    promise.then((storage) => {
+      return PlazaService.remove(storage, filename);
+    })
+      .then(res.ok)
+      .catch(res.negotiate);
+  },
+
+  /**
    * Upload a file in user's storage
    *
    * @method upload
@@ -198,12 +268,42 @@ module.exports = {
   },
 
   /**
-   * update is forbidden for everyone
+   * rename is used to rename files
    *
-   * @method update
+   * @method rename
    * @public true
    */
+  rename: function(req, res) {
+    let filename = req.query.filename;
+    let newFilename = req.query.newfilename;
+    let promise = null;
+
+    if (req.allParams().teams === 'true') {
+      promise = Promise.props({
+        user: User.findOne(req.user.id).populate('team'),
+        config: ConfigService.get('teamStorageAddress', 'teamStoragePort')
+      })
+        .then((result) => {
+          return {
+            hostname: result.config.teamStorageAddress,
+            port: result.config.teamStoragePort,
+            username: result.user.team.username
+          };
+        });
+    } else {
+      promise = Storage.findOne({
+        user: req.user.id
+      });
+    }
+
+    promise.then((storage) => {
+      return PlazaService.rename(storage, filename, newFilename);
+    })
+      .then(res.ok)
+      .catch(res.negotiate);
+  },
+
   update: function(req, res) {
     return res.forbidden();
-  },
+  }
 };
