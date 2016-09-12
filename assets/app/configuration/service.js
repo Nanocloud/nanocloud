@@ -47,6 +47,7 @@ export default Ember.Service.extend({
     'creditLimit',
     'iaas',
     'teamEnabled',
+    'machinesName',
   ],
   keyToBeRetrievedAsString: Ember.computed('keyToBeRetrieved', function() {
     let params = this.get('keyToBeRetrieved');
