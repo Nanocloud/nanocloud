@@ -1,0 +1,27 @@
+.floating-sidebar-component {
+  position: fixed;
+  width: 40%;
+  height: 100%;
+  top: 0;
+  right: 0;
+  z-index: 1;
+  background-color: $white;
+}
+
+@media (max-width: 600px) {
+  .floating-sidebar-component {
+    width: 100%;
+  }
+}
+
+@media (max-width:1200px) and (min-width:600px) {
+  .floating-sidebar-component {
+    width: 70%;
+  }
+}
+
+@media (max-width:1200px) and (min-width:990px) {
+  .floating-sidebar-component {
+    width: 50%;
+  }
+}

@@ -46,10 +46,15 @@
 {{/single-tab}}
 
 {{dim-background show=showFileExplorer preventAction=isPublishing action="toggleFileExplorer"}}
-{{#file-explorer
+{{#floating-sidebar-component
   isVisible=showFileExplorer
-  isPublishing=isPublishing
-  api="file"
-  action="refreshModel"
 }}
-{{/file-explorer}}
+  {{#application-publisher
+    isPublishing=isPublishing
+    api="file"
+    target='machines'
+    system='windows'
+    action="refreshModel"
+  }}
+  {{/application-publisher}}
+{{/floating-sidebar-component}}

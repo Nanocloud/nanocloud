@@ -59,12 +59,21 @@
   </div>
 {{/if}}
 <div class='m-t-2'>
+  {{#if protectedController.hasTeam}}
+    <h4 class='pull-xs-right'>
+        {{#link-to 'protected.users.teams.new' class='btn btn-primary'}}Create a new user{{/link-to}}
+    </h4>
+    <div class="clearfix"></div>
+    {{#file-explorer
+      isPublishing=isPublishing
+      api="file"
+      target='teams'
+      system='unix'
+      action="refreshModel"
+    }}
+    {{/file-explorer}}
+  {{/if}}
   {{#if protectedController.isAdminOrTeamAdmin}}
-    {{#if protectedController.hasTeam}}
-      <h4>
-          {{#link-to 'protected.users.teams.new' class='btn btn-primary pull-xs-right'}}Create a new user{{/link-to}}
-      </h4>
-    {{/if}}
     {{#each teams as |team|}}
       <h4 class='m-t-1 m-b-1 color-primary'> Teams
         <div class='in-bl'>
@@ -92,38 +101,3 @@
     <div class="clearfix"></div>
   {{/if}}
 </div>
-
-{{#if protectedController.hasTeam}}
-  <div id="team-file-page">
-    <h4>
-      {{#link-to 'protected.users.teams' }}
-        Team files
-      {{/link-to}}
-    </h4>
-
-    <p class="color-primary indication m-t-1">
-      <span class="text">
-      {{icon-component class='va-mid color-success' size=22 materialIcon="done"}}
-      You are a member of the {{session.user.team.name}} team.
-      </span>
-    </p>
-
-    {{#if modelIsEmpty}}
-      There is no file
-    {{else}}
-      {{models-table
-        class="sortableTable"
-          data=teamFiles
-          filteringIgnoreCase=sortableTableConfig.filteringIgnoreCase
-          columns=fileColumns
-          showColumnsDropdown=false
-          customMessages=sortableTableConfig.messageConfig
-          customIcons=sortableTableConfig.customIcons
-          customClasses=sortableTableConfig.customClasses
-          useNumericPagination=true
-          multipleColumnsSorting=false
-      }}
-    {{/if}}
-    <div class="clearfix"></div>
-  </div>
-{{/if}}

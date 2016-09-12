@@ -34,10 +34,12 @@ h1 {
   position: relative;
 	background: $gray-lightest;
   padding: 20px 20px 20px 20px;
+  height: inherit;
 }
 
 .content-wrapper {
   margin: 0px 0px 20px 0px;
+  height: 100%;
 }
 
 .loading-page {
@@ -215,6 +217,10 @@ h1 {
 
 .px-l-5 {
   padding-left: 5px;
+}
+
+.mx-l-1 {
+  margin-left: 5px;
 }
 
 .no-underline *:hover {
