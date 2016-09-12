@@ -1,8 +1,8 @@
 <div class='file-explorer'>
   <div class='content-wrapper'>
     <h4 class='color-primary m-b-1'>
-      <p class='in-bl'>Team files</p>
-      {{#nano-tooltip class='in-bl' content="Click on any file to download it." position="right"}}
+      <p class='in-bl'>File explorer </p>
+      {{#nano-tooltip class='in-bl' content="Select the application you want to publish" position="right"}}
         {{icon-component class="va-sub" materialIcon="help"}} 
       {{/nano-tooltip}}
     </h4>
@@ -28,6 +28,13 @@
         {{else}}
           No files.
         {{/each}}
+      {{/if}}
+    </div>
+    <div class='file-explorer-footer'>
+      {{#if isPublishing}}
+        <button type="button" class="publish-btn btn btn-info">In progress {{ fa-icon "spinner" spin=true}}</button>
+      {{else}}
+        <button {{ action "clickPublish" }} type="button" class="publish-btn btn {{ if selectedFile 'btn-primary' 'btn-secondary-outline disabled' }}">Publish it!</button>
       {{/if}}
     </div>
   </div>
