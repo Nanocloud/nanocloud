@@ -27,6 +27,7 @@ const Promise = require('bluebird');
 const ManualDriver = require('../drivers/manual/driver');
 const AWSDriver = require('../drivers/aws/driver');
 const DummyDriver = require('../drivers/dummy/driver');
+const LibvirtDriver = require('../drivers/libvirt/driver');
 const OpenstackDriver = require('../drivers/openstack/driver');
 
 /**
@@ -42,6 +43,7 @@ const drivers = {
   manual    : ManualDriver,
   aws       : AWSDriver,
   dummy     : DummyDriver,
+  libvirt       : LibvirtDriver,
   openstack : OpenstackDriver
 };
 
