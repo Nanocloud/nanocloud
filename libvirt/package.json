@@ -1,0 +1,27 @@
+{
+  "name": "libvirtManager",
+  "private": true,
+  "version": "0.1.0",
+  "description": "Manage libvirt",
+  "keywords": [],
+  "dependencies": {
+    "bluebird": "^3.4.6",
+    "body-parser": "^1.15.2",
+    "libvirt": "^1.1.3",
+    "multer": "^1.2.0",
+    "uuid": "^2.0.2",
+    "xml": "^1.0.1"
+  },
+  "scripts": {
+    "test": "make tests",
+    "debug": "node debug app.js",
+    "start": "node app.js"
+  },
+  "main": "app.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Nanocloud/nanocloud"
+  },
+  "author": "Romain Soufflet <romain.soufflet@nanocloud.com>",
+  "license": "AGPL-3.0"
+}
