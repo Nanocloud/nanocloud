@@ -53,15 +53,22 @@ AWS driver specific:
 - creditLimit (Defaults empty string) set a credit limit to users (aws only)
 
 Openstack driver specific:
- - openstackUsername username to connect to openstack
- - openstackPassword password to connect to openstack
- - openstackAuthUrl url of the openstack's API (example: https://identity.example.com:5000)
- - openstackRegion (Defaults to 'RegionOne') region name to use on openstack
- - openstackImage if of the image to boot Windows execution servers from
- - openstackFlavor (defaults to m1.medium) flavor for the virtual machine
- - openstackSecurityGroups (Defaults to ['default']) array of security groups to apply to the instance
- - openstackMachineUsername (Defaults to Administrator) windows account username
- - openstackMachinePassword (Defaults empty, password will generated) windows account password
+- openstackUsername username to connect to openstack
+- openstackPassword password to connect to openstack
+- openstackAuthUrl url of the openstack's API (example: https://identity.example.com:5000)
+- openstackRegion (Defaults to 'RegionOne') region name to use on openstack
+- openstackImage if of the image to boot Windows execution servers from
+- openstackFlavor (defaults to m1.medium) flavor for the virtual machine
+- openstackSecurityGroups (Defaults to ['default']) array of security groups to apply to the instance
+- openstackMachineUsername (Defaults to Administrator) windows account username
+- openstackMachinePassword (Defaults empty, password will generated) windows account password
+
+Libvirt driver specific:
+- libvirtServiceURL (Default to localhost) url of libvirt manager service
+- libvirtServicePort (Default to 3000) port of libvirt manager service
+- libvirtMemory (Default to 4096000) memory to allocate to your VMs in bit
+- libvirtCPU (Default to 2) number of vCPU to allocate to your VMs
+- libvirtDrive absolute path to your virtual hard drive
 
 Storage configuration:
 - storageAddress (mandatory, defaults to 'localhost') storage service's IP

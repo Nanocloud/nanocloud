@@ -111,6 +111,12 @@ module.exports = {
     openstackFlavor: 'm1.medium',
     openstackSecurityGroups: ['default'],
     openstackMachineUsername: 'Administrator',
-    openstackMachinePassword: ''
+    openstackMachinePassword: '',
+
+    libvirtServiceURL: 'localhost',
+    libvirtServicePort: 3000,
+    libvirtMemory: '4096000',
+    libvirtCPU: '2',
+    libvirtDrive: '/data/windows-server-2012-r2.qcow2'
   }
 };
