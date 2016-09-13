@@ -7,7 +7,8 @@
 				<h4>Reset your password</h4>
 		        	{{nano-input type="password" placeholder='New password' model=model valuePath="password"}}
 		        <button type="submit" class="btn btn-primary btn-block text-uppercase">Update my password</button>
-		    </form>
+				  {{#link-to 'login'}}Sign in{{/link-to}}
+        </form>
 		  </div>
 		</div>
 	</div>
