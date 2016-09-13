@@ -1,34 +1,106 @@
 <div class='file-explorer'>
-  <div class='content-wrapper'>
-    <h4 class='color-primary m-b-1'>
-      <p class='in-bl'>Team files</p>
-      {{#nano-tooltip class='in-bl' content="Click on any file to download it." position="right"}}
-        {{icon-component class="va-sub" materialIcon="help"}} 
-      {{/nano-tooltip}}
-    </h4>
-      <ol class="breadcrumb">
-        {{#each historyData as |item index|}}
-          <li class='clickable'><a {{ action "moveOffset" index}}>{{ item }}</a></li>
-        {{/each}} 
-        <li><a>{{ selectedFile.name }}</a></li>
-      </ol>
-      <div class='navigation m-t-1'>
-        <span {{ action "clickPrevBtn" }}>{{icon-component class='clickable icon_link va-bl-mid' materialIcon="navigate_before" size=20}}</span>
-        <span {{ action "clickNextBtn" }}>{{icon-component class='clickable icon_link va-bl-mid' materialIcon="navigate_next" size=20}}</span>
+  <h4 class='color-primary m-b-1'>
+    <p class='in-bl'>Team files</p>
+    {{#nano-tooltip class='in-bl' content="Click on any file to download it." position="right"}}
+      {{icon-component class="va-sub" materialIcon="help"}} 
+    {{/nano-tooltip}}
+  </h4>
+  <ol class="breadcrumb">
+    {{#each historyData as |item index|}}
+      <li class='clickable'><a {{ action "moveOffset" index}}>{{ item }}</a></li>
+    {{/each}} 
+    <li><a>{{ selectedFile.name }}</a></li>
+  </ol>
+
+  <div class='file-list-wrapper {{ if draggedTarget "dragging"}}'>
+    <div class='px-l-5 indication-xs'>
+      <div class='bar-items-wrapper'>
+        <div class='navigation in-bl'>
+          <span {{ action "clickPrevBtn" }}>{{icon-component class='clickable icon_link va-bl-mid' materialIcon="navigate_before" size=20}}</span>
+          <span {{ action "clickNextBtn" }}>{{icon-component class='clickable icon_link va-bl-mid' materialIcon="navigate_next" size=20}}</span>
+        </div>
+        <span class='va-mid' {{ action "newFolder" }}>
+          {{#icon-component class='color-primary va-sub' hover-darker=true materialIcon='create_new_folder' size=15}}
+            {{#text-component class='inl va-top' size=11}}New folder{{/text-component}}
+          {{/icon-component}}
+        </span>
+        {{#if newFolderPopup}}
+          {{#edit-text
+            class='abs in-bl m-l-1 newFolder'
+            type="text"
+            isEditing=newFolderPopup
+            textInput=createFolderInput
+            textInputPlaceholder="Folder name"
+            onClose="validateNewFolder"
+            cancel="cancelEditing"
+          }}
+          {{/edit-text}}
+        {{/if}}
       </div>
-      <div class='file-list-wrapper m-t-1'>
-      {{#if loadState}} 
-        {{loading-component}} 
-      {{else}}
-        {{#each items as |item|}}
-          <div {{ action "clickItem" item }} class="item {{ if (is-equal selectedFile item) 'selected' }}">
-            <span>{{icon-component class='color-primary va-mid' materialIcon=item.icon size=15}}</span>
-            <div class='filename mx-l-1 in-bl'>{{item.name}}</div>
-          </div>
-        {{else}}
-          No files.
-        {{/each}}
-      {{/if}}
     </div>
+    {{#if loadState}} 
+      {{loading-component}} 
+    {{else}}
+      {{#draggable-zone
+        id="current-folder"
+        lastObjectHovered=lastObjectHovered
+        class='target-current-folder'
+        classBinding="displayBlueBorder:active"
+        elementBeingDraggedPath=elementBeingDraggedPath
+        dropAction=(action 'dropAction' elementBeingDragged)
+      }}
+        <div class='list-items'>
+          {{#draggable-zone
+            enabled=false
+            dragAction=(action 'clickPrevBtn')
+          }}
+            <div class='draggableItem'>
+              <div {{ action "clickPrevBtn" }} class="item">
+                <span>{{icon-component class='color-primary va-mid' materialIcon='folder_open' size=15}}</span>
+                <div class='filename mx-l-1 in-bl'>..</div>
+              </div>
+            </div>
+
+          {{/draggable-zone}}
+          
+          {{#each items as |item|}}
+
+            {{#draggable-zone
+              enabled=item.isDir
+              lastObjectHovered=lastObjectHovered
+              elementBeingDragged=elementBeingDragged
+              setLastObjectHovered=(action 'setLastObjectHovered' item)
+              dragAction=(action 'dragAction' item)
+              dropAction=(action 'dropAction' elementBeingDragged)
+            }}
+              {{#draggable-item
+                content=item
+                currentPath=pathToString
+                elementBeingDragged=elementBeingDragged
+                elementBeingDraggedPath=elementBeingDraggedPath
+              }}
+              <div {{ action "clickItem" item }} class="item">
+                <span>{{icon-component class='color-primary va-mid' materialIcon=item.icon size=15}}</span>
+                {{#edit-text
+                  class='in-bl'
+                  type="text"
+                  textInput=renameItem
+                  textInputPlaceholder=item.name
+                  onClose=(action "renameItem" item.name)
+                }}
+                  <div class='filename mx-l-1 in-bl'>{{item.name}}</div>
+                {{/edit-text}}
+                <span {{ action 'removeItem' item bubbles=false }} class='pull-xs-right'>{{icon-component class='color-primary va-mid' hover-darker=true materialIcon='delete' size=15}}</span>
+              </div>
+              {{/draggable-item}}
+            {{/draggable-zone}}
+          {{else}}
+            <p class='section'>
+            No files.
+            </p>
+          {{/each}}
+        </div>
+      {{/draggable-zone}}
+    {{/if}}
   </div>
 </div>

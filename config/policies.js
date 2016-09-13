@@ -77,11 +77,10 @@ module.exports.policies = {
     destroy: 'isAdmin'
   },
 
-  storageController: {
-    create: false,
+  StorageController: {
+    update: false,
     find: false,
     findOne: false,
-    destroy: false,
     download: 'checkDownloadToken'
   },
 
