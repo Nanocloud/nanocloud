@@ -272,6 +272,7 @@ function set(key, value) {
 /**
  * init initializes the ConfigService. It will copy the configuration variables
  * found in `config.nanocloud` in the database.
+ * init do not overwrite values that already exist.
  *
  * @method init
  * @private
@@ -282,11 +283,19 @@ function init(callback) {
   const config = sails.config.nanocloud;
   let actions = [];
 
-  for (let name in config) {
+  Object.keys(config).forEach((name) => {
     if (config.hasOwnProperty(name)) {
-      actions.push(set(name, nanocloudConfigValue(name, config[name])));
+      actions.push(Config.findOne({
+        key: name
+      })
+      .then((conf) => {
+        if (!conf || conf.value === '') {
+          return set(name, nanocloudConfigValue(name, config[name]));
+        }
+      })
+      );
     }
-  }
+  });
 
   return Promise.all(actions).then(callback, callback);
 }
