@@ -7,10 +7,10 @@
       {{/if}}
       <div class='controls-wrapper'>
         <span class="icon icon_link clickable" {{ action "submit" bubbles=false }}>
-          <i class="material-icons">done</i>
+          {{icon-component materialIcon="done"}}
         </span>
         <span class="icon icon_link clickable close_icon" {{ action "cancel" bubbles=false }}>
-          <i class="material-icons">clear</i>
+          {{icon-component materialIcon="clear"}}
         </span>
       </div>
       {{errorMessage}}
@@ -19,8 +19,8 @@
     <span class="content">
     {{ yield }}
     </span>
-    <span class="edit-mode-icon link">
-      <i {{ action "toggle" bubbles=false }} class="material-icons icon_link edit">editmode</i>
+    <span class='link' {{ action "toggle" bubbles=false }} >
+      {{icon-component class='edit va-mid' materialIcon="editmode" size=14}}
     </span>
   {{/if}}
 </div>

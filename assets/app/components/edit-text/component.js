@@ -61,6 +61,12 @@ export default TooltipsterComponent.extend({
     this.set('originalValue', this.get('textInput'));
   }.on('init'),
 
+  click() {
+    if (this.get('isEditing')) {
+      return false;
+    }
+  },
+
   actions: {
 
     toggle() {

@@ -51,6 +51,58 @@ func (f *file) GetID() string {
 	return f.Id
 }
 
+func Patch(w http.ResponseWriter, r *http.Request) {
+
+	username := r.URL.Query()["username"][0]
+	filename := r.URL.Query()["filename"][0]
+	newfilename := r.URL.Query()["newfilename"][0]
+	var path string
+	var newPath string
+
+	path = fmt.Sprintf("/home/%s/%s", username, filename)
+	newPath = fmt.Sprintf("/home/%s/%s", username, newfilename)
+	err := os.Rename(path, newPath);
+
+	if err != nil {
+		log.Error(err)
+		http.Error(w, "Unable to move file", http.StatusInternalServerError)
+		return
+	}
+}
+
+
+func CreateDirectory(w http.ResponseWriter, r *http.Request) {
+
+	username := r.URL.Query()["username"][0]
+	filename := r.URL.Query()["filename"][0]
+	var path string
+
+	path = fmt.Sprintf("/home/%s/%s", username, filename)
+	err := os.Mkdir(path, 0744);
+
+	if err != nil {
+		log.Error(err)
+		http.Error(w, "Unable to create directory", http.StatusInternalServerError)
+		return
+	}
+}
+
+func Delete(w http.ResponseWriter, r *http.Request) {
+
+	username := r.URL.Query()["username"][0]
+	filename := r.URL.Query()["filename"][0]
+	var path string
+
+	path = fmt.Sprintf("/home/%s/%s", username, filename)
+	err := os.RemoveAll(path);
+
+	if err != nil {
+		log.Error(err)
+		http.Error(w, "Unable to remove", http.StatusInternalServerError)
+		return
+	}
+}
+
 func Post(w http.ResponseWriter, r *http.Request) {
 	var dst *os.File
 	username := r.URL.Query()["username"][0]
@@ -105,6 +157,8 @@ func Post(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Unable to write destination file", http.StatusInternalServerError)
 		return
 	}
+	dst.Sync();
+	return
 }
 
 func Get(c *echo.Context) error {

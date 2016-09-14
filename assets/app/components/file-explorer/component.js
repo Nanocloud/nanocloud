@@ -31,6 +31,23 @@ export default Ember.Component.extend({
   store: Ember.inject.service('store'),
   session: Ember.inject.service('session'),
   loadState: false,
+  displayBlueBorder: Ember.computed('lastObjectHovered', function() {
+    if (this.get('lastObjectHovered') === 'current-folder') {
+      return true;
+    }
+    return false;
+  }),
+
+  targetDirectory: Ember.computed('lastObjectHovered.name', function() {
+    let targetDirectory = this.get('lastObjectHovered.name');
+    if (targetDirectory === undefined) {
+      targetDirectory = '';
+    }
+    else {
+      targetDirectory += '/';
+    }
+    return targetDirectory;
+  }),
 
   loadDirectory() {
     this.set('loadState', true);
@@ -131,6 +148,63 @@ export default Ember.Component.extend({
       }
     },
 
+    setLastObjectHovered(item) {
+      this.set('lastObjectHovered', item);
+    },
+
+    dragAction(item) {
+      if (item.get('isDir')) {
+        this.selectDir(item.get('name'));
+      }
+    },
+
+    dropAction(item) {
+
+      let old = this.get('elementBeingDraggedPath') + item.get('name');
+      let dest = this.get('pathToString') + this.get('targetDirectory') + item.get('name');
+
+      Ember.$.ajax({
+        type: 'PATCH',
+        headers: { Authorization : 'Bearer ' + this.get('session.access_token')},
+        url: '/api/files?filename=./' + old + '&newfilename=' + dest,
+        data: {
+          teams: true
+        }
+      })
+        .then(() => {
+          this.toast.success('File has been moved successfully');
+          this.loadDirectory();
+        }, () => {
+          this.toast.error('File could not be moved');
+        });
+    },
+
+    uploadFile(file) {
+      let req = new XMLHttpRequest();
+      this.set('req', req);
+      req.open('POST', '/api/upload?' + this.get('target') + '=true&filename=' + file.name + '&dest=' + this.get('targetDirectory') + file.name);
+      req.setRequestHeader('Authorization', 'Bearer ' + this.get('session.access_token'));
+      req.upload.onprogress = (event) => {
+        if (event.lengthComputable) {
+          this.set('progress', Math.round(event.loaded / event.total * 100));
+        }
+      };
+      req.onload = (res) => {
+        if (res.target.status === 403) {
+          this.set('forbidden', true);
+          this.trigger('forbidden');
+        } else {
+          this.set('completed', true);
+          this.loadDirectory();
+        }
+        this.set('uploading', false);
+      };
+      this.set('uploading', true);
+      var formData = new FormData();
+      formData.append(file.name, file);
+      req.send(formData);
+    },
+
     clickNextBtn() {
       this.goNext();
     },
@@ -138,5 +212,67 @@ export default Ember.Component.extend({
     clickPrevBtn() {
       this.goBack();
     },
-  }
+
+    newFolder() {
+      this.set('newFolderPopup', true);
+    },
+
+    validateNewFolder() {
+      this.set('newFolderPopup', false);
+      let path = this.get('pathToString') + this.get('createFolderInput');
+      Ember.$.ajax({
+        type: 'POST',
+        headers: { Authorization : 'Bearer ' + this.get('session.access_token')},
+        url: '/api/files?filename=' + path,
+        data: {
+          teams: true
+        }
+      })
+        .then(() => {
+          this.toast.success('File has been created successfully');
+          this.loadDirectory();
+          this.set('createFolderInput', '');
+        }, () => {
+          this.toast.error('File could not be created');
+        });
+    },
+
+    renameItem(item) {
+      let oldName = this.get('pathToString') + item;
+      let newName = this.get('pathToString') + this.get('renameItem');
+      Ember.$.ajax({
+        type: 'PATCH',
+        headers: { Authorization : 'Bearer ' + this.get('session.access_token')},
+        url: '/api/files?filename=' + oldName + '&newfilename=' + newName,
+        data: {
+          teams: true
+        }
+      })
+        .then(() => {
+          this.toast.success('File has been renamed successfully');
+          this.loadDirectory();
+        }, () => {
+          this.toast.error('File could not be renamed');
+        });
+    },
+
+    removeItem(item) {
+
+      let path = this.get('pathToString') + item.get('name');
+      Ember.$.ajax({
+        type: 'DELETE',
+        headers: { Authorization : 'Bearer ' + this.get('session.access_token')},
+        url: '/api/files?filename=' + path,
+        data: {
+          teams: true
+        }
+      })
+        .then(() => {
+          this.toast.success('File has been removed successfully');
+          this.loadDirectory();
+        }, () => {
+          this.toast.error('File could not be removed');
+        });
+    }
+  },
 });

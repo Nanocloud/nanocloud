@@ -203,7 +203,7 @@ paths:
           description: Forbidden, regular users can't modify other user informations
         401:
           description: Unauthorized when you are not logged in
-        
+
     delete:
       tags:
         - users
@@ -942,12 +942,19 @@ paths:
         401:
           description: Unauthorized when you are not logged in
 
-  /files:
+  /files?path={path}:
     get:
       tags:
         - files
       summary:
         Get the files list in user storage
+      parameters:
+        - in: path
+          name: path
+          description: Path to browse (default root directory)
+          required: true
+          type: string
+          format: string
       responses:
         200:
           description: Return the files list
@@ -973,7 +980,7 @@ paths:
                 items:
                   "$ref": "#/definitions/Errors"
 
-  /files{machines}{path}:
+  /files?machines=true&path={path}:
     get:
       tags:
         - files
@@ -981,14 +988,41 @@ paths:
         Get the files list from virtual machine
       parameters:
         - in: path
-          name: machines
-          description: Set to true
+          name: path
+          description: Path to browse (default root directory)
           required: true
           type: string
           format: string
+      responses:
+        200:
+          description: Return the files list
+          schema:
+            type: object
+            properties:
+              data:
+                type: array
+                items:
+                  "$ref": "#/definitions/Files"
+        401:
+          description: Unauthorized when you are not logged in
+          schema:
+            type: object
+            properties:
+              errors:
+                type: array
+                items:
+                  "$ref": "#/definitions/Errors"
+
+  /files?teams=true&path={path}:
+    get:
+      tags:
+        - files
+      summary:
+        Get the files list from virtual machine
+      parameters:
         - in: path
           name: path
-          description: Path to browse
+          description: Path to browse (default root directory)
           required: true
           type: string
           format: string
@@ -1066,12 +1100,12 @@ paths:
                 items:
                   "$ref": "#/definitions/Errors"
 
-  /upload/{filename}:
+  /upload?{filename}:
     post:
       tags:
         - files
       summary:
-        Upload a file
+        Upload a file in personal storage
       parameters:
         - in: path
           name: filename
@@ -1084,6 +1118,196 @@ paths:
           description: File have been uploaded
         400:
           description: Bad request, no file was uploaded
+          schema:
+            type: object
+            properties:
+              errors:
+                type: array
+                items:
+                  "$ref": "#/definitions/Errors"
+
+  /upload?taget=teams&filename={filename}:
+    post:
+      tags:
+        - files
+      summary:
+        Upload a file in the team directory
+      parameters:
+        - in: path
+          name: filename
+          description: file name
+          required: true
+          type: string
+          format: string
+      responses:
+        200:
+          description: File have been uploaded
+        400:
+          description: Bad request, no file was uploaded
+          schema:
+            type: object
+            properties:
+              errors:
+                type: array
+                items:
+                  "$ref": "#/definitions/Errors"
+
+  /files?filename={filename}:
+    post:
+      tags:
+        - files
+      summary:
+        Create a directory in personal storage
+      parameters:
+        - in: path
+          name: filename
+          description: file name
+          required: true
+          type: string
+          format: string
+      responses:
+        200:
+          description: Directory have been created
+        400:
+          description: Bad request, no directory was created
+          schema:
+            type: object
+            properties:
+              errors:
+                type: array
+                items:
+                  "$ref": "#/definitions/Errors"
+    delete:
+      tags:
+        - files
+      summary:
+        Remove a file or a directory from personal storage. In case of a directory, all its content is recursively removed
+      parameters:
+        - in: path
+          name: filename
+          description: file name
+          required: true
+          type: string
+          format: string
+      responses:
+        200:
+          description: Files or directories have been removed
+        400:
+          description: Bad request, no operations were applied
+          schema:
+            type: object
+            properties:
+              errors:
+                type: array
+                items:
+                  "$ref": "#/definitions/Errors"
+
+  /files?target=teams&filename={filename}:
+    post:
+      tags:
+        - files
+      summary:
+        Create a directory in team storage
+      parameters:
+        - in: path
+          name: filename
+          description: file name
+          required: true
+          type: string
+          format: string
+      responses:
+        200:
+          description: Directory have been created
+        400:
+          description: Bad request, no directory was created
+          schema:
+            type: object
+            properties:
+              errors:
+                type: array
+                items:
+                  "$ref": "#/definitions/Errors"
+    delete:
+      tags:
+        - files
+      summary:
+        Remove a file or a directory from team storage. In case of a directory, all its content is recursively removed
+      parameters:
+        - in: path
+          name: filename
+          description: file name
+          required: true
+          type: string
+          format: string
+      responses:
+        200:
+          description: Files or directories have been removed
+        400:
+          description: Bad request, no operations were applied
+          schema:
+            type: object
+            properties:
+              errors:
+                type: array
+                items:
+                  "$ref": "#/definitions/Errors"
+
+  /files?filename={filename}&newfilename={newfilename}:
+    patch:
+      tags:
+        - files
+      summary:
+        Rename/move a file or a directory
+      parameters:
+        - in: path
+          name: filename
+          description: current file name
+          required: true
+          type: string
+          format: string
+        - in: path
+          name: newfilename
+          description: new file name
+          required: true
+          type: string
+          format: string
+      responses:
+        200:
+          description: File or directory renamed
+        400:
+          description: Bad request, no operations were applied
+          schema:
+            type: object
+            properties:
+              errors:
+                type: array
+                items:
+                  "$ref": "#/definitions/Errors"
+
+  /files?teams=true&filename={filename}&newfilename={newfilename}:
+    patch:
+      tags:
+        - files
+      summary:
+        Rename/move a file or a directory
+      parameters:
+        - in: path
+          name: filename
+          description: current file name
+          required: true
+          type: string
+          format: string
+        - in: path
+          name: newfilename
+          description: new file name
+          required: true
+          type: string
+          format: string
+      responses:
+        200:
+          description: File or directory renamed
+        400:
+          description: Bad request, no operation were applied
           schema:
             type: object
             properties:
@@ -1317,7 +1541,7 @@ paths:
           description: Your credentials are not valid or your account expired
           schema:
             $ref: "#/definitions/LoginErrors"
-            
+
   /brokerlog:
     get:
       tags:
@@ -1461,7 +1685,7 @@ definitions:
             type: string
           file-path:
             type: string
-            
+
   ApplicationCreated:
     type: object
     properties:

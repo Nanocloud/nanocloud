@@ -36,6 +36,80 @@ const Promise = require('bluebird');
 module.exports = {
 
   /**
+   * Create a directory in user's storage
+   *
+   * @method upload
+   * @public true
+   */
+  create: function(req, res) {
+    let filename = req.query.filename;
+    let promise = null;
+
+    if (req.allParams().teams === 'true') {
+      promise = Promise.props({
+        user: User.findOne(req.user.id).populate('team'),
+        config: ConfigService.get('teamStorageAddress', 'teamStoragePort')
+      })
+        .then((result) => {
+          return {
+            hostname: result.config.teamStorageAddress,
+            port: result.config.teamStoragePort,
+            username: result.user.team.username
+          };
+        });
+    } else {
+      promise = Storage.findOne({
+        user: req.user.id
+      });
+    }
+
+    promise.then((storage) => {
+      return PlazaService.createDirectory(storage, filename);
+    })
+      .then(() => {
+        return this.files(req, res);
+      })
+      .catch(res.negotiate);
+  },
+
+  /**
+   * Delete a file or a directory
+   *
+   * @method upload
+   * @public true
+   */
+  destroy: function(req, res) {
+    let filename = req.query.filename;
+    let promise = null;
+
+    if (req.allParams().teams === 'true') {
+      promise = Promise.props({
+        user: User.findOne(req.user.id).populate('team'),
+        config: ConfigService.get('teamStorageAddress', 'teamStoragePort')
+      })
+        .then((result) => {
+          return {
+            hostname: result.config.teamStorageAddress,
+            port: result.config.teamStoragePort,
+            username: result.user.team.username
+          };
+        });
+    } else {
+      promise = Storage.findOne({
+        user: req.user.id
+      });
+    }
+
+    promise.then((storage) => {
+      return PlazaService.remove(storage, filename);
+    })
+      .then(() => {
+        return this.files(req, res);
+      })
+      .catch(res.negotiate);
+  },
+
+  /**
    * Upload a file in user's storage
    *
    * @method upload
@@ -44,36 +118,56 @@ module.exports = {
   upload: function(req, res) {
     let user = req.user;
     let filename = req.query.filename;
+    let promise = null;
 
-    StorageService.findOrCreate(user)
-      .then((storage) => {
-        return StorageService.checkUploadLimit(storage, parseInt(req.headers['content-length'], 10))
-          .then(() => {
-            return new Promise(function(resolve, reject) {
-              req.file(filename).upload({
-                maxBytes: 0
-              }, function(error, uploadedFiles) {
-                return error ? reject(error) : resolve(uploadedFiles);
-              });
-            });
-          })
-          .then((uploadedFiles) => {
-            // If no files were uploaded, respond with an error.
-            if (uploadedFiles.length === 0){
-              return res.badRequest('No file was uploaded');
-            }
-            return PlazaService.upload(storage, uploadedFiles[0]);
+    if (req.allParams().teams === 'true') {
+      promise = Promise.props({
+        user: User.findOne(req.user.id).populate('team'),
+        config: ConfigService.get('teamStorageAddress', 'teamStoragePort')
+      })
+        .then((result) => {
+          return Promise.resolve({
+            hostname: result.config.teamStorageAddress,
+            port: result.config.teamStoragePort,
+            username: result.user.team.username
           });
+        });
+    } else {
+      promise = StorageService.findOrCreate(user)
+        .then((storage) => {
+          return StorageService.checkUploadLimit(storage, parseInt(req.headers['content-length'], 10))
+            .then(() => {
+              return storage;
+            });
+        });
+    }
+
+    promise.then((storage) => {
+      return new Promise(function(resolve, reject) {
+        req.file(filename).upload({
+          maxBytes: 0
+        }, function(error, uploadedFiles) {
+          return error ? reject(error) : resolve(uploadedFiles);
+        });
       })
-      .then((response) => {
-        return res.ok(response.body);
-      })
-      .catch((err) => {
-        if (err.statusCode === 403) {
-          return res.forbidden(err.message);
-        }
-        return res.negotiate(err);
-      });
+        .then((uploadedFiles) => {
+          // If no files were uploaded, respond with an error.
+          if (uploadedFiles.length === 0){
+            return res.badRequest('No file was uploaded');
+          }
+
+          return PlazaService.upload(storage, uploadedFiles[0]);
+        })
+        .then((response) => {
+          return res.ok(response.body);
+        })
+        .catch((err) => {
+          if (err.statusCode === 403) {
+            return res.forbidden(err.message);
+          }
+          return res.negotiate(err);
+        });
+    });
   },
 
   /**
@@ -198,12 +292,44 @@ module.exports = {
   },
 
   /**
-   * update is forbidden for everyone
+   * rename is used to rename files
    *
-   * @method update
+   * @method rename
    * @public true
    */
+  rename: function(req, res) {
+    let filename = req.query.filename;
+    let newFilename = req.query.newfilename;
+    let promise = null;
+
+    if (req.allParams().teams === 'true') {
+      promise = Promise.props({
+        user: User.findOne(req.user.id).populate('team'),
+        config: ConfigService.get('teamStorageAddress', 'teamStoragePort')
+      })
+        .then((result) => {
+          return {
+            hostname: result.config.teamStorageAddress,
+            port: result.config.teamStoragePort,
+            username: result.user.team.username
+          };
+        });
+    } else {
+      promise = Storage.findOne({
+        user: req.user.id
+      });
+    }
+
+    promise.then((storage) => {
+      return PlazaService.rename(storage, filename, newFilename);
+    })
+      .then(() => {
+        return this.files(req, res);
+      })
+      .catch(res.negotiate);
+  },
+
   update: function(req, res) {
     return res.forbidden();
-  },
+  }
 };
