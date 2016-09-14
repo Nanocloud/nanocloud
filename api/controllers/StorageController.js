@@ -66,7 +66,9 @@ module.exports = {
     promise.then((storage) => {
       return PlazaService.createDirectory(storage, filename);
     })
-      .then(res.ok)
+      .then(() => {
+        return this.files(req, res);
+      })
       .catch(res.negotiate);
   },
 
@@ -101,7 +103,9 @@ module.exports = {
     promise.then((storage) => {
       return PlazaService.remove(storage, filename);
     })
-      .then(res.ok)
+      .then(() => {
+        return this.files(req, res);
+      })
       .catch(res.negotiate);
   },
 
@@ -299,7 +303,9 @@ module.exports = {
     promise.then((storage) => {
       return PlazaService.rename(storage, filename, newFilename);
     })
-      .then(res.ok)
+      .then(() => {
+        return this.files(req, res);
+      })
       .catch(res.negotiate);
   },
 
