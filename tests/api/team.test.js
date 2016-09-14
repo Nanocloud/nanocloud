@@ -23,7 +23,7 @@
  */
 
 // jshint mocha:true
-/* globals sails, AccessToken, ConfigService, User, Team */
+/* globals sails, AccessToken, ConfigService, User, Team, PendingUser */
 
 var nano = require('./lib/nanotest');
 var expect = require('chai').expect;
@@ -63,6 +63,7 @@ module.exports = function() {
     let teamAdmin = null;
     let teamAdminToken = null;
     let teamMemberId = null;
+    let teamMemberToken = null;
     let teamId = null;
 
     before((done) => {
@@ -159,7 +160,12 @@ module.exports = function() {
           .expect(201)
           .expect(nano.jsonApiSchema(userExpectedSchema))
           .then((res) => {
-            teamMemberId = res.body.data.id;
+            return PendingUser.findOne({
+              id: res.body.data.id
+            });
+          })
+          .then((res) => {
+            teamMemberToken = res.token;
             // user has been added to pending user table
             return nano.request(sails.hooks.http.app)
               .get('/api/pendingusers')
@@ -169,7 +175,7 @@ module.exports = function() {
           .then(() => {
             // activate user
             return nano.request(sails.hooks.http.app)
-              .patch('/api/pendingusers/' + teamMemberId)
+              .patch('/api/pendingusers/' + teamMemberToken)
               .expect(200);
           })
           .then((res) => {

@@ -24,6 +24,7 @@
 
 /* globals sails, User, AccessToken, MachineService, Group */
 /* globals ConfigService, StorageService, Machine, Team, BrokerLog */
+/* globals PendingUser */
 
 const nano = require('./lib/nanotest');
 
@@ -1351,6 +1352,9 @@ module.exports = function() {
 
     describe('Pending-user', function() {
 
+      let adminPendingUserToken = null;
+      let ruPendingUserToken = null;
+      let nologPendingUserToken = null;
       let adminPendingUser = null;
       let ruPendingUser = null;
       let nologPendingUser = null;
@@ -1372,11 +1376,19 @@ module.exports = function() {
                 type: 'pendingusers'
               }
             })
-            .expect((res) => {
-              adminPendingUser = res.body.data.id;
-            })
             .expect(201)
-            .end(done);
+            .then((res) => {
+              return PendingUser.findOne({
+                id: res.body.data.id
+              });
+            })
+            .then((res) => {
+              adminPendingUserToken = res.token;
+              adminPendingUser = res.id;
+            })
+            .then(() => {
+              return done();
+            });
         });
 
         it('Regular users should be authorized to create a pending user', function(done) {
@@ -1394,11 +1406,19 @@ module.exports = function() {
                 type: 'pendingusers'
               }
             })
-            .expect((res) => {
-              ruPendingUser = res.body.data.id;
-            })
             .expect(201)
-            .end(done);
+            .then((res) => {
+              return PendingUser.findOne({
+                id: res.body.data.id
+              });
+            })
+            .then((res) => {
+              ruPendingUserToken = res.token;
+              ruPendingUser = res.id;
+            })
+            .then(() => {
+              return done();
+            });
         });
 
         it('Not logged in user should be authorized to create a pending user', function(done) {
@@ -1415,11 +1435,19 @@ module.exports = function() {
                 type: 'pendingusers'
               }
             })
-            .expect((res) => {
-              nologPendingUser = res.body.data.id;
-            })
             .expect(201)
-            .end(done);
+            .then((res) => {
+              return PendingUser.findOne({
+                id: res.body.data.id
+              });
+            })
+            .then((res) => {
+              nologPendingUserToken = res.token;
+              nologPendingUser = res.token;
+            })
+            .then(() => {
+              return done();
+            });
         });
       });
 
@@ -1505,7 +1533,7 @@ module.exports = function() {
 
         it('Admins should be authorized to activate a pending user', function(done) {
           return nano.request(sails.hooks.http.app)
-            .patch('/api/pendingusers/' + adminPendingUser)
+            .patch('/api/pendingusers/' + adminPendingUserToken)
             .set(nano.adminLogin())
             .expect(200)
             .end(done);
@@ -1513,7 +1541,7 @@ module.exports = function() {
 
         it('Regular users should be authorized to activate a pending user', function(done) {
           return nano.request(sails.hooks.http.app)
-            .patch('/api/pendingusers/' + ruPendingUser)
+            .patch('/api/pendingusers/' + ruPendingUserToken)
             .set('Authorization', 'Bearer ' + token)
             .expect(200)
             .end(done);
@@ -1521,7 +1549,7 @@ module.exports = function() {
 
         it('Not logged in user should be authorized to activate a pending user', function(done) {
           return nano.request(sails.hooks.http.app)
-            .patch('/api/pendingusers/' + nologPendingUser)
+            .patch('/api/pendingusers/' + nologPendingUserToken)
             .expect(200)
             .end(done);
         });

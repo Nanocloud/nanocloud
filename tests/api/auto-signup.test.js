@@ -22,7 +22,7 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-/* globals sails, User, ConfigService, Group, UserGroup */
+/* globals sails, User, ConfigService, Group, UserGroup, PendingUser */
 
 var nano = require('./lib/nanotest');
 var expect = require('chai').expect;
@@ -91,10 +91,15 @@ module.exports = function() {
             });
         })
         .then((res) => {
+          return PendingUser.findOne({
+            email: res.body.data[0].attributes.email
+          });
+        })
+        .then((res) => {
 
           // activate user
           return nano.request(sails.hooks.http.app)
-            .patch('/api/pendingusers/' + res.body.data[0].id)
+            .patch('/api/pendingusers/' + res.token)
             .expect(200)
             .expect(nano.jsonApiSchema(expectedSchema));
         })
@@ -131,10 +136,15 @@ module.exports = function() {
             })
             .expect(201)
             .then((res) => {
+              return PendingUser.findOne({
+                email: res.body.data.attributes.email
+              });
+            })
+            .then((res) => {
 
               // activate user
               return nano.request(sails.hooks.http.app)
-                .patch('/api/pendingusers/' + res.body.data.id)
+                .patch('/api/pendingusers/' + res.token)
                 .expect(200)
                 .expect(nano.jsonApiSchema(expectedSchema));
             })
@@ -172,10 +182,15 @@ module.exports = function() {
             })
             .expect(201)
             .then((res) => {
+              return PendingUser.findOne({
+                email: res.body.data.attributes.email
+              });
+            })
+            .then((res) => {
 
               // activate user
               return nano.request(sails.hooks.http.app)
-                .patch('/api/pendingusers/' + res.body.data.id)
+                .patch('/api/pendingusers/' + res.token)
                 .expect(200)
                 .expect(nano.jsonApiSchema(expectedSchema));
             })
@@ -258,9 +273,9 @@ module.exports = function() {
             groupId = group.id;
             return ConfigService.set('defaultGroup', groupId);
           })
-					.then(() => {
-						return ConfigService.set('autoRegister', true);
-					})
+          .then(() => {
+            return ConfigService.set('autoRegister', true);
+          })
           .then(() => {
             return done();
           });
@@ -295,9 +310,14 @@ module.exports = function() {
           })
           .expect(201)
           .then((res) => {
+            return PendingUser.findOne({
+              email: res.body.data.attributes.email
+            });
+          })
+          .then((res) => {
             // activate user
             return nano.request(sails.hooks.http.app)
-              .patch('/api/pendingusers/' + res.body.data.id)
+              .patch('/api/pendingusers/' + res.token)
               .expect(200)
               .expect(nano.jsonApiSchema(expectedSchema));
           })
@@ -315,34 +335,34 @@ module.exports = function() {
       });
     });
 
-		it('Should not create an entry in pending user table', function(done) {
+    it('Should not create an entry in pending user table', function(done) {
 
-			ConfigService.set('autoRegister', false)
-				.then(() => {
-					// adding user to pendinguser table
-					nano.request(sails.hooks.http.app)
-						.post('/api/pendingusers')
-						.send({
-							data: {
-								attributes: userData,
-								type: 'pendingusers'
-							}
-						})
-						.expect(400)
-						.then (() => {
-							return done();
-						});
-				});
-		});
+      ConfigService.set('autoRegister', false)
+        .then(() => {
+          // adding user to pendinguser table
+          nano.request(sails.hooks.http.app)
+            .post('/api/pendingusers')
+            .send({
+              data: {
+                attributes: userData,
+                type: 'pendingusers'
+              }
+            })
+            .expect(400)
+            .then (() => {
+              return done();
+            });
+        });
+    });
 
     after(function(done) {
       ConfigService.unset('testMail')
         .then(() => {
-					return ConfigService.set('autoRegister', true);
+          return ConfigService.set('autoRegister', true);
         })
-				.then(() => {
-					return done();
-				});
+        .then(() => {
+          return done();
+        });
     });
 
     afterEach(function(done) {

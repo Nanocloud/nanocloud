@@ -40,6 +40,7 @@ module.exports = {
 
     user.id = uuid.v4();
     user.isAdmin = false;
+    user.token = uuid.v4();
 
     ConfigService.get('autoRegister')
       .then((conf) => {
@@ -76,7 +77,7 @@ module.exports = {
         return TemplateService.render('activation-email', {
           firstName: user['first-name'],
           lastName: user['last-name'],
-          activationLink: `http://${host}/#/activate/${user.id}`
+          activationLink: `http://${host}/#/activate/${user.token}`
         })
           .then((message) => {
             return EmailService.sendMail(to, subject, message)
@@ -108,14 +109,14 @@ module.exports = {
   },
 
   update: function(req, res) {
-    var pendingUserID = req.params.id;
+    var pendingUserToken = req.params.id;
     var expirationDays;
 
     ConfigService.get('expirationDate')
       .then((conf) => {
         expirationDays = conf.expirationDate;
         return PendingUser.findOne({
-          id: pendingUserID
+          token: pendingUserToken
         });
       })
       .then((user) => {
@@ -141,7 +142,7 @@ module.exports = {
           })
           .then(() => {
             return PendingUser.destroy({
-              id: pendingUserID
+              token: pendingUserToken
             });
           })
           .then(() => {

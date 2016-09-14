@@ -67,9 +67,14 @@ module.exports = {
       model: 'team'
     },
 
+    token: {
+      type: 'string'
+    },
+
     toJSON: function() {
       var obj = this.toObject();
       delete obj.hashedPassword;
+      delete obj.token;
       return obj;
     }
   },
