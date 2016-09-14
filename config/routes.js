@@ -140,6 +140,10 @@ module.exports.routes = {
     action: 'destroy'
   },
 
+  'DELETE /api/storages/:id': {response: 'forbidden'},
+
+  'POST /api/storages': {response: 'forbidden'},
+
   'GET /api/files': {
     controller: 'Storage',
     action: 'files'
