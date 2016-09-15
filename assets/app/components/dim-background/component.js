@@ -27,6 +27,24 @@ import Ember from 'ember';
 export default Ember.Component.extend({
   classNames: ['dim-background'],
   classNameBindings: ['show:state-show:state-hide'],
+  opacity: 0.6,
+  duration: 200,
+
+  animation: function() {
+    if (this.get('show')) {
+      Ember.$(this.get('element')).velocity('stop').velocity({ opacity: this.get('opacity')}, {
+        easing: 'easeOutQuart',
+        duration: this.get('duration')
+      });
+    }
+    else {
+      Ember.$(this.get('element')).velocity('stop').velocity({ opacity: 0}, {
+        easing: 'easeOutQuart',
+        duration: this.get('duration'),
+      });
+    }
+  }.observes('show'),
+
   click: function() {
     if (!this.get('preventAction')) {
       this.sendAction();

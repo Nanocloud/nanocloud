@@ -27,6 +27,7 @@ import Ember from 'ember';
 export default Ember.Controller.extend({
 
   /* global $:false */
+  download: Ember.inject.service('download'),
   session: Ember.inject.service('session'),
   teamController: Ember.inject.controller('protected.users.teams'),
   protectedController: Ember.inject.controller('protected'),
@@ -35,6 +36,7 @@ export default Ember.Controller.extend({
   focusModeTeams: false,
   loadState: false,
   items: null,
+  showFileExplorer: false,
 
   modelIsEmpty: Ember.computed.empty('items', 'items'),
 
@@ -42,7 +44,8 @@ export default Ember.Controller.extend({
 
     filteringIgnoreCase: true,
     messageConfig: {
-      searchLabel: 'Search',
+      searchLabel: '',
+      searchPlaceholder: 'Search',
     },
 
     customIcons: {
@@ -79,46 +82,6 @@ export default Ember.Controller.extend({
       template: 'protected/users/teams/index/table/activated-user',
     }
   ],
-
-  fileColumns: [
-    {
-      propertyName: 'type',
-      title: 'Type',
-      disableFiltering: true,
-      filterWithSelect: false,
-      className: 'short',
-      template: 'protected/files/index/table/file-list/file-type',
-      disableSorting: true,
-    },
-    {
-      propertyName: 'name',
-      title: 'Filename',
-      disableFiltering: true,
-      filterWithSelect: false,
-    },
-    {
-      propertyName: 'size',
-      title: 'Size',
-      disableFiltering: true,
-      filterWithSelect: false,
-      template: 'protected/files/index/table/file-list/size',
-    }
-  ],
-
-  teamFiles : Ember.computed('items', 'items', function() {
-
-    var ret = Ember.A([]);
-    this.get('items').forEach(function(item) {
-      if (item.get('type') !== 'directory') {
-        ret.push(Ember.Object.create({
-          type: item.get('icon'),
-          name: item.get('name'),
-          size: item.get('size'),
-        }));
-      }
-    });
-    return ret;
-  }),
 
   actions: {
     createTeam() {
@@ -162,8 +125,64 @@ export default Ember.Controller.extend({
         });
     },
 
+    toggleUserSetting(user) {
+      this.send('togglePopup', user);
+    },
+
+    closePopup(user) {
+      user.set('teamOptionIsOpen', false);
+    },
+
+    openPopup(user) {
+      user.set('teamOptionIsOpen', true);
+    },
+
+    togglePopup(user) {
+      user.toggleProperty('teamOptionIsOpen');
+    },
+
     closeFocusModeTeams() {
       this.set('focusModeTeams', false);
-    }
+    },
+
+    toAdminTeam(user) {
+      user.set('isTeamAdmin', true);
+      user.save()
+        .then(() => {
+          this.toast.success(user.get('fullName') + ' has been promoted to team admin');
+        })
+        .catch(() => {
+          this.toast.error('An error occurred while setting a team member team admin. Please try again.');
+        })
+        .finally(() => {
+          this.send('closePopup', user);
+        });
+    },
+
+    toRegularUser(user) {
+      user.set('isTeamAdmin', false);
+      user.save()
+        .then(() => {
+          this.toast.success(user.get('fullName') + ' is now a regular user');
+        })
+        .catch(() => {
+          this.toast.error('An error occurred while setting a team admin team member. Please try again.');
+        })
+        .finally(() => {
+          this.send('closePopup', user);
+        });
+    },
+
+    toggleFileExplorer() {
+      this.toggleProperty('showFileExplorer');
+    },
+
+    closeFileExplorer() {
+      this.set('showFileExplorer', false);
+    },
+
+    openFileExplorer() {
+      this.set('showFileExplorer', true);
+    },
   }
 });

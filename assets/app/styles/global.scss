@@ -34,10 +34,12 @@ h1 {
   position: relative;
 	background: $gray-lightest;
   padding: 20px 20px 20px 20px;
+  height: inherit;
 }
 
 .content-wrapper {
   margin: 0px 0px 20px 0px;
+  height: 100%;
 }
 
 .loading-page {
@@ -107,6 +109,11 @@ h1 {
   &.hover:hover{
     border: 1px solid #C2E4FB;
   }
+}
+
+.indication-xs {
+  @extend .indication;
+  padding: 2px 5px 0px 5px;
 }
 
 .color-gray-dark {
@@ -193,8 +200,16 @@ h1 {
   display: inline-block;
 }
 
+.inl {
+  display: inline;
+}
+
 .fl {
   display: flex;
+}
+
+.rel {
+  position: relative;
 }
 
 .abs {
@@ -213,21 +228,29 @@ h1 {
   padding-left: 5px;
 }
 
+.mx-l-1 {
+  margin-left: 5px;
+}
+
 .no-underline *:hover {
   text-decoration: none;
 }
 
 .noselect {
-  -webkit-touch-callout: none; 
-  -webkit-user-select: none;   
-  -khtml-user-select: none;    
-  -moz-user-select: none;      
-  -ms-user-select: none;       
-  user-select: none;           
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
 }
 
 .clickable {
   cursor: pointer;
+}
+
+.unclickable {
+  cursor: default;
 }
 
 .online {

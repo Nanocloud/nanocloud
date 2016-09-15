@@ -77,6 +77,61 @@ module.exports = {
   },
 
   /**
+   * rename
+   *
+   * Ask for a file to be renamed
+   *
+   * @param {Object} storage used by user
+   * @param {string} oldpath the current file location
+   * @param {string} newpath the new desired path
+   * @return {Promise} Request to Plaza
+   */
+  rename: function(storage, oldpath, newpath) {
+    let options = {
+      url: 'http://' + storage.hostname + ':' + storage.port + '/files?username=' + encodeURI(storage.username) + '&filename=' + oldpath + '&newfilename=' + newpath,
+      method: 'PATCH'
+    };
+
+    return request(options);
+  },
+
+  /**
+   * remove
+   *
+   * Ask for a file to be removed
+   *
+   * @param {Object} storage used by user
+   * @param {string} path file to remove
+   * @return {Promise} Request to Plaza
+   */
+  remove: function(storage, path) {
+    let options = {
+      url: 'http://' + storage.hostname + ':' + storage.port + '/files?username=' + encodeURI(storage.username) + '&filename=' + path,
+      method: 'DELETE'
+    };
+
+    return request(options);
+  },
+
+  /**
+   * createDirectory
+   *
+   * Ask for a directory to be created
+   *
+   * @param {Object} storage used by user
+   * @param {string} path directory's path
+   * @return {Promise} Request to Plaza
+   */
+  createDirectory: function(storage, path) {
+    let options = {
+      url: 'http://' + storage.hostname + ':' + storage.port + '/directory?username=' + encodeURI(storage.username) + '&filename=' + path,
+      method: 'POST'
+    };
+
+    return request(options);
+  },
+
+  /**
    * download
    *
    * Ask to download a file

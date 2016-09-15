@@ -29,16 +29,43 @@ export default TooltipsterComponent.extend({
   classNames: ['icon-component'],
   classNameBindings: [
     'hover-enabled:hover-enabled',
-    'clickable:clickable'
+    'hover-darker:hover-darker',
+    'hover-lighter:hover-lighter',
+    'clickable:clickable',
   ],
+  popup: false,
+  isOpen: false,
+  showPopup: Ember.computed.and('popup', 'isOpen'),
 
   didInsertElement() {
     Ember.$(this.get('element')).find('.icon-element').css('font-size', this.get('size'));
   },
 
+  click() {
+    this.sendAction();
+  },
+
   actions: {
     clickAction() {
       this.sendAction('click');
+    },
+
+    togglePopup() {
+      this.toggleProperty('isOpen');
+    },
+
+    openPopup() {
+      this.set('isOpen', true);
+    },
+
+    closePopup() {
+      this.set('isOpen', false);
+    },
+
+    userClickPopup() {
+      if (this.get('popup')) {
+        this.send('togglePopup');
+      }
     }
   }
 });

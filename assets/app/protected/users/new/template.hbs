@@ -6,10 +6,11 @@
   </p>
   <h4>
     {{#link-to 'protected.users' }}Users{{/link-to}}
-    <div class='in-bl va-tb'>
-      {{icon-component class="va-sub" materialIcon="navigate_next"}} Create a new user
+    <div class='in-bl'>
+      {{icon-component class="va-sub" materialIcon="navigate_next"}} 
     </div>
- </h4>
+    Create a new user
+  </h4>
   <div class="user-new content-wrapper form m-t-1">
     <form {{action 'add' on='submit'}}>
         {{nano-input hideError=userHasSubmitted placeholder='Firstname' model=model valuePath="firstName" autofocus=true }}

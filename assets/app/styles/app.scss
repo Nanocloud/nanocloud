@@ -21,6 +21,7 @@ $blue-default:             #006CB6 !default;
 @import "app-item";
 @import "global";
 @import "dim-background";
+@import "floating-sidebar-component";
 @import "file-explorer";
 @import "edit-text";
 @import "topbar-item";
@@ -46,6 +47,8 @@ $blue-default:             #006CB6 !default;
 @import "detail-table";
 @import "teams-focus-input";
 @import "inputs";
+@import "popup-component";
+@import "draggable-zone";
 @import "specific/teams-index";
 
 @include bg-variant('.bg-light', $gray-lighter);

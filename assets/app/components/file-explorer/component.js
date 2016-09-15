@@ -25,18 +25,37 @@
 import Ember from 'ember';
 
 export default Ember.Component.extend({
-  isVisible: false,
+  classNames: ['file-explorer-wrapper'],
+  classBindings: ['noselect', 'transition-enabled-2'],
   publishError: false,
   store: Ember.inject.service('store'),
+  session: Ember.inject.service('session'),
   loadState: false,
+  displayBlueBorder: Ember.computed('lastObjectHovered', function() {
+    if (this.get('lastObjectHovered') === 'current-folder') {
+      return true;
+    }
+    return false;
+  }),
+
+  targetDirectory: Ember.computed('lastObjectHovered.name', function() {
+    let targetDirectory = this.get('lastObjectHovered.name');
+    if (targetDirectory === undefined) {
+      targetDirectory = '';
+    }
+    else {
+      targetDirectory += '/';
+    }
+    return targetDirectory;
+  }),
 
   loadDirectory() {
-    this.set('selectedFile', null);
     this.set('loadState', true);
-    let loadFilesPromise = this.get('store').query(this.get('api'), {
-      machines: true,
+    let parameters = {
       path: this.get('pathToString')
-    });
+    };
+    parameters[this.get('target')] = true;
+    let loadFilesPromise = this.get('store').query(this.get('api'), parameters);
     this.set('items', loadFilesPromise);
     loadFilesPromise.then(() => {
       this.set('loadState', false);
@@ -47,19 +66,11 @@ export default Ember.Component.extend({
     return (this.pathToArray());
   }),
 
-  becameVisible: function() {
-    this.set('history', [ 'C:' ]);
+  init() {
+    this.set('history', this.get('system') === 'windows' ? ['C:'] : ['']);
     this.set('history_offset', 0);
     this.loadDirectory();
-  },
-
-  selectFile(file) {
-    if (this.get('selectedFile') !== file) {
-      this.set('selectedFile', file);
-    }
-    else {
-      this.set('selectedFile', null);
-    }
+    this._super(...arguments);
   },
 
   selectDir(dir) {
@@ -103,39 +114,24 @@ export default Ember.Component.extend({
   pathToString: Ember.computed('history', 'history_offset', function() {
     let data = this.get('history');
     let offset = this.get('history_offset');
-    let path = data.slice(0, offset + 1).join('\\') + '\\';
+    let separator = this.get('system') === 'windows' ? '\\' : '\/';
+    let path = data.slice(0, offset + 1).join(separator) + separator;
     return path;
   }),
 
-  publishSelectedFile() {
-
-    let name = this.get('selectedFile').get('name').replace(/\.[^/.]+$/, '');
-
-    let m = this.get('store').createRecord('app', {
-      alias: name,
-      displayName: name,
-      collectionName: 'collection',
-      filePath: this.get('pathToString') + this.get('selectedFile.name')
-    });
-
-    this.set('isPublishing', true);
-    m.save()
-      .then(() => {
-        this.set('isPublishing', false);
-        this.toggleProperty('isVisible');
-        this.toast.success('Your application has been published successfully');
-        this.sendAction('action');
-      }, (error) => {
-        this.set('isPublishing', false);
-        this.set('publishError', true);
-        this.set('selectedFile', null);
-        this.toast.error(error.errors[0].status + ' : ' + error.errors[0].title);
+  downloadFile(filename) {
+    let path = this.get('pathToString').substring(1) + filename;
+    Ember.$.ajax({
+      type: 'GET',
+      headers: { Authorization : 'Bearer ' + this.get('session.access_token')},
+      url: '/api/files/token',
+      data: { filename: path }
+    })
+      .then((response) => {
+        let url = '/api/files/download?' + this.get('target') + '=true&filename=' + encodeURIComponent(path) + '&token=' + encodeURIComponent(response.token);
+        window.location.assign(url);
       });
   },
-
-  selectedFilePath: Ember.computed('pathToString', 'selectedFile', function() {
-    return (this.get('pathToString') + this.get('selectedFile').get('name'));
-  }),
 
   actions: {
 
@@ -144,20 +140,69 @@ export default Ember.Component.extend({
       this.loadDirectory();
     },
 
-    toggleFileExplorer() {
-      this.toggleProperty('isVisible');
-    },
-
     clickItem(item) {
       if (item.get('isDir')) {
         this.selectDir(item.get('name'));
       } else {
-        this.selectFile(item);
+        this.downloadFile(item.get('name'));
       }
     },
 
-    clickPublish() {
-      this.publishSelectedFile();
+    setLastObjectHovered(item) {
+      this.set('lastObjectHovered', item);
+    },
+
+    dragAction(item) {
+      if (item.get('isDir')) {
+        this.selectDir(item.get('name'));
+      }
+    },
+
+    dropAction(item) {
+
+      let old = this.get('elementBeingDraggedPath') + item.get('name');
+      let dest = this.get('pathToString') + this.get('targetDirectory') + item.get('name');
+
+      Ember.$.ajax({
+        type: 'PATCH',
+        headers: { Authorization : 'Bearer ' + this.get('session.access_token')},
+        url: '/api/files?filename=./' + old + '&newfilename=' + dest,
+        data: {
+          teams: true
+        }
+      })
+        .then(() => {
+          this.toast.success('File has been moved successfully');
+          this.loadDirectory();
+        }, () => {
+          this.toast.error('File could not be moved');
+        });
+    },
+
+    uploadFile(file) {
+      let req = new XMLHttpRequest();
+      this.set('req', req);
+      req.open('POST', '/api/upload?' + this.get('target') + '=true&filename=' + file.name + '&dest=' + this.get('targetDirectory') + file.name);
+      req.setRequestHeader('Authorization', 'Bearer ' + this.get('session.access_token'));
+      req.upload.onprogress = (event) => {
+        if (event.lengthComputable) {
+          this.set('progress', Math.round(event.loaded / event.total * 100));
+        }
+      };
+      req.onload = (res) => {
+        if (res.target.status === 403) {
+          this.set('forbidden', true);
+          this.trigger('forbidden');
+        } else {
+          this.set('completed', true);
+          this.loadDirectory();
+        }
+        this.set('uploading', false);
+      };
+      this.set('uploading', true);
+      var formData = new FormData();
+      formData.append(file.name, file);
+      req.send(formData);
     },
 
     clickNextBtn() {
@@ -167,5 +212,67 @@ export default Ember.Component.extend({
     clickPrevBtn() {
       this.goBack();
     },
-  }
+
+    newFolder() {
+      this.set('newFolderPopup', true);
+    },
+
+    validateNewFolder() {
+      this.set('newFolderPopup', false);
+      let path = this.get('pathToString') + this.get('createFolderInput');
+      Ember.$.ajax({
+        type: 'POST',
+        headers: { Authorization : 'Bearer ' + this.get('session.access_token')},
+        url: '/api/files?filename=' + path,
+        data: {
+          teams: true
+        }
+      })
+        .then(() => {
+          this.toast.success('File has been created successfully');
+          this.loadDirectory();
+          this.set('createFolderInput', '');
+        }, () => {
+          this.toast.error('File could not be created');
+        });
+    },
+
+    renameItem(item) {
+      let oldName = this.get('pathToString') + item;
+      let newName = this.get('pathToString') + this.get('renameItem');
+      Ember.$.ajax({
+        type: 'PATCH',
+        headers: { Authorization : 'Bearer ' + this.get('session.access_token')},
+        url: '/api/files?filename=' + oldName + '&newfilename=' + newName,
+        data: {
+          teams: true
+        }
+      })
+        .then(() => {
+          this.toast.success('File has been renamed successfully');
+          this.loadDirectory();
+        }, () => {
+          this.toast.error('File could not be renamed');
+        });
+    },
+
+    removeItem(item) {
+
+      let path = this.get('pathToString') + item.get('name');
+      Ember.$.ajax({
+        type: 'DELETE',
+        headers: { Authorization : 'Bearer ' + this.get('session.access_token')},
+        url: '/api/files?filename=' + path,
+        data: {
+          teams: true
+        }
+      })
+        .then(() => {
+          this.toast.success('File has been removed successfully');
+          this.loadDirectory();
+        }, () => {
+          this.toast.error('File could not be removed');
+        });
+    }
+  },
 });

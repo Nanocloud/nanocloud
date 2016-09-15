@@ -148,10 +148,18 @@
               {{#if isMe }}
                 {{input type="checkbox" name="isAdmin" change=(action "updatePrivilege") checked=model.isAdmin disabled="isMe"}}
               {{else}}
-              {{input type="checkbox" name="isAdmin" change=(action "updatePrivilege") checked=model.isAdmin}}
+                {{input type="checkbox" name="isAdmin" change=(action "updatePrivilege") checked=model.isAdmin}}
               {{/if}}
             </td>
           </tr>
+          {{#if model.hasTeam}}
+            <tr>
+              <th scope="row">Is team admin</th>
+              <td>
+                {{input type="checkbox" name="isAdmin" change=(action "updateTeamAdmin") checked=model.isTeamAdmin}}
+              </td>
+            </tr>
+          {{/if}}
         {{/if}}
       </tbody>
     </table>

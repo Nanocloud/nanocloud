@@ -1,14 +1,5 @@
 .file-explorer-wrapper {
-  position: fixed;
-  width: $file-explorer-width;
   height: 100%;
-  top: 0;
-  right: 0;
-  z-index: 1;
-
-  .breadcrumb {
-    font-size: 16px;
-  }
 }
 
 .file-explorer {
@@ -18,13 +9,17 @@
   margin: auto;
   z-index: 1;
 
+  .breadcrumb {
+    font-size: 16px;
+  }
+
   .section {
     height: 100%;
     margin-top: 0;
   }
 
   .filePath {
-    display: inline-block; 
+    display: inline-block;
 
     a {
       cursor: pointer;
@@ -32,8 +27,6 @@
   }
 
   .file-explorer-footer {
-    bottom: 0px;
-    position: absolute;
     width: 100%;
     padding: 10px 0px 10px 0px;
 
@@ -44,12 +37,21 @@
     }
   }
 
+  .bar-items-wrapper {
+    position: relative;
+    top: 2px;
+
+    .newFolder {
+      top: -3px;
+    }
+  }
+
   .file-list-wrapper {
     overflow: auto;
     cursor: pointer;
-    position: absolute;
-    width: 94%;
-    height: calc(100% - 215px);
+    height: calc(100% - 180px);
+    border: 2px solid $white;
+    padding: 10px 0px 10px 0px;
 
     > .item {
       padding: 4px 10px 4px 5px;
@@ -57,7 +59,10 @@
       &:hover {
         color: $blue-default;
         background-color: $gray-lighter;
-        text-decoration: underline;
+
+        .filename {
+          text-decoration: underline;
+        }
       }
 
       &.selected {
@@ -68,23 +73,5 @@
         }
       }
     }
-  }
-}
-
-@media (max-width: 600px) {
-  .file-explorer-wrapper {
-    width: 100%;
-  }
-}
-
-@media (max-width:1200px) and (min-width:600px) {
-  .file-explorer-wrapper {
-    width: 70%;
-  }
-}
-
-@media (max-width:1200px) and (min-width:990px) {
-  .file-explorer-wrapper {
-    width: 50%;
   }
 }

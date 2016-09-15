@@ -47,7 +47,6 @@ export default Ember.Route.extend({
 
   actions : {
     refreshModel() {
-      this.store.unloadAll();
       this.refresh();
     },
   }
