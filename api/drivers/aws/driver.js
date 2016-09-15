@@ -257,95 +257,26 @@ class AWSDriver extends Driver {
                   return reject(err);
                 }
 
-                if (image.password === null) {
-                  return this._client.ec2
-                    .waitFor('passwordDataAvailable', {
-                      InstanceId: server.id
-                    }, (err, res) => {
-
-                      if (err) {
-                        return reject(err);
-                      }
-                      return resolve({
-                        server: server,
-                        password: res.PasswordData,
-                        image: image
-                      });
-                    });
-                }
-
-                this._client.ec2
-                  .waitFor('instanceStatusOk', {
-                    InstanceIds: [server.id]
-                  }, (err) => {
-
-                    if (err) {
-                      return reject(err);
-                    }
-
-                    this._client.ec2
-                      .waitFor('systemStatusOk', {
-                        InstanceIds: [server.id]
-                      }, (err) => {
-                        if (err) {
-                          return reject(err);
-                        }
-
-                        return resolve({
-                          server: server,
-                          password: image.password,
-                          image: image
-                        });
-                      });
-                  });
-              });
-            })
-              .then((res) => {
-                return new Promise((resolve, reject) => {
-                  res.server.refresh((err, server) => {
-                    if (err) {
-                      reject(err);
-                    } else {
-                      res.server = server;
-                      resolve(res);
-                    }
-                  });
-                });
-              })
-              .then((res) => {
-                const server = res.server;
-                const password = res.password;
-                const image = res.image;
                 const ip = server.addresses.public[0] || server.addresses.private[0];
                 const type = this.name();
 
-                return ConfigService.get('awsMachineUsername', 'plazaPort', 'awsFlavor')
+                ConfigService.get('awsMachineUsername', 'plazaPort', 'awsFlavor')
                   .then((config) => {
-
-                    let _createMachine = function(password) {
-                      return Machine.create({
-                        id: server.id,
-                        name: server.name,
-                        type: type,
-                        flavor: config.awsFlavor,
-                        ip: ip,
-                        username: config.awsMachineUsername,
-                        password: password,
-                        domain: '',
-                        plazaport: config.plazaPort
-                      });
-                    };
-
-                    if (image.password) {
-                      return _createMachine(image.password);
-                    } else {
-                      return this._decryptPassword(password)
-                        .then((password) => {
-                          return _createMachine(password);
-                        });
-                    }
+                    let machine = new Machine._model({
+                      id: server.id,
+                      name: options.name,
+                      type: type,
+                      flavor: config.awsFlavor,
+                      ip: ip,
+                      username: config.awsMachineUsername,
+                      password: null,
+                      domain: '',
+                      plazaport: config.plazaPort,
+                    });
+                    return resolve(machine);
                   });
               });
+            });
           });
       });
   }
@@ -497,6 +428,125 @@ class AWSDriver extends Driver {
           });
       });
     });
+  }
+
+  /**
+   * Retrieve the machine's data
+   *
+   * @method refresh
+   * @param {machine} Machine model
+   * @return {Promise[Machine]}
+   */
+  refresh(machine) {
+    return this.getServer(machine.id)
+      .then((res) => {
+        return new Promise((resolve, reject) => {
+          const server = res.server;
+          const password = res.password;
+          const ip = res.addresses.public[0] || server.addresses.private[0];
+          this._client.ec2.waitFor('instanceStatusOk', {
+            InstanceIds: [machine.id]
+          }, function(err, data) {
+            if (err) {
+              reject(err);
+            } else if (!data) {
+              machine.status = 'pending';
+            } else if (data.InstanceStatuses[0].InstanceState.Code === 16) {
+              machine.status = 'running';
+            } else {
+              machine.status = 'unknown';
+            }
+            machine.password = password;
+            machine.ip = ip;
+            return resolve(machine);
+          });
+        });
+      });
+  }
+
+  /**
+   * Retrieve the machine's password
+   *
+   * @method getPassword
+   * @param {machine} Machine model
+   * @return {Promise[String]}
+   */
+  getPassword(machine) {
+    var image = null;
+    var server = null;
+    return MachineService.getDefaultImage()
+      .then((res) => {
+        image = res;
+        return this.getServer(machine.id);
+      })
+      .then((res) => {
+        server = res;
+        return new Promise((resolve, reject) => {
+          if (image.password === null) {
+            return this._client.ec2
+              .waitFor('passwordDataAvailable', {
+                InstanceId: machine.id
+              }, (err, res) => {
+                if (err) {
+                  return reject(err);
+                }
+                return resolve({
+                  server: server,
+                  password: res.PasswordData,
+                  image: image
+                });
+              });
+          }
+          this._client.ec2
+            .waitFor('instanceStatusOk', {
+              InstanceIds: [machine.id]
+            }, (err) => {
+
+              if (err) {
+                return reject(err);
+              }
+
+              this._client.ec2
+                .waitFor('systemStatusOk', {
+                  InstanceIds: [machine.id]
+                }, (err) => {
+                  if (err) {
+                    return reject(err);
+                  }
+
+                  return resolve({
+                    server: server,
+                    password: image.password,
+                    image: image
+                  });
+                });
+            });
+        });
+      })
+      .then((res) => {
+        return new Promise((resolve, reject) => {
+          res.server.refresh((err, server) => {
+            if (err) {
+              reject(err);
+            } else {
+              res.server = server;
+              resolve(res);
+            }
+          });
+        });
+      })
+      .then((res) => {
+        const password = res.password;
+
+        if (image.password) {
+          return Promise.resolve(password);
+        } else {
+          return this._decryptPassword(password)
+            .then((password) => {
+              return Promise.resolve(password);
+            });
+        }
+      });
   }
 }
 

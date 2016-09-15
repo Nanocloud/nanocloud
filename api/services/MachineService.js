@@ -241,28 +241,52 @@ function increaseUsersMachineEndDate(user) {
  * @return {Promise}
  */
 function _createMachine() {
+  let machine = {};
+
+  // Check machine's status every 5s if driver is not dummy (testing purpose)
+  const interval = (driverName() === 'dummy') ? (0) : (5000);
+
   return ConfigService.get('machinesName')
     .then((config) => {
-      const machine = _driver.createMachine({
+      return _driver.createMachine({
         name: config.machinesName
-      })
-        .then((machineCreated) => {
-          _createBrokerLog(machineCreated, 'Created');
-        })
-        .finally(() => {
-          const len = _awaitingMachines.length;
-          for (let i = 0; i < len; i++) {
-            if (_awaitingMachines[i] === machine) {
-              _awaitingMachines.splice(i, 1);
+      });
+    })
+    .then((res) => {
+      machine = res;
+      machine.status = 'booting';
+      _createBrokerLog(machine, 'Created');
+      return Machine.create(machine);
+    })
+    .then(() => {
+      let i = 0; // To prevent infinite loop in case of error
+      let loop = setInterval(function (){
+        i++;
+        if (i > 60) {
+          clearInterval(loop);
+          _createBrokerLog(machine, 'Terminated (timeout when booting)');
+          return _terminateMachine(machine);
+        }
+        machine.refresh()
+          .then((machine) => { // Refresh machine's data from iaas
+            if (machine.status !== 'booting') {
+              clearInterval(loop);
+              if (!machine.password && machine.status === 'running') {
+                machine.getPassword()
+                  .then((pwd) => {
+                    machine.password = pwd;
+                    return Machine.update({id: machine.id}, machine);
+                  });
+              }
+              else {
+                return Machine.update({id: machine.id}, machine);
+              }
             }
-          }
-        })
-        .catch(() => {
-          _createBrokerLog({}, 'Not created');
-        });
-
-      _awaitingMachines.push(machine);
-      return machine;
+          });
+      }, interval);
+    })
+    .catch(() => {
+      _createBrokerLog({}, 'Not created');
     });
 }
 
@@ -482,7 +506,29 @@ function _createBrokerLog(machine, state) {
     });
 }
 
+/**
+ * Retrieve the machine's data
+ *
+ * @method refresh
+ * @param {machine} Machine model
+ * @return {Promise[Machine]}
+ */
+function refresh(machine) {
+  return _driver.refresh(machine);
+}
+
+/**
+ * Retrieve the machine's password
+ *
+ * @method getPassword
+ * @param {machine} Machine model
+ * @return {Promise[String]}
+ */
+function getPassword(machine) {
+  return _driver.getPassword(machine);
+}
+
 module.exports = {
   initialize, getMachineForUser, driverName, sessionOpen, sessionEnded,
-  machines, createImage, getDefaultImage
+  machines, createImage, getDefaultImage, refresh, getPassword
 };

@@ -55,6 +55,7 @@ export default Ember.Controller.extend({
         id: item.get('id'),
         ip: item.get('ip'),
         expiration: item.get('expiration'),
+        status: item.get('status'),
         user: item.get('user'),
         endDate: item.get('endDate'),
       }));
@@ -68,6 +69,13 @@ export default Ember.Controller.extend({
       propertyName: 'id',
       title: 'ID',
       disableFiltering: true,
+    },
+    {
+      propertyName: 'boot',
+      title: 'Status',
+      disableFiltering: true,
+      filterWithSelect: false,
+      template: 'protected/machines/index/table/machine-list/boot',
     },
     {
       propertyName: 'name',

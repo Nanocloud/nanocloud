@@ -26,6 +26,7 @@ const url = require('url');
 const Promise = require('bluebird');
 const request = Promise.promisifyAll(require('request'));
 const uuid = require('node-uuid');
+const MachineService = require('../services/MachineService');
 
 /**
  * @module models
@@ -70,6 +71,9 @@ module.exports = {
     user: {
       model: 'user',
       unique: true
+    },
+    status: {
+      type: 'string'
     },
 
     setEndDate(duration) {
@@ -166,6 +170,26 @@ module.exports = {
 
           return Promise.resolve();
         });
+    },
+
+    /**
+     * Retrieve the machine's data
+     *
+     * @method refresh
+     * @return {Promise[Machine]}
+     */
+    refresh() {
+      return MachineService.refresh(this);
+    },
+
+    /**
+     * Retrieve the machine's password
+     *
+     * @method getPassword
+     * @return {Promise[String]}
+     */
+    getPassword() {
+      return MachineService.getPassword(this);
     }
   }
 };
