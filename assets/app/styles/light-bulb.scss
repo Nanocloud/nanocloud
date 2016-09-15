@@ -6,50 +6,50 @@
     height: 20px;
     border-radius: 10px;
 
-    &.unknown {		
-      background-color: #F45835;		
+    &.unknown {
+      background-color: #F45835;
       box-shadow: 0px 0px 1px #F45835;
-    }		
+    }
 
-    &.down {		
-      background-color: #dedede;		
+    &.down {
+      background-color: #dedede;
       box-shadow: 0px 0px 1px #a0a0a0;
-    }		
+    }
 
-    &.up {		
+    &.running {
       background-color: #5eca20;
       box-shadow: 0px 0px 1px #5eca20;
-    }		
+    }
 
-    &.terminated {		
-      background-color: #525252;		
+    &.terminated {
+      background-color: #525252;
       box-shadow: 0px 0px 1px #525252;
-    }		
+    }
 
-    &.reboot {		
+    &.reboot {
       @extend .booting;
-    }		
+    }
 
-    &.booting {		
+    &.booting {
       background-color: #F4B835;
       box-shadow: 0px 0px 1px #F4B835;
       @extend .transition-enabled;
       animation-name: nanoloading;
       animation-duration: 2s;
       animation-iteration-count: infinite;
-    }		
+    }
 
-    &.stopping {		
+    &.stopping {
       background-color: red;
       box-shadow: 0px 0px 1px red;
       @extend .transition-enabled;
       animation-name: nanoloading;
       animation-duration: 2s;
       animation-iteration-count: infinite;
-    }		
+    }
 
-    &.downloading {		
-      background-color: #8EDAFB;		
+    &.downloading {
+      background-color: #8EDAFB;
       box-shadow: 0px 0px 1px #8EDAFB;
     }
   }
