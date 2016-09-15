@@ -75,11 +75,6 @@ module.exports.routes = {
     action: 'update'
   },
 
-  'PATCH /api/storage/:id': {
-    controller: 'Storage',
-    action: 'update'
-  },
-
   'PATCH /api/reset-passwords/:id': {
     controller: 'Reset-password',
     action: 'update'
@@ -130,9 +125,28 @@ module.exports.routes = {
     action: 'upload'
   },
 
+  'POST /api/files': {
+    controller: 'Storage',
+    action: 'create'
+  },
+
+  'DELETE /api/files': {
+    controller: 'Storage',
+    action: 'destroy'
+  },
+
+  'DELETE /api/storages/:id': {response: 'forbidden'},
+
+  'POST /api/storages': {response: 'forbidden'},
+
   'GET /api/files': {
     controller: 'Storage',
     action: 'files'
+  },
+
+  'PATCH /api/files': {
+    controller: 'Storage',
+    action: 'rename'
   },
 
   'GET /api/files/token': {
