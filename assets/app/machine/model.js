@@ -35,7 +35,6 @@ export default DS.Model.extend({
     return this.get('status') === 'up';
   }),
   endDate: DS.attr('date'),
-  status: DS.attr('string'),
   createdAt: DS.attr('date'),
   updatedAt: DS.attr('date'),
   expiration: Ember.computed('endDate', function() {

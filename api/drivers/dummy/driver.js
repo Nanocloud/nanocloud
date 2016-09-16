@@ -133,20 +133,22 @@ class DummyDriver extends BaseDriver {
    * @return {Promise[Machine]} Machine model created
    */
   createMachine(options) {
+    let machine = {};
     const id = uuid.v4();
-    let machine = new Machine._model({
-      id        : id,
-      name      : options.name,
-      type      : 'dummy',
-      flavor    : 'dummy',
-      ip        : _plazaAddress,
-      username  : 'Administrator',
-      plazaport : _plazaPort,
-      domain    : ''
-    });
+
+    machine.id = id;
+    machine.name = options.name;
+    machine.type = 'dummy';
+    machine.flavor = 'dummy';
+    machine.ip = _plazaAddress;
+    machine.username = 'Administrator';
+    machine.plazaport = _plazaPort;
 
     this._machines[machine.id] = machine;
-    return new Promise.resolve(machine);
+    return new Promise((resolve, reject) => {
+      Machine.create(machine)
+        .then(resolve, reject);
+    });
   }
 
   destroyMachine(machine) {
@@ -230,39 +232,6 @@ class DummyDriver extends BaseDriver {
             return reject(err);
           });
       });
-    });
-  }
-
-  /**
-   * Retrieve the machine's data
-   *
-   * @method refresh
-   * @param {machine} Machine model
-   * @return {Promise[Machine]}
-   */
-  refresh(machine) {
-    return new Promise((resolve, reject) => {
-      if (machine.status === 'error') {
-        reject(machine.status);
-      }
-      machine.status = 'running';
-      return resolve(machine);
-    });
-  }
-
-  /**
-   * Retrieve the machine's password
-   *
-   * @method getPassword
-   * @param {machine} Machine model
-   * @return {Promise[String]}
-   */
-  getPassword(machine) {
-    return new Promise((resolve, reject) => {
-      if (machine.status === 'error') {
-        reject(machine.status);
-      }
-      return resolve(machine.password);
     });
   }
 }
