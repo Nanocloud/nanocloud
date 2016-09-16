@@ -262,7 +262,7 @@ function _createMachine() {
       let i = 0; // To prevent infinite loop in case of error
       let loop = setInterval(function (){
         i++;
-        if (i > 60) {
+        if (i > 180) { // 15 minutes before timeout
           clearInterval(loop);
           _createBrokerLog(machine, 'Terminated (timeout when booting)');
           return _terminateMachine(machine);
