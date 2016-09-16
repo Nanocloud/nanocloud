@@ -70,7 +70,7 @@ module.exports = {
     defaultGroup: '',
     creditLimit: '',
 
-    iaas: 'manual',
+    iaas: 'qemu',
     machinePoolSize: 1,
 
     sessionDuration: 600, // 10 minutes
