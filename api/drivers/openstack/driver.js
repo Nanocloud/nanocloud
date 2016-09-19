@@ -165,17 +165,19 @@ class OpenstackDriver extends Driver {
                       return reject(err);
                     }
                   });
-                  return resolve(Machine.create({
+
+                  let machine = new Machine._model({
                     id        : server.id,
                     name      : server.name,
                     type      : this.name(),
-                    ip        : ips.ip,
+                    ip        : null,
                     username  : config.openstackMachineUsername,
                     password  : password,
                     domain    : '',
                     plazaport : config.plazaPort
-                  })
-                  );
+                  });
+
+                  return resolve(machine);
                 }
               });
             });
@@ -223,6 +225,45 @@ class OpenstackDriver extends Driver {
           resolve(server);
         }
       });
+    });
+  }
+
+  /**
+   * Retrieve the machine's data
+   *
+   * @method refresh
+   * @param {machine} Machine model
+   * @return {Promise[Machine]}
+   */
+  refresh(machine) {
+    return new Promise((resolve, reject) => {
+      this.getServer(machine.id)
+        .then((server, err) => {
+          if (err) { return reject(err); }
+          return new Promise((resolve, reject) => {
+            this._client.allocateNewFloatingIp((err, ips) => {
+              if (err) {
+                return reject(err);
+              } else {
+                this._client.addFloatingIp(server, ips.ip, (err) => {
+                  if (err) {
+                    return reject(err);
+                  }
+                });
+
+                let machine = new Machine._model({
+                  id        : server.id,
+                  name      : server.name,
+                  type      : this.name(),
+                  ip        : ips.ip,
+                  status    : server.STATUS.running
+                });
+
+                return resolve(machine);
+              }
+            });
+          });
+        });
     });
   }
 }

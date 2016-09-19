@@ -108,7 +108,9 @@ describe('Machine Service', () => {
                   assert.equal(machineLogs[0].machineFlavor, 'dummy');
                   return BrokerLog.find({
                     userId: null,
-                    state: 'Update machine pool'
+                    state: {
+                      like: '%Update machine pool%'
+                    }
                   });
                 })
                 .then((logs) => {
@@ -116,7 +118,7 @@ describe('Machine Service', () => {
                     throw new Error('Broker should log when machine pool need to be update');
                   }
                   assert.isNull(logs[0].machineId);
-                  assert.equal(logs[0].state, 'Update machine pool');
+                  assert.equal(logs[0].state, 'Update machine pool from 0 to 1 (+1)');
                   assert.equal(logs[0].machineDriver, 'dummy');
                 })
                 .then(() => {

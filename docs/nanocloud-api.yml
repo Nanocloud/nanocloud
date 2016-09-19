@@ -1789,6 +1789,8 @@ definitions:
             type: string
           user:
             type: string
+          status:
+            type: string
 
   AccessToken:
     type: object
