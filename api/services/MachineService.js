@@ -23,11 +23,13 @@
 
 /* global ConfigService, Machine, Image, User, BrokerLog */
 
+const _ = require('lodash');
 const Promise = require('bluebird');
 const ManualDriver = require('../drivers/manual/driver');
 const AWSDriver = require('../drivers/aws/driver');
 const DummyDriver = require('../drivers/dummy/driver');
 const OpenstackDriver = require('../drivers/openstack/driver');
+const promisePoller = require('promise-poller').default;
 
 /**
  * Service responssible of the machine pool
@@ -63,15 +65,6 @@ let _driver = null;
  * @private
  */
 let _initializing = null;
-
-/**
- * The list of the machine beeing created.
- *
- * @property _awaitingMachines
- * @type {[]Promise[Machine]}
- * @private
- */
-let _awaitingMachines = [];
 
 /**
  * Returns a Promise that reject `err` if `condition` if false. A resolved
@@ -164,7 +157,7 @@ function getMachineForUser(user) {
             FROM (
               SELECT machine.id
               FROM machine
-              WHERE "user" IS NULL
+              WHERE "user" IS NULL AND "status" = 'running'
               LIMIT 1
               FOR UPDATE SKIP LOCKED
             ) sub
@@ -241,28 +234,55 @@ function increaseUsersMachineEndDate(user) {
  * @return {Promise}
  */
 function _createMachine() {
+
   return ConfigService.get('machinesName')
     .then((config) => {
-      const machine = _driver.createMachine({
+      return _driver.createMachine({
         name: config.machinesName
-      })
-        .then((machineCreated) => {
-          _createBrokerLog(machineCreated, 'Created');
-        })
-        .finally(() => {
-          const len = _awaitingMachines.length;
-          for (let i = 0; i < len; i++) {
-            if (_awaitingMachines[i] === machine) {
-              _awaitingMachines.splice(i, 1);
-            }
-          }
-        })
-        .catch(() => {
-          _createBrokerLog({}, 'Not created');
-        });
+      });
+    })
+    .then((machine) => {
 
-      _awaitingMachines.push(machine);
-      return machine;
+      machine.status = 'booting';
+      _createBrokerLog(machine, 'Created');
+      return Machine.create(machine);
+    })
+    .then((machine) => {
+
+      return promisePoller({
+        taskFn: () => {
+          return machine.refresh()
+            .then((machine) => {
+
+              if (machine.status === 'running') {
+                return Promise.resolve(machine);
+              } else {
+                return Promise.reject(machine);
+              }
+            });
+        },
+        interval: 5000,
+        retries: 100
+      })
+        .catch((errs) => { // If timeout is reached
+
+          let machine = errs.pop(); // On timeout, promisePoller rejects with an array of all rejected promises. In our case, MachineService rejects the still booting machine. Let's pick the last one.
+
+          _createBrokerLog(machine, 'Error');
+          _terminateMachine(machine);
+          throw machine;
+        });
+    })
+    .then((machine) => {
+      return machine.getPassword()
+        .then((password) => {
+          machine.password = password;
+
+          return Machine.update({id: machine.id}, machine);
+        })
+        .then(() => {
+          _createBrokerLog(machine, 'Available');
+        });
     });
 }
 
@@ -291,31 +311,39 @@ function _terminateMachine(machine) {
  * @return {Promise}
  */
 function _updateMachinesPool() {
+
   return assert(!!_driver, driverNotInitializedError)
     .then(() => {
-      return ConfigService.get('machinePoolSize')
-        .then((config) => {
-          return Machine.count({
-            where: {
-              user: null
-            }
-          })
-            .then((machineNbr) => {
-              let i = (config.machinePoolSize + _awaitingMachines.length) - machineNbr;
-              if (i > 0) {
-                _createBrokerLog({
-                  type: _driver.name()
-                }, 'Update machine pool');
-              }
-              let machines = [];
-              while (i > 0) {
-                machines.push(_createMachine());
-                i--;
-              }
 
-              return Promise.all(machines);
-            });
+      return Promise.props({
+        config: ConfigService.get('machinePoolSize'),
+        machineCount: Machine.count({
+          status: 'running',
+          user: null
+        })
+      })
+        .then(({config, machineCount}) => {
+
+          let machineToCreate = config.machinePoolSize - machineCount;
+          let machines = _.times(machineToCreate, () => _createMachine());
+
+          if (machineToCreate > 0) {
+            _createBrokerLog({
+              type: _driver.name()
+            }, `Update machine pool from ${machineCount} to ${machineCount + machineToCreate} (+${machineToCreate})`);
+          }
+          return Promise.all(machines);
         });
+    })
+    .then(() => {
+      _createBrokerLog({
+        type: _driver.name()
+      }, 'Machine pool updated');
+    })
+    .catch(() => {
+      _createBrokerLog({
+        type: _driver.name()
+      }, 'Error while updating the pool');
     });
 }
 
@@ -469,7 +497,9 @@ function getDefaultImage() {
  * @return {Promise} created log
  */
 function _createBrokerLog(machine, state) {
-  return Machine.count()
+  return Machine.count({
+    status: 'running'
+  })
     .then((nbrMachines) => {
       return BrokerLog.create({
         userId: machine.user,
@@ -482,7 +512,29 @@ function _createBrokerLog(machine, state) {
     });
 }
 
+/**
+ * Retrieve the machine's data
+ *
+ * @method refresh
+ * @param {machine} Machine model
+ * @return {Promise[Machine]}
+ */
+function refresh(machine) {
+  return _driver.refresh(machine);
+}
+
+/**
+ * Retrieve the machine's password
+ *
+ * @method getPassword
+ * @param {machine} Machine model
+ * @return {Promise[String]}
+ */
+function getPassword(machine) {
+  return _driver.getPassword(machine);
+}
+
 module.exports = {
   initialize, getMachineForUser, driverName, sessionOpen, sessionEnded,
-  machines, createImage, getDefaultImage
+  machines, createImage, getDefaultImage, refresh, getPassword
 };

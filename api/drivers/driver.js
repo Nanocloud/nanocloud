@@ -86,6 +86,7 @@ class Driver {
   createImage(/* image */) {
     return Promise.reject(new Error('Driver\'s method "createImage" not implemented'));
   }
+
   /**
    * Calculate credit used by a user
    *
@@ -95,6 +96,28 @@ class Driver {
    */
   getUserCredit(/* user */) {
     return Promise.reject(new Error('Driver\'s method \'getUserCredit\' not implemented'));
+  }
+
+  /**
+   * Refresh machine's data
+   *
+   * @method refresh
+   * @param {Object} Machine model
+   * @return {Promise[Machine]}
+   */
+  refresh(/* machine */) {
+    return Promise.reject(new Error('Driver\'s method \'refresh\' not implemented'));
+  }
+
+  /**
+   * Retrieve machine's password
+   *
+   * @method getPassword
+   * @param {Object} Machine model
+   * @return {Promise[String]}
+   */
+  getPassword(/* machine */) {
+    return Promise.reject(new Error('Driver\'s method \'getPassword\' not implemented'));
   }
 }
 

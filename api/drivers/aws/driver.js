@@ -257,95 +257,26 @@ class AWSDriver extends Driver {
                   return reject(err);
                 }
 
-                if (image.password === null) {
-                  return this._client.ec2
-                    .waitFor('passwordDataAvailable', {
-                      InstanceId: server.id
-                    }, (err, res) => {
-
-                      if (err) {
-                        return reject(err);
-                      }
-                      return resolve({
-                        server: server,
-                        password: res.PasswordData,
-                        image: image
-                      });
-                    });
-                }
-
-                this._client.ec2
-                  .waitFor('instanceStatusOk', {
-                    InstanceIds: [server.id]
-                  }, (err) => {
-
-                    if (err) {
-                      return reject(err);
-                    }
-
-                    this._client.ec2
-                      .waitFor('systemStatusOk', {
-                        InstanceIds: [server.id]
-                      }, (err) => {
-                        if (err) {
-                          return reject(err);
-                        }
-
-                        return resolve({
-                          server: server,
-                          password: image.password,
-                          image: image
-                        });
-                      });
-                  });
-              });
-            })
-              .then((res) => {
-                return new Promise((resolve, reject) => {
-                  res.server.refresh((err, server) => {
-                    if (err) {
-                      reject(err);
-                    } else {
-                      res.server = server;
-                      resolve(res);
-                    }
-                  });
-                });
-              })
-              .then((res) => {
-                const server = res.server;
-                const password = res.password;
-                const image = res.image;
                 const ip = server.addresses.public[0] || server.addresses.private[0];
                 const type = this.name();
 
-                return ConfigService.get('awsMachineUsername', 'plazaPort', 'awsFlavor')
+                ConfigService.get('awsMachineUsername', 'plazaPort', 'awsFlavor')
                   .then((config) => {
-
-                    let _createMachine = function(password) {
-                      return Machine.create({
-                        id: server.id,
-                        name: server.name,
-                        type: type,
-                        flavor: config.awsFlavor,
-                        ip: ip,
-                        username: config.awsMachineUsername,
-                        password: password,
-                        domain: '',
-                        plazaport: config.plazaPort
-                      });
-                    };
-
-                    if (image.password) {
-                      return _createMachine(image.password);
-                    } else {
-                      return this._decryptPassword(password)
-                        .then((password) => {
-                          return _createMachine(password);
-                        });
-                    }
+                    let machine = new Machine._model({
+                      id: server.id,
+                      name: options.name,
+                      type: type,
+                      flavor: config.awsFlavor,
+                      ip: ip,
+                      username: config.awsMachineUsername,
+                      password: null,
+                      domain: '',
+                      plazaport: config.plazaPort,
+                    });
+                    return resolve(machine);
                   });
               });
+            });
           });
       });
   }
@@ -497,6 +428,83 @@ class AWSDriver extends Driver {
           });
       });
     });
+  }
+
+  /**
+   * Retrieve the machine's data
+   *
+   * @method refresh
+   * @param {machine} Machine model
+   * @return {Promise[Machine]}
+   */
+  refresh(machine) {
+    return this.getServer(machine.id)
+      .then((res) => {
+
+        machine.ip = res.addresses.public[0] || res.addresses.private[0];
+        if (res.status === 'PROVISIONING') {
+          machine.status = 'booting';
+        } else if (res.status === 'RUNNING') { // If instance is running, let's gather more information before considering it available
+          return new Promise((resolve, reject) => {
+            this._client.ec2.describeInstanceStatus({
+              InstanceIds: [machine.id]
+            }, (err, data) => {
+
+              if (err) {
+                return reject(err);
+              }
+
+              let instance = data.InstanceStatuses.pop();
+              if (!instance) {
+                machine.status = 'booting';
+              } else if (instance.InstanceState.Name === 'running') {
+                if (instance.SystemStatus.Status === 'ok' && instance.InstanceStatus.Status === 'ok') {
+                  machine.status = 'running';
+                }
+              } else {
+                machine.status = 'unknown';
+              }
+
+              return resolve(machine);
+            });
+          });
+        }
+
+        return Promise.resolve(machine);
+      });
+  }
+
+  /**
+   * Retrieve the machine's password
+   *
+   * @method getPassword
+   * @param {machine} Machine model
+   * @return {Promise[String]}
+   */
+  getPassword(machine) {
+
+    return Promise.props({
+      image: MachineService.getDefaultImage()
+    })
+      .then(({image}) => {
+
+        if (image.password !== null) {
+          return Promise.resolve(image.password);
+        } else {
+          return new Promise((resolve, reject) => {
+            this._client.ec2
+              .waitFor('passwordDataAvailable', {
+                InstanceId: machine.id
+              }, (err, res) => {
+                if (err) {
+                  return reject(err);
+                }
+
+                return resolve(this._decryptPassword(res.PasswordData));
+              });
+          });
+        }
+      });
   }
 }
 
