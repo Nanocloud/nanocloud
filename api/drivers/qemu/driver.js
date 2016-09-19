@@ -20,7 +20,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* global Machine, ConfigService*/
+/* global Machine, ConfigService, Image, MachineService */
 
 const request = require('request-promise');
 const Driver = require('../driver');
@@ -40,15 +40,24 @@ class QemuDriver extends Driver {
    * @return {Promise}
    */
   initialize() {
-    return ConfigService.get('qemuServiceURL', 'qemuServicePort')
+    return ConfigService.get('qemuServiceURL', 'qemuServicePort', 'qemuImage')
       .then((config) => {
+        Image.update({
+          default: true
+        }, {
+          iaasId: 'Qemu',
+          name: config.qemuImage,
+          password: null
+        })
+          .then(() => {
 
-        let requestOptions = {
-          url: 'http://' + config.qemuServiceURL + ':' + config.qemuServicePort,
-          method: 'GET'
-        };
+            let requestOptions = {
+              url: 'http://' + config.qemuServiceURL + ':' + config.qemuServicePort,
+              method: 'GET'
+            };
 
-        return request(requestOptions);
+            return request(requestOptions);
+          });
       });
   }
 
@@ -76,10 +85,15 @@ class QemuDriver extends Driver {
    * @return {Promise[Machine]} The created machine
    */
   createMachine(options) {
-    return ConfigService.get('qemuServiceURL', 'qemuServicePort',
-      'qemuMemory', 'qemuCPU', 'qemuDrive', 'plazaPort',
-      'qemuMachineUsername', 'qemuMachinePassword')
-      .then((config) => {
+    return Promise.props({
+      config: ConfigService.get('qemuServiceURL', 'qemuServicePort',
+        'qemuMemory', 'qemuCPU', 'qemuDrive', 'plazaPort',
+        'qemuMachineUsername', 'qemuMachinePassword'),
+      image: MachineService.getDefaultImage()
+    })
+      .then((obj) => {
+        var config = obj.config;
+        var image = obj.image;
         let requestOptions = {
           url: 'http://' + config.qemuServiceURL + ':' + config.qemuServicePort + '/machines',
           json: true,
@@ -87,7 +101,7 @@ class QemuDriver extends Driver {
             name: options.name,
             cpu: config.qemuCPU,
             memory: config.qemuMemory,
-            drive: config.qemuDrive
+            drive: image.name
           },
           method: 'POST'
         };
@@ -166,20 +180,38 @@ class QemuDriver extends Driver {
    * @return {Promise[Image]} resolves to the new default image
    */
   createImage(imageToCreate) {
-    return imageToCreate;
-  }
-
-  /**
-   * Retrieve the machine's data
-   *
-   * @method refresh
-   * @param {machine} Machine model
-   * @return {Promise[Machine]}
-   */
-  refresh(machine) {
-    return new Promise((resolve) => {
-      machine.status = 'running';
-      return resolve(machine);
+    return new Promise((resolve, reject) => {
+      return Promise.props({
+        config: ConfigService.get('qemuServiceURL', 'qemuServicePort'),
+        image: MachineService.getDefaultImage()
+      })
+        .then((res) => {
+          return request({
+            url: 'http://' + res.config.qemuServiceURL + ':' + res.config.qemuServicePort + '/images',
+            json: true,
+            method: 'POST',
+            body: {
+              buildFrom: imageToCreate.buildFrom,
+              name: imageToCreate.name
+            }
+          });
+        })
+        .then((res) => {
+          return Image.update({
+            default: true
+          }, {
+            iaasId: 'Qemu',
+            name: res.name,
+            password: null,
+            buildFrom: imageToCreate.buildFrom
+          });
+        })
+        .then((image) => {
+          return resolve(image);
+        })
+        .catch((err) => {
+          return reject(err);
+        });
     });
   }
 

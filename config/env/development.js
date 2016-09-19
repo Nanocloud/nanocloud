@@ -119,6 +119,7 @@ module.exports = {
     qemuCPU: '2',
     qemuDrive: '/data/windows-server-2012-r2.qcow2',
     qemuMachineUsername: 'Administrator',
-    qemuMachinePassword: 's3cret'
+    qemuMachinePassword: 's3cret',
+    qemuImage: 'windows-server-2012-r2.qcow2'
   }
 };
