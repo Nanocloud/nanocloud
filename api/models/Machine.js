@@ -75,6 +75,12 @@ module.exports = {
       type: 'string'
     },
 
+    toJSON: function() {
+      var obj = this.toObject();
+      delete obj.password;
+      return obj;
+    },
+
     setEndDate(duration) {
       let now = (new Date()).getTime();
       let endDate = new Date(now + duration * 1000);
