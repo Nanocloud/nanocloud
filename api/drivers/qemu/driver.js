@@ -182,6 +182,20 @@ class QemuDriver extends Driver {
       return resolve(machine);
     });
   }
+
+  /**
+   * Retrieve the machine's data
+   *
+   * @method refresh
+   * @param {machine} Machine model
+   * @return {Promise[Machine]}
+   */
+  refresh(machine) {
+    return new Promise((resolve) => {
+      machine.status = 'running';
+      return resolve(machine);
+    });
+  }
 }
 
 module.exports = QemuDriver;

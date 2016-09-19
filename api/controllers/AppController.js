@@ -232,6 +232,7 @@ module.exports = {
               });
             });
 
+            console.log(connections);
             return res.ok(connections);
           });
       })

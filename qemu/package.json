@@ -7,7 +7,6 @@
   "dependencies": {
     "bluebird": "^3.4.6",
     "body-parser": "^1.15.2",
-    "express": "^4.14.0",
     "multer": "^1.2.0",
     "uuid": "^2.0.2"
   },
