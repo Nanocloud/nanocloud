@@ -223,7 +223,7 @@ module.exports = {
                 machineId: machine.id,
                 machineType: machine.flavor,
                 machineDriver: machine.type,
-                port: 3389,
+                port: machine.rdpPort,
                 username: machine.username,
                 password: machine.password,
                 'remote-app': '',

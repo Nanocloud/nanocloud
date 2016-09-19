@@ -1,0 +1,85 @@
+---
+swagger: '2.0'
+info:
+  version: "2.0.0"
+  title: Nanocloud libvirt module API
+  description: |
+    **Complete Nanocloud libvirt module API documentation.**
+
+    You can try all HTTP operation described in this Swagger spec.
+host: http://localhost:3000
+consumes:
+  - application/json
+produces:
+  - application/json
+paths:
+  /machines:
+    get:
+      summary:
+        Get all machines defined (active and inactive ones)
+      responses:
+        200:
+          description: Get all machines
+          schema:
+            type: array
+            items:
+              "$ref": "#/definitions/Machine"
+    post:
+      summary:
+        Create a new machine
+      parameters:
+        - in: body
+          name: data
+          description: Machine description
+          required: true
+          schema:
+              $ref: "#/definitions/MachineDescription"
+      responses:
+        201:
+          description: A VM is booting
+        400:
+          description: Machine description is missing or incomplete
+
+  /machines/{machine_uuid}:
+    delete:
+      summary:
+        Stop specified VM. This won't delete it
+      parameters:
+        - in: path
+          name: id
+          description: Machine's UUID
+          required: true
+          type: string
+          format: uuid
+      responses:
+        200:
+          description: VM has been stopped
+          schema:
+            type: object
+            properties:
+              data:
+                type: array
+                items:
+                  "$ref": "#/definitions/Machine"
+        404:
+          description: No machine found with this UUID
+
+definitions:
+  Machine:
+    type: object
+    properties:
+      id:
+        type: string
+      name:
+        type: string
+      status:
+        type: string
+  MachineDescription:
+    type: object
+    properties:
+      id:
+        type: string
+      name:
+        type: string
+      status:
+        type: string
