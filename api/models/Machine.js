@@ -61,6 +61,9 @@ module.exports = {
     endDate: {
       type: 'datetime'
     },
+    rdpPort: {
+      type: 'integer'
+    },
     plazaport: {
       type: 'integer'
     },

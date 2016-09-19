@@ -18,42 +18,33 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- *
- * AWSDriver
- *
- * @description :: Driver for Amazon Web Service EC2 Iaas
  */
 
-/* global ConfigService*/
+/* global Machine, ConfigService*/
 
 const request = require('request-promise');
+const Driver = require('../driver');
 const Promise = require('bluebird');
 
-const Driver = require('../driver');
-
-
 /**
- * Driver for libvirt API
+ * Driver for Qemu API
  *
- * @class LibvirtDriver
+ * @class QemuDriver
  */
-class LibvirtDriver extends Driver {
+class QemuDriver extends Driver {
 
   /**
-   * Initializes the Libvirt driver.
-   * Requires the `ConfigService` variables:
-   *  - libvirtConnectionURI: The connection string for libvirt
+   * Initializes the Qemu driver.
    *
    * @method initialize
    * @return {Promise}
    */
   initialize() {
-    return ConfigService.get('libvirtServiceURL', 'libvirtServicePort')
+    return ConfigService.get('qemuServiceURL', 'qemuServicePort')
       .then((config) => {
 
-        console.log('http://' + config.libvirtServiceURL + ':' + config.libvirtServicePort);
         let requestOptions = {
-          url: 'http://' + config.libvirtServiceURL + ':' + config.libvirtServicePort,
+          url: 'http://' + config.qemuServiceURL + ':' + config.qemuServicePort,
           method: 'GET'
         };
 
@@ -68,15 +59,16 @@ class LibvirtDriver extends Driver {
    * @return {String} The name of the driver
    */
   name() {
-    return 'libvirt';
+    return 'qemu';
   }
 
   /**
    * Create a new virtual machine. It uses the `ConfigService` variables:
-   *  - libvirtMemory: Memory in MB
-   *  - libvirtCPU: Number of vCPU
-   *  - libvirtDrive: Hard drive file (qcow2)
-   *  - plazaPort: Port to contact plaza
+   *  - qemutMemory: Memory in MB
+   *  - qemuCPU: Number of vCPU
+   *  - qemutDrive: Hard drive file (qcow2)
+   *  - qemuMachineUsername: Windows account username
+   *  - qemuMachinePassword: Windows account password
    *
    * @method createMachine
    * @param {Object} options The machine options. `options.name`: The name of
@@ -84,22 +76,37 @@ class LibvirtDriver extends Driver {
    * @return {Promise[Machine]} The created machine
    */
   createMachine(options) {
-    return ConfigService.get('libvirtServiceURL', 'libvirtServicePort',
-      'libvirtMemory', 'libvirtCPU', 'libvirtDrive', 'plazaPort')
+    return ConfigService.get('qemuServiceURL', 'qemuServicePort',
+      'qemuMemory', 'qemuCPU', 'qemuDrive', 'plazaPort',
+      'qemuMachineUsername', 'qemuMachinePassword')
       .then((config) => {
         let requestOptions = {
-          url: 'http://' + config.libvirtServiceURL + ':' + config.libvirtServicePort + '/machines',
+          url: 'http://' + config.qemuServiceURL + ':' + config.qemuServicePort + '/machines',
           json: true,
           body: {
             name: options.name,
-            cpu: config.libvirtCPU,
-            memory: config.libvirtMemory,
-            drive: config.libvirtDrive
+            cpu: config.qemuCPU,
+            memory: config.qemuMemory,
+            drive: config.qemuDrive
           },
           method: 'POST'
         };
 
-        return request(requestOptions);
+        return request(requestOptions)
+          .then((res) => {
+            return Machine.create({
+              id        : res.id,
+              name      : res.name,
+              type      : this.name(),
+              ip        : config.qemuServiceURL,
+              username  : config.qemuMachineUsername,
+              password  : config.qemuMachinePassword,
+              domain    : '',
+              plazaport : res.plazaPort,
+              rdpPort   : res.rdpPort,
+              status    : res.status
+            });
+          });
       });
   }
 
@@ -110,15 +117,32 @@ class LibvirtDriver extends Driver {
    * @return {Promise}
    */
   destroyMachine(machine) {
-    return ConfigService.get('libvirtServiceURL', 'libvirtServicePort')
+    return ConfigService.get('qemuServiceURL', 'qemuServicePort')
       .then((config) => {
         let requestOptions = {
-          url: 'http://' + config.libvirtServiceURL + ':' + config.libvirtServicePort + '/machines/' + machine.id,
+          url: 'http://' + config.qemuServiceURL + ':' + config.qemuServicePort + '/machines/' + machine.id,
           json: true,
           method: 'DELETE'
         };
 
-        return request(requestOptions);
+        return request(requestOptions)
+          .then((res) => {
+            return(res);
+          });
+      });
+  }
+
+  /**
+   * Retrieve the machine's password
+   *
+   * @method getPassword
+   * @param {machine} Machine model
+   * @return {Promise[String]}
+   */
+  getPassword() {
+    return ConfigService.get('qemuMachinePassword')
+      .then((config) => {
+        return (config.qemuMachinePassword);
       });
   }
 
@@ -130,7 +154,7 @@ class LibvirtDriver extends Driver {
    */
   getServer(id) {
     // Not implemented yet
-    console.log(id);
+    return id;
   }
 
   /*
@@ -142,8 +166,22 @@ class LibvirtDriver extends Driver {
    * @return {Promise[Image]} resolves to the new default image
    */
   createImage(imageToCreate) {
-    console.log(imageToCreate);
+    return imageToCreate;
+  }
+
+  /**
+   * Retrieve the machine's data
+   *
+   * @method refresh
+   * @param {machine} Machine model
+   * @return {Promise[Machine]}
+   */
+  refresh(machine) {
+    return new Promise((resolve) => {
+      machine.status = 'running';
+      return resolve(machine);
+    });
   }
 }
 
-module.exports = LibvirtDriver;
+module.exports = QemuDriver;

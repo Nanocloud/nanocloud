@@ -332,7 +332,8 @@ class AWSDriver extends Driver {
                         username: config.awsMachineUsername,
                         password: password,
                         domain: '',
-                        plazaport: config.plazaPort
+                        plazaport: config.plazaPort,
+                        rdpPort: 3389
                       });
                     };
 

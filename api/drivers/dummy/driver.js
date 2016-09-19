@@ -143,6 +143,7 @@ class DummyDriver extends BaseDriver {
     machine.ip = _plazaAddress;
     machine.username = 'Administrator';
     machine.plazaport = _plazaPort;
+    machine.rdpPort = 3389;
 
     this._machines[machine.id] = machine;
     return new Promise((resolve, reject) => {

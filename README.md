@@ -63,12 +63,14 @@ Openstack driver specific:
 - openstackMachineUsername (Defaults to Administrator) windows account username
 - openstackMachinePassword (Defaults empty, password will generated) windows account password
 
-Libvirt driver specific:
-- libvirtServiceURL (Default to localhost) url of libvirt manager service
-- libvirtServicePort (Default to 3000) port of libvirt manager service
-- libvirtMemory (Default to 4096000) memory to allocate to your VMs in bit
-- libvirtCPU (Default to 2) number of vCPU to allocate to your VMs
-- libvirtDrive absolute path to your virtual hard drive
+Qemu driver specific:
+- qemuServiceURL (Default to localhost) url of qemu manager service
+- qemuServicePort (Default to 3000) port of qemu manager service
+- qemuMemory (Default to 4096) memory to allocate to your VMs in KB
+- qemuCPU (Default to 2) number of vCPU to allocate to your VMs
+- qemuDrive absolute path to your virtual hard drive
+- qemuMachineUsername (Defaults to Administrator) windows account username
+- qemuMachinePassword (Defaults empty) windows account password
 
 Storage configuration:
 - storageAddress (mandatory, defaults to 'localhost') storage service's IP
