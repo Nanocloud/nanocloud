@@ -71,6 +71,7 @@ Qemu driver specific:
 - qemuDrive absolute path to your virtual hard drive
 - qemuMachineUsername (Defaults to Administrator) windows account username
 - qemuMachinePassword (Defaults empty) windows account password
+- qemuImage is the name of your virtual hard drive without the path
 
 Storage configuration:
 - storageAddress (mandatory, defaults to 'localhost') storage service's IP

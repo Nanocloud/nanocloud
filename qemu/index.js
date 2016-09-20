@@ -5,7 +5,24 @@ var multer = require('multer'); // v1.0.5
 var upload = multer(); // for parsing multipart/form-data
 var uuid = require('uuid');
 var exec = require('child_process').exec;
+var Promise = require('bluebird');
 
+function createImage(backFile, newImage) {
+  var cmd = `qemu-img create -f qcow2 -b ${backFile} ${newImage}`;
+
+  return new Promise((resolve, reject) => {
+    return exec(cmd, (err) => {
+      if (err) {
+        return reject(err);
+      }
+
+      return resolve({
+        name: newImage,
+        buildFrom:backFile
+      });
+    });
+  });
+}
 
 function getPort() {
   getPort.plaza =  ++getPort.plaza || 9090;
@@ -32,13 +49,15 @@ app.post('/machines', upload.array(), function (req, res) {
   var id = uuid.v4();
   var name = machineDescription.name + '-qemu-' + id;
   var port = getPort();
-  var cmd = `qemu-system-x86_64 \
+  createImage(machineDescription.drive, uuid.v4())
+    .then((image) => {
+      var cmd = `qemu-system-x86_64 \
     -nodefaults \
     -name "${name}" \
     -m ${machineDescription.memory} \
     -smp ${machineDescription.cpu} \
     -machine accel=kvm \
-    -drive file=${machineDescription.drive},format=qcow2 \
+    -drive file=${image.name},format=qcow2 \
     -vnc :${port.vnc} \
     -usb -device usb-tablet \
     -net nic,vlan=0,model=virtio \
@@ -46,31 +65,62 @@ app.post('/machines', upload.array(), function (req, res) {
     -vga qxl \
   `;
 
-  exec(cmd, () => {});
+      exec(cmd, () => {});
 
-  return res.json({
-    id: id,
-    name: name,
-    plazaPort: port.plaza,
-    rdpPort: port.rdp,
-    vncPort: port.vnc,
-    status: 'running'
-  });
-
+      return res.json({
+        id: id,
+        name: name,
+        plazaPort: port.plaza,
+        rdpPort: port.rdp,
+        vncPort: port.vnc,
+        status: 'running'
+      });
+    });
 });
 
 app.delete('/machines/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}', function (req, res) {
 
   var machineId = req.path.substr(10);
 
-  exec('PID=$(ps aux | grep "' + machineId + ' " | grep qemu | awk \'{ print $2 }\' | tr "\\n" " ") ; kill ${PID}',
-    () => {});
+  exec('IMAGE=$(ps aux | grep "' + machineId + ' " | grep qemu | tr " " "\\n" | grep \'file=\' | awk -F, \'{print $1}\' | awk -F= \'{print $2}\'); rm ${IMAGE}',
+    () => {
+      exec('PID=$(ps aux | grep "' + machineId + ' " | grep qemu | awk \'{ print $2 }\' | tr "\\n" " ") ; kill ${PID}',
+        (err, stdout, stderr) => {
+          if (err || stderr) {
+            return (err);
+          }
+        });
 
-  return res.json({
-    id: machineId,
-    status: 'stopping'
-  });
+      return res.json({
+        id: machineId,
+        status: 'stopping'
+      });
+    });
+});
 
+app.post('/images', upload.array(), function (req, res) {
+  var params = req.body;
+
+  return exec('ps aux | grep "' + params.buildFrom + ' " | grep qemu | tr " " "\\n" | grep \'file=\' | awk -F, \'{print $1}\' | awk -F= \'{print $2}\'',
+    (err, stdout) => {
+      if (err) {
+        res.status = 404;
+        return res.send(err);
+      }
+      stdout = stdout.substring(0, 36);
+      return createImage(stdout, params.name)
+        .then(() => {
+          res.status = 200;
+          return res.send({
+            buildFrom: params.buildFrom,
+            name: params.name
+          });
+        })
+        .catch((err) => {
+          res.status = 400;
+          return res.send(err);
+        });
+    });
 });
 
 app.get('/', function (req, res) {

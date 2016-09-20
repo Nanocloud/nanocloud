@@ -52,6 +52,22 @@ paths:
                   "$ref": "#/definitions/MachineDeleted"
         404:
           description: No machine found with this UUID
+  /images:
+    post:
+      summary:
+        Create a new image
+      parameters:
+        - in: body
+          name: body
+          description: Machine id and image name
+          required: true
+          schema:
+            $ref: "#/definitions/Image"
+      responses:
+        201:
+          description: A new image, based on the machine, is created
+        400:
+          description: Machine id or image name is missing or incomplete
 
 definitions:
   Machine:
@@ -75,4 +91,11 @@ definitions:
       id:
         type: string
       status:
+        type: string
+  Image:
+    type: object
+    properties:
+      name:
+        type: string
+      buildFrom:
         type: string
