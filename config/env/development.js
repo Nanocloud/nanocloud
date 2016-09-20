@@ -111,6 +111,14 @@ module.exports = {
     openstackFlavor: 'm1.medium',
     openstackSecurityGroups: ['default'],
     openstackMachineUsername: 'Administrator',
-    openstackMachinePassword: ''
+    openstackMachinePassword: '',
+
+    qemuServiceURL: '172.17.0.2',
+    qemuServicePort: 3000,
+    qemuMemory: '4096',
+    qemuCPU: '2',
+    qemuDrive: '/data/windows-server-2012-r2.qcow2',
+    qemuMachineUsername: 'Administrator',
+    qemuMachinePassword: ''
   }
 };

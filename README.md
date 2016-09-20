@@ -53,15 +53,24 @@ AWS driver specific:
 - creditLimit (Defaults empty string) set a credit limit to users (aws only)
 
 Openstack driver specific:
- - openstackUsername username to connect to openstack
- - openstackPassword password to connect to openstack
- - openstackAuthUrl url of the openstack's API (example: https://identity.example.com:5000)
- - openstackRegion (Defaults to 'RegionOne') region name to use on openstack
- - openstackImage if of the image to boot Windows execution servers from
- - openstackFlavor (defaults to m1.medium) flavor for the virtual machine
- - openstackSecurityGroups (Defaults to ['default']) array of security groups to apply to the instance
- - openstackMachineUsername (Defaults to Administrator) windows account username
- - openstackMachinePassword (Defaults empty, password will generated) windows account password
+- openstackUsername username to connect to openstack
+- openstackPassword password to connect to openstack
+- openstackAuthUrl url of the openstack's API (example: https://identity.example.com:5000)
+- openstackRegion (Defaults to 'RegionOne') region name to use on openstack
+- openstackImage if of the image to boot Windows execution servers from
+- openstackFlavor (defaults to m1.medium) flavor for the virtual machine
+- openstackSecurityGroups (Defaults to ['default']) array of security groups to apply to the instance
+- openstackMachineUsername (Defaults to Administrator) windows account username
+- openstackMachinePassword (Defaults empty, password will generated) windows account password
+
+Qemu driver specific:
+- qemuServiceURL (Default to localhost) url of qemu manager service
+- qemuServicePort (Default to 3000) port of qemu manager service
+- qemuMemory (Default to 4096) memory to allocate to your VMs in MB
+- qemuCPU (Default to 2) number of vCPU to allocate to your VMs
+- qemuDrive absolute path to your virtual hard drive
+- qemuMachineUsername (Defaults to Administrator) windows account username
+- qemuMachinePassword (Defaults empty) windows account password
 
 Storage configuration:
 - storageAddress (mandatory, defaults to 'localhost') storage service's IP

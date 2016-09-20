@@ -272,6 +272,7 @@ class AWSDriver extends Driver {
                       password: null,
                       domain: '',
                       plazaport: config.plazaPort,
+                      rdpPort: 3389
                     });
                     return resolve(machine);
                   });
