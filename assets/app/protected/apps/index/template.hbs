@@ -49,6 +49,7 @@
 {{#floating-sidebar-component
   isVisible=showFileExplorer
 }}
+{{#if showFileExplorer}}
   {{#application-publisher
     isPublishing=isPublishing
     api="file"
@@ -57,4 +58,5 @@
     action="refreshModel"
   }}
   {{/application-publisher}}
+{{/if}}
 {{/floating-sidebar-component}}
