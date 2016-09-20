@@ -108,15 +108,15 @@ function initialize() {
             buildFrom: null,
             default: true
           })
-            .then(() => {
-              _driver = new (drivers[config.iaas])();
+          .then(() => {
+            _driver = new (drivers[config.iaas])();
 
-              return _driver.initialize()
-                .then(() => {
-                  _updateMachinesPool();
-                  return null;
-                });
-            });
+            return _driver.initialize()
+              .then(() => {
+                _updateMachinesPool();
+                return null;
+              });
+          });
         });
 
       return _initializing;

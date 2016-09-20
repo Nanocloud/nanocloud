@@ -23,14 +23,38 @@
  */
 
 import Ember from 'ember';
+import ArrayDiff from 'nanocloud/lib/array-diff';
 
-export default Ember.Route.extend({
-  setupController(controller, model) {
-    controller.set('applications', model.toArray());
-    controller.reset();
+export default Ember.Controller.extend({
+  groupController: Ember.inject.controller('protected.users.groups.group'),
+  groupBinding: 'groupController.model',
+
+  actions: {
+    addImage(image) {
+      let group = this.get('group');
+
+      group.get('images').pushObject(image);
+      group.save();
+    },
+
+    removeImage(image) {
+      let group = this.get('group');
+      let images = group.get('images');
+
+      images.removeObject(image);
+      group.save();
+    }
   },
 
-  model() {
-    return this.store.findAll('app', { reload : true });
+  reset() {
+    let allImages = this.get('images');
+    let images = this.get('group.images');
+
+    let availableImages = ArrayDiff.create({
+      major: allImages,
+      minor: images
+    });
+
+    this.set('availableImages', availableImages);
   }
 });

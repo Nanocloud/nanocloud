@@ -22,7 +22,7 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-/* globals sails, User, AccessToken, MachineService, Group */
+/* globals sails, User, Image, AccessToken, MachineService, Group */
 /* globals ConfigService, StorageService, Machine, Team, BrokerLog */
 /* globals PendingUser */
 
@@ -363,7 +363,18 @@ module.exports = function() {
 
     describe('api/apps', function() {
       let appId = null;
+      let imageId = null;
       let localGroupId = null;
+
+      before('Get default image ID', function(done) {
+        Image.findOne({
+          default: true
+        })
+          .then((image) => {
+            imageId = image.id;
+            done();
+          });
+      });
 
       after('Delete the created group', function(done) {
         Group.destroy({
@@ -386,7 +397,8 @@ module.exports = function() {
                   alias: 'tempo',
                   'collection-name': 'tempo',
                   'display-name': 'tempo',
-                  'file-path': 'C:\\Windows\\System32\\notepad.exe'
+                  'file-path': 'C:\\Windows\\System32\\notepad.exe',
+                  'image': imageId
                 },
                 type: 'apps'
               }
@@ -399,8 +411,8 @@ module.exports = function() {
                 members: {
                   id: userId
                 },
-                apps: {
-                  id: res.body.data.id
+                images: {
+                  id: imageId
                 }
               })
                 .then((group) => {
@@ -420,7 +432,8 @@ module.exports = function() {
                   alias: 'tempo',
                   'collection-name': 'tempo',
                   'display-name': 'tempo',
-                  'file-path': 'C:\\Windows\\System32\\notepad.exe'
+                  'file-path': 'C:\\Windows\\System32\\notepad.exe',
+                  'image': imageId
                 },
                 type: 'apps'
               }
@@ -438,7 +451,8 @@ module.exports = function() {
                   alias: 'tempo',
                   'collection-name': 'tempo',
                   'display-name': 'tempo',
-                  'file-path': 'C:\\Windows\\System32\\notepad.exe'
+                  'file-path': 'C:\\Windows\\System32\\notepad.exe',
+                  'image': imageId
                 },
                 type: 'apps'
               }

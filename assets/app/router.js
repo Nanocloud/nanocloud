@@ -38,7 +38,7 @@ Router.map(function() {
       this.route('groups', function() {
         this.route('group', { path: '/:group_id' }, function() {
           this.route('members');
-          this.route('apps');
+          this.route('images');
         });
         this.route('new');
       });
@@ -55,6 +55,9 @@ Router.map(function() {
       this.route('app', { path: '/:app_id' });
     });
     this.route('apps');
+    this.route('images', function() {
+      this.route('image', { path: '/:image_id' });
+    });
     this.route('files', function() {
       this.route('nowindows');
     });

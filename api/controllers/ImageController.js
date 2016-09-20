@@ -22,7 +22,7 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-/* globals MachineService */
+/* globals MachineService, Image */
 
 const uuid = require('node-uuid');
 
@@ -39,6 +39,20 @@ module.exports = {
         });
       })
       .then(res.created)
+      .catch(res.negotiate);
+  },
+
+  findOne: function(req, res) {
+    Image.findOne(req.allParams().id)
+      .populate('apps')
+      .then(res.ok)
+      .catch(res.negotiate);
+  },
+
+  find: function(req, res) {
+    Image.find()
+      .populate('apps')
+      .then(res.ok)
       .catch(res.negotiate);
   }
 };

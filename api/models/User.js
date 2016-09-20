@@ -72,7 +72,6 @@ module.exports = {
     team: {
       model: 'team'
     },
-
     groups: {
       collection: 'group',
       via: 'members',
