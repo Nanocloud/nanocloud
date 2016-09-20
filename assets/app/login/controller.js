@@ -43,6 +43,9 @@ export default Ember.Controller.extend({
   actions: {
     authenticate() {
       let { identification, password } = this.getProperties('identification', 'password');
+      if (this.get('session').get('isAuthenticated') === true) {
+        this.get('session').invalidate();
+      }
 
       this.get('session')
       .authenticate(
