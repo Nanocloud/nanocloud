@@ -7,7 +7,6 @@ info:
     **Complete Nanocloud libvirt module API documentation.**
 
     You can try all HTTP operation described in this Swagger spec.
-host: http://localhost:3000
 consumes:
   - application/json
 produces:
@@ -36,7 +35,7 @@ paths:
         Stop specified VM. This won't delete it
       parameters:
         - in: path
-          name: id
+          name: machine_uuid
           description: Machine's UUID
           required: true
           type: string
