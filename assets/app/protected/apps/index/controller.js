@@ -39,7 +39,7 @@ let App = Ember.Object.extend({
   launch() {
     this.set('remoteSession.plazaHasFinishedLoading', false);
     this.get('controller')
-      .launchVDI(this.get('model.alias'))
+      .launchVDI(this.get('id'))
       .then(() => {
         let app = this.get('model');
         app.reload()
@@ -133,7 +133,7 @@ export default Ember.Controller.extend({
     ];
   }.property(),
 
-  launchVDI(connectionName) {
+  launchVDI(appId) {
 
     return new Ember.RSVP.Promise((res, rej) => {
 
@@ -144,7 +144,7 @@ export default Ember.Controller.extend({
             this.get('remoteSession').one('connected', () => {
               res();
             });
-            this.set('connectionName', connectionName);
+            this.set('connectionName', appId);
             this.toggleProperty('showSingleTab');
           }
           else {
