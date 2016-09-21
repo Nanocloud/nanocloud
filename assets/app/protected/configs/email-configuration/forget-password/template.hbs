@@ -1,4 +1,4 @@
 <div class='m-t-1 m-b-1'>
-  {{ember-ckeditor value=text on-change="textChanged"}}
+  {{ember-ckeditor value=template on-change="textChanged"}}
 </div>
-<button class="btn btn-primary">Submit</button>
+<button {{ action 'saveChanges' }} class="btn btn-primary">Update</button>
