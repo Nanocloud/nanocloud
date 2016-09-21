@@ -81,19 +81,48 @@ class AWSDriver extends Driver {
                 KeyName: config.awsKeyName
               }, (err, res) => {
                 if (err) {
-                  return reject(err);
-                }
-                return fs.writeFileAsync(
-                  config.awsPrivateKey,
-                  res.KeyMaterial, {
-                    encoding: 'utf8',
-                    mode: 0o600,
-                    flag: 'w'
+                  if (err.code === 'InvalidKeyPair.Duplicate') {
+                    this._client.ec2.deleteKeyPair({
+                      KeyName: config.awsKeyName,
+                    }, (err) => {
+                      if (err) {
+                        return reject(err);
+                      }
+                      this._client.ec2.createKeyPair({
+                        KeyName: config.awsKeyName
+                      }, (err, res) => {
+                        if (err) {
+                          return reject(err);
+                        }
+                        return fs.writeFileAsync(
+                          config.awsPrivateKey,
+                          res.KeyMaterial, {
+                            encoding: 'utf8',
+                            mode: 0o600,
+                            flag: 'w'
+                          }
+                        )
+                          .then(() => {
+                            resolve();
+                          });
+                      });
+                    });
+                  } else {
+                    return reject(err);
                   }
-                )
-                  .then(() => {
-                    resolve();
-                  });
+                } else {
+                  return fs.writeFileAsync(
+                    config.awsPrivateKey,
+                    res.KeyMaterial, {
+                      encoding: 'utf8',
+                      mode: 0o600,
+                      flag: 'w'
+                    }
+                  )
+                    .then(() => {
+                      resolve();
+                    });
+                }
               });
             });
         })
