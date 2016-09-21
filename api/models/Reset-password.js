@@ -39,7 +39,7 @@ module.exports = {
       defaultsTo: function (){ return uuid.v4(); }
     },
     email: {
-      type: 'string'
+      type: 'email'
     }
   }
 };

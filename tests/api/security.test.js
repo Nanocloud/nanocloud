@@ -1945,7 +1945,7 @@ module.exports = function() {
                   'first-name': 'aaaa',
                   'last-name': 'aaaa',
                   password: 'aaaaaaaa',
-                  email: 'a@a.a',
+                  email: 'a@a.aa',
                   'is-admin': false,
                   'expiration-date': 0
                 },
@@ -1969,7 +1969,7 @@ module.exports = function() {
                   'first-name': 'bbbb',
                   'last-name': 'bbbb',
                   password: 'bbbbbbbbb',
-                  email: 'b@b.b',
+                  email: 'b@b.bb',
                   'is-admin': false,
                   'expiration-date': 0
                 },
@@ -1989,7 +1989,7 @@ module.exports = function() {
                   'first-name': 'cccc',
                   'last-name': 'cccc',
                   password: 'cccccccc',
-                  email: 'c@c.c',
+                  email: 'c@c.cc',
                   'is-admin': false,
                   'expiration-date': 0
                 },
