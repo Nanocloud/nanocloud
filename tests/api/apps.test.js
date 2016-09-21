@@ -487,7 +487,7 @@ module.exports = function() {
                   'password': null,
                   'remote-app': '',
                   'protocol': 'rdp',
-                  'app-name': 'app1',
+                  'app-name': app1,
                   'machine-id': machine.id,
                   'machine-type': 'dummy',
                   'machine-driver': 'dummy'
@@ -503,7 +503,7 @@ module.exports = function() {
                   'password': null,
                   'remote-app': '',
                   'protocol': 'rdp',
-                  'app-name': 'app2',
+                  'app-name': app2,
                   'machine-id': machine.id,
                   'machine-type': 'dummy',
                   'machine-driver': 'dummy'
@@ -519,7 +519,7 @@ module.exports = function() {
                   'password': null,
                   'remote-app': '',
                   'protocol': 'rdp',
-                  'app-name': 'Desktop',
+                  'app-name': nano.desktopId(),
                   'machine-id': machine.id,
                   'machine-type': 'dummy',
                   'machine-driver': 'dummy'
@@ -560,7 +560,7 @@ module.exports = function() {
                   'password': null,
                   'remote-app': '',
                   'protocol': 'rdp',
-                  'app-name': 'app1',
+                  'app-name': app1,
                   'machine-id': machine.id,
                   'machine-type': 'dummy',
                   'machine-driver': 'dummy'
@@ -576,7 +576,7 @@ module.exports = function() {
                   'password': null,
                   'remote-app': '',
                   'protocol': 'rdp',
-                  'app-name': 'app2',
+                  'app-name': app2,
                   'machine-id': machine.id,
                   'machine-type': 'dummy',
                   'machine-driver': 'dummy'
