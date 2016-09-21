@@ -21,7 +21,7 @@
  */
 
 const net = require('net');
-const drive = '/data/image.qcow2';
+const drivePath = '/data/';
 
 var express = require('express');
 var app = express();
@@ -30,7 +30,24 @@ var multer = require('multer'); // v1.0.5
 var upload = multer(); // for parsing multipart/form-data
 var uuid = require('uuid');
 var exec = require('child_process').exec;
+var Promise = require('bluebird');
 
+function createImage(backFile, newImage) {
+  var cmd = `qemu-img create -f qcow2 -b ${backFile} ${newImage}`;
+
+  return new Promise((resolve, reject) => {
+    return exec(cmd, (err) => {
+      if (err) {
+        return reject(err);
+      }
+
+      return resolve({
+        iaasId: newImage,
+        buildFrom:backFile
+      });
+    });
+  });
+}
 
 function getPort() {
   getPort.plaza =  ++getPort.plaza || 28000;
@@ -57,13 +74,17 @@ app.post('/machines', upload.array(), function (req, res) {
   var id = uuid.v4();
   var name = machineDescription.name + '-qemu-' + id;
   var port = getPort();
-  var cmd = `qemu-system-x86_64 \
+  var drive = machineDescription.drive;
+  createImage(drivePath + drive, drivePath + uuid.v4())
+    .then((image) => {
+      var cmd = `qemu-system-x86_64 \
     -nodefaults \
+    -snapshot \
     -name "${name}" \
     -m ${machineDescription.memory} \
     -smp ${machineDescription.cpu} \
     -machine accel=kvm \
-    -drive file=${drive},format=qcow2 \
+    -drive file=${image.iaasId},format=qcow2 \
     -vnc :${port.vnc} \
     -usb -device usb-tablet \
     -net nic,vlan=0,model=virtio \
@@ -72,17 +93,17 @@ app.post('/machines', upload.array(), function (req, res) {
     -vga qxl \
   `;
 
-  exec(cmd, () => {});
+      exec(cmd, () => {});
 
-  return res.json({
-    id: id,
-    name: name,
-    plazaPort: port.plaza,
-    rdpPort: port.rdp,
-    vncPort: port.vnc,
-    status: 'booting'
-  });
-
+      return res.json({
+        id: id,
+        name: name,
+        plazaPort: port.plaza,
+        rdpPort: port.rdp,
+        vncPort: port.vnc,
+        status: 'booting'
+      });
+    });
 });
 
 app.delete('/machines/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}', function (req, res) {
@@ -97,6 +118,84 @@ app.delete('/machines/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{1
     });
   });
 });
+
+app.post('/images', upload.array(), function (req, res) {
+  var params = req.body;
+
+  if (!params.buildFrom || !params.iaasId) {
+    res.status = 400;
+    return res.send('Some parameters are missing');
+  }
+
+  let vmId = null;
+  return new Promise((resolve) => {
+    let socket = net.connect({path: '/data/' + params.buildFrom + '.socket'}, () => {
+      return resolve(socket);
+    });
+  })
+    .then((socket) => {
+      return new Promise((resolve) => {
+        socket.write('info block\n', () => {
+          return resolve();
+        });
+      })
+        .then(() => {
+          return new Promise((resolve) => {
+            socket.on('data', (data) => {
+              var lines = data.toString().split('\n');
+              lines.forEach(function(line) {
+                if ( line.substr(4,6) === 'Backin' ) {
+                  vmId = line.split(':')[1].substr(5,42);
+                  return resolve();
+                }
+              });
+            });
+          });
+        })
+        .then(() => {
+          return new Promise((resolve) => {
+            socket.write('stop\n', () => {
+              return resolve();
+            });
+          });
+        })
+        .then(() => {
+          return new Promise((resolve) => {
+            socket.write('commit all\n', () => {
+              return resolve();
+            });
+          });
+        })
+        .then(() => {
+          return createImage(vmId, drivePath + params.iaasId);
+        })
+        .then(() => {
+          return new Promise((resolve) => {
+            socket.write('cont\n', () => {
+              return resolve();
+            });
+          });
+        })
+        .then(() => {
+          return new Promise((resolve) => {
+            socket.end();
+            return resolve();
+          });
+        })
+        .then(() => {
+          res.status = 200;
+          return res.send({
+            buildFrom: params.buildFrom,
+            iaasId: params.iaasId
+          });
+        })
+        .catch((err) => {
+          res.status = 400;
+          return res.send(err);
+        });
+    });
+});
+
 
 app.get('/', function (req, res) {
   return res.send('Qemu manager');
