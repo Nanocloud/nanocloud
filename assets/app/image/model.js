@@ -25,5 +25,12 @@
 import DS from 'ember-data';
 
 export default DS.Model.extend({
-  name: DS.attr('string')
+  iaasId: DS.attr('string'),
+  name: DS.attr('string'),
+  buildFrom: DS.attr('string'),
+  default: DS.attr('boolean'),
+  password: DS.attr('string'),
+  createdAt: DS.attr('string'),
+
+  apps: DS.hasMany('app'),
 });

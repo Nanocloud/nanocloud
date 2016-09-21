@@ -1,6 +1,6 @@
 <div class="row">
   <div class="col-md-6">
-    <h2>Manage applications:</h2>
+    <h2>Manage images:</h2>
     <table class="table m-t-2">
       <thead>
         <tr>
@@ -9,17 +9,17 @@
         </tr>
       </thead>
       <tbody>
-        {{#each applications as |app|}}
+        {{#each images as |image|}}
           <tr>
             <td scope="row">
               <span class="link in-bl">
-                {{#link-to 'protected.apps.app' app}}
-                  {{app.displayName}}
+                {{#link-to 'protected.images.image' image}}
+                  {{image.name}}
                 {{/link-to}}
               </span>
             </td>
             <td>
-              {{toggle-item-from-list list=group.apps item=app property='id' addAction="addApp" removeAction="removeApp"}}
+              {{toggle-item-from-list list=group.images item=image property='id' addAction="addImage" removeAction="removeImage"}}
             </td>
           </tr>
         {{/each}}

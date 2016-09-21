@@ -22,25 +22,15 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-function seed(knex) {
-  return knex.raw(`
-    INSERT INTO "app" (
-      "id",
-      "alias",
-      "displayName",
-      "filePath",
-      "createdAt", "updatedAt"
-    ) VALUES (
-      :id, :alias, :displayName, :filePath,
-      NOW(), NOW()
-    )
-    ON CONFLICT DO NOTHING
-  `, {
-    id: 'aff17b8b-bf91-40bf-ace6-6dfc985680bb',
-    alias: 'Desktop',
-    displayName: 'Desktop',
-    filePath: 'C:\\Windows\\explorer.exe'
-  });
-}
+import Ember from 'ember';
 
-module.exports = { seed };
+export default Ember.Route.extend({
+  setupController(controller, model) {
+    controller.set('images', model.toArray());
+    controller.reset();
+  },
+
+  model() {
+    return this.store.findAll('image', { reload : true });
+  }
+});

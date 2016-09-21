@@ -75,7 +75,7 @@ export default Ember.Controller.extend({
     'protected.users.groups.index' : 'overview-of-the-users-tab#groups',
     'protected.users.groups.new' : 'create-a-new-group',
     'protected.users.groups.group.members' : 'add-remove-a-group-member',
-    'protected.users.groups.group.apps' : 'add-remove-an-application',
+    'protected.users.groups.group.image' : 'add-remove-an-application',
     'protected.users.groups.group.index' : 'rename-a-group',
     'protected.configs.index' : 'configure-sessions',
     'protected.configs.user-right' : 'configure-user-rights',

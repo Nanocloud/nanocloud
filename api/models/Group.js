@@ -44,16 +44,15 @@ module.exports = {
     name: {
       type: 'string'
     },
-
     members: {
       collection: 'user',
       via: 'groups',
       through: 'usergroup'
     },
-    apps: {
-      collection: 'app',
+    images: {
+      collection: 'image',
       via: 'groups',
-      through: 'appgroup'
+      through: 'imagegroup'
     }
   },
 

@@ -55,11 +55,8 @@ module.exports = {
     state: {
       type: 'string'
     },
-
-    groups: {
-      collection: 'group',
-      via: 'apps',
-      through: 'appgroup'
+    image: {
+      model: 'image',
     }
   }
 };

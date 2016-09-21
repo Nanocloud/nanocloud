@@ -33,7 +33,7 @@ module.exports = {
 
     Group.findOne(req.allParams().id)
       .populate('members')
-      .populate('apps')
+      .populate('images')
       .then(res.ok)
       .catch(res.negotiate);
   }
