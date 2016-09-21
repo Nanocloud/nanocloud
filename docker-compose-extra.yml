@@ -23,6 +23,16 @@ services:
       file: docker-compose.yml
       service: plaza
 
+  qemu-manager:
+    build: ./qemu
+    image: nanocloud/qemu-manager
+    volumes:
+      - ./qemu/image.qcow2:/data/image.qcow2
+    devices:
+      - /dev/kvm
+    network_mode: host
+    container_name: "qemumanager"
+
 networks:
   nanocloud:
     driver: bridge

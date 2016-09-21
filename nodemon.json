@@ -1,4 +1,9 @@
 {
     "verbose": true,
-    "ignore": ["assets/*", "postgres/*", "guacamole-client/*", "proxy/*"]
+    "ignore": [
+      "assets/*",
+      "postgres/*",
+      "guacamole-client/*",
+      "proxy/*",
+      "qemu/*"]
 }
