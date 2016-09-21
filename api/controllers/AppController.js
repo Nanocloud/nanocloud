@@ -228,7 +228,7 @@ module.exports = {
                 password: machine.password,
                 'remote-app': '',
                 protocol: 'rdp',
-                'app-name': app.alias
+                'app-name': app.id
               });
             });
 
