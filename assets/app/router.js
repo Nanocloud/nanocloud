@@ -62,7 +62,10 @@ Router.map(function() {
     this.route('dashboard');
     this.route('configs', function() {
       this.route('user-right');
-      this.route('email-configuration');
+      this.route('email-configuration', function() {
+        this.route('sign-up');
+        this.route('forget-password');
+      });
       this.route('other-setting');
       this.route('look-and-feel');
     });
