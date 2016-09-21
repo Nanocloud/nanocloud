@@ -1,30 +1,29 @@
 <div class="histories section">
-  <h4>
-    History 
-  </h4>
-  <p class="color-primary indication">
-    History gives you information about your users' sessions. You can also download this table as a CSV file.
-    <p class="m-t-1 m-b-0"> 
-      <a class='btn btn-primary downloadcsv' href={{downloadCsvLink}} download={{downloadCsvFilename}}>Save as CSV file</a>
-      <button {{ action "refreshModel" }} class="btn btn-info">Reload</button> 
-    </p>
-  </p>
+  <h1 class='in-bl color-primary'>
+    History
+  </h1>
+  <span class="icon_link clickable noselect" {{ action "refreshModel" }}>
+    {{icon-component class='va-sub' size=26 materialIcon="autorenew" spin=loadState content="Refresh history"}}
+  </span>
+    <a class='btn btn-primary downloadcsv pull-xs-right' href={{downloadCsvLink}} download={{downloadCsvFilename}}>Save as CSV file</a>
   {{#if items.length}}
     <ul class="history-info list-group color-primary">
       {{#if avgSessionDuration}}
         <li class="list-group-item in-bl">
-          Average session duration: {{format-duration avgSessionDuration}}
+          Average session duration {{format-duration avgSessionDuration}}
         </li>
       {{/if}}
       <li class="list-group-item in-bl">
         {{items.length}} {{formatSessionLabel}}
       </li>
     </ul>
+  {{else}}
+    <p class="color-primary indication">
+      Looks like there is nothing to display in your history! As soon as you and your users start using the VDI and remote applications, the sessions will be recorded here!
+    </p>
   {{/if}}
   <div class='content-wrapper m-t-2'>
-    {{#if modelIsEmpty}}
-      No entries 
-    {{else}}
+    {{#unless modelIsEmpty}}
       {{models-table
         class="sortableTable"
         data=data
@@ -37,7 +36,7 @@
         useNumericPagination=true
         multipleColumnsSorting=false
       }}
-    {{/if}}
+    {{/unless}}
     <div class="clearfix"></div>
   </div>
 

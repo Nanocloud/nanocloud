@@ -1,13 +1,8 @@
 <div class='user m-t-1'>
-  <p class="color-primary indication in-bl">
-    <span class="text">
-      All your users are displayed in this page. You can click on one name to display its configuration page.
-    </span>
-  </p>
-  <h4>
-    {{#link-to 'protected.users' }}Users{{/link-to}}
+  <h1 class='m-t-1 color-primary'>
+    Users
     {{#link-to 'protected.users.new' class='btn btn-primary pull-xs-right'}}Add user{{/link-to}}
-  </h4>
+  </h1>
   <div class='content-wrapper m-t-2'>
     {{#if modelIsEmpty}}
       No entries 

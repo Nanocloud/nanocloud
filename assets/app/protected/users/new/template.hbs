@@ -4,13 +4,13 @@
       All your users are displayed in this page. You can click on one name to display its configuration page.
     </span>
   </p>
-  <h4>
-    {{#link-to 'protected.users' }}Users{{/link-to}}
+  <h1 class='m-t-1 color-primary'>
+    Users
     <div class='in-bl'>
-      {{icon-component class="va-sub" materialIcon="navigate_next"}} 
+      {{icon-component class="va-sub" materialIcon="navigate_next" size=36}} 
     </div>
     Create a new user
-  </h4>
+  </h1>
   <div class="user-new content-wrapper form m-t-1">
     <form {{action 'add' on='submit'}}>
         {{nano-input hideError=userHasSubmitted placeholder='Firstname' model=model valuePath="firstName" autofocus=true }}

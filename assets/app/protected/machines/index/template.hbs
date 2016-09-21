@@ -1,11 +1,9 @@
 <div class="machines section">
-  <h4 class="in-bl">
-    {{#link-to 'protected.machines' }}
-      Machines
-    {{/link-to}}
-  </h4>
+  <h1 class="in-bl color-primary">
+    Machines
+  </h1>
   <span class="icon_link clickable noselect" {{ action "refreshModel" }}>
-    {{icon-component size=19 materialIcon="autorenew" spin=loadState content="Refresh machine list"}}
+    {{icon-component class='va-sub' size=26 materialIcon="autorenew" spin=loadState content="Refresh machine list"}}
   </span>
   {{#if needRefresh}}
     <div class='refresh-notification indication in-bl'>
@@ -13,12 +11,12 @@
     </div>
   {{/if}}  
 
-  <div class='content-wrapper m-t-2'>
+  <div class='content-wrapper'>
 
   {{#unless loadState}}
     {{#if modelIsEmpty}}
       <div class="alert alert-info" role="alert">
-        <strong>No machines are available.</strong>
+        <strong>Looks like you haven’t uploaded any file yet! Drag and drop any file here to upload it.</strong>
       </div>
     {{else}}
       {{models-table

@@ -1,36 +1,10 @@
-{{dim-background show=dimBackground click=(action 'closeFocusModeTeams')}}
-{{#if protectedController.isAdminOrTeamAdmin}}
-  <p class="color-primary indication m-t-1">
-    <span class="text">
-    {{icon-component class='va-mid color-primary' size=22 materialIcon="error"}}
-    You can create a new member by clicking on 'Create a new user'.
-    </span>
-  </p>
-{{/if}}
-
 {{#if protectedController.hasNoTeam}}
   <div class="teams-focus-input group in-bl {{if dimBackground 'focus' }}">
 
-    {{#if dimBackground}}
-      <div class='close-btn pull-xs-right'>
-        {{ icon-component
-          materialIcon="close"
-          clickable=true
-          hover-enabled=true
-          click=(action "closeFocusModeTeams")
-        }}
-      </div>
-    {{/if}}
-
-    <h4>
-      {{#link-to 'protected.users.teams' }}
-        Teams
-      {{/link-to}}
-    </h4>
-
-    <p class="color-primary in-bl m-t-1">
+    <h1 class='color-primary'>Teams</h1>
+    <p class="color-primary in-bl">
       <span class="text">
-        Looks like you don't have a team yet.<br>You can create one by filling this area then press enter.
+        Looks like you haven’t created any team yet! Click here to create your team!
       </span>
     </p>
     <form {{action "createTeam" on="submit"}}>
@@ -39,7 +13,7 @@
           {{nano-input
             class="color-primary input-pattern-underline"
             type="text"
-            placeholder="(ex: Team Cook)"
+            placeholder="(ex Team Cook)"
             autofocus=protectedController.isNotAdmin
             value=model.name
             isFocused=focusModeTeams
@@ -75,11 +49,11 @@
   {{/if}}
   {{#if protectedController.isAdminOrTeamAdmin}}
     {{#each teams as |team|}}
-      <h4 class='m-t-1 m-b-1 color-primary'> Teams
+      <h1 class='m-t-1 m-b-1 color-primary'> Teams
         <div class='in-bl'>
-          {{icon-component class="va-sub" materialIcon="navigate_next"}} {{team.name}}
+          {{icon-component class="va-sub" materialIcon="navigate_next" size=36}} {{team.name}}
         </div>
-      </h4>
+      </h1>
       {{models-table
         class="sortableTable"
         data=team.allMembers

@@ -1,20 +1,17 @@
 <div class="group m-t-1">
-  <p class="color-primary indication in-bl">
-    <span class="text">
-    Groups are an easy way to create lists of people that can use specific applications. A user added to a group gets access to applications available in this group.
-    </span>
-  </p>
-  <h4>
-    {{#link-to 'protected.users.groups' }}
-      Groups
-    {{/link-to}}
+  <h1 class='m-t-1 color-primary'>
+    Groups
     {{#link-to 'protected.users.groups.new' class='btn btn-primary pull-xs-right'}}
       Create a group
     {{/link-to}}
-  </h4>
+  </h1>
   <div class='content-wrapper m-t-1'>
     {{#if modelIsEmpty}}
-      No entries 
+      <p class="color-primary indication in-bl">
+        <span class="text">
+          Looks like you haven’t created any group yet! Click here to create your first group!
+        </span>
+      </p>
     {{else}}
       {{models-table
         class="sortableTable"
