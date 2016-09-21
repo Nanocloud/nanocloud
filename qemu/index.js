@@ -20,6 +20,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+const net = require('net');
 const drive = '/data/image.qcow2';
 
 var express = require('express');
@@ -67,6 +68,7 @@ app.post('/machines', upload.array(), function (req, res) {
     -usb -device usb-tablet \
     -net nic,vlan=0,model=virtio \
     -net user,vlan=0,hostfwd=tcp::${port.plaza}-:9090,hostfwd=tcp::${port.rdp}-:3389 \
+    -monitor unix:/data/${id}.socket,server,nowait \
     -vga qxl \
   `;
 
@@ -86,15 +88,14 @@ app.post('/machines', upload.array(), function (req, res) {
 app.delete('/machines/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}', function (req, res) {
 
   var machineId = req.path.substr(10);
-
-  exec('PID=$(ps aux | grep "' + machineId + ' " | grep qemu | awk \'{ print $2 }\' | tr "\\n" " ") ; kill ${PID}',
-    () => {});
-
-  return res.json({
-    id: machineId,
-    status: 'stopping'
+  let socket = net.connect({path: '/data/' + machineId + '.socket'}, () => {
+    socket.write('system_powerdown\n', () => {
+      return res.json({
+        id: machineId,
+        status: 'stopping'
+      });
+    });
   });
-
 });
 
 app.get('/', function (req, res) {
