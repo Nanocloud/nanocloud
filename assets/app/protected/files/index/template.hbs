@@ -8,9 +8,15 @@
 
   {{#ember-wormhole to="file-page"}}
     <div class="section p-a-2">
-      <h4>Files</h4>
+      <h1 class='color-primary'>Files</h1>
       <p class="color-primary indication hover clickable">
-        <span class="browse link">Drag and drop any file right here to upload it</span>
+        <span class="browse link">
+          {{#if modelIsEmpty}}
+            Looks like you haven’t uploaded any file yet! Drag and drop any file here to upload it.
+          {{else}}
+            Click here or drag and drop any file right here to upload it
+          {{/if}}
+        </span>
 
         {{#if uploadData.queue}}
           <hr>
@@ -53,9 +59,7 @@
       <div class='content-wrapper'>
         <div class='drag-drop-wrapper'>
         </div>
-        {{#if modelIsEmpty}}
-          There is no file
-        {{else}}
+        {{#unless modelIsEmpty}}
           {{models-table
             class="sortableTable"
             data=data
@@ -69,7 +73,7 @@
             useNumericPagination=true
             multipleColumnsSorting=false
           }}
-        {{/if}}
+        {{/unless}}
         <div class="clearfix"></div>
       </div>
     </div>

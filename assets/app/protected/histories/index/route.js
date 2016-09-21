@@ -31,9 +31,20 @@ export default Ember.Route.extend({
   },
 
   model() {
-    var model = this.store.query('history', {});
+
+    var promise = this.store.query('history', {});
     this.controllerFor('protected.histories.index').setData();
-    return model;
+
+    let historyIndexController = this.controllerFor('protected.histories.index');
+    historyIndexController.set('loadState', true);
+    promise
+      .catch(() => {
+        this.toast.error('History could not be retrieved');
+      })
+      .finally(() => {
+        historyIndexController.set('loadState', false);
+      });
+    return promise;
   },
 
   actions: {

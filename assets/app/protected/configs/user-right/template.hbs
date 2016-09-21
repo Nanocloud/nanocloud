@@ -1,4 +1,3 @@
-<h5 class="m-t-1">User rights</h5>
 <div class="checkbox">
   <label>
     {{input type="checkbox" checked=configController.autoRegister}}
@@ -8,7 +7,7 @@
 {{#if configController.autoRegister}}
   {{log model}}
   {{#if model.groups.length}}
-    <p class='m-t-1 color-primary'>You can select a default group:</p>
+    <p class='m-t-1 color-primary'>You can select a default group</p>
     <ul class="selectable-list">
       <div class="row">
         <div class="col-md-6">
@@ -36,7 +35,7 @@
   {{/if}}
   <div class="form-group row">
     <div class="col-sm-4">
-      <p class="confirm-input-item color-primary in-bl fl">You can enter an expiration date for new users (in days):</p>
+      <p class="confirm-input-item color-primary in-bl fl">You can enter an expiration date for new users (in days)</p>
     </div>
     <div class="col-sm-2">{{input-confirm value=configController.expirationDate type="number" min="1"}}</div>
   </div>
@@ -50,7 +49,7 @@
 {{#if isAws}}
   <div class="form-group row">
     <div class="col-sm-2">
-      <p class="confirm-input-item color-primary">Set a credit limit to users using AWS:</p>
+      <p class="confirm-input-item color-primary">Set a credit limit to users using AWS</p>
     </div>
     <div class="col-sm-2">{{input-confirm type="string" value=configController.creditLimit}}</div>
   </div>
