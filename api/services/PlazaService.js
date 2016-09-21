@@ -67,7 +67,7 @@ module.exports = {
    */
   files: function(storage, path) {
     let options = {
-      url: 'http://' + storage.hostname + ':' + storage.port + '/files?path=' + encodeURI(path),
+      url: 'http://' + storage.hostname + ':' + storage.port + '/files?path=' + encodeURIComponent(path),
       method: 'GET'
     };
 
@@ -88,7 +88,7 @@ module.exports = {
    */
   rename: function(storage, oldpath, newpath) {
     let options = {
-      url: 'http://' + storage.hostname + ':' + storage.port + '/files?username=' + encodeURI(storage.username) + '&filename=' + oldpath + '&newfilename=' + newpath,
+      url: 'http://' + storage.hostname + ':' + storage.port + '/files?username=' + encodeURIComponent(storage.username) + '&filename=' + oldpath + '&newfilename=' + newpath,
       method: 'PATCH'
     };
 
