@@ -55,7 +55,7 @@ module.exports = {
       type: 'string'
     },
     email: {
-      type: 'string',
+      type: 'email',
       unique: true
     },
     isAdmin: {
