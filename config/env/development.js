@@ -111,6 +111,13 @@ module.exports = {
     openstackFlavor: 'm1.medium',
     openstackSecurityGroups: ['default'],
     openstackMachineUsername: 'Administrator',
-    openstackMachinePassword: ''
+    openstackMachinePassword: '',
+
+    qemuServiceURL: 'localhost',
+    qemuServicePort: 3000,
+    qemuMemory: '4096',
+    qemuCPU: '2',
+    qemuMachineUsername: 'Administrator',
+    qemuMachinePassword: ''
   }
 };

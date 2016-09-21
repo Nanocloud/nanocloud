@@ -142,7 +142,8 @@ class DummyDriver extends BaseDriver {
       ip        : _plazaAddress,
       username  : 'Administrator',
       plazaport : _plazaPort,
-      domain    : ''
+      domain    : '',
+      rdpPort   : 3389
     });
 
     this._machines[machine.id] = machine;

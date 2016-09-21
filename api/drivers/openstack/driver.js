@@ -174,7 +174,8 @@ class OpenstackDriver extends Driver {
                     username  : config.openstackMachineUsername,
                     password  : password,
                     domain    : '',
-                    plazaport : config.plazaPort
+                    plazaport : config.plazaPort,
+                    rdpPort   : 3389
                   });
 
                   return resolve(machine);

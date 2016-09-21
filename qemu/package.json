@@ -1,0 +1,26 @@
+{
+  "name": "qemuManager",
+  "private": true,
+  "version": "0.1.0",
+  "description": "Manage Qemu",
+  "keywords": [],
+  "dependencies": {
+    "bluebird": "^3.4.6",
+    "body-parser": "^1.15.2",
+    "express": "^4.14.0",
+    "multer": "^1.2.0",
+    "uuid": "^2.0.2"
+  },
+  "scripts": {
+    "test": "make tests",
+    "debug": "node debug app.js",
+    "start": "node app.js"
+  },
+  "main": "app.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Nanocloud/nanocloud"
+  },
+  "author": "Romain Soufflet <romain.soufflet@nanocloud.com>",
+  "license": "AGPL-3.0"
+}

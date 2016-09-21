@@ -10,3 +10,4 @@ docker-compose.yml
 docker-compose-dev.yml
 LICENSE
 README.md
+qemu
