@@ -111,6 +111,7 @@ module.exports = {
       });
 
       return request.getAsync(plazaAddr)
+        .timeout(300)
         .then((res) => {
           let body = res.body;
 
@@ -131,7 +132,10 @@ module.exports = {
           });
 
           return sessions;
-        });
+        })
+        // If timeout is exceeded, machine is probably booting or being shut-down
+        // Let's ignore the error silently
+        .catch(() => {});
     },
 
     /*
