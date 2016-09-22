@@ -132,7 +132,7 @@ class DummyDriver extends BaseDriver {
    * @param {Object} options model to be created
    * @return {Promise[Machine]} Machine model created
    */
-  createMachine(machine) {
+  createMachine(machine, image) {
     const id = uuid.v4();
     let machineToCreate = new Machine._model({
       id        : id,
@@ -143,7 +143,8 @@ class DummyDriver extends BaseDriver {
       username  : 'Administrator',
       plazaport : _plazaPort,
       domain    : '',
-      rdpPort   : 3389
+      rdpPort   : 3389,
+      image     : image.id
     });
 
     this._machines[id] = machineToCreate;
