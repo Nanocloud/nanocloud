@@ -201,5 +201,10 @@ export default Ember.Controller.extend({
     openFileExplorer() {
       this.set('showFileExplorer', true);
     },
+
+    onboardAppSucceeded() {
+      this.send('refreshModel');
+      this.send('closeFileExplorer');
+    }
   }
 });
