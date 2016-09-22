@@ -1,0 +1,16 @@
+<div class='m-t-1 m-b-1'>
+  {{text-editor value=template on-change="textChanged"}}
+</div>
+
+<div>
+  <p class="color-primary indication in-bl m-t-1">
+    <strong>Available placeholders:</strong>
+    <ul>
+      <li>firstName: user's first name</li>
+      <li>lastName: user's last name</li>
+      <li>resetLink: will resolve to the link to use to reset the account's password</li>
+    </ul>
+  </p>
+</div>
+
+<button {{ action 'saveChanges' }} class="btn btn-primary">Update</button>

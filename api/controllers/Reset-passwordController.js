@@ -59,17 +59,16 @@ module.exports = {
     // send him reset password link
       .then((configuration) => {
         let host = configuration.host;
-        let subject = 'Nanocloud - Reset your password';
         let to = user.email;
 
-        return TemplateService.render('reset-password-email', {
+        return TemplateService.render('reset', {
           firstName: user.firstName,
           lastName: user.lastName,
           resetLink: `http://${host}/#/reset-password/${token}`
         })
-          .then((message) => {
+          .then((template) => {
             // mail sent here
-            return EmailService.sendMail(to, subject, message);
+            return EmailService.sendMail(to, template.subject, template.content);
           });
       })
       .then(() => {

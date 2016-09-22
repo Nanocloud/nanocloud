@@ -24,7 +24,7 @@
 
 /* globals sails, User, AccessToken, MachineService, Group */
 /* globals ConfigService, StorageService, Machine, Team, BrokerLog */
-/* globals PendingUser */
+/* globals PendingUser, Template  */
 
 const nano = require('./lib/nanotest');
 
@@ -2978,6 +2978,221 @@ module.exports = function() {
         it('Unauthenticate users token should be unauthorized', function(done) {
           nano.request(sails.hooks.http.app)
             .delete('/api/teams/' + team1.id)
+            .expect(403)
+            .end(done);
+        });
+      });
+    });
+
+    describe('Templates', function() {
+
+      let templateId = null;
+
+      before('Create a test template', function(done) {
+        Template.create({
+          key: 'test',
+          subject: 'test',
+          content: 'test'
+        })
+          .then((template) => {
+            templateId = template.id;
+            done();
+          });
+      });
+
+      after('Delete the test template', function(done) {
+        Template.destroy({
+          id: templateId
+        })
+          .then(() => {
+            done();
+          });
+      });
+
+      describe('Create a template - not available', function() {
+
+        it('Admins should be unauthorized', function(done) {
+          return nano.request(sails.hooks.http.app)
+            .post('/api/templates')
+            .set(nano.adminLogin())
+            .send({
+              data: {
+                attributes: {
+                  key: 'test',
+                  subject: 'test',
+                  content: 'test'
+                },
+                type: 'templates'
+              }
+            })
+            .expect(403)
+            .end(done);
+        });
+
+        it('Regular users should be unauthorized', function(done) {
+          return nano.request(sails.hooks.http.app)
+            .post('/api/templates')
+            .set('Authorization', 'Bearer ' + token)
+            .set(nano.adminLogin())
+            .send({
+              data: {
+                attributes: {
+                  key: 'test',
+                  subject: 'test',
+                  content: 'test'
+                },
+                type: 'templates'
+              }
+            })
+            .expect(403)
+            .end(done);
+        });
+
+        it('Request without authorization should be unauthorized', function(done) {
+          return nano.request(sails.hooks.http.app)
+            .post('/api/templates')
+            .set(nano.adminLogin())
+            .send({
+              data: {
+                attributes: {
+                  key: 'test',
+                  subject: 'test',
+                  content: 'test'
+                },
+                type: 'templates'
+              }
+            })
+            .expect(403)
+            .end(done);
+        });
+      });
+
+      describe('Get templates - only admins', function() {
+
+        it('Admins should be authorized', function(done) {
+          return nano.request(sails.hooks.http.app)
+            .get('/api/templates')
+            .set(nano.adminLogin())
+            .expect(200)
+            .end(done);
+        });
+
+        it('Regular users should be unauthorized', function(done) {
+          return nano.request(sails.hooks.http.app)
+            .get('/api/templates')
+            .set('Authorization', 'Bearer ' + token)
+            .expect(403)
+            .end(done);
+        });
+
+        it('Request without authorization should be unauthorized', function(done) {
+          return nano.request(sails.hooks.http.app)
+            .get('/api/templates')
+            .expect(401)
+            .end(done);
+        });
+      });
+
+      describe('Get one template - only admins', function() {
+
+        it('Admins should be authorized', function(done) {
+          return nano.request(sails.hooks.http.app)
+            .get('/api/templates/' + templateId)
+            .set(nano.adminLogin())
+            .expect(200)
+            .end(done);
+        });
+
+        it('Regular users should be unauthorized', function(done) {
+          return nano.request(sails.hooks.http.app)
+            .get('/api/templates/' + templateId)
+            .set('Authorization', 'Bearer ' + token)
+            .expect(403)
+            .end(done);
+        });
+
+        it('Request without authorization should be unauthorized', function(done) {
+          return nano.request(sails.hooks.http.app)
+            .get('/api/templates/' + templateId)
+            .expect(401)
+            .end(done);
+        });
+      });
+
+      describe('Update templates - only admins', function() {
+
+        it('Admins should be authorized', function(done) {
+          return nano.request(sails.hooks.http.app)
+            .patch('/api/templates/' + templateId)
+            .set(nano.adminLogin())
+            .send({
+              data: {
+                attributes: {
+                  subject: 'New subject'
+                },
+                id: templateId,
+                type: 'templates'
+              }
+            })
+            .expect(200)
+            .end(done);
+        });
+
+        it('Regular users should be unauthorized', function(done) {
+          return nano.request(sails.hooks.http.app)
+            .patch('/api/templates/' + templateId)
+            .set('Authorization', 'Bearer ' + token)
+            .send({
+              data: {
+                attributes: {
+                  subject: 'New subject'
+                },
+                id: templateId,
+                type: 'templates'
+              }
+            })
+            .expect(403)
+            .end(done);
+        });
+
+        it('Request without authorization should be unauthorized', function(done) {
+          return nano.request(sails.hooks.http.app)
+            .patch('/api/templates/' + templateId)
+            .send({
+              data: {
+                attributes: {
+                  subject: 'New subject'
+                },
+                id: templateId,
+                type: 'templates'
+              }
+            })
+            .expect(401)
+            .end(done);
+        });
+      });
+
+      describe('Delete templates - only admins', function() {
+
+        it('Admins should be authorized', function(done) {
+          return nano.request(sails.hooks.http.app)
+            .delete('/api/templates/' + templateId)
+            .set(nano.adminLogin())
+            .expect(403)
+            .end(done);
+        });
+
+        it('Regular users should be unauthorized', function(done) {
+          return nano.request(sails.hooks.http.app)
+            .delete('/api/templates/' + templateId)
+            .set('Authorization', 'Bearer ' + token)
+            .expect(403)
+            .end(done);
+        });
+
+        it('Request without authorization should be unauthorized', function(done) {
+          return nano.request(sails.hooks.http.app)
+            .delete('/api/templates/' + templateId)
             .expect(403)
             .end(done);
         });

@@ -18,37 +18,37 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- *
  */
 
-/* globals Template */
-
-const Handlebars = require('handlebars');
+const uuid = require('node-uuid');
 
 /**
- * render
+ * Template.js
  *
- * Find the template associated to emailKey and return email subject and
- * content with appropriate data
- *
- * @param {String} emailKey associate to the template
- * @param {Object} All data availble to inject in email
- * @return {Object} Object with subject and content with appropriate data
+ * @description :: Template's model
+ * @docs        :: http://sailsjs.org/documentation/concepts/models-and-orm/models
  */
-function render(emailKey, data) {
+module.exports = {
 
-  return Template.findOne({
-    key: emailKey
-  })
-    .then((template) => {
-      let tmpl = Handlebars.compile(template.content.toString());
-      let content = tmpl(data);
+  autoPK: false,
 
-      return ({
-        content: content,
-        subject: template.subject
-      });
-    });
-}
-
-module.exports = { render };
+  attributes: {
+    id: {
+      type: 'string',
+      primaryKey: true,
+      unique: true,
+      index: true,
+      uuidv4: true,
+      defaultsTo: function (){ return uuid.v4(); }
+    },
+    key: {
+      type: 'string'
+    },
+    content: {
+      type: 'string'
+    },
+    subject: {
+      type: 'string'
+    }
+  }
+};
