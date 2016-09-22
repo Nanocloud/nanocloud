@@ -133,5 +133,13 @@ module.exports.policies = {
     '*': false,
     find: 'isAdmin',
     findOne: 'isAdmin'
+  },
+
+  TemplateController: {
+    create: false,
+    update: 'isAdmin',
+    find: 'isAdmin',
+    findOne: 'isAdmin',
+    destroy: false
   }
 };
