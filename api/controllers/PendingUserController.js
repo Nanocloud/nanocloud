@@ -63,8 +63,19 @@ module.exports = {
         return Promise.reject(new Error('User already exists'));
       })
       .then((pendingUserResponse) => {
+        let host = ConfigService.get('host');
         if (!pendingUserResponse) {
-          return ConfigService.get('host');
+          return host;
+        }
+
+        let date = moment().unix();
+        let expirationDate = moment(pendingUserResponse.createdAt).add(7, 'days').unix();
+        if (expirationDate <= date) {
+          // Delete expirated pending user
+          return PendingUser.destroy({ email: user.email })
+            .then(() => {
+              return host;
+            });
         }
 
         return Promise.reject(new Error('User already exists'));
