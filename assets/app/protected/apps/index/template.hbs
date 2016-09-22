@@ -45,7 +45,7 @@
   {{remote-session connectionName=connectionName activator=activator}}
 {{/single-tab}}
 
-{{dim-background show=showFileExplorer preventAction=isPublishing action="toggleFileExplorer"}}
+{{dim-background show=showFileExplorer preventAction=isPublishing action="closeFileExplorer"}}
 {{#floating-sidebar-component
   isVisible=showFileExplorer
 }}
@@ -55,7 +55,7 @@
     api="file"
     target='machines'
     system='windows'
-    action="refreshModel"
+    action="onboardAppSucceeded"
   }}
   {{/application-publisher}}
 {{/if}}
