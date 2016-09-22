@@ -140,8 +140,40 @@ module.exports = {
                   })
                     .catch(() => {
                       // User storage is probably already mounted
+                      // When an image is published, sometimes storage does not work again
+                      // Let's delete the currupted storage and recreate it
                       // Let's ignore the error silently
-                      return Promise.resolve();
+
+                      return PlazaService.exec(machine.ip, machine.plazaport, {
+                        command: [
+                          `C:\\Windows\\System32\\net.exe`,
+                          'use',
+                          'z:',
+                          `/DELETE`,
+                          `/YES`
+                        ],
+                        wait: true,
+                        hideWindow: true,
+                        username: machine.username
+                      })
+                        .then(() => {
+                          return PlazaService.exec(machine.ip, machine.plazaport, {
+                            command: [
+                              `C:\\Windows\\System32\\net.exe`,
+                              'use',
+                              'z:',
+                              `\\\\${storage.hostname}\\${storage.username}`,
+                              `/user:${storage.username}`,
+                              storage.password
+                            ],
+                            wait: true,
+                            hideWindow: true,
+                            username: machine.username
+                          });
+                        })
+                        .then(() => {
+                          return Promise.resolve();
+                        });
                     });
                 })
                 .then(() => {
