@@ -21,34 +21,13 @@
  *
  */
 
-/* globals Template */
-
-const Handlebars = require('handlebars');
-
 /**
- * render
+ * TemplateController
  *
- * Find the template associated to emailKey and return email subject and
- * content with appropriate data
- *
- * @param {String} emailKey associate to the template
- * @param {Object} All data availble to inject in email
- * @return {Object} Object with subject and content with appropriate data
+ * @description :: Server-side logic for managing email template
+ * @help        :: See http://sailsjs.org/#!/documentation/concepts/Controllers
  */
-function render(emailKey, data) {
 
-  return Template.findOne({
-    key: emailKey
-  })
-    .then((template) => {
-      let tmpl = Handlebars.compile(template.content.toString());
-      let content = tmpl(data);
+module.exports = {
 
-      return ({
-        content: content,
-        subject: template.subject
-      });
-    });
-}
-
-module.exports = { render };
+};

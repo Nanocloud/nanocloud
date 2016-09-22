@@ -1561,6 +1561,99 @@ paths:
         403:
           description: Only admin can list broker logs
 
+  /templates:
+    get:
+      tags:
+        - templates
+      summary:
+        Get a detailed list of templates
+      responses:
+        200:
+          description: Get all templates
+          schema:
+            type: object
+            properties:
+              data:
+                type: array
+                items:
+                  $ref: "#/definitions/Templates"
+        403:
+          description: You are not an admin
+          schema:
+            type: object
+            properties:
+              errors:
+                type: array
+                items:
+                  $ref: "#/definitions/Errors"
+
+  /templates/{template_id}:
+    get:
+      tags:
+        - templates
+      summary:
+        Get details of a specific template
+      parameters:
+        - in: path
+          name: template_id
+          description: Id of the template to fetch
+          required: true
+          type: string
+          format: uuid
+      responses:
+        200:
+          description: Get template details
+          schema:
+            type: object
+            properties:
+              data:
+                $ref: "#/definitions/Templates"
+        403:
+          description: You are not an admin
+          schema:
+            type: object
+            properties:
+              errors:
+                type: array
+                items:
+                  $ref: "#/definitions/Errors"
+
+    patch:
+      tags:
+        - templates
+      summary:
+        Update a specific template
+      parameters:
+        - in: path
+          name: template_id
+          description: Id of the template to update
+          required: true
+          type: string
+          format: uuid
+        - in: body
+          name: data
+          description: Template description
+          required: true
+          schema:
+            $ref: "#/definitions/TemplatesAttibutes"
+      responses:
+        200:
+          description: The template details updated
+          schema:
+            type: object
+            properties:
+              data:
+                $ref: "#/definitions/Templates"
+        403:
+          description: You are not an admin
+          schema:
+            type: object
+            properties:
+              errors:
+                type: array
+                items:
+                  $ref: "#/definitions/Errors"
+
 definitions:
   Configuration:
     type: object
@@ -2157,6 +2250,7 @@ definitions:
         type: string
       status:
         type: number
+
   BrokerLog:
     type: object
     properties:
@@ -2172,3 +2266,43 @@ definitions:
         type: string
       pool-size:
         type: string
+
+  Templates:
+    type: object
+    properties:
+      type:
+        type: string
+      id:
+        type: string
+        format: uuid
+      attributes:
+        type: object
+        properties:
+          key:
+            type: string
+          content:
+            type: string
+          subject:
+            type: string
+          created-at:
+            type: string
+            format: date-Time
+          updated-at:
+            type: string
+            format: date-Time
+
+  TemplatesAttibutes:
+    type: object
+    properties:
+      key:
+        type: string
+      content:
+        type: string
+      subject:
+        type: string
+      created-at:
+        type: string
+        format: date-Time
+      updated-at:
+        type: string
+        format: date-Time
