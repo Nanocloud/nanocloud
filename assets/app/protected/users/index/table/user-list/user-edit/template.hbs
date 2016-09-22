@@ -1,5 +1,5 @@
-{{#nano-tooltip class='in-bl' content="Click here to modify this user profile" position="right"}}
-  {{#link-to "protected.users.user" record.id}}
+{{#nano-tooltip class='in-bl maxWidth' content="Click here to modify this user profile" position="right"}}
+  {{#link-to "protected.users.user" record.id class="truncate"}}
     {{record.firstName}}
     {{record.lastName}}
   {{/link-to}}

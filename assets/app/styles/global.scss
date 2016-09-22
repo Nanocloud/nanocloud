@@ -289,6 +289,22 @@ h1 {
   padding: 0 !important;
 }
 
+.truncate {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: block;
+}
+
+.maxWidth {
+  width: 100%;
+}
+
+.sortableTable td, 
+{
+  max-width: 200px;
+}
+
 @media (max-width: 991px) {
   .ember-modal-dialog {
     width: 95%;
