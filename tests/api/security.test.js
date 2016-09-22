@@ -22,7 +22,7 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-/* globals sails, User, AccessToken, MachineService, Group */
+/* globals sails, User, Image, AccessToken, MachineService, Group */
 /* globals ConfigService, StorageService, Machine, Team, BrokerLog */
 /* globals PendingUser, Template  */
 
@@ -363,14 +363,29 @@ module.exports = function() {
 
     describe('api/apps', function() {
       let appId = null;
+      let imageId = null;
       let localGroupId = null;
 
-      after('Delete the created group', function(done) {
-        Group.destroy({
-          id: localGroupId
+      before('Get default image ID', function(done) {
+        Image.create({
+          name: 'test',
+          default: true
         })
-          .then(() => {
+          .then((image) => {
+            imageId = image.id;
             done();
+          });
+      });
+
+      after('Delete the created group', function(done) {
+        Image.destroy(imageId)
+          .then(() => {
+            Group.destroy({
+              id: localGroupId
+            })
+              .then(() => {
+                done();
+              });
           });
       });
 
@@ -386,7 +401,8 @@ module.exports = function() {
                   alias: 'tempo',
                   'collection-name': 'tempo',
                   'display-name': 'tempo',
-                  'file-path': 'C:\\Windows\\System32\\notepad.exe'
+                  'file-path': 'C:\\Windows\\System32\\notepad.exe',
+                  'image': imageId
                 },
                 type: 'apps'
               }
@@ -394,17 +410,23 @@ module.exports = function() {
             .expect(201)
             .expect((res) => {
               appId = res.body.data.id;
-              Group.create({
+              return Group.create({
                 name: 'groupTest',
                 members: {
                   id: userId
                 },
-                apps: {
-                  id: res.body.data.id
+                images: {
+                  id: imageId
                 }
               })
                 .then((group) => {
                   localGroupId = group.id;
+
+                  return Image.update(imageId, {
+                    apps: [
+                      appId
+                    ]
+                  });
                 });
             })
             .end(done);
@@ -420,7 +442,8 @@ module.exports = function() {
                   alias: 'tempo',
                   'collection-name': 'tempo',
                   'display-name': 'tempo',
-                  'file-path': 'C:\\Windows\\System32\\notepad.exe'
+                  'file-path': 'C:\\Windows\\System32\\notepad.exe',
+                  'image': imageId
                 },
                 type: 'apps'
               }
@@ -438,7 +461,8 @@ module.exports = function() {
                   alias: 'tempo',
                   'collection-name': 'tempo',
                   'display-name': 'tempo',
-                  'file-path': 'C:\\Windows\\System32\\notepad.exe'
+                  'file-path': 'C:\\Windows\\System32\\notepad.exe',
+                  'image': imageId
                 },
                 type: 'apps'
               }

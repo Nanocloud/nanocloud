@@ -22,25 +22,39 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-function seed(knex) {
-  return knex.raw(`
-    INSERT INTO "app" (
-      "id",
-      "alias",
-      "displayName",
-      "filePath",
-      "createdAt", "updatedAt"
-    ) VALUES (
-      :id, :alias, :displayName, :filePath,
-      NOW(), NOW()
-    )
-    ON CONFLICT DO NOTHING
-  `, {
-    id: 'aff17b8b-bf91-40bf-ace6-6dfc985680bb',
-    alias: 'Desktop',
-    displayName: 'Desktop',
-    filePath: 'C:\\Windows\\explorer.exe'
-  });
-}
+import Ember from 'ember';
+import ArrayDiff from 'nanocloud/lib/array-diff';
 
-module.exports = { seed };
+export default Ember.Controller.extend({
+  groupController: Ember.inject.controller('protected.users.groups.group'),
+  groupBinding: 'groupController.model',
+
+  actions: {
+    addImage(image) {
+      let group = this.get('group');
+
+      group.get('images').pushObject(image);
+      group.save();
+    },
+
+    removeImage(image) {
+      let group = this.get('group');
+      let images = group.get('images');
+
+      images.removeObject(image);
+      group.save();
+    }
+  },
+
+  reset() {
+    let allImages = this.get('images');
+    let images = this.get('group.images');
+
+    let availableImages = ArrayDiff.create({
+      major: allImages,
+      minor: images
+    });
+
+    this.set('availableImages', availableImages);
+  }
+});

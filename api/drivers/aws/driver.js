@@ -24,7 +24,7 @@
  * @description :: Driver for Amazon Web Service EC2 Iaas
  */
 
-/* global Machine, MachineService, ConfigService, Image */
+/* global Machine, ConfigService, Image */
 
 const pkgcloud = require('pkgcloud');
 const Promise = require('bluebird');
@@ -252,18 +252,15 @@ class AWSDriver extends Driver {
    *  - awsMachineSubnet: Subnet's id to apply to machines
    *
    * @method createMachine
-   * @param {Object} options The machine options. `options.name`: The name of
-   * the machine
+   * @param {Object} Machine properties worth to be passed along to the driver
+   * @param {Object[Image]} Image to instantiate the machine from
    * @return {Promise[Machine]} The created machine
    */
-  createMachine(options) {
+  createMachine(machine, image) {
     return ConfigService.get('awsFlavor', 'plazaURI', 'awsKeyName', 'plazaPort', 'awsMachineSubnet')
       .then((config) => {
 
-        return MachineService.getDefaultImage()
-          .then((image) => {
-
-            const userData = `<powershell>
+        const userData = `<powershell>
         REG.exe Add HKLM\\Software\\Microsoft\\ServerManager /V DoNotOpenServerManagerAtLogon /t REG_DWORD /D 0x1 /F
         Set-ExecutionPolicy RemoteSigned -force
         Invoke-WebRequest ${config.plazaURI} -OutFile C:\\plaza.exe
@@ -273,41 +270,40 @@ class AWSDriver extends Driver {
         </powershell>
       `;
 
-            return new Promise((resolve, reject) => {
-              this._client.createServer({
-                name     : options.name,
-                image    : image.iaasId,
-                flavor   : config.awsFlavor,
-                KeyName  : config.awsKeyName,
-                UserData : userData,
-                subnetId : config.awsMachineSubnet
-              }, (err, server) => {
-                if (err) {
-                  return reject(err);
-                }
+        return new Promise((resolve, reject) => {
+          this._client.createServer({
+            name     : machine.name,
+            image    : image.iaasId,
+            flavor   : config.awsFlavor,
+            KeyName  : config.awsKeyName,
+            UserData : userData,
+            subnetId : config.awsMachineSubnet
+          }, (err, server) => {
+            if (err) {
+              return reject(err);
+            }
 
-                const ip = server.addresses.public[0] || server.addresses.private[0];
-                const type = this.name();
+            const ip = server.addresses.public[0] || server.addresses.private[0];
+            const type = this.name();
 
-                ConfigService.get('awsMachineUsername', 'plazaPort', 'awsFlavor')
-                  .then((config) => {
-                    let machine = new Machine._model({
-                      id: server.id,
-                      name: options.name,
-                      type: type,
-                      flavor: config.awsFlavor,
-                      ip: ip,
-                      username: config.awsMachineUsername,
-                      password: null,
-                      domain: '',
-                      plazaport: config.plazaPort,
-                      rdpPort: 3389
-                    });
-                    return resolve(machine);
-                  });
+            ConfigService.get('awsMachineUsername', 'plazaPort', 'awsFlavor')
+              .then((config) => {
+                let machineModel = new Machine._model({
+                  id: server.id,
+                  name: machine.name,
+                  type: type,
+                  flavor: config.awsFlavor,
+                  ip: ip,
+                  username: config.awsMachineUsername,
+                  password: null,
+                  domain: '',
+                  plazaport: config.plazaPort,
+                  rdpPort: 3389
+                });
+                return resolve(machineModel);
               });
-            });
           });
+        });
       });
   }
 
@@ -368,7 +364,6 @@ class AWSDriver extends Driver {
           return reject(err);
         }
 
-
         Machine.findOne(imageToCreate.buildFrom)
           .then((machine) => {
             this._client.ec2.waitFor('imageAvailable', {
@@ -378,32 +373,26 @@ class AWSDriver extends Driver {
                 return reject(err);
               }
 
-              return Image.update({
-                default: true
-              }, {
+              let imageModel = new Machine._model({
                 iaasId: image.ImageId,
                 name: imageToCreate.name,
                 buildFrom: imageToCreate.buildFrom,
                 password: machine.password
-              })
-                .then((images) => {
+              });
 
-                  let image = images.pop();
-                  return this._client.ec2
-                    .waitFor('instanceStatusOk', {
-                      InstanceIds: [machine.id]
-                    }, (err) => {
+              return this._client.ec2
+                .waitFor('instanceStatusOk', {
+                  InstanceIds: [machine.id]
+                }, (err) => {
 
-                      if (err) {
-                        return reject(err);
-                      }
+                  if (err) {
+                    return reject(err);
+                  }
 
-                      return resolve(image);
-                    });
+                  return resolve(imageModel);
                 });
             });
-          })
-          .catch(reject);
+          });
       });
     });
   }
@@ -513,10 +502,8 @@ class AWSDriver extends Driver {
    */
   getPassword(machine) {
 
-    return Promise.props({
-      image: MachineService.getDefaultImage()
-    })
-      .then(({image}) => {
+    return Image.findOne(machine.image)
+      .then((image) => {
 
         if (image.password !== null) {
           return Promise.resolve(image.password);

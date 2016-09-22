@@ -42,7 +42,7 @@ class QemuDriver extends Driver {
   initialize() {
     return ConfigService.get('qemuServiceURL', 'qemuServicePort')
       .then((config) => {
-        Image.update({
+        return Image.update({
           default: true
         }, {
           iaasId: 'image.qcow2',
@@ -80,28 +80,24 @@ class QemuDriver extends Driver {
    *  - qemuMachinePassword: Windows account password
    *
    * @method createMachine
-   * @param {Object} options The machine options. `options.name`: The name of
-   * the machine
+   * @param {Object[Machine]} properties worth to be passed along to the driver
+   * @param {Object[Image]} An image object the machine needs to be built from
    * @return {Promise[Machine]} The created machine
    */
-  createMachine(options) {
-    return Promise.props({
-      config: ConfigService.get('qemuServiceURL', 'qemuServicePort',
+  createMachine(machine, image) {
+    return ConfigService.get('qemuServiceURL', 'qemuServicePort',
         'qemuMemory', 'qemuCPU', 'plazaPort',
-        'qemuMachineUsername', 'qemuMachinePassword'),
-      image: MachineService.getDefaultImage()
-    })
-      .then((obj) => {
-        var config = obj.config;
-        var image = obj.image;
+        'qemuMachineUsername', 'qemuMachinePassword')
+      .then((config) => {
+
         let requestOptions = {
           url: 'http://' + config.qemuServiceURL + ':' + config.qemuServicePort + '/machines',
           json: true,
           body: {
-            name: options.name,
+            name: machine.name,
             cpu: config.qemuCPU,
             memory: config.qemuMemory,
-            drive: image.iaasId,
+            drive: image.iaasId
           },
           method: 'POST'
         };
@@ -197,17 +193,15 @@ class QemuDriver extends Driver {
           });
         })
         .then((res) => {
-          return Image.update({
-            default: true
-          }, {
+
+          let imageModel = new Machine._model({
             iaasId: res.iaasId,
             name: 'Qemu default image',
             password: null,
             buildFrom: imageToCreate.buildFrom
           });
-        })
-        .then((image) => {
-          return resolve(image);
+
+          return resolve(imageModel);
         })
         .catch((err) => {
           return reject(err);

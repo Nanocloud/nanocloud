@@ -51,13 +51,14 @@ class Driver {
   }
 
   /*
-   * Return list of machines
+   * Create a machine from an image
    *
    * @method createMachine
-   * @param {Object} options model to be created
-   * @return {Promise[Machine]} Machine model created
+   * @param {Object[Machine]} properties worth to be passed along to the driver
+   * @param {Object[Image]} An image object the machine needs to be built from
+   * @return {Promise[Machine]} A promise resolving to the created machine
    */
-  createMachine(/* options */) {
+  createMachine(/*machine, image*/) {
     return Promise.reject(new Error('Driver\'s method "createMachine" not implemented'));
   }
 
