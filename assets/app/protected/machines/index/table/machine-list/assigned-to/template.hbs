@@ -1,5 +1,5 @@
 {{#if record.user}}
-  {{#link-to 'protected.users.user' record.user.id}}
+  {{#link-to 'protected.users.user' record.user.id class="truncate"}}
     {{record.user.fullName}}
   {{/link-to}}
 {{else}}
