@@ -451,7 +451,7 @@ class AWSDriver extends Driver {
             });
           })
           .then(() => {
-            return resolve(finalPrice);
+            return resolve(parseFloat(finalPrice.toFixed(4)));
           })
           .catch((err) => {
             return reject(err);
