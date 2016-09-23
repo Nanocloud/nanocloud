@@ -134,8 +134,10 @@ module.exports = {
           return sessions;
         })
         // If timeout is exceeded, machine is probably booting or being shut-down
-        // Let's ignore the error silently
-        .catch(() => {});
+        // Let's ignore the error silently and return an empty array.
+        .catch(() => {
+          return ([]);
+        });
     },
 
     /*
