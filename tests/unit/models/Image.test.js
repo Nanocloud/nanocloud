@@ -75,7 +75,7 @@ describe('Images', () => {
         .then((image) => {
           return Promise.props({
             defaultImage: Image.findOne(defaultImage.id).populate('apps'),
-            newImage: Image.findONe(image.id).populate('apps')
+            newImage: Image.findOne(image.id).populate('apps')
           });
         })
         .then(({defaultImage, newImage}) => {

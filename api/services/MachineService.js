@@ -113,7 +113,6 @@ function initialize() {
           })
           .then(() => {
             _driver = new (drivers[config.iaas])();
-
               return _driver.initialize()
                 .then(() => {
                   updateMachinesPool();
@@ -452,6 +451,7 @@ function _terminateMachine(machine) {
  * @return {Promise}
  */
 function updateMachinesPool() {
+
   return assert(!!_driver, driverNotInitializedError)
     .then(() => {
 
