@@ -1,6 +1,5 @@
 .drag-n-drop-container {
   height: 150px;
-  background-color: $white;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -19,14 +18,12 @@
 }
 
 .drag-n-drop-container .element-default-state {
-  border: 2px dashed $gray-light;
   > .text {
     color: $gray;
   }
 }
 
 .drag-n-drop-container .element-active-state {
-  border: 2px dashed $blue-default;
   background-color: $white;
   opacity: 0;
   > .text {
@@ -41,12 +38,12 @@
 
 .drag-n-drop-container .progress {
   position: absolute;
-    bottom: 20px;
-    width: 80%;
-    pointer-events: none;
-    left: 0;
-    right: 0;
-    margin: auto;
+  bottom: 20px;
+  width: 80%;
+  pointer-events: none;
+  left: 0;
+  right: 0;
+  margin: auto;
 }
 
 .drag-n-drop-container .completed-message {
