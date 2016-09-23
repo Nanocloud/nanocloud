@@ -28,4 +28,10 @@ export default Ember.Route.extend({
   setupController(controller, model) {
     controller.set('items', model);
   },
+
+  actions: {
+    refreshModel() {
+      this.refresh();
+    }
+  }
 });
