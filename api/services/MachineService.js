@@ -637,6 +637,7 @@ function createImage(image) {
       return Image.create(newImage);
     })
     .then((newImage) => {
+      updateMachinesPool();
       return Promise.resolve(newImage);
     });
 }
