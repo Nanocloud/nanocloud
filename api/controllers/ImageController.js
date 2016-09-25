@@ -44,8 +44,7 @@ module.exports = {
 
   findOne: function(req, res) {
     Image.findOne({
-      id: req.allParams().id,
-      default: true
+      id: req.allParams().id
     })
       .populate('apps')
       .then(res.ok)
@@ -54,7 +53,7 @@ module.exports = {
 
   find: function(req, res) {
     Image.find({
-      default: true
+      deleted: false
     })
       .populate('apps')
       .then(res.ok)
