@@ -72,6 +72,7 @@ export default Ember.Controller.extend({
     'protected.users.index' : 'overview-of-the-users-tab',
     'protected.users.new' : 'create-a-new-user',
     'protected.users.user' : 'modify-the-users-information',
+    'protected.users.teams.index' : 'create-a-team',
     'protected.users.groups.index' : 'overview-of-the-users-tab#groups',
     'protected.users.groups.new' : 'create-a-new-group',
     'protected.users.groups.group.members' : 'add-remove-a-group-member',
@@ -79,12 +80,17 @@ export default Ember.Controller.extend({
     'protected.users.groups.group.index' : 'rename-a-group',
     'protected.configs.index' : 'configure-sessions',
     'protected.configs.user-right' : 'configure-user-rights',
-    'protected.configs.email-configuration' : 'configure-emails',
+    'protected.configs.email-configuration.index' : 'configure-emails',
+    'protected.configs.look-and-feel' : 'configure-look-and-feel',
     'protected.configs.other-setting' : 'other-settings',
   },
 
   redirectLink: Ember.computed('routeName', function() {
-    return this.get('documentationUrl') + this.get('routeNameToDocumentationLink')[this.get('routeName')];
+    let page = this.get('routeNameToDocumentationLink')[this.get('routeName')];
+    if (page) {
+      return this.get('documentationUrl') + page;
+    }
+    return false;
   }),
 
   actions: {

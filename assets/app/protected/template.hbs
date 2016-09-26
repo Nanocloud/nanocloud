@@ -140,15 +140,17 @@
       <button {{action "toggleSidebar"}} class="navbar-toggler hidden-lg-up" type="button">
         &#9776;
       </button>
-      <ul class="nav navbar-nav pull-xs-left">
-        <a href={{redirectLink}} target="_blank">
-          <li class="nav-item icon_link clickable">
-            {{#tool-tipster content="Need help?" position="right"}}
-              {{icon-component class="va-mid" materialIcon="help"}} <div class="in-bl">Help</div>
-            {{/tool-tipster}}
-          </li>
-        </a>
-      </ul>
+      {{#if redirectLink}}
+        <ul class="nav navbar-nav pull-xs-left">
+          <a href={{redirectLink}} target="_blank">
+            <li class="nav-item icon_link clickable">
+              {{#tool-tipster content="Need help?" position="right"}}
+                {{icon-component class="va-mid" materialIcon="help"}} <div class="in-bl">Help</div>
+              {{/tool-tipster}}
+            </li>
+          </a>
+        </ul>
+      {{/if}}
       <ul class="nav navbar-nav pull-xs-right">
         <li class="nav-item">
           <div class="dropdown logout-dropdown">
