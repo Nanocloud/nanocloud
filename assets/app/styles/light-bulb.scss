@@ -11,6 +11,10 @@
       box-shadow: 0px 0px 1px #F45835;
     }
 
+    &.up {
+      background-color: $blue-default;
+    }
+
     &.down {
       background-color: #dedede;
       box-shadow: 0px 0px 1px #a0a0a0;
