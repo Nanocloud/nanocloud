@@ -191,24 +191,55 @@ module.exports = {
                 })
                 .then(() => {
                   if (req.user.team) {
-                    Team.findOne(req.user.team)
-                      .then((team) => {
-                        return ConfigService.get('teamStorageAddress')
-                          .then((config) => {
-                            let command = [
-                              `C:\\Windows\\System32\\net.exe`,
-                              'use',
-                              'y:',
-                              `\\\\${config.teamStorageAddress}\\${team.username}`,
-                              `/user:${team.username}`,
-                              team.password
-                            ];
+                    Promise.props({
+                      team: Team.findOne(req.user.team),
+                      config: ConfigService.get('teamStorageAddress'),
+                    })
+                      .then(({team, config}) => {
+
+                        let command = [
+                          `C:\\Windows\\System32\\net.exe`,
+                          'use',
+                          'y:',
+                          `\\\\${config.teamStorageAddress}\\${team.username}`,
+                          `/user:${team.username}`,
+                          team.password
+                        ];
+                        return PlazaService.exec(machine.ip, machine.plazaport, {
+                          command: command,
+                          wait: true,
+                          hideWindow: true,
+                          username: machine.username
+                        })
+                          .catch(() => {
+                            // Team storage is probably already mounted like user storage
+                            // When an image is published, sometimes team storage does not work again
+                            // Let's delete the currupted team storage and recreate it
+                            // Let's ignore the error silently
+
                             return PlazaService.exec(machine.ip, machine.plazaport, {
-                              command: command,
+                              command: [
+                                `C:\\Windows\\System32\\net.exe`,
+                                'use',
+                                'y:',
+                                `/DELETE`,
+                                `/YES`
+                              ],
                               wait: true,
                               hideWindow: true,
                               username: machine.username
-                            });
+                            })
+                              .then(() => {
+                                return PlazaService.exec(machine.ip, machine.plazaport, {
+                                  command: command,
+                                  wait: true,
+                                  hideWindow: true,
+                                  username: machine.username
+                                });
+                              })
+                              .then(() => {
+                                return Promise.resolve();
+                              });
                           });
                       })
                       .then(() => {
