@@ -1,10 +1,10 @@
 ---
 swagger: '2.0'
 info:
-  version: "2.0.0"
-  title: Nanocloud Enterprise API
+  version: "2.0.1"
+  title: Nanocloud API
   description: |
-    **Complete Nanocloud enterprise API documentation.**
+    **Complete Nanocloud API documentation.**
 
     You can try all HTTP operation described in this Swagger spec.
 host: enterprise-qa.nanocloud.com
