@@ -1,7 +1,7 @@
 ---
 swagger: '2.0'
 info:
-  version: "2.0.0"
+  version: "2.0.1"
   title: Nanocloud libvirt module API
   description: |
     **Complete Nanocloud libvirt module API documentation.**

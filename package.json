@@ -1,8 +1,8 @@
 {
   "name": "backend",
   "private": true,
-  "version": "2.0.0",
-  "description": "a Sails application",
+  "version": "2.0.1",
+  "description": "Nanocloud",
   "keywords": [],
   "dependencies": {
     "bcryptjs": "^2.3.0",
