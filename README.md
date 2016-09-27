@@ -6,13 +6,20 @@
 
 Nanocloud relies on Docker containers to run its stack.
 
-````
+```
 docker-compose build
 docker-compose up
-````
+```
 
-Some configuration variable are expected to be set in `config/env/development.js`:
-- iaas (mandatory) currently only "manual" and "aws" are implemented
+# Configure
+
+Some configuration variable are expected to be set in
+`config/env/development.js` but you can also create the file `config/local.js`
+to avoid commiting those changes
+
+## General settings
+
+- iaas (mandatory) currently only "manual", "qemu" and "aws" are implemented
 - host (mandatory, defaults to localhost) nanocloud's host
 - expirationDate (Defaults to 0 (deactivated)) number of days a user account should remain active
 - autoRegister (Defaults to false) user can signup to the platform
@@ -23,23 +30,53 @@ Some configuration variable are expected to be set in `config/env/development.js
 - plazaURI (Defaults to https://s3-eu-west-1.amazonaws.com/nanocloud/plaza/1.0.0/windows/amd64/plaza.exe) URL to download plaza from
 - plazaPort (Defaults to 9090) port to communicate with plaza
 
-SMTP configuration:
+## SMTP configuration
+
 - smtpServerHost host to send email
 - smtpServerPort (defaults to 25) port for the SMTP server
 - smtpLogin login for the SMTP server
 - smtpPassword password for the SMTP server
 - smtpSendFrom (defaults to mail@nanocloud.com) nanocloud's sender
 
-Look and feel:
+## Look and feel
+
 - title (defaults to Nanocloud) page title
 - favIconPath (defaults to favicon.ico) relative path from `assets/dist`
 - logoPath (defaults to `/assets/images/logo.png`) relative path from `assets/dist` (URL works)
 - primaryColor (defaults to #006CB6) primary color to use
 
-Manual driver specific:
+## Manual driver specific
+
 - machines (array) Array of machine object to statically insert in the database
 
-AWS driver specific:
+Machines objects contains several pieces of information, here's an example:
+
+```
+machines: [
+  {
+    name: 'Machine1',
+    type: 'manual',
+    ip: '1.2.3.4',
+    username: 'Administrator',
+    password: 'secr3t'
+  }, {
+    name: 'Machine2',
+    type: 'manual',
+    ip: '5.6.7.8',
+    username: 'Administrator',
+    password: 's3cret'
+  }
+]
+```
+
+You can use *config.env* to set this variable too:
+
+```
+MACHINES=[{"name": "My Machine", "type": "manual", "ip": "1.2.3.4", "username": "Administrator", "password": "s3cr3t", "plazaport": 9090, "rdpPort": 3389 }]
+```
+
+## AWS driver specific
+
 - awsRegion region where machines will spawn
 - awsAccessKeyId AWS key id
 - awsSecretAccessKey AWS private key
@@ -52,7 +89,8 @@ AWS driver specific:
 - awsMachineSubnet (Defaults to empty string, automatic subnet) subnet to assign to the machine
 - creditLimit (Defaults empty string) set a credit limit to users (aws only)
 
-Openstack driver specific:
+## Openstack driver specific
+
 - openstackUsername username to connect to openstack
 - openstackPassword password to connect to openstack
 - openstackAuthUrl url of the openstack's API (example: https://identity.example.com:5000)
@@ -63,7 +101,8 @@ Openstack driver specific:
 - openstackMachineUsername (Defaults to Administrator) windows account username
 - openstackMachinePassword (Defaults empty, password will generated) windows account password
 
-Qemu driver specific:
+## Qemu driver specific
+
 - qemuServiceURL (Default to localhost) url of qemu manager service
 - qemuServicePort (Default to 3000) port of qemu manager service
 - qemuMemory (Default to 4096) memory to allocate to your VMs in MB
@@ -71,9 +110,10 @@ Qemu driver specific:
 - qemuMachineUsername (Defaults to Administrator) windows account username
 - qemuMachinePassword (Defaults empty) windows account password
 
-Qemu use '10.0.2.2' to contact host, you should replace default 'localhost' by this ip to be able to use storage.
+Qemu use *10.0.2.2* to contact host, you should replace default 'localhost' by this ip to be able to use storage.
 
-Storage configuration:
+## Storage configuration
+
 - storageAddress (mandatory, defaults to 'localhost') storage service's IP
 - storagePort (mandatory, defaults to 9090) storage service's port
 - uploadLimit (defaults 0 (deactivate)) upload limit, in MB, for each user
@@ -84,22 +124,37 @@ Once loaded, Nanocloud will be accessible on **localhost**.
 
 Nanocloud also relies on Docker to run its development stack:
 
-````
+```
 docker-compose build
 docker-compose -f docker-compose-dev.yml build
 docker-compose -f docker-compose-dev.yml up
-````
+```
 
 Backend and frontend containers are automatically updated when source code changes in dev mode.
 All services are accessible on localhost.
+
+# Optional services
+
+There are 2 optional services described in `docker-compose-extra.yml`:
+
+- team-storage : Another storage container to provide *team* feature
+- qemumanager : This is a service aiming to simulate a *IaaS* on a developer's
+  machine. This is not production ready.
+
+To launch those services, run:
+
+```
+docker-compose -f docker-compose-extra.yml build
+docker-compose -f docker-compose-extra.yml up
+```
 
 # Tests
 
 To run all tests:
 
-````
+```
 make tests
-````
+```
 
 This will run all tests defined in `./tests/test-all.sh`.
 
@@ -116,7 +171,7 @@ Some environment variables can be set to customize tests:
 **API tests expects a postgres database up and running on localhost**
 **Some tests may require storage and frontend to be up as well**
 
-## Licence
+# Licence
 
 This file is part of Nanocloud.
 
