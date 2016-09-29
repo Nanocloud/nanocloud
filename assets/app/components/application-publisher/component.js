@@ -48,8 +48,16 @@ export default fileExplorer.extend({
     m.save()
       .then(() => {
         this.set('isPublishing', false);
-        this.toast.success('Your application has been published successfully');
         this.sendAction('action');
+        window.swal({
+          title: 'Success!',
+          text: 'Your application has been onboarded.',
+          type: 'success',
+          showCancelButton: false,
+          confirmButtonText: 'Great.',
+          closeOnConfirm: true,
+          animation: false
+        });
       }, (error) => {
         this.set('isPublishing', false);
         this.set('publishError', true);

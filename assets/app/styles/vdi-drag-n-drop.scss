@@ -1,19 +1,6 @@
 .vdi-drag-n-drop {
 
-  width: 100%;
   height: 100%;
-  position: fixed;
-  top: 0;
-  left: 0;
-  z-index: 4;
-
-  &.state-show {
-    pointer-events: auto;
-  }
-
-  &.state-hide {
-    pointer-events: none;
-  }
 
   .drag-n-drop-area {
     position: fixed;
@@ -23,24 +10,11 @@
     left: 0;
     z-index: 4;
     background-color: rgba(0, 144, 255, 0.8);
+    pointer-events: none;
 
-    .message {
-      position: absolute;
-      width: auto;
-      height: 0;
-      text-align:center;
-      left: 0;
-      right: 0;
-      top: 0;
-      bottom: 0;
-      margin: auto;
-      color: $white;
-      font-size: 28px;
-
-      .text {
-        padding: 28px;
-        border-radius: 8px;
-      }
+    .text {
+      font-size: 40px;
+      color: #fff;
     }
 
     &.state-show {

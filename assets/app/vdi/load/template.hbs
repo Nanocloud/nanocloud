@@ -1,0 +1,36 @@
+{{#unless showVdi}}
+  <div class="vdi-load-background centered fixed noselect">
+    <div>
+      <h2 class='text'>Loading</h2>
+      <div class='white '>
+        Please wait, we're trying to open a session.
+        <p>
+          Status: {{display-guac-status remoteSession.loadState}}<br/>
+          Waiting for plaza: {{plazaStatus}}<br/>
+          <div class='abs'>
+            {{#if vdiIsLoading}}
+              Starting..
+            {{/if}}
+          </div>
+        </p>
+      </div>
+    </div>
+  </div>
+{{else}}
+  {{#if remoteSession.isError}} 
+    <div class="vdi-load-background centered fixed">
+      <div>
+        <h2>An error occured.</h2>
+        <div class='white '>
+          Connection has failed.
+          <p>
+            Message: {{vdiLoadErrorMessage}}
+          </p>
+          <p {{action remoteSessionData.retryConnection}} class='clickable color-primary'>
+            Retry connection 
+          </p>
+        </div>
+      </div>
+    </div>
+  {{/if}}
+{{/unless}}

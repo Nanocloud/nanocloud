@@ -145,7 +145,12 @@ export default Ember.Controller.extend({
               res();
             });
             this.set('connectionName', appId);
-            this.toggleProperty('showSingleTab');
+            this.transitionToRoute('vdi', {
+              queryParams: {
+                connection_name: this.get('connectionName'),
+                machine_id: machines.objectAt(0).get('id')
+              }
+            });
           }
           else {
             this.toast.error('Could not find a virtual machine to start the VDI');
@@ -169,11 +174,6 @@ export default Ember.Controller.extend({
 
     retryConnection() {
       this.toggleProperty('activator');
-    },
-
-    handleVdiClose() {
-      this.get('remoteSession').disconnectSession(this.get('connectionName'));
-      this.send('refreshModel');
     },
 
     startDesktop() {
@@ -203,8 +203,8 @@ export default Ember.Controller.extend({
     },
 
     onboardAppSucceeded() {
-      this.send('refreshModel');
       this.send('closeFileExplorer');
+      this.send('refreshModel');
     }
   }
 });

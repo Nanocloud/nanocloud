@@ -1,4 +1,5 @@
 .icon-component {
+  @extend .noselect;
   position: relative;
   display: inline-block;
 }

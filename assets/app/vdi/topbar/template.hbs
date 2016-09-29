@@ -1,0 +1,155 @@
+<div class="vdi-topbar">
+  <div class="fl">
+    {{#if uploadData.progress}}
+      {{#icon-component
+        class="item"
+        materialIcon="cloud_upload"
+        clickable=true
+        hover-lighter=true
+        click=(action "toggleWindow" 'upload')
+        content="File Upload"
+        color="#11d6de"
+        size=16
+        animate='bottom-top'
+      }}
+        <span class='color-primary va-tb hidden-sm-down'>
+          In progress
+        </span>
+      {{/icon-component}}
+      {{#unless uploadData.state}}
+        <span class="item">
+          {{uploadData.progress}}%
+        </span>
+        {{#if uploadData.progress}}
+          <span class="link item" {{ action uploadData.stopUpload }}>Cancel All</span>
+        {{/if}}
+      {{/unless}}
+    {{else}}
+      {{#icon-component
+        class='item'
+        classNameBindings="windowCollector.upload:selected"
+        materialIcon="cloud_upload"
+        clickable=true
+        click=(action "toggleWindow" 'upload')
+        content="File Upload"
+        color="#424242"
+        size=16
+      }}
+        <span class='va-tb hidden-sm-down'>
+          Upload
+        </span>
+      {{/icon-component}}
+      
+    {{/if}}
+
+    {{#icon-component
+      class="item"
+      classNameBindings="windowCollector.download:selected"
+      materialIcon="cloud_download"
+      clickable=true
+      hover-lighter=true
+      content="Download"
+      color="#424242"
+      click=(action "toggleWindow" 'download')
+      size=16
+    }}
+      <span class='va-tb hidden-sm-down'>
+        Download
+      </span>
+    {{/icon-component}}
+
+    {{#icon-component
+      class="item"
+      classNameBindings="windowCollector.clipboard:selected"
+      materialIcon="assignment_returned"
+      clickable=true
+      hover-lighter=true
+      click=(action "toggleWindow" 'clipboard')
+      content="Copy / paste"
+      size=16
+      color="#424242"
+    }}
+      <span class='va-tb hidden-sm-down'>
+        Clipboard
+      </span>
+    {{/icon-component}}
+    {{#if session.user.isAdmin}}
+      {{#icon-component
+        class="item"
+        clickable=true
+        hover-enabled=true
+        hover-lighter=true
+        materialIcon="save"
+        click=(action "askSaveImage" 'saveImage')
+        content="Minimize VDI"
+        size=16
+        color="#424242"
+      }}
+        <span class='va-tb hidden-sm-down'>
+          Save an image
+        </span>
+      {{/icon-component}}
+      {{#icon-component
+        class="item"
+        classNameBindings="windowCollector.onboardApp:selected"
+        clickable=true
+        hover-enabled=true
+        hover-lighter=true
+        materialIcon="add_circle_outline"
+        click=(action "askSaveImageFirst" 'onboardApp')
+        content="Minimize VDI"
+        size=16
+        color="#424242"
+      }}
+        <span class='va-tb hidden-sm-down'>
+          Onboard an application
+        </span>
+      {{/icon-component}}
+    {{/if}}
+
+  </div>
+  <div class="fl">
+    {{#if logoff}}
+      {{icon-component
+        class="item"
+        fontAwesome="spinner"
+        fontAwesomeSpin=true
+        content="Disconnect VDI"
+        size=16
+        color="#11d6de"
+      }}
+    {{else}}
+      {{#icon-component
+        clickable=true
+        class="item"
+        hover-enabled=true
+        hover-lighter=true
+        materialIcon="power_settings_new"
+        click=(action "disconnectVDI")
+        content="Disconnect VDI"
+        size=16
+      }}
+        <span class='va-tb hidden-sm-down'>
+          Disconnect
+        </span>
+      {{/icon-component}}
+    {{/if}}
+
+    {{#if showHomeBtn}}
+      {{#icon-component
+        clickable=true
+        class="item"
+        hover-enabled=true
+        hover-lighter=true
+        materialIcon="home"
+        click=(action "goToApp")
+        content="Minimize VDI"
+        size=16
+      }}
+        <span class='va-tb hidden-sm-down'>
+          Home
+        </span>
+      {{/icon-component}}
+    {{/if}}
+  </div>
+</div>

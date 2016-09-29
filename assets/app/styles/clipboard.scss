@@ -1,0 +1,36 @@
+.clipboard.content-wrapper {
+  overflow: hidden;
+  height: auto;
+  width: 100%;
+  margin: 0;
+
+  .icon-wrapper {
+    text-align: center;
+  }
+
+  .input-wrapper {
+    margin-top: 5px;
+
+    i {
+      font-size: 14px;
+      vertical-align: text-top;
+    }
+
+    .done-msg {
+      opacity: 0;
+    }
+  }
+
+  .textarea {
+    flex-grow: 1;
+
+    textarea {
+      width: 100%;
+      height: 50px;
+      border-radius: 3px;
+      border: 1px solid #C5C5C5;
+      outline: 0;
+      padding: 10px;
+    }
+  }
+}

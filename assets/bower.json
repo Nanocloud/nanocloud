@@ -10,6 +10,7 @@
     "font-awesome": "~4.5.0",
     "tooltipster": "^3.3.0",
     "humanize-duration": "^3.9.0",
-    "ckeditor": "^4.5.11"
+    "ckeditor": "^4.5.11",
+    "sweetalert": "~1.1.0"
   }
 }

@@ -49,12 +49,15 @@ export default Ember.Component.extend({
     return targetDirectory;
   }),
 
+  becameVisible: function() {
+    this.loadDirectory();
+  },
+
   loadDirectory() {
     this.set('loadState', true);
-    let parameters = {
-      path: this.get('pathToString')
-    };
-    parameters[this.get('target')] = true;
+    let parameters = this.get('requestParams');
+    parameters.path = this.get('pathToString');
+
     let loadFilesPromise = this.get('store').query(this.get('api'), parameters);
     this.set('items', loadFilesPromise);
     loadFilesPromise.then(() => {

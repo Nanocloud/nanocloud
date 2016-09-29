@@ -1,0 +1,56 @@
+.vdi {
+  width: 100%;
+  height: 100%;
+  background-color: #000;
+
+  .vdi-topbar {
+    display: flex;
+    z-index: 2;
+    position: relative;
+    height: $topbar-height;
+    padding: 0px 5px 0px 5px;
+    overflow: hidden;
+    justify-content: space-between;
+    background-color: #000;
+    top: -25px;
+
+    .item {
+      height: $topbar-height;
+      margin: 0px 3px 0px 3px;
+      padding: 4px 5px 0px 5px;
+
+      &:hover {
+        color: #52a3ce;
+
+        i {
+          color: #52a3ce !important;
+        }
+      }
+    }
+
+    .selected,
+    .selected i {
+      color: #52a3ce !important;
+    }
+  }
+
+  .vdi-onboard-app-browser {
+    .file-explorer {
+      padding-top: $topbar-height;
+    }
+  }
+
+  .vdi-load-background {
+    top: 0;
+    background: #000;
+    z-index: 5;
+
+    .text {
+      @extend .transition-enabled;
+      color: #fafafa;
+      animation-name: nanoloading;
+      animation-duration: 5s;
+      animation-iteration-count: infinite;
+    }
+  }
+}
