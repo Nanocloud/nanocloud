@@ -116,6 +116,9 @@ export default Ember.Component.extend({
           fileReader.onload = function(e) {
             arrayBuffer = e.target.result;
             this.get('remoteSession').setCloudClipboard(this.get('connectionName'), arrayBuffer);
+            if (navigator.userAgent.indexOf('Chrome') !== -1) {
+              window.postMessage({type: 'VDIExperience', value: arrayBuffer}, '*');
+            }
           }.bind(this);
           fileReader.readAsText(blob_reader.getBlob());
         }.bind(this);
