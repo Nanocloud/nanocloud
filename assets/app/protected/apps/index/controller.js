@@ -163,7 +163,7 @@ export default Ember.Controller.extend({
     },
 
     startDesktop() {
-      var list = this.get('items').filterBy('alias', 'Desktop');
+      var list = this.get('items').filterBy('alias', 'Desktop').filterBy('image.default', true);
       if (list.length === 1) {
         var app = list.objectAt(0);
 

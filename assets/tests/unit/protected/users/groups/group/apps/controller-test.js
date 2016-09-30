@@ -24,7 +24,7 @@
 
 import { moduleFor, test } from 'ember-qunit';
 
-moduleFor('controller:protected/users/groups/group/apps', 'Unit | Controller | protected/users/groups/group/apps', {
+moduleFor('controller:protected/users/groups/group/images', 'Unit | Controller | protected/users/groups/group/images', {
   // Specify the other units that are required for this test.
   // needs: ['controller:foo']
 });

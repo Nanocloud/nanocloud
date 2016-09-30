@@ -22,6 +22,8 @@
  * <http://www.gnu.org/licenses/>.
  */
 
+/* globals App */
+
 const uuid = require('node-uuid');
 
 module.exports = {
@@ -40,7 +42,7 @@ module.exports = {
       type: 'string'
     },
     buildFrom: {
-      type: 'string' // Actually the id of a machine that used to exist and served as base for this image (null if default image)
+      type: 'string'
     },
     default: {
       type: 'boolean'
@@ -48,6 +50,28 @@ module.exports = {
     password: {
       type: 'string',
       defaultsTo: null
+    },
+    groups: {
+      collection: 'group',
+      via: 'images',
+      through: 'imagegroup'
+    },
+    apps: {
+      collection: 'app',
+      via: 'image',
     }
+  },
+
+  afterCreate: function(values, next){
+    // Each image must have a "desktop" application by default
+    App.create({
+      alias: 'Desktop',
+      displayName: 'Desktop',
+      filePath: 'C:\\Windows\\explorer.exe',
+      image: values.id
+    })
+      .then(() => {
+        next();
+      });
   }
 };
