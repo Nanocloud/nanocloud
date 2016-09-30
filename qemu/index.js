@@ -31,6 +31,7 @@ var upload = multer(); // for parsing multipart/form-data
 var uuid = require('uuid');
 var exec = require('child_process').exec;
 var Promise = require('bluebird');
+const request = require('request-promise');
 
 function createImage(backFile, newImage) {
   var cmd = `qemu-img create -f qcow2 -b ${backFile} ${newImage}`;
@@ -111,12 +112,28 @@ app.delete('/machines/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{1
   var machineId = req.path.substr(10);
   let socket = net.connect({path: '/data/' + machineId + '.socket'}, () => {
     socket.write('system_powerdown\n', () => {
+      socket.end();
       return res.json({
         id: machineId,
         status: 'stopping'
       });
     });
   });
+});
+
+app.patch('/machines/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}', function (req, res) {
+  var params = req.body;
+  let requestOptions = {
+    url: 'http://' + params.ip + ':' + params.plazaPort + '/restart',
+    json: true,
+    method: 'GET'
+  };
+  return request(requestOptions)
+    .then(() => {
+      return res.json({
+        status: 'rebooting'
+      });
+    });
 });
 
 app.post('/images', upload.array(), function (req, res) {

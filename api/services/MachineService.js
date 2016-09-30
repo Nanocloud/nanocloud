@@ -536,7 +536,44 @@ function getPassword(machine) {
   return _driver.getPassword(machine);
 }
 
+/**
+ * Reboot the machine
+ *
+ * @method rebootMachine
+ * @param string Id of the machine
+ * @return {Promise[Object]}
+ */
+function rebootMachine(machine) {
+  return _driver.rebootMachine(machine)
+    .then((rebootedMachine) => {
+
+      return promisePoller({
+        taskFn: () => {
+          return rebootedMachine.refresh()
+            .then((refreshedMachine) => {
+
+              if (refreshedMachine.status === 'running') {
+                _createBrokerLog(refreshedMachine, 'Rebooted');
+                return Promise.resolve(refreshedMachine);
+              } else {
+                return Promise.reject(refreshedMachine);
+              }
+            });
+        },
+        interval: 5000,
+        retries: 100
+      })
+        .catch((errs) => { // If timeout is reached
+
+          let machine = errs.pop(); // On timeout, promisePoller rejects with an array of all rejected promises. In our case, MachineService rejects the still booting machine. Let's pick the last one.
+
+          _createBrokerLog(machine, 'Error waiting for machine to reboot');
+          throw machine;
+        });
+    });
+}
+
 module.exports = {
   initialize, getMachineForUser, driverName, sessionOpen, sessionEnded,
-  machines, createImage, getDefaultImage, refresh, getPassword
+  machines, createImage, getDefaultImage, refresh, getPassword, rebootMachine
 };

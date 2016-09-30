@@ -32,7 +32,7 @@ export default DS.Model.extend({
   progress: DS.attr('number'),
   type: DS.attr('string'),
   isUp: Ember.computed('status', function() {
-    return this.get('status') === 'up';
+    return this.get('status') === 'running';
   }),
   endDate: DS.attr('date'),
   status: DS.attr('string'),
@@ -41,6 +41,9 @@ export default DS.Model.extend({
 
   isDown: Ember.computed('status', function() {
     return this.get('status') === 'down';
+  }),
+  isBooting: Ember.computed('status', function() {
+    return this.get('status') === 'booting';
   }),
   isDownloading: Ember.computed('status', function() {
     return this.get('status') === 'creating';

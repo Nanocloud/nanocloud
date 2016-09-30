@@ -204,6 +204,10 @@ module.exports = {
      */
     getPassword() {
       return MachineService.getPassword(this);
+    },
+
+    reboot() {
+      return MachineService.rebootMachine(this);
     }
   }
 };
