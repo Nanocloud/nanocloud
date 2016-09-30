@@ -30,6 +30,7 @@ const request = require('request-promise');
 const Promise = require('bluebird');
 
 describe('Machine Service', () => {
+
   describe('Broker', () => {
 
     before('Force machine to terminate if no one is connected', function(done) {
@@ -79,9 +80,16 @@ describe('Machine Service', () => {
                   if (machineNbr !== conf.machinePoolSize) {
                     throw new Error('One machine should belongs to the admin');
                   }
-                  return BrokerLog.find({
-                    userId: adminId,
-                    state: 'Assigned',
+                  return new Promise((resolve) => {
+                    return setTimeout(function() {
+                      return BrokerLog.find({
+                        userId: adminId,
+                        state: 'Assigned',
+                      })
+                        .then((log) => {
+                          return resolve(log);
+                        });
+                    }, 100);
                   });
                 })
                 .then((logs) => {
@@ -93,9 +101,16 @@ describe('Machine Service', () => {
                   assert.equal(logs[0].state, 'Assigned');
                   assert.equal(logs[0].machineDriver, 'dummy');
                   assert.equal(logs[0].machineFlavor, 'dummy');
-                  return BrokerLog.find({
-                    machineId: logs[0].machineId,
-                    state: 'Created'
+                  return new Promise((resolve) => {
+                    return setTimeout(function() {
+                      return BrokerLog.find({
+                        machineId: logs[0].machineId,
+                        state: 'Created'
+                      })
+                        .then((log) => {
+                          return resolve(log);
+                        });
+                    }, 100);
                   });
                 })
                 .then((machineLogs) => {
@@ -106,11 +121,18 @@ describe('Machine Service', () => {
                   assert.equal(machineLogs[0].state, 'Created');
                   assert.equal(machineLogs[0].machineDriver, 'dummy');
                   assert.equal(machineLogs[0].machineFlavor, 'dummy');
-                  return BrokerLog.find({
-                    userId: null,
-                    state: {
-                      like: '%Update machine pool%'
-                    }
+                  return new Promise((resolve) => {
+                    return setTimeout(function() {
+                      return BrokerLog.find({
+                        userId: null,
+                        state: {
+                          like: '%Update machine pool%'
+                        }
+                      })
+                        .then((log) => {
+                          return resolve(log);
+                        });
+                    }, 100);
                   });
                 })
                 .then((logs) => {
@@ -181,9 +203,16 @@ describe('Machine Service', () => {
                 })
                 .then((active) => {
                   assert.isTrue(active);
-                  return BrokerLog.find({
-                    userId: adminId,
-                    state: 'Opened'
+                  return new Promise((resolve) => {
+                    return setTimeout(function() {
+                      return BrokerLog.find({
+                        userId: adminId,
+                        state: 'Opened'
+                      })
+                        .then((log) => {
+                          return resolve(log);
+                        });
+                    }, 100);
                   });
                 })
                 .then((logs) => {
@@ -247,21 +276,26 @@ describe('Machine Service', () => {
               return;
             })
             .then(() => {
-              return setTimeout(function() {
-                return BrokerLog.findOne({
-                  machineId: machine.id,
-                  state: 'Stopped'
-                })
-                  .then((log) => {
-                    assert.equal(log.state, 'Stopped');
-                    assert.equal(log.machineId, machine.id);
-                    assert.equal(log.userId, adminId);
-                    return;
+              return new Promise((resolve) => {
+                return setTimeout(function() {
+                  return BrokerLog.findOne({
+                    machineId: machine.id,
+                    state: 'Stopped'
                   })
-                  .then(() => {
-                    return done();
-                  });
-              }, 100); // give broker time to log the machine state
+                    .then((log) => {
+                      return resolve(log);
+                    });
+                }, 100); // give broker time to log the machine state
+              });
+            })
+            .then((log) => {
+              assert.equal(log.state, 'Stopped');
+              assert.equal(log.machineId, machine.id);
+              assert.equal(log.userId, adminId);
+              return;
+            })
+            .then(() => {
+              return done();
             });
         });
     });
@@ -280,21 +314,26 @@ describe('Machine Service', () => {
               return;
             })
             .then(() => {
-              return setTimeout(function() {
-                return BrokerLog.findOne({
-                  machineId: machine.id,
-                  state: 'Started'
-                })
-                  .then((log) => {
-                    assert.equal(log.state, 'Started');
-                    assert.equal(log.machineId, machine.id);
-                    assert.equal(log.userId, adminId);
-                    return;
+              return new Promise((resolve) => {
+                return setTimeout(function() {
+                  return BrokerLog.findOne({
+                    machineId: machine.id,
+                    state: 'Started'
                   })
-                  .then(() => {
-                    return done();
-                  });
-              }, 100);
+                    .then((log) => {
+                      return resolve(log);
+                    });
+                }, 100);
+              });
+            })
+            .then((log) => {
+              assert.equal(log.state, 'Started');
+              assert.equal(log.machineId, machine.id);
+              assert.equal(log.userId, adminId);
+              return;
+            })
+            .then(() => {
+              return done();
             });
         });
     });
@@ -318,9 +357,16 @@ describe('Machine Service', () => {
             })
             .then((userMachine) => {
               assert.isNotNull(userMachine.endDate);
-              return BrokerLog.find({
-                userId: adminId,
-                state: 'Closed'
+              return new Promise((resolve) => {
+                return setTimeout(function() {
+                  return BrokerLog.find({
+                    userId: adminId,
+                    state: 'Closed'
+                  })
+                    .then((log) => {
+                      return resolve(log);
+                    });
+                }, 100);
               });
             })
             .then((logs) => {
@@ -347,8 +393,15 @@ describe('Machine Service', () => {
                   .then((machines) => {
                     assert.equal(machines.length, 1);
                     assert.isNull(machines[0].user);
-                    return BrokerLog.find({
-                      state: 'Deleted'
+                    return new Promise((resolve) => {
+                      return setTimeout(function() {
+                        return BrokerLog.find({
+                          state: 'Deleted'
+                        })
+                          .then((log) => {
+                            return resolve(log);
+                          });
+                      }, 100);
                     });
                   })
                   .then((logs) => {
