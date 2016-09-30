@@ -44,5 +44,6 @@ export default DS.Model.extend(Validations, {
   displayName: DS.attr('string'),
   filePath: DS.attr('string'),
   iconContent: DS.attr('string'),
+  image: DS.belongsTo(),
   path: DS.attr('string'),
 });

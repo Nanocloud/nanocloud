@@ -28,5 +28,5 @@ export default DS.Model.extend({
   name: DS.attr('string'),
 
   members: DS.hasMany('user'),
-  apps: DS.hasMany('app'),
+  images: DS.hasMany('image'),
 });

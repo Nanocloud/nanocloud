@@ -115,13 +115,13 @@ module.exports = function() {
     describe('Get user\'s team\'s files', function() {
       it('Should return an empty list (no team)', function(done) {
         nano.request(sails.hooks.http.app)
-        .get('/api/files?teams=true')
-        .set(nano.adminLogin())
-        .expect(200)
-        .expect(nano.jsonApiSchema(fileSchema))
-        .expect((res) => {
-          expect(res.body.data.length).to.equal(0);
-        })
+          .get('/api/files?teams=true')
+          .set(nano.adminLogin())
+          .expect(200)
+          .expect(nano.jsonApiSchema(fileSchema))
+          .expect((res) => {
+            expect(res.body.data.length).to.equal(0);
+          })
         .end(done);
       });
     });
@@ -129,16 +129,16 @@ module.exports = function() {
     describe('Create directory', function() {
       it('Should create a directory', function(done) {
         nano.request(sails.hooks.http.app)
-        .post('/api/files?filename=./test')
-        .set(nano.adminLogin())
-        .expect(200)
-        .expect(nano.jsonApiSchema(fileSchema))
-        .expect((res) => {
-          expect(res.body.data.length).to.equal(2);
-          expect(res.body.data[1].attributes.type).to.equal('directory');
-          expect(res.body.data[1].attributes.name).to.equal('test');
-        })
-        .end(done);
+          .post('/api/files?filename=./test')
+          .set(nano.adminLogin())
+          .expect(200)
+          .expect(nano.jsonApiSchema(fileSchema))
+          .expect((res) => {
+            expect(res.body.data.length).to.equal(2);
+            expect(res.body.data[1].attributes.type).to.equal('directory');
+            expect(res.body.data[1].attributes.name).to.equal('test');
+          })
+          .end(done);
       });
     });
 

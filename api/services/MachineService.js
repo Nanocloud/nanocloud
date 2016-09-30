@@ -21,7 +21,7 @@
  *
  */
 
-/* global ConfigService, Machine, Image, User, BrokerLog */
+/* global ConfigService, Machine, Image, User, BrokerLog, ImageGroup */
 
 const _ = require('lodash');
 const Promise = require('bluebird');
@@ -110,15 +110,15 @@ function initialize() {
             buildFrom: null,
             default: true
           })
-            .then(() => {
-              _driver = new (drivers[config.iaas])();
+          .then(() => {
+            _driver = new (drivers[config.iaas])();
 
-              return _driver.initialize()
-                .then(() => {
-                  _updateMachinesPool();
-                  return null;
-                });
-            });
+            return _driver.initialize()
+              .then(() => {
+                _updateMachinesPool();
+                return null;
+              });
+          });
         });
 
       return _initializing;
@@ -232,20 +232,22 @@ function increaseUsersMachineEndDate(user) {
  *  - machinesName: the name of the machine to be created
  *
  * @method _createMachine
+ * @param image {Object[Image]} image to build to machine from
  * @private
  * @return {Promise}
  */
-function _createMachine() {
+function _createMachine(image) {
 
   return ConfigService.get('machinesName')
     .then((config) => {
       return _driver.createMachine({
         name: config.machinesName
-      });
+      }, image);
     })
     .then((machine) => {
 
       machine.status = 'booting';
+      machine.image = image.id;
       _createBrokerLog(machine, 'Created');
       return Machine.create(machine);
     })
@@ -322,12 +324,13 @@ function _updateMachinesPool() {
         machineCount: Machine.count({
           status: 'running',
           user: null
-        })
+        }),
+        defaultImage: getDefaultImage()
       })
-        .then(({config, machineCount}) => {
+        .then(({config, machineCount, defaultImage}) => {
 
           let machineToCreate = config.machinePoolSize - machineCount;
-          let machines = _.times(machineToCreate, () => _createMachine());
+          let machines = _.times(machineToCreate, () => _createMachine(defaultImage));
 
           if (machineToCreate > 0) {
             _createBrokerLog({
@@ -474,7 +477,31 @@ function machines() {
  * @return {Promise[Image]} resolves to the new default image
  */
 function createImage(image) {
-  return _driver.createImage(image);
+  return _driver.createImage(image)
+    .then((newImage) => {
+
+      newImage.default = true;
+      return getDefaultImage()
+        .then((defaultImage) => {
+
+          return Image.update(defaultImage.id, {
+            default: false
+          })
+            .then(() => {
+              return Image.create(newImage);
+            })
+            .then((newImage) => {
+              return ImageGroup.update({
+                image: defaultImage.id
+              }, {
+                image: newImage.id
+              })
+                .then(() => {
+                  return Promise.resolve(newImage);
+                });
+            });
+        });
+    });
 }
 
 /*

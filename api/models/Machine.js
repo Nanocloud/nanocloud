@@ -74,6 +74,10 @@ module.exports = {
       model: 'user',
       unique: true
     },
+    image: {
+      model: 'image',
+      unique: true
+    },
     status: {
       type: 'string'
     },

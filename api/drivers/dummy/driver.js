@@ -132,11 +132,11 @@ class DummyDriver extends BaseDriver {
    * @param {Object} options model to be created
    * @return {Promise[Machine]} Machine model created
    */
-  createMachine(options) {
+  createMachine(machine) {
     const id = uuid.v4();
-    let machine = new Machine._model({
+    let machineToCreate = new Machine._model({
       id        : id,
-      name      : options.name,
+      name      : machine.name,
       type      : 'dummy',
       flavor    : 'dummy',
       ip        : _plazaAddress,
@@ -146,8 +146,8 @@ class DummyDriver extends BaseDriver {
       rdpPort   : 3389
     });
 
-    this._machines[machine.id] = machine;
-    return new Promise.resolve(machine);
+    this._machines[id] = machineToCreate;
+    return new Promise.resolve(machineToCreate);
   }
 
   destroyMachine(machine) {
@@ -172,18 +172,14 @@ class DummyDriver extends BaseDriver {
     return Machine.findOne(imageToCreate.buildFrom)
       .then((machine) => {
 
-        return Image.update({
-          default: true
-        }, {
+        let image = new Image._model({
           iaasId: uuid.v4(),
           name: imageToCreate.name,
           buildFrom: imageToCreate.buildFrom,
           password: machine.password
-        })
-          .then((images) => {
+        });
 
-            return images.pop();
-          });
+        return Promise.resolve(image);
       });
   }
 
