@@ -12,3 +12,18 @@
   </ul>
   {{outlet}}
 </div>
+
+<div class="configuration m-t-1">
+  <ul class="nav nav-pills">
+    <li class="nav-item">
+      {{#link-to 'protected.configs.email-configuration.index' class='nav-link' }}Settings{{/link-to}}
+    </li>
+    <li class="nav-item">
+      {{#link-to 'protected.configs.email-configuration.sign-up' class='nav-link'}}Signup template{{/link-to}}
+    </li>
+    <li class="nav-item">
+      {{#link-to 'protected.configs.email-configuration.forget-password' class='nav-link'}}Reset password template{{/link-to}}
+    </li>
+  </ul>
+  {{outlet}}
+</div>
