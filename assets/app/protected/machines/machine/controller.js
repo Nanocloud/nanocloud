@@ -49,6 +49,13 @@ export default Ember.Controller.extend({
     machine.save();
   },
 
+  rebootMachine() {
+    let machine = this.get('model');
+
+    machine.set('status', 'rebooting');
+    machine.save();
+  },
+
   terminateMachine() {
     let machine = this.get('model');
 
@@ -67,6 +74,10 @@ export default Ember.Controller.extend({
 
     terminateMachine() {
       this.terminateMachine();
+    },
+
+    rebootMachine() {
+      this.rebootMachine();
     }
   }
 });

@@ -609,7 +609,15 @@ paths:
           required: true
           type: string
           format: uuid
+        - in: body
+          name: data
+          description: machine with attribute status set to 'rebooting'
+          required: true
+          schema:
+            $ref: "#/definitions/Machines"
       responses:
+        200:
+          description: Only for rebooting machines
         401:
           description: Unauthorized if no token without an access token.
         403:

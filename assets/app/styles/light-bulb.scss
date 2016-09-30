@@ -30,7 +30,7 @@
       @extend .booting;
     }
 
-    &.booting {
+    &.booting, &.rebooting {
       background-color: #F4B835;
       box-shadow: 0px 0px 1px #F4B835;
       @extend .transition-enabled;

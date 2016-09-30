@@ -62,6 +62,16 @@
             {{/if}}
           </td>
         </tr>
+        {{#if session.user.isAdmin}}
+          <tr>
+            <th scope="row">Reboot machine</th>
+            <td>
+              <button type="button" class="btn btn-secondary" {{action 'rebootMachine'}} disabled={{model.isBooting}}>
+                Reboot
+              </button>
+            </td>
+          </tr>
+        {{/if}}
       </tbody>
     </table>
   </div>

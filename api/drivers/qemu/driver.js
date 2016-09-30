@@ -233,6 +233,34 @@ class QemuDriver extends Driver {
         return machine;
       });
   }
+
+  /**
+   * Reboot the machine
+   *
+   * @method rebootMachine
+   * @param string Id of the machine
+   * @return {Promise[{object}]}
+   */
+  rebootMachine(machine) {
+    return ConfigService.get('qemuServiceURL', 'qemuServicePort')
+        .then((configs) => {
+          let requestOptions = {
+            url: 'http://' + configs.qemuServiceURL + ':' + configs.qemuServicePort + '/machines/' + machine.id,
+            json: true,
+            body: {
+              ip: machine.ip,
+              plazaPort: machine.plazaport,
+            },
+            method: 'PATCH'
+          };
+
+          return request(requestOptions)
+            .then((state) => {
+              machine.status = state.status;
+              return machine;
+            });
+        });
+  }
 }
 
 module.exports = QemuDriver;

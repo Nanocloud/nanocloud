@@ -119,6 +119,17 @@ class Driver {
   getPassword(/* machine */) {
     return Promise.reject(new Error('Driver\'s method \'getPassword\' not implemented'));
   }
+
+  /**
+   * Reboot the machine
+   *
+   * @method rebootMachine
+   * @param string Id of the machine
+   * @return {Promise[{object}]}
+   */
+  rebootMachine(/* machine id */) {
+    return Promise.reject(new Error('Driver\'s method \'rebootMachine\' not implemented'));
+  }
 }
 
 module.exports = Driver;

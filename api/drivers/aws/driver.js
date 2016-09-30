@@ -536,6 +536,28 @@ class AWSDriver extends Driver {
         }
       });
   }
+
+  /**
+   * Reboot the machine
+   *
+   * @method rebootMachine
+   * @param string Id of the machine
+   * @return {Promise[{object}]}
+   */
+  rebootMachine(machine) {
+    return this.getServer(machine.id)
+      .then((server) => {
+        return new Promise((resolve, reject) => {
+          this._client.rebootServer(server, (err) => {
+            if (err) {
+              return reject(err);
+            }
+
+            return resolve(machine);
+          });
+        });
+      });
+  }
 }
 
 module.exports = AWSDriver;

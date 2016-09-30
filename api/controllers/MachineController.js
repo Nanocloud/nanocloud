@@ -70,7 +70,24 @@ module.exports = {
   },
 
   update(req, res) {
-    return res.forbidden();
+
+    if (req.body.data.attributes.status === 'rebooting') {
+      return Machine.findOne({
+        id: req.body.data.id
+      })
+        .then((machine) => {
+          return machine.reboot();
+        })
+        .then(() => {
+          return res.ok();
+        })
+        .catch((err) => {
+          res.status = 400;
+          return res.send(err);
+        });
+    } else {
+      return res.forbidden();
+    }
   },
 
   /**

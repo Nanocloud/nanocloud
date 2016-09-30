@@ -9,6 +9,8 @@
     "body-parser": "^1.15.2",
     "express": "^4.14.0",
     "multer": "^1.2.0",
+    "request": "^2.74.0",
+    "request-promise": "^4.1.0",
     "uuid": "^2.0.2"
   },
   "scripts": {
