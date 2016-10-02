@@ -5,3 +5,4 @@ assets/node_modules/**
 assets/bower_components/**
 node_modules/**
 plaza/vendor
+vdiexperience/**
