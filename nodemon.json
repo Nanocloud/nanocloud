@@ -5,5 +5,7 @@
       "postgres/*",
       "guacamole-client/*",
       "proxy/*",
-      "qemu/*"]
+      "qemu/*",
+      "vdiexperience/*"
+    ]
 }
