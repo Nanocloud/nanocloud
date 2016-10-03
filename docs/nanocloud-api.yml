@@ -572,52 +572,6 @@ paths:
                   "$ref": "#/definitions/Machines"
         401:
           description: Unauthorized if no token without an access token
-  /machines/start/{id}:
-    post:
-      tags:
-        - machines
-      summary:
-        Start the specified machine
-      parameters:
-        - in: path
-          name: id
-          description: Machine id
-          required: true
-          type: string
-          format: uuid
-      responses:
-        200:
-          description: Return the specified machine updated
-          schema:
-            type: object
-            properties:
-              data:
-                type: array
-                items:
-                  "$ref": "#/definitions/Machines"
-  /machines/stop/{id}:
-    post:
-      tags:
-        - machines
-      summary:
-        Stop the specified machine
-      parameters:
-        - in: path
-          name: id
-          description: Machine id
-          required: true
-          type: string
-          format: uuid
-      responses:
-        200:
-          description: Return the specified machine updated
-          schema:
-            type: object
-            properties:
-              data:
-                type: array
-                items:
-                  "$ref": "#/definitions/Machines"
   /machines/{id}:
     get:
       tags:

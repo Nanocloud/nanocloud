@@ -125,16 +125,6 @@ module.exports.routes = {
     action: 'findOne'
   },
 
-  'POST /machines/start/:id': {
-    controller: 'Machine',
-    action: 'start'
-  },
-
-  'POST /machines/stop/:id': {
-    controller: 'Machine',
-    action: 'stop'
-  },
-
   'GET /machines/users': {
     controller: 'Machine',
     action: 'users'
