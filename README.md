@@ -82,7 +82,7 @@ MACHINES=[{"name": "My Machine", "type": "manual", "ip": "1.2.3.4", "username": 
 - awsSecretAccessKey AWS private key
 - awsKeyName private key name
 - awsPrivateKey (Defaults to /opt/back/id_rsa) path to where the key will be stored
-- awsImage (Defaults to ami-09e61366) Nanocloud's execution servers default image)
+- awsImage Nanocloud's execution servers default image
 - awsFlavor (Defaults to t2.medium) size of virtual machines
 - awsMachineUsername (Defaults to Administrator) administrator account on the machine
 - awsMachinePassword (Defaults to empty string, will be generated if possible) administrator password on the machine
@@ -105,7 +105,7 @@ MACHINES=[{"name": "My Machine", "type": "manual", "ip": "1.2.3.4", "username": 
 
 - qemuServiceURL (Default to localhost) url of qemu manager service
 - qemuServicePort (Default to 3000) port of qemu manager service
-- qemuMemory (Default to 4096) memory to allocate to your VMs in MB
+- qemuMemory (Default to 2048) memory to allocate to your VMs in MB
 - qemuCPU (Default to 2) number of vCPU to allocate to your VMs
 - qemuMachineUsername (Defaults to Administrator) windows account username
 - qemuMachinePassword (Defaults empty) windows account password

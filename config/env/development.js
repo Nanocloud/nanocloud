@@ -97,7 +97,7 @@ module.exports = {
     awsRegion: '',
     awsKeyName: '',
     awsPrivateKey: '/opt/back/id_rsa',
-    awsImage: 'ami-09e61366',
+    awsImage: '',
     awsFlavor: 't2.medium',
     awsMachineUsername: 'Administrator',
     awsMachinePassword: '',
@@ -115,7 +115,7 @@ module.exports = {
 
     qemuServiceURL: 'localhost',
     qemuServicePort: 3000,
-    qemuMemory: '4096',
+    qemuMemory: '2048',
     qemuCPU: '2',
     qemuMachineUsername: 'Administrator',
     qemuMachinePassword: ''
