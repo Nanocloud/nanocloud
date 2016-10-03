@@ -20,7 +20,7 @@
       box-shadow: 0px 0px 1px #a0a0a0;
     }
 
-    &.running {
+    &.running, &.inUse {
       background-color: #5eca20;
       box-shadow: 0px 0px 1px #5eca20;
     }

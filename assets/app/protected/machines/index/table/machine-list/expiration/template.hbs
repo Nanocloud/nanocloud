@@ -2,7 +2,11 @@
   {{#if record.expiration}}
     {{live-countdown class='color-primary' value=record.expiration isTime=true}}
   {{else}}
-    This machine will be terminated soon.
+    {{#if record.neverTerminateMachine}}
+      This machine will be stopped soon.
+    {{else}}
+      This machine will be terminated soon.
+    {{/if}}
   {{/if}}
 {{else if record.user}}
   {{#if record.stopped}}

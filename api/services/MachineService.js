@@ -186,7 +186,24 @@ function getMachineForUser(user) {
               });
             });
           } else {
-            return Promise.resolve(res);
+            return ConfigService.get('neverTerminateMachine')
+              .then((config) => {
+                if (config.neverTerminateMachine) {
+                  if (res.status === 'stopped') {
+                    startMachine(res)
+                      .then(() => {
+                        increaseUsersMachineEndDate(user);
+                      });
+                    return Promise.reject('Your machine is starting. Please retry in one minute.');
+                  } else if (res.status === 'running') {
+                    return Promise.resolve(res);
+                  } else {
+                    return Promise.reject(`Your machine is ${res.status}. Please retry in one minute.`);
+                  }
+                } else {
+                  return Promise.resolve(res);
+                }
+              });
           }
         });
     });
@@ -481,17 +498,25 @@ function _updateMachinesPool() {
  * @return {null}
  */
 function _shouldTerminateMachine(machine) {
-  machine.isSessionActive()
-    .then((isActive) => {
+  Promise.props({
+    isActive: machine.isSessionActive(),
+    config: ConfigService.get('neverTerminateMachine')
+  })
+    .then((props) => {
+      var {isActive, config} = props;
       if (!isActive) {
         const now = new Date();
         if (machine.endDate < now) {
-          machine.user = null;
+          if (config.neverTerminateMachine) {
+            stopMachine(machine);
+          } else {
+            machine.user = null;
 
-          Machine.update(machine.id, machine)
-            .then(() => {
-              _terminateMachine(machine);
-            });
+            Machine.update(machine.id, machine)
+              .then(() => {
+                _terminateMachine(machine);
+              });
+          }
         }
       }
     });

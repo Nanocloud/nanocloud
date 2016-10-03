@@ -48,6 +48,7 @@ export default Ember.Service.extend({
     'iaas',
     'teamEnabled',
     'machinesName',
+    'neverTerminateMachine',
   ],
   keyToBeRetrievedAsString: Ember.computed('keyToBeRetrieved', function() {
     let params = this.get('keyToBeRetrieved');
