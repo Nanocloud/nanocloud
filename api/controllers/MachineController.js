@@ -71,15 +71,23 @@ module.exports = {
 
   update(req, res) {
 
-    if (req.body.data.attributes.status === 'rebooting') {
+    var status = req.body.data.attributes.status;
+    if (status === 'rebooting' || status === 'stop' || status === 'start') {
       return Machine.findOne({
-        id: req.body.data.id
+        id: (status === 'rebooting') ? req.body.data.id : req.params.id
       })
         .then((machine) => {
-          return machine.reboot();
+          if (status === 'rebooting') {
+            machine.reboot();
+            return machine;
+          } else if (status === 'start') {
+            return MachineService.startMachine(machine);
+          } else if (status === 'stop') {
+            return MachineService.stopMachine(machine);
+          }
         })
-        .then(() => {
-          return res.ok();
+        .then((machine) => {
+          return res.ok(machine);
         })
         .catch((err) => {
           res.status = 400;
@@ -106,42 +114,6 @@ module.exports = {
         } else {
           return res.negotiate(err);
         }
-      });
-  },
-
-  /**
-   * @methods start
-   */
-  start(req, res) {
-    Machine.findOne({
-      id: req.params.id
-    })
-      .then((machine) => {
-        return MachineService.startMachine(machine);
-      })
-      .then((machine) => {
-        return res.ok(machine);
-      })
-      .catch((err) => {
-        return res.send(400, err);
-      });
-  },
-
-  /**
-   * @method stop
-   */
-  stop(req, res) {
-    Machine.findOne({
-      id: req.params.id
-    })
-      .then((machine) => {
-        return MachineService.stopMachine(machine);
-      })
-      .then((machine) => {
-        return res.ok(machine);
-      })
-      .catch((err) => {
-        return res.send(400, err);
       });
   }
 };
