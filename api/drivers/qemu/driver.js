@@ -124,6 +124,40 @@ class QemuDriver extends Driver {
       });
   }
 
+  stopMachine(machine) {
+    return ConfigService.get('qemuServiceURL', 'qemuServicePort')
+      .then((config) => {
+        let requestOptions = {
+          url: 'http://' + config.qemuServiceURL + ':' + config.qemuServicePort + '/machines/stop/' + machine.id,
+          json: true,
+          method: 'POST'
+        };
+
+        return request(requestOptions)
+          .then((res) => {
+            machine.status = res.status;
+            return(machine);
+          });
+      });
+  }
+
+  startMachine(machine) {
+    return ConfigService.get('qemuServiceURL', 'qemuServicePort')
+      .then((config) => {
+        let requestOptions = {
+          url: 'http://' + config.qemuServiceURL + ':' + config.qemuServicePort + '/machines/start/' + machine.id,
+          json: true,
+          method: 'POST'
+        };
+
+        return request(requestOptions)
+          .then((res) => {
+            machine.status = res.status;
+            return(machine);
+          });
+      });
+  }
+
   /**
    * Destroy the specified machine.
    *
@@ -223,14 +257,32 @@ class QemuDriver extends Driver {
    * @return {Promise[Machine]}
    */
   refresh(machine) {
-    let requestOptions = {
-      url: 'http://' + machine.ip + ':' + machine.plazaport,
-      method: 'GET'
-    };
-    return request(requestOptions)
-      .then(() => {
-        machine.status = 'running';
-        return machine;
+    return ConfigService.get('qemuServiceURL', 'qemuServicePort')
+      .then((config) => {
+        let promise = null;
+
+        if (machine.status === 'booting') {
+          let requestOptions = {
+            url: 'http://' + machine.ip + ':' + machine.plazaport,
+            method: 'GET'
+          };
+          promise = request(requestOptions);
+        } else {
+          promise = Promise.resolve();
+        }
+
+        return promise.then(() => {
+          let requestOptions = {
+            url: 'http://' + config.qemuServiceURL + ':' + config.qemuServicePort + '/machines/status/' + machine.id,
+            json: true,
+            method: 'GET'
+          };
+          return request(requestOptions)
+            .then((res) => {
+              machine.status = (res.status === 'paused') ? 'stopped' : res.status;
+              return machine;
+            });
+        });
       });
   }
 

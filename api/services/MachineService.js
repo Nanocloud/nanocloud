@@ -288,6 +288,128 @@ function _createMachine() {
     });
 }
 
+/**
+ * Ask the driver to start the specified machine
+ *
+ * @method startMachine
+ * @public
+ * @return {Promise[Machine]}
+ */
+function startMachine(machine) {
+
+  if (_driver.startMachine) {
+    return _driver.startMachine(machine)
+      .then((machineStarting) => {
+        machineStarting.status = 'starting';
+
+        return Machine.update({
+          id: machineStarting.id
+        }, machineStarting);
+      })
+      .then((machines) => {
+        return promisePoller({
+          taskFn: () => {
+            return machines[0].refresh()
+              .then((machineRefreshed) => {
+                if (machineRefreshed.status === 'running') {
+                  return Promise.resolve(machineRefreshed);
+                } else {
+                  return Promise.reject(machineRefreshed);
+                }
+              });
+          },
+          interval: 5000,
+          retries: 100
+        })
+          .catch((errs) => { // If timeout is reached
+
+            let machine = errs.pop(); // On timeout, promisePoller rejects with an array of all rejected promises. In our case, MachineService rejects the still booting machine. Let's pick the last one.
+
+            _createBrokerLog(machine, 'Error waiting to start machine');
+            _terminateMachine(machine);
+            throw machine;
+          });
+      })
+      .then((machineStarted) => {
+        _createBrokerLog(machineStarted, 'Started');
+        return Machine.update({
+          id: machine.id
+        }, machineStarted);
+      })
+      .then((machines) => {
+        if (machines[0].user) {
+          increaseUsersMachineEndDate({id: machines[0].user});
+        }
+        return (machines[0]);
+      });
+  } else {
+    return new Promise((resolve, reject) => {
+      return reject('Start machine feature is not available on this driver');
+    });
+  }
+}
+
+/**
+ * Ask the driver to stop the specified machine
+ *
+ * @method stopMachine
+ * @public
+ * @return {Promise[Machine]}
+ */
+function stopMachine(machine) {
+
+  if (_driver.stopMachine) {
+    return _driver.stopMachine(machine)
+      .then(() => {
+        machine.status = 'stopping';
+        return Machine.update({
+          id: machine.id
+        }, machine);
+      })
+      .then((machines) => {
+        return promisePoller({
+          taskFn: () => {
+            return machines[0].refresh()
+              .then((machineRefreshed) => {
+
+                if (machineRefreshed.status === 'stopped') {
+                  return Promise.resolve(machineRefreshed);
+                } else {
+                  return Promise.reject(machineRefreshed);
+                }
+              });
+          },
+          interval: 5000,
+          retries: 100
+        })
+          .catch((errs) => { // If timeout is reached
+
+            let machine = errs.pop(); // On timeout, promisePoller rejects with an array of all rejected promises. In our case, MachineService rejects the still booting machine. Let's pick the last one.
+
+            _createBrokerLog(machine, 'Error waiting to stop machine');
+            _terminateMachine(machine);
+            throw machine;
+          });
+      })
+      .then((machineStopped) => {
+        _createBrokerLog(machineStopped, 'Stopped');
+        return Machine.update({
+          id: machine.id
+        }, machineStopped);
+      })
+      .then((machines) => {
+        if (!machines[0].user) {
+          _updateMachinesPool();
+        }
+        return (machines[0]);
+      });
+  } else {
+    return new Promise((resolve, reject) => {
+      return reject('Stop machine feature is not available on this driver');
+    });
+  }
+}
+
 function _terminateMachine(machine) {
 
   if (_driver.destroyMachine) {
@@ -575,5 +697,6 @@ function rebootMachine(machine) {
 
 module.exports = {
   initialize, getMachineForUser, driverName, sessionOpen, sessionEnded,
-  machines, createImage, getDefaultImage, refresh, getPassword, rebootMachine
+  machines, createImage, getDefaultImage, refresh, getPassword,
+  rebootMachine, startMachine, stopMachine,
 };

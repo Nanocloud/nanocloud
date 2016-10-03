@@ -233,6 +233,72 @@ describe('Machine Service', () => {
         });
     });
 
+    it('Should stop machine', (done) => {
+      return MachineService.getMachineForUser({
+        id: adminId,
+        name: 'Admin'
+      })
+        .then((machine) => {
+          return MachineService.stopMachine(machine)
+            .then((machineStopped) => {
+              assert.equal(machineStopped.id, machine.id);
+              assert.equal(machineStopped.user, machine.user);
+              assert.equal(machineStopped.status, 'stopped');
+              return;
+            })
+            .then(() => {
+              return setTimeout(function() {
+                return BrokerLog.findOne({
+                  machineId: machine.id,
+                  state: 'Stopped'
+                })
+                  .then((log) => {
+                    assert.equal(log.state, 'Stopped');
+                    assert.equal(log.machineId, machine.id);
+                    assert.equal(log.userId, adminId);
+                    return;
+                  })
+                  .then(() => {
+                    return done();
+                  });
+              }, 100); // give broker time to log the machine state
+            });
+        });
+    });
+
+    it('Should start machine', (done) => {
+      return MachineService.getMachineForUser({
+        id: adminId,
+        name: 'Admin'
+      })
+        .then((machine) => {
+          return MachineService.startMachine(machine)
+            .then((machineStarted) => {
+              assert.equal(machineStarted.id, machine.id);
+              assert.equal(machineStarted.user, machine.user);
+              assert.equal(machineStarted.status, 'running');
+              return;
+            })
+            .then(() => {
+              return setTimeout(function() {
+                return BrokerLog.findOne({
+                  machineId: machine.id,
+                  state: 'Started'
+                })
+                  .then((log) => {
+                    assert.equal(log.state, 'Started');
+                    assert.equal(log.machineId, machine.id);
+                    assert.equal(log.userId, adminId);
+                    return;
+                  })
+                  .then(() => {
+                    return done();
+                  });
+              }, 100);
+            });
+        });
+    });
+
     it('Should terminate machine if no connection occured after the maximum session duration time', (done) => {
       return MachineService.getMachineForUser({
         id: adminId,

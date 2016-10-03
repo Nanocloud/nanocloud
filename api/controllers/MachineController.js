@@ -71,15 +71,23 @@ module.exports = {
 
   update(req, res) {
 
-    if (req.body.data.attributes.status === 'rebooting') {
+    var status = req.body.data.attributes.status;
+    if (status === 'rebooting' || status === 'stopping' || status === 'starting') {
       return Machine.findOne({
-        id: req.body.data.id
+        id: (status === 'rebooting') ? req.body.data.id : req.params.id
       })
         .then((machine) => {
-          return machine.reboot();
+          if (status === 'rebooting') {
+            machine.reboot();
+            return machine;
+          } else if (status === 'starting') {
+            return MachineService.startMachine(machine);
+          } else if (status === 'stopping') {
+            return MachineService.stopMachine(machine);
+          }
         })
-        .then(() => {
-          return res.ok();
+        .then((machine) => {
+          return res.ok(machine);
         })
         .catch((err) => {
           res.status = 400;

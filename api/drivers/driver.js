@@ -61,6 +61,28 @@ class Driver {
     return Promise.reject(new Error('Driver\'s method "createMachine" not implemented'));
   }
 
+  /*
+   * Stop the specified machine
+   *
+   * @method stopMachine
+   * @param {Object} machine to be stopped
+   * @return {Promise[Machine]} Machine model stopped
+   */
+  stopMachine(/* machine */) {
+    return Promise.reject(new Error('Driver\'s method "stopMachine" not implemented'));
+  }
+
+  /*
+   * Start the specified machine
+   *
+   * @method stopMachine
+   * @param {Object} machine to be started
+   * @return {Promise[Machine]} Machine model started
+   */
+  startMachine(/* machine */) {
+    return Promise.reject(new Error('Driver\'s method "startMachine" not implemented'));
+  }
+
   destroyMachine(/* machine */) {
     return Promise.reject(new Error('Driver\'s method "destroyMachine" not implemented'));
   }

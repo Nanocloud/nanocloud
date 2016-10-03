@@ -5,7 +5,13 @@
     This machine will be terminated soon.
   {{/if}}
 {{else if record.user}}
-  <span class='color-success'>Currently in use</span>
+  {{#if record.stopped}}
+    -
+  {{else if record.starting}}
+    -
+  {{else}}
+    <span class='color-success'>Currently in use</span>
+  {{/if}}
 {{else}}
   -
 {{/if}}

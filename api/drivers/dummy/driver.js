@@ -150,6 +150,26 @@ class DummyDriver extends BaseDriver {
     return new Promise.resolve(machine);
   }
 
+  /**
+   * Start the specified machine.
+   *
+   * @method startMachine
+   * @return {Promise[Object]}
+   */
+  startMachine(machine) {
+    return Promise.resolve(machine);
+  }
+
+  /**
+   * Stop the specified machine.
+   *
+   * @method stopMachine
+   * @return {Promise}
+   */
+  stopMachine(machine) {
+    return Promise.resolve(machine);
+  }
+
   destroyMachine(machine) {
     if (this._machines.hasOwnProperty(machine.id)) {
       delete this._machines[machine.id];
@@ -245,6 +265,9 @@ class DummyDriver extends BaseDriver {
     return new Promise((resolve, reject) => {
       if (machine.status === 'error') {
         reject(machine.status);
+      } else if (machine.status === 'stopping') {
+        machine.status = 'stopped';
+        return resolve(machine);
       }
       machine.status = 'running';
       return resolve(machine);

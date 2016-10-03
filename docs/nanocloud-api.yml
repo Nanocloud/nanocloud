@@ -611,7 +611,7 @@ paths:
           format: uuid
         - in: body
           name: data
-          description: machine with attribute status set to 'rebooting'
+          description: machine with attribute status set to 'rebooting', 'stopping' or 'starting'
           required: true
           schema:
             $ref: "#/definitions/Machines"

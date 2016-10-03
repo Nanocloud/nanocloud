@@ -312,6 +312,54 @@ class AWSDriver extends Driver {
   }
 
   /**
+   * Start the specified machine.
+   *
+   * @method startMachine
+   * @return {Promise[Machine]}
+   */
+  startMachine(machine) {
+    return new Promise((resolve, reject) => {
+      var params = {
+        InstanceIds: [
+          machine.id
+        ],
+        DryRun: false
+      };
+      this._client.ec2.startInstances(params, (err) => {
+        if (err) {
+          return reject(err);
+        }
+
+        return resolve(machine);
+      });
+    });
+  }
+
+  /**
+   * Stop the specified machine.
+   *
+   * @method stopMachine
+   * @return {Promise[Machine]}
+   */
+  stopMachine(machine) {
+    return new Promise((resolve, reject) => {
+      var params = {
+        InstanceIds: [
+          machine.id
+        ],
+        DryRun: false,
+        Force: false
+      };
+      this._client.ec2.stopInstances(params, (err) => {
+        if (err) {
+          return reject(err);
+        }
+        return resolve(machine);
+      });
+    });
+  }
+
+  /**
    * Destroy the specified machine.
    *
    * @method destroyMachine
@@ -474,6 +522,29 @@ class AWSDriver extends Driver {
         machine.ip = res.addresses.public[0] || res.addresses.private[0];
         if (res.status === 'PROVISIONING') {
           machine.status = 'booting';
+        } else if (res.status === 'STOPPED') {
+          return new Promise((resolve, reject) => {
+            this._client.ec2.describeInstanceStatus({
+              InstanceIds: [machine.id],
+              IncludeAllInstances: true
+            }, (err, data) => {
+
+              if (err) {
+                return reject(err);
+              }
+
+              let instance = data.InstanceStatuses[0];
+              if (instance.InstanceState.Name === 'stopping') {
+                machine.status = 'stopping';
+              } else if (instance.InstanceState.Name === 'stopped') {
+                machine.status = 'stopped';
+              } else {
+                machine.status = 'unknown';
+              }
+
+              return resolve(machine);
+            });
+          });
         } else if (res.status === 'RUNNING') { // If instance is running, let's gather more information before considering it available
           return new Promise((resolve, reject) => {
             this._client.ec2.describeInstanceStatus({
