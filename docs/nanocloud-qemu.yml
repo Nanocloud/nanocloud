@@ -28,11 +28,55 @@ paths:
           description: A VM is booting
         400:
           description: Machine description is missing or incomplete
-
-  /machines/{machine_uuid}:
-    delete:
+          
+  /machines/status/{machine_uuid}:
+    get:
       summary:
-        Stop specified VM. This won't delete it
+        Get the status of the specified machine
+      parameters:
+        - in: path
+          name: machine_uuid
+          description: Machine's UUID
+          required: true
+          type: string
+          format: uuid
+      responses:
+        200:
+          description: VM status
+          schema:
+            type: object
+            properties:
+              data:
+                type: array
+                items:
+                  "$ref": "#/definitions/MachineStatus"
+          
+  /machines/start/{machine_uuid}:
+    post:
+      summary:
+        Get the status of the specified machine
+      parameters:
+        - in: path
+          name: machine_uuid
+          description: Machine's UUID
+          required: true
+          type: string
+          format: uuid
+      responses:
+        200:
+          description: VM has been started
+          schema:
+            type: object
+            properties:
+              data:
+                type: array
+                items:
+                  "$ref": "#/definitions/MachineStatus"
+          
+  /machines/stop/{machine_uuid}:
+    post:
+      summary:
+        Get the status of the specified machine
       parameters:
         - in: path
           name: machine_uuid
@@ -49,7 +93,29 @@ paths:
               data:
                 type: array
                 items:
-                  "$ref": "#/definitions/MachineDeleted"
+                  "$ref": "#/definitions/MachineStatus"
+
+  /machines/{machine_uuid}:
+    delete:
+      summary:
+        Stop specified VM. This won't delete it
+      parameters:
+        - in: path
+          name: machine_uuid
+          description: Machine's UUID
+          required: true
+          type: string
+          format: uuid
+      responses:
+        200:
+          description: VM has been deleted
+          schema:
+            type: object
+            properties:
+              data:
+                type: array
+                items:
+                  "$ref": "#/definitions/MachineStatus"
         404:
           description: No machine found with this UUID
   /images:
@@ -85,7 +151,7 @@ definitions:
         type: number
       plazaPort:
         type: number
-  MachineDeleted:
+  MachineStatus:
     type: object
     properties:
       id:

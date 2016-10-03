@@ -107,6 +107,83 @@ app.post('/machines', upload.array(), function (req, res) {
     });
 });
 
+app.get('/machines/status/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}', function (req, res) {
+  // we cut the 17 first characters of the path '/mahines/status/'
+  var machineId = req.path.substr(17);
+  let machineStatus = null;
+  return new Promise((resolve) => {
+    let socket = net.connect({path: drivePath + machineId + '.socket'}, () => {
+      return resolve(socket);
+    });
+  })
+    .then((socket) => {
+      return new Promise((resolve) => {
+        socket.write('info status\n', () => {
+          return resolve();
+        });
+      })
+        .then(() => {
+          return new Promise((resolve) => {
+            socket.on('data', (data) => {
+              var lines = data.toString().split('\n');
+              lines.forEach(function(line) {
+                if ( line.substr(0,9) === 'VM status' ) {
+                  machineStatus = line.split(':')[1].substr(1);
+                  return resolve();
+                }
+              });
+            });
+          });
+        })
+        .then(() => {
+          /**
+           * Qemu 'info status' command return the status of the machine. it can be
+           * 'running' or 'paused'.
+           * But it add a '\r' or other character at the end of this string.
+           * so we received something like this: 'running\r'.
+           * We need to return a correct string, so we need to know what is the
+           * response, if it's paused or running, to know how many characters we need
+           * to split.
+           * example:
+           *    'paused\r' => we only want the 6 firsts characters.
+           *    'running\r' => we only want the 7 firsts characters.
+           */
+          machineStatus = machineStatus.substr(0, (machineStatus.substr(0, 6) === 'paused') ? 6 : 7);
+          socket.end();
+          return res.send({
+            id: machineId,
+            status: machineStatus
+          });
+        });
+    });
+});
+
+app.post('/machines/start/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}', function (req, res) {
+  var machineId = req.path.substr(16);
+  let socket = net.connect({path: drivePath + machineId + '.socket'}, () => {
+    socket.write('cont\n', () => {
+      socket.end();
+      return res.send({
+        id: machineId,
+        status: 'running'
+      });
+    });
+  });
+});
+
+app.post('/machines/stop/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}', function (req, res) {
+  var machineId = req.path.substr(15);
+  let socket = net.connect({path: drivePath + machineId + '.socket'}, () => {
+    socket.write('stop\n', () => {
+      socket.end();
+      return res.send({
+        id: machineId,
+        status: 'stopped'
+      });
+    });
+  });
+});
+
 app.delete('/machines/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}', function (req, res) {
 
   var machineId = req.path.substr(10);

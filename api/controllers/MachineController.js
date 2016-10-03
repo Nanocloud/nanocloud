@@ -107,5 +107,41 @@ module.exports = {
           return res.negotiate(err);
         }
       });
+  },
+
+  /**
+   * @methods start
+   */
+  start(req, res) {
+    Machine.findOne({
+      id: req.params.id
+    })
+      .then((machine) => {
+        return MachineService.startMachine(machine);
+      })
+      .then((machine) => {
+        return res.ok(machine);
+      })
+      .catch((err) => {
+        return res.send(400, err);
+      });
+  },
+
+  /**
+   * @method stop
+   */
+  stop(req, res) {
+    Machine.findOne({
+      id: req.params.id
+    })
+      .then((machine) => {
+        return MachineService.stopMachine(machine);
+      })
+      .then((machine) => {
+        return res.ok(machine);
+      })
+      .catch((err) => {
+        return res.send(400, err);
+      });
   }
 };
