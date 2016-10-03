@@ -26,14 +26,11 @@ import Ember from 'ember';
 
 export default Ember.Controller.extend({
 
-  /* global $:false */
   download: Ember.inject.service('download'),
   session: Ember.inject.service('session'),
   teamController: Ember.inject.controller('protected.users.teams'),
   protectedController: Ember.inject.controller('protected'),
   teams: Ember.computed.oneWay('teamController.teams'),
-  dimBackground: Ember.computed.and('focusModeTeams', 'protectedController.hasNoTeam'),
-  focusModeTeams: false,
   loadState: false,
   items: null,
   showFileExplorer: false,
@@ -96,18 +93,6 @@ export default Ember.Controller.extend({
             this.set('loadState', true);
             this.get('model').save()
               .then((team) => {
-                this.set('focusModeTeams', false);
-                $('.teams-focus-input').velocity(
-                  {
-                    opacity: 0,
-                    right: '100%',
-                    position: 'absolute'
-                  },
-                  {
-                    easing: 'easeOutQuart',
-                    duration: 700,
-                    visibility: 'hidden',
-                  });
                 this.toast.success('Team has been created successfully');
                 this.get('session.user').set('team', team);
                 this.get('session.user').set('isTeamAdmin', true);
@@ -139,10 +124,6 @@ export default Ember.Controller.extend({
 
     togglePopup(user) {
       user.toggleProperty('teamOptionIsOpen');
-    },
-
-    closeFocusModeTeams() {
-      this.set('focusModeTeams', false);
     },
 
     toAdminTeam(user) {

@@ -6,7 +6,7 @@
         {{icon-component class="va-sub" materialIcon="help"}} 
       {{/nano-tooltip}}
     </h4>
-      <ol class="breadcrumb">
+      <ol class="breadcrumb truncate">
         {{#each historyData as |item index|}}
           <li class='clickable'><a {{ action "moveOffset" index}}>{{ item }}</a></li>
         {{/each}} 

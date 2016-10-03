@@ -11,6 +11,11 @@
 
   .breadcrumb {
     font-size: 16px;
+
+    > li {
+      float: none;
+      display: inline !important;
+    }
   }
 
   .section {

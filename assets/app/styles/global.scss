@@ -18,9 +18,9 @@ h1 {
 
 .main-navbar {
   position: fixed;
-  right: 0;
+  right: 15px;
   top: 0;
-  width: calc(100% - 250px);
+  width: calc(100% - 265px);
   z-index: 1;
 }
 
@@ -39,7 +39,6 @@ h1 {
 
 .content-wrapper {
   margin: 0px 0px 20px 0px;
-  height: 100%;
 }
 
 .loading-page {

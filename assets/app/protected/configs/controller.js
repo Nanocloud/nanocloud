@@ -70,7 +70,7 @@ export default Ember.Controller.extend({
   actions: {
     selectGroup(id) {
       if (this.get('defaultGroup') === id) {
-        this.set('defaultGroup', null);
+        this.set('defaultGroup', false);
       }
       else {
         this.set('defaultGroup', id);
