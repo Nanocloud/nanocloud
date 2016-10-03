@@ -1,0 +1,56 @@
+{
+    "variables": {
+        "product_name": "windows-server",
+        "product_version": "2012R2",
+        "product_arch": "amd64",
+        "headless": "true",
+        "password": "Nanocloud123+",
+        "disk_size": "25000"
+    },
+
+    "builders": [
+        {
+            "vm_name": "{{user `product_name`}}-{{user `product_version`}}-{{user `product_arch`}}.qcow2",
+            "name": "windows-2012R2",
+            "headless": "{{user `headless`}}",
+            "type": "qemu",
+            "format":"qcow2",
+            "accelerator": "kvm",
+            "disk_size": "{{ user `disk_size`}}",
+            "disk_interface":"virtio",
+            "qemuargs": [
+                           [ "-m", "2560"],
+                           [ "-smp", "2"]
+                        ],
+            "iso_url": "http://care.dlservice.microsoft.com/dl/download/6/2/A/62A76ABB-9990-4EFC-A4FE-C7D698DAEB96/9600.17050.WINBLUE_REFRESH.140317-1640_X64FRE_SERVER_EVAL_EN-US-IR3_SSS_X64FREE_EN-US_DV9.ISO",
+            "iso_checksum_type": "md5",
+            "iso_checksum": "5b5e08c490ad16b59b1d9fab0def883a",
+
+            "communicator": "winrm",
+            "winrm_username": "Administrator",
+            "winrm_password": "Nanocloud123+",
+            "shutdown_command": "shutdown /s /f /d p:4:1 /c \"Packer Shutdown\"",
+            "winrm_timeout": "120m",
+            "boot_wait": "2s",
+
+            "vnc_port_min": 5987,
+            "vnc_port_max": 5987,
+
+            "floppy_files": [
+                "floppy/drivers/virtio-win-0.1-81/WIN7/AMD64/*",
+                "floppy/windows-2012-standard-amd64/Autounattend.xml",
+                "floppy/windows-2012-standard-amd64/configure-winrm.ps1"
+            ]
+        }
+    ],
+
+    "provisioners": [
+        {
+            "type": "powershell",
+            "scripts": [
+                "scripts/install-plaza.ps1",
+                "scripts/install-chrome.ps1"
+            ]
+        }
+    ]
+}

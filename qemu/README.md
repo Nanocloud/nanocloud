@@ -10,6 +10,8 @@ enabled.
 
 You can download a qcow2 image with this link: https://s3-eu-west-1.amazonaws.com/nanocloud/windows-server-2012-r2.qcow2
 
+You can also create a Windows Server 2012 qcow2 image with our packer script [packer/README.md](../packer/README.md)
+
 ```
 docker-compose -f docker-compose-extra.yml up qemu-manager
 ```
