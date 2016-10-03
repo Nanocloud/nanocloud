@@ -25,6 +25,9 @@
   td {
     border: 1px solid $blue-lighter;
     vertical-align: middle;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 
   tr {
