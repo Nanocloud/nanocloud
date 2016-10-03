@@ -16,7 +16,7 @@
                   disabled=renaming}}
               </div>
               <div class="col-sm-4">
-                <button type="submit" class="btn btn-secondary" disabled={{preventRenaming}}>
+                <button type="submit" class="btn btn-secondary btn-color-default" disabled={{preventRenaming}}>
                   {{#if renaming}}
                     {{ fa-icon "spinner" spin=true }}
                   {{/if}}
@@ -72,8 +72,8 @@
         </form>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" {{action "toggleModal"}}>Cancel</button>
-        <button type="button" class="btn btn-primary" {{action "deleteGroup"}} disabled={{preventDeletion}}>Delete group</button>
+        <button type="button" class="btn btn-secondary btn-color-default" {{action "toggleModal"}}>Cancel</button>
+        <button type="button" class="btn btn-primary btn-color-default" {{action "deleteGroup"}} disabled={{preventDeletion}}>Delete group</button>
       </div>
     </div>
   {{/modal-dialog}}

@@ -29,12 +29,7 @@
 
     > li button {
       padding: 5px 0;
-      background-color: $blue-default;
       color: $white;
-
-      &:hover {
-        background-color: $blue-light;
-      }
     }
   }
 }

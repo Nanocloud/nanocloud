@@ -78,13 +78,7 @@
       width: 100%;
       padding: 10px;
 
-      &:hover {
-        background-color: $blue-light;
-        color: #fff;
-      }
-
       &.active {
-        color: $blue-default;
         background-color: $white;
       }
 

@@ -1,6 +1,6 @@
 <div class="login-container">
   <div class="login-form">
-  <div class="login-logo"></div>
+  <div class="login-logo background-color-default"></div>
 		<div class="section">
 		  <div class="content-wrapper form">
 		    <form {{action 'add' on='submit'}}>
@@ -11,7 +11,7 @@
 		        {{nano-input placeholder='Password' type="password" model=model valuePath="password"}}
 		        {{nano-input placeholder='Password confirmation' type="password" value=passwordConfirmation}}
 
-            <button {{ action "submitForm" }} type="submit" class="btn btn-primary btn-block text-uppercase {{ if loadState 'loadState' }}">
+            <button {{ action "submitForm" }} type="submit" class="btn btn-primary btn-block text-uppercase btn-color-default {{ if loadState 'loadState btn-color-default' }}">
               <span class='text'>Sign Up</span>
               {{#if (is-equal loadState 1) }}
                 {{icon-component fontAwesome="spinner" fontAwesomeSpin=true}}

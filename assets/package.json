@@ -47,6 +47,7 @@
     "ember-moment": "7.0.0-beta.3",
     "ember-resolver": "^2.0.3",
     "ember-simple-auth": "1.1.0-beta.3",
+    "ember-spectrum-color-picker": "0.5.1",
     "ember-tether": "0.3.0",
     "ember-toastr": "1.4.0",
     "ember-utc-transform": "0.0.8",

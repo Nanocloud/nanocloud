@@ -2,10 +2,10 @@
   <h1 class='in-bl color-primary'>
     History
   </h1>
-  <span class="icon_link clickable noselect" {{ action "refreshModel" }}>
+  <span class="icon_link clickable noselect color-default" {{ action "refreshModel" }}>
     {{icon-component class='va-sub' size=26 materialIcon="autorenew" spin=loadState content="Refresh history"}}
   </span>
-    <a class='btn btn-primary downloadcsv pull-xs-right' href={{downloadCsvLink}} download={{downloadCsvFilename}}>Save as CSV file</a>
+    <a class='btn btn-primary downloadcsv pull-xs-right btn-color-default' href={{downloadCsvLink}} download={{downloadCsvFilename}}>Save as CSV file</a>
   {{#if items.length}}
     <ul class="history-info list-group color-primary">
       {{#if avgSessionDuration}}

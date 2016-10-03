@@ -1,6 +1,6 @@
 <div class="login-container">
 	<div class="login-form">
-		<div class="login-logo"></div>
+		<div class="login-logo background-color-default"></div>
 		<form {{action 'authenticate' on='submit'}}>
 			<fieldset class="form-group">
 				{{input class='form-control' autofocus=true placeholder='E-mail' value=identification}}
@@ -8,11 +8,11 @@
 			<fieldset class="form-group">
 				{{input class='form-control' placeholder='Password' type='password' value=password}}
 			</fieldset>
-			<button type="submit" class="btn btn-primary btn-block text-uppercase">Login</button>
+			<button type="submit" class="btn btn-primary btn-block text-uppercase btn-color-default">Login</button>
 			{{#if autoRegister}}
-				{{#link-to 'sign-up'}}Sign up{{/link-to}}
+				{{#link-to 'sign-up' class="color-default"}}Sign up{{/link-to}}
 			{{/if}}
-			{{#link-to 'reset-password' class="fright"}}Reset my password{{/link-to}}
+			{{#link-to 'reset-password' class="fright color-default"}}Reset my password{{/link-to}}
 		</form>
 	</div>
 </div>

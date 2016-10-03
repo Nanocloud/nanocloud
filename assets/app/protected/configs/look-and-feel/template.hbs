@@ -23,6 +23,5 @@
   <div class="col-sm-2">
     <p class="confirm-input-item color-primary in-bl fl">Primary color (hex)</p>
   </div>
-  <div class="col-sm-3">{{input-confirm value=configController.primaryColor placeholder="#000000" type="text"}}</div>
+  <div class="col-sm-3">{{spectrum-color-picker preferredFormat="hex" showInput=true color=configController.primaryColor onMove=(action "liveChangeColor") onChange=(action "colorRefresh")}}</div>
 </div>
-
