@@ -47,7 +47,7 @@ export default Ember.Mixin.create({
       }, () => {
         this.toast.success('Your image has been saved successfully');
       });
-    })
+    });
 
     window.swal({
       title: 'In progress..',
