@@ -24,8 +24,10 @@
 
 import Ember from 'ember';
 import fileExplorer from 'nanocloud/components/file-explorer/component';
+import focusInputsHandlerMixin from 'nanocloud/mixins/focus-inputs-handler';
 
-export default fileExplorer.extend({
+export default fileExplorer.extend(
+  focusInputsHandlerMixin, {
   publishError: false,
 
   loadDirectory() {
