@@ -65,6 +65,8 @@ export default Ember.Controller.extend({
         status: item.get('status'),
         user: item.get('user'),
         endDate: item.get('endDate'),
+        stopped: item.get('isStopped'),
+        starting: item.get('isStarting'),
       }));
     });
     this.set('data', ret);

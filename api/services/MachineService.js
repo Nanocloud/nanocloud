@@ -395,6 +395,9 @@ function stopMachine(machine) {
         }, machineStopped);
       })
       .then((machines) => {
+        if (!machines[0].user) {
+          _updateMachinesPool();
+        }
         return (machines[0]);
       });
   } else {

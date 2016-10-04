@@ -34,7 +34,7 @@
       @extend .booting;
     }
 
-    &.booting, &.rebooting {
+    &.booting, &.rebooting, &.starting {
       background-color: #F4B835;
       box-shadow: 0px 0px 1px #F4B835;
       @extend .transition-enabled;
@@ -55,6 +55,11 @@
     &.downloading {
       background-color: #8EDAFB;
       box-shadow: 0px 0px 1px #8EDAFB;
+    }
+
+    &.stopped {
+      background-color: red;
+      box-shadow: 0px 0px 1px red;
     }
   }
 
