@@ -26,8 +26,8 @@ import Ember from 'ember';
 import fileExplorer from 'nanocloud/components/file-explorer/component';
 import focusInputsHandlerMixin from 'nanocloud/mixins/focus-inputs-handler';
 
-export default fileExplorer.extend(
-  focusInputsHandlerMixin, {
+export default fileExplorer.extend(focusInputsHandlerMixin, {
+
   publishError: false,
 
   loadDirectory() {
@@ -48,24 +48,24 @@ export default fileExplorer.extend(
 
     this.set('isPublishing', true);
     m.save()
-      .then(() => {
-        this.set('isPublishing', false);
-        this.sendAction('action');
-        window.swal({
-          title: 'Success!',
-          text: 'Your application has been onboarded.',
-          type: 'success',
-          showCancelButton: false,
-          confirmButtonText: 'Great.',
-          closeOnConfirm: true,
-          animation: false
-        });
-      }, (error) => {
-        this.set('isPublishing', false);
-        this.set('publishError', true);
-        this.set('selectedFile', null);
-        this.toast.error(error.errors[0].status + ' : ' + error.errors[0].title);
+    .then(() => {
+      this.set('isPublishing', false);
+      this.sendAction('action');
+      window.swal({
+        title: 'Success!',
+        text: 'Your application has been onboarded.',
+        type: 'success',
+        showCancelButton: false,
+        confirmButtonText: 'Great.',
+        closeOnConfirm: true,
+        animation: false
       });
+    }, (error) => {
+      this.set('isPublishing', false);
+      this.set('publishError', true);
+      this.set('selectedFile', null);
+      this.toast.error(error.errors[0].status + ' : ' + error.errors[0].title);
+    });
   },
 
   selectFile(file) {
