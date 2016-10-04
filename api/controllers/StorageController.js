@@ -180,7 +180,7 @@ module.exports = {
 
     let getFiles;
 
-    if (req.allParams().machines === 'true') {
+    if (req.allParams().machines) {
       getFiles = MachineService.getMachineForUser(req.user)
         .then((machine) => {
           return PlazaService.files({
