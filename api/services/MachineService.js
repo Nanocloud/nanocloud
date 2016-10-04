@@ -337,6 +337,9 @@ function startMachine(machine) {
         }, machineStarted);
       })
       .then((machines) => {
+        if (machines[0].user) {
+          increaseUsersMachineEndDate({id: machines[0].user});
+        }
         return (machines[0]);
       });
   } else {
