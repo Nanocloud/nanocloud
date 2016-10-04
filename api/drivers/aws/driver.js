@@ -439,7 +439,6 @@ class AWSDriver extends Driver {
       this._client.ec2.createImage({
         Name: imageToCreate.name,
         InstanceId: imageToCreate.buildFrom,
-        NoReboot: true
       }, (err, image) => {
 
         if (err) {
