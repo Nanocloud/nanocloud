@@ -190,10 +190,7 @@ function getMachineForUser(user) {
               .then((config) => {
                 if (config.neverTerminateMachine) {
                   if (res.status === 'stopped') {
-                    startMachine(res)
-                      .then(() => {
-                        increaseUsersMachineEndDate(user);
-                      });
+                    startMachine(res);
                     return Promise.reject('Your machine is starting. Please retry in one minute.');
                   } else if (res.status === 'running') {
                     return Promise.resolve(res);
