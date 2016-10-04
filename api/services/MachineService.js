@@ -502,8 +502,7 @@ function _shouldTerminateMachine(machine) {
     isActive: machine.isSessionActive(),
     config: ConfigService.get('neverTerminateMachine')
   })
-    .then((props) => {
-      var {isActive, config} = props;
+    .then(({isActive, config}) => {
       if (!isActive) {
         const now = new Date();
         if (machine.endDate < now) {
