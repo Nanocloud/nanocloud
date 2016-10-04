@@ -26,11 +26,12 @@ import Ember from 'ember';
 
 export default Ember.Mixin.create({
   remoteSession: Ember.inject.service('remote-session'),
-  mouseEnter() {
+
+  becameVisible() {
     this.get('remoteSession').pauseInputs(this.get('connectionName'));
   },
 
-  mouseLeave() {
+  becameHidden() {
     this.get('remoteSession').restoreInputs(this.get('connectionName'));
   },
 });
