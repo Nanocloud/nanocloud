@@ -29,6 +29,8 @@ to avoid commiting those changes
 - machinesName (Defaults to 'Nanocloud Exec Server') default name for machines
 - plazaURI (Defaults to https://s3-eu-west-1.amazonaws.com/nanocloud/plaza/1.0.0/windows/amd64/plaza.exe) URL to download plaza from
 - plazaPort (Defaults to 9090) port to communicate with plaza
+- neverTerminateMachine (Defaults to false) if set to true, machines are
+  never destroyed, users always keep the same machine at all time.
 
 ## SMTP configuration
 

@@ -25,6 +25,7 @@
 import Ember from 'ember';
 
 export default Ember.Controller.extend({
+  configController: Ember.inject.controller('protected.configs'),
   store: Ember.inject.service('store'),
   modelIsEmpty: Ember.computed.empty('items'),
   sortableTableConfig: {
@@ -49,6 +50,7 @@ export default Ember.Controller.extend({
 
   setData: function() {
     var ret = Ember.A([]);
+    var neverTerminateMachine = this.get('configController.neverTerminateMachine');
     this.get('items').forEach(function(item) {
       let now = new Date();
       let endDate = window.moment(item.get('endDate'));
@@ -67,6 +69,7 @@ export default Ember.Controller.extend({
         endDate: item.get('endDate'),
         stopped: item.get('isStopped'),
         starting: item.get('isStarting'),
+        neverTerminateMachine: neverTerminateMachine,
       }));
     });
     this.set('data', ret);
