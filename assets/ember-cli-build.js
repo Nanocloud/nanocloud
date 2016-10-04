@@ -60,5 +60,9 @@ module.exports = function(defaults) {
   app.import('bower_components/bootstrap/dist/js/bootstrap.js');
   app.import('bower_components/humanize-duration/humanize-duration.js');
 
+  app.import('bower_components/sweetalert/dist/sweetalert.min.js');
+  app.import('bower_components/sweetalert/dist/sweetalert.css');
+  app.import('bower_components/sweetalert/themes/google/google.css');
+
   return app.toTree();
 };

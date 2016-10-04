@@ -1,0 +1,21 @@
+.window-component {
+  width: 500px;
+  min-height: 200px;
+  position: absolute;
+  z-index: 1;
+  top: $topbar-height + 5;
+  left: 0;
+  background-color: #fff;
+  box-shadow: 0px 0px 4px rgb(0, 15, 33);
+
+  .head {
+    display: flex;
+    justify-content: space-between;
+  }
+}
+
+@media (max-width: 500px) {
+  .window-component {
+    width: 100%;
+  }
+}

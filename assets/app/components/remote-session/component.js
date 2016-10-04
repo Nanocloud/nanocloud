@@ -38,7 +38,7 @@ export default Ember.Component.extend({
   },
 
   getHeight: function() {
-    return Ember.$(this.element).parent().height();
+    return Ember.$(this.element).parent().height() - 25; // minus topbar height
   },
 
   initialize: function() {
@@ -47,7 +47,11 @@ export default Ember.Component.extend({
     }
   }.on('didRender'),
 
-  connect: function() {
+  didInsertElement: function() {
+    this.startConnection();
+  },
+
+  startConnection() {
 
     if (Ember.isEmpty(this.get('connectionName'))) {
       return ;
@@ -55,11 +59,10 @@ export default Ember.Component.extend({
 
     let width = this.getWidth();
     let height = this.getHeight();
+    let guacSession = this.get('remoteSession').getSession(this.get('connectionName'), width, height);
 
-    let guacamole = this.get('remoteSession').getSession(this.get('connectionName'), width, height);
-    this.set('guacamole', guacamole);
-    guacamole.then((guacData) => {
-
+    this.set('guacamole', guacSession);
+    guacSession.then((guacData) => {
       guacData.tunnel.onerror = function(status) {
         this.get('element').removeChild(guacData.guacamole.getDisplay().getElement());
         var message = 'Opening a WebSocketTunnel has failed';
@@ -146,5 +149,11 @@ export default Ember.Component.extend({
 
       guac.connect();
     });
-  }.observes('connectionName', 'activator').on('becameVisible'),
+  },
+
+  actions: {
+    retryConnection() {
+      this.startConnection();
+    }
+  }
 });

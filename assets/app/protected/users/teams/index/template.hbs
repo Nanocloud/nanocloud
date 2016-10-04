@@ -39,9 +39,9 @@
     </h4>
     <div class="clearfix"></div>
     {{#file-explorer
+      requestParams=(hash teams=true)
       isPublishing=isPublishing
       api="file"
-      target='teams'
       system='unix'
       action="refreshModel"
     }}

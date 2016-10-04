@@ -38,7 +38,10 @@ export default TooltipsterComponent.extend({
   showPopup: Ember.computed.and('popup', 'isOpen'),
 
   didInsertElement() {
-    Ember.$(this.get('element')).find('.icon-element').css('font-size', this.get('size'));
+    Ember.$(this.get('element')).find('.icon-element').css({
+      'font-size': this.get('size'),
+      color: this.get('color'),
+    });
   },
 
   click() {

@@ -1,0 +1,40 @@
+{{#window-component
+  connectionName=connection_name
+  title='Upload'
+  isOpen=windowCollector.upload
+  close=(action 'toggleWindow' 'upload') data='upload'}}
+
+  {{partial 'window/upload'}}
+{{/window-component}}
+
+{{#window-component
+  connectionName=connection_name
+  title='Download'
+  isOpen=windowCollector.download
+  close=(action 'toggleWindow' 'donwload') data='download'}}
+
+  {{partial 'window/download'}}
+{{/window-component}}
+
+{{#window-component
+  connectionName=connection_name
+  title='Clipboard'
+  isOpen=windowCollector.clipboard
+  close=(action 'toggleWindow' 'clipboard') data='clipboard'}}
+
+  {{partial 'window/clipboard'}}
+{{/window-component}}
+
+{{#floating-sidebar-component
+  class='vdi-onboard-app-browser'
+  isVisible=windowCollector.onboardApp
+}}
+  {{#application-publisher
+    connectionName=connection_name
+    requestParams=(hash machines=machine_id)
+    api="file"
+    system='windows'
+    action="closeAllWindow"
+  }}
+  {{/application-publisher}}
+{{/floating-sidebar-component}}

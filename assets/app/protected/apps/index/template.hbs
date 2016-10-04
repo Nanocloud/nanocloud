@@ -10,7 +10,7 @@
           <div class="in-bl">Waiting for VM</div>
         </button>
       {{else}}
-        <button class="btn btn-primary" {{action "startDesktop"}}>Desktop</button>
+        <button class="btn btn-primary" {{action 'startDesktop'}}>Desktop</button>
       {{/if}}
     {{/if}}
     {{#if session.user.isAdmin}}
@@ -31,29 +31,18 @@
     multipleColumnsSorting=false
   }}
   <div class="clearfix"></div>
+  {{remote-session isVisible=showSingleTab connectionName=connectionName}}
 </div>
 
-{{#single-tab 
-  togglable=true
-  disconnectBtn=true
-  homeBtn=(reverse configuration.autoLogoff)
-  isVisible=showSingleTab
-  onClose="handleVdiClose"
-  connectionName=connectionName
-  retryConnection="retryConnection"
-}}
-  {{remote-session connectionName=connectionName activator=activator}}
-{{/single-tab}}
-
-{{dim-background show=showFileExplorer preventAction=isPublishing action="closeFileExplorer"}}
+{{dim-background show=showFileExplorer action="closeFileExplorer"}}
 {{#floating-sidebar-component
   isVisible=showFileExplorer
 }}
 {{#if showFileExplorer}}
   {{#application-publisher
+    requestParams=(hash machines=true)
     isPublishing=isPublishing
     api="file"
-    target='machines'
     system='windows'
     action="onboardAppSucceeded"
   }}

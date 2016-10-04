@@ -137,6 +137,7 @@ export default Ember.Component.extend({
     this.hideElement();
 
     this.startDownload(event.dataTransfer.files);
+    this.sendAction('onDrop');
   },
 
   checkUploadLimit(fileSize) {

@@ -1,7 +1,9 @@
 <div class='app-item-block link hover-enabled' {{ action "triggerDownload" file.name }}>
-  <div class='app-item part1'>
-    <i class='va-top material-icons'>{{ file.icon }}</i>
-  </div>
+  {{#if file.icon}}
+    <div class='app-item part1'>
+      <i class='va-top material-icons'>{{ file.icon }}</i>
+    </div>
+  {{/if}}
   <div class='app-item part2'>
     <span class='filename'>{{file.name}}</span>
   </div>

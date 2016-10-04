@@ -82,6 +82,7 @@ Router.map(function() {
   this.route('reset-password', function() {
     this.route('token',  { path: '/:reset-password_id' });
   });
+  this.route('vdi');
 });
 
 export default Router;
