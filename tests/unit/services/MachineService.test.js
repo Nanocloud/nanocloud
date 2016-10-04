@@ -444,6 +444,7 @@ describe('Machine Service', () => {
         .then((machines) => {
           ConfigService.get('machinePoolSize')
             .then((conf) => {
+              var machineId = null;
               if (machines.length !== conf.machinePoolSize) {
                 throw new Error('Available machines should be equal to machine pool size');
               }
@@ -452,7 +453,8 @@ describe('Machine Service', () => {
                 id: adminId,
                 name: 'Admin'
               })
-                .then(() => {
+                .then((machine) => {
+                  machineId = machine.id;
                   return new Promise((resolve, reject) => {
                     setTimeout(() => {
                       Machine.count()
@@ -481,6 +483,7 @@ describe('Machine Service', () => {
                       return BrokerLog.find({
                         userId: adminId,
                         state: 'Assigned',
+                        machineId: machineId
                       })
                         .then((log) => {
                           return resolve(log);
@@ -489,7 +492,7 @@ describe('Machine Service', () => {
                   });
                 })
                 .then((logs) => {
-                  if (logs.length !== 2) {
+                  if (logs.length !== 1) {
                     throw new Error('Broker should log when a machine is assigned');
                   }
                   assert.equal(logs[0].userId, adminId);
@@ -532,7 +535,7 @@ describe('Machine Service', () => {
                   });
                 })
                 .then((logs) => {
-                  if (logs.length !== 3) {
+                  if (logs.length !== 4) {
                     throw new Error('Broker should log when machine pool need to be update');
                   }
                   assert.isNull(logs[0].machineId);
@@ -763,34 +766,36 @@ describe('Machine Service', () => {
            * We set the sessionDuration to 0, and the broker set an endDate on
            * machine started again, so the machine is stopped
            */
-          Machine.findOne({
-            user: adminId
-          })
-            .then((machine) => {
-              assert.equal(machine.id, machineId);
-              assert.equal(machine.user, adminId);
-              assert.equal(machine.status, 'stopped');
-              return new Promise((resolve) => {
-                setTimeout(() => {
-                  return Promise.props({
-                    machine: Machine.findOne({ user: adminId }),
-                    log: BrokerLog.findOne({
-                      state: 'Stopped',
-                      machineId: machineId
-                    })
-                  })
-                    .then((props) => {
-                      return resolve(props);
-                    });
-                }, 100);
-              });
+          setTimeout(() => {
+            Machine.findOne({
+              user: adminId
             })
-            .then((props) => {
-              assert.isDefined(props.log);
-              assert.isDefined(props.machine);
-              assert.equal(props.machine.status, 'stopped');
-              return done();
-            });
+              .then((machine) => {
+                assert.equal(machine.id, machineId);
+                assert.equal(machine.user, adminId);
+                assert.equal(machine.status, 'stopped');
+                return new Promise((resolve) => {
+                  setTimeout(() => {
+                    return Promise.props({
+                      machine: Machine.findOne({ user: adminId }),
+                      log: BrokerLog.findOne({
+                        state: 'Stopped',
+                        machineId: machineId
+                      })
+                    })
+                      .then((props) => {
+                        return resolve(props);
+                      });
+                  }, 100);
+                });
+              })
+              .then((props) => {
+                assert.isDefined(props.log);
+                assert.isDefined(props.machine);
+                assert.equal(props.machine.status, 'stopped');
+                return done();
+              });
+          }, 100);
         });
     });
   });
