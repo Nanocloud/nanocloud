@@ -49,6 +49,7 @@ export default Ember.Service.extend({
     'teamEnabled',
     'machinesName',
     'neverTerminateMachine',
+    'machinePoolSize'
   ],
   keyToBeRetrievedAsString: Ember.computed('keyToBeRetrieved', function() {
     let params = this.get('keyToBeRetrieved');

@@ -25,7 +25,7 @@
  * @help        :: See http://sailsjs.org/#!/documentation/concepts/Controllers
  */
 
-/* globals Config, ConfigService */
+/* globals Config, ConfigService, MachineService */
 
 module.exports = {
 
@@ -36,16 +36,19 @@ module.exports = {
 
     ConfigService.set(key, value)
       .then(() => {
+        if (key === 'machinePoolSize') {
+          MachineService.updateMachinesPool();
+        }
         Config.find({
           key : key
         })
-        .then((createdEntry) => {
-          return res.ok(createdEntry);
-        });
+          .then((createdEntry) => {
+            return res.ok(createdEntry);
+          });
       })
-    .catch((err) => {
-      return res.negotiate(err);
-    });
+      .catch((err) => {
+        return res.negotiate(err);
+      });
   },
 
   find: function(req, res) {
