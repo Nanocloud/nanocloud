@@ -799,4 +799,102 @@ describe('Machine Service', () => {
         });
     });
   });
+
+  describe('Update Machine pool size', () => {
+
+    before('Set machinePoolSize to 0', function(done) {
+      return ConfigService.set('machinePoolSize', 0)
+        .then(() => {
+          return MachineService.updateMachinesPool();
+        })
+        .then(() => {
+          return done();
+        });
+    });
+
+
+    after('Set machinePoolSize to 1', function(done) {
+      return ConfigService.set('machinePoolSize', 1)
+        .then(() => {
+          return MachineService.updateMachinesPool();
+        })
+        .then(() => {
+          return done();
+        });
+    });
+
+    it('Should add machines when machinePoolSize grow up', (done) => {
+      return ConfigService.set('machinePoolSize', 2)
+        .then(() => {
+          return MachineService.updateMachinesPool();
+        })
+        .then(() => {
+          return Machine.find({
+            user: null
+          });
+        })
+        .then((machines) => {
+          if (machines.length !== 2) {
+            throw new Error('Should have 2 running machines');
+          }
+          return ConfigService.set('machinePoolSize', 4);
+        })
+        .then(() => {
+          return MachineService.updateMachinesPool();
+        })
+        .then(() => {
+          return Machine.find({
+            user: null
+          });
+        })
+        .then((machines) => {
+          if (machines.length !== 4) {
+            throw new Error('Should have 4 running machines');
+          }
+          return done();
+        });
+    });
+
+    it('Should destroy not assigned running machine when machinePoolSize shrinks', (done) => {
+      return ConfigService.set('machinePoolSize', 2)
+        .then(() => {
+          return MachineService.updateMachinesPool();
+        })
+        .then(() => {
+          return Machine.find({
+            user: null
+          });
+        })
+        .then((machines) => {
+          if (machines.length !== 2) {
+            throw new Error('Should still have 2 running machines');
+          }
+          return done();
+        });
+    });
+
+    it('Should not destroy assigned machines when machinePoolSize shrinks', (done) => {
+      return MachineService.getMachineForUser({
+        id: adminId,
+        name: 'Admin'
+      })
+        .then(() => {
+          return ConfigService.set('machinePoolSize', 0);
+        })
+        .then(() => {
+          return MachineService.updateMachinesPool();
+        })
+        .then(() => {
+          return Machine.find({
+            user: adminId
+          });
+        })
+        .then((machines) => {
+          if (machines.length !== 1) {
+            throw new Error('Should have 1 assigned running machine even the machinePoolSize equal 0');
+          }
+          return done();
+        });
+    });
+  });
 });

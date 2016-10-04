@@ -115,7 +115,7 @@ function initialize() {
 
               return _driver.initialize()
                 .then(() => {
-                  _updateMachinesPool();
+                  updateMachinesPool();
                   return null;
                 });
             });
@@ -172,7 +172,7 @@ function getMachineForUser(user) {
                 }
 
                 if (res.rows.length) {
-                  _updateMachinesPool();
+                  updateMachinesPool();
                   _createBrokerLog(res.rows[0], 'Assigned')
                     .then(() => {
                       return resolve(Machine.findOne({
@@ -413,7 +413,7 @@ function stopMachine(machine) {
       })
       .then((machines) => {
         if (!machines[0].user) {
-          _updateMachinesPool();
+          updateMachinesPool();
         }
         return (machines[0]);
       });
@@ -444,12 +444,11 @@ function _terminateMachine(machine) {
  * variable:
  *  - machinePoolSize: the number of available machine to keep in the pool
  *
- * @method _updateMachinesPool
- * @private
+ * @method updateMachinesPool
+ * @public
  * @return {Promise}
  */
-function _updateMachinesPool() {
-
+function updateMachinesPool() {
   return assert(!!_driver, driverNotInitializedError)
     .then(() => {
 
@@ -458,30 +457,42 @@ function _updateMachinesPool() {
         machineCount: Machine.count({
           status: 'running',
           user: null
+        }),
+        unassignedMachine: Machine.find({
+          user: null
         })
       })
-        .then(({config, machineCount}) => {
+        .then(({config, machineCount, unassignedMachine}) => {
 
           let machineToCreate = config.machinePoolSize - machineCount;
-          let machines = _.times(machineToCreate, () => _createMachine());
+          let machineToDestroy = machineCount - config.machinePoolSize;
+          let machines = null;
 
-          if (machineToCreate > 0) {
+
+          if (machineToDestroy > 0) {
+            machines = _.times(machineToDestroy, (index) => _terminateMachine(unassignedMachine[index]));
+            _createBrokerLog({
+              type: _driver.name()
+            }, `Update machine pool from ${machineCount} to ${machineCount - machineToDestroy} (-${machineToDestroy})`);
+          } else if (machineToCreate > 0) {
+            machines = _.times(machineToCreate, () => _createMachine());
             _createBrokerLog({
               type: _driver.name()
             }, `Update machine pool from ${machineCount} to ${machineCount + machineToCreate} (+${machineToCreate})`);
           }
+
           return Promise.all(machines);
+        })
+        .then(() => {
+          return _createBrokerLog({
+            type: _driver.name()
+          }, 'Machine pool updated');
+        })
+        .catch(() => {
+          _createBrokerLog({
+            type: _driver.name()
+          }, 'Error while updating the pool');
         });
-    })
-    .then(() => {
-      _createBrokerLog({
-        type: _driver.name()
-      }, 'Machine pool updated');
-    })
-    .catch(() => {
-      _createBrokerLog({
-        type: _driver.name()
-      }, 'Error while updating the pool');
     });
 }
 
@@ -719,5 +730,5 @@ function rebootMachine(machine) {
 module.exports = {
   initialize, getMachineForUser, driverName, sessionOpen, sessionEnded,
   machines, createImage, getDefaultImage, refresh, getPassword,
-  rebootMachine, startMachine, stopMachine,
+  rebootMachine, startMachine, stopMachine, updateMachinesPool
 };

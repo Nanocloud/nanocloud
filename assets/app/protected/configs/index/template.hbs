@@ -1,8 +1,12 @@
-<div class='content-wrapper m-t-1'>
-  <p class="color-primary in-bl fl m-t-1">
-    <span class='session-expired'>
-    <span class="va-sup">Session duration (seconds)</span>
-    {{input-confirm class="in-bl va-bottom" placeholder=configController.sessionDuration value=configController.sessionDuration type="number"}}
-    </span>
-  </p>
+<div class="form-group row">
+  <div class="col-sm-2">
+    <p class="confirm-input-item color-primary in-bl fl">Session duration (seconds)</p>
+  </div>
+  <div class="col-sm-3">{{input-confirm class="in-bl va-bottom" placeholder=configController.sessionDuration value=configController.sessionDuration type="number"}}</div>
+</div>
+<div class="form-group row">
+  <div class="col-sm-2">
+    <p  class="confirm-input-item color-primary in-bl fl">Machine pool size</p>
+  </div>
+  <div class="col-sm-3">{{input-confirm class="in-bl va-bottom" placeholder=configController.machinePoolSize value=configController.machinePoolSize type="number"}}</div>
 </div>
