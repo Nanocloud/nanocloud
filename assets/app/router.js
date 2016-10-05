@@ -68,6 +68,7 @@ Router.map(function() {
       });
       this.route('other-setting');
       this.route('look-and-feel');
+      this.route('ldap');
     });
     this.route('brokerlog', function() {});
   });

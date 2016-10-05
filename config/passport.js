@@ -22,13 +22,15 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-/* globals User, AccessToken, sails */
+/* globals User, AccessToken, sails, ConfigService */
 
-var bcrypt = require('bcryptjs'),
+const Promise = require('bluebird'),
+  bcrypt = require('bcryptjs'),
   moment = require('moment'),
   passport = require('passport'),
   BearerStrategy = require('passport-http-bearer').Strategy,
-  LocalStrategy = require('passport-local').Strategy;
+  LocalStrategy = require('passport-local').Strategy,
+  activedirectory = require('activedirectory');
 
 passport.serializeUser(function(user, done) {
   done(null, user.id);
@@ -55,41 +57,119 @@ passport.use(
       process.nextTick(
 
         function () {
-          User.findOne({
-            email: username
-          }).exec(function (err, user) {
-            if (err) {
-              return done(err);
-            }
+          let authLdap = function(ldapConfig, username, password){
+            let config = { url: ldapConfig.url,
+              baseDN: ldapConfig.baseDn,
+              username: username,
+              password: password };
+            let ad = new activedirectory(config);
 
-            if (!user) {
-              return done(null, null);
-            }
-
-            bcrypt.compare(password, user.hashedPassword, function(err, res){
-              if(err){
-                return done(err);
-              } else {
-                if (!res) {
-                  return done({
-                    error: 'access_denied',
-                    error_description: 'Invalid user credentials',
-                    status: 400
+            // Trying to authenticate user in LDAP
+            return new Promise(function(resolve, reject) {
+              ad.authenticate(config.username, config.password, function(err, auth) {
+                if (err) {
+                  return done(null, null);
+                } else if (auth) { // User found in LDAP
+                  ad.opts.bindDN = username;
+                  ad.opts.bindCredentials = password;
+                  ad.findUser(username, function(err, user) {
+                    if (err || !user) {
+                      return reject(JSON.stringify(err));
+                    }
+                    User.create({
+                      firstName: user.givenName,
+                      lastName: user.sn,
+                      email: username,
+                      password: password
+                    })
+                      .then((user) => {
+                        return ConfigService.get('defaultGroupLdap')
+                          .then((config) => {
+                            return new Promise((resolve) => {
+                              if (config.defaultGroupLdap !== '') {
+                                user.groups.add(config.defaultGroupLdap);
+                                user.save((err) => {
+                                  if (err) {
+                                    return reject(null, err);
+                                  }
+                                  return resolve(user, null);
+                                });
+                              } else {
+                                return resolve(user, null);
+                              }
+                            });
+                          });
+                      })
+                      .then((user, err) => {
+                        if (err || !user) {
+                          return reject(err);
+                        }
+                        return resolve(user);
+                      });
                   });
-                } else if (user.expirationDate < Math.floor(new Date() / 1000) && user.expirationDate !== null) {
-                  return done({
-                    error: 'access_denied',
-                    error_description: 'This account is expired',
-                    status: 400
-                  });
-                } else {
-                  return done(null, user);
+                } else { // User not found neither in databse nor in LDAP
+                  return reject(null);
                 }
-              }
+              });
+           });
+          };
+
+          ConfigService.get('ldapActivated', 'ldapUrl', 'ldapBaseDn')
+            .then((config) => {
+              var ldapActivated = config.ldapActivated;
+              var ldapConfig = {
+                url: config.ldapUrl,
+                baseDn: config.ldapBaseDn
+              };
+
+              User.findOne({
+                email: username
+              }).exec(function (err, user) {
+                if (err) {
+                  return done(err);
+                } else if (!user) {
+                  // Can't retreive account in the DB with the specified email
+                  // Is LDAP activated ? if so checking into LDAP if user exists
+                  if (ldapActivated === false) {
+                    return done(null, null);
+                  } else {
+                    return authLdap(ldapConfig, username, password)
+                      .then((user) => {
+                        return done(null, user);
+                      })
+                      .catch((err) => {
+                        return done(err, null);
+                      });
+                  }
+                }
+
+                bcrypt.compare(password, user.hashedPassword, function(err, res){
+                  if(err){
+                    return done(err);
+                  } else {
+                    if (!res) {
+                      return done({
+                        error: 'access_denied',
+                        error_description: 'Invalid user credentials',
+                        status: 400
+                      });
+                    } else if (user.expirationDate < Math.floor(new Date() / 1000)
+                      && (user.expirationDate)) {
+                      return done({
+                        error: 'access_denied',
+                        error_description: 'This account is expired',
+                        status: 400
+                      });
+                    } else {
+                      return done(null, user);
+                    }
+                  }
+                });
             });
           });
         });
-    }));
+    }
+  ));
 
 /**
  * BearerStrategy
