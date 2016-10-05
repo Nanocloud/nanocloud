@@ -151,6 +151,7 @@ module.exports = {
           `.file-explorer .file-list-wrapper > .item.selected{background-color:${config.primaryColor}}`,
           `.file-explorer .file-list-wrapper > .item:hover{color:${darkenColor}}`,
           `.file-explorer .file-list-wrapper > .item:hover.selected{color:#ffffff}`,
+          `.vdi-drag-n-drop .drag-n-drop-area{background-color:${lightenColor}}`,
         ].join('');
 
         res.send({
