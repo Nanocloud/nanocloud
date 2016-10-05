@@ -111,7 +111,7 @@ module.exports = function() {
             .set(nano.adminLogin())
             .expect(200)
             .expect((res) => {
-              expect(res.body.data[1].attributes['first-name']).to.equal('Firstname');
+              expect(res.body.data[3].attributes['first-name']).to.equal('Firstname');
             });
         })
         .then(() => {
@@ -156,7 +156,7 @@ module.exports = function() {
                 .set(nano.adminLogin())
                 .expect(200)
                 .expect((res) => {
-                  let expirationDate = res.body.data[2].attributes['expiration-date'];
+                  let expirationDate = res.body.data[3].attributes['expiration-date'];
 
                   expect(moment(moment.unix(expirationDate)).diff(new Date(), 'days')).to.equal(expirationDateInConfig - 1);
                 });
