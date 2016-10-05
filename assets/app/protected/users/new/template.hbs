@@ -21,12 +21,12 @@
         {{nano-input hideError=userHasSubmitted placeholder='Days left before expiration' model=model valuePath="expirationDate"}}
 
         {{#if loadState}}
-          <button type="submit" class="btn btn-info btn-block text-uppercase">
+          <button type="submit" class="btn btn-info btn-block text-uppercase btn-color-default">
             Create
             {{ fa-icon "spinner" spin=true}}
           </button>
         {{else}}
-          <button type="submit" class="btn btn-primary btn-block text-uppercase">Create</button>
+          <button type="submit" class="btn btn-primary btn-block text-uppercase btn-color-default">Create</button>
         {{/if}}
     </form>
   </div>

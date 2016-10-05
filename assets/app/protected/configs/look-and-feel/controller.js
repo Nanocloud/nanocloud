@@ -23,6 +23,25 @@
  */
 
 import Ember from 'ember';
+
 export default Ember.Controller.extend({
   configController: Ember.inject.controller('protected.configs'),
+  actions: {
+    liveChangeColor(color) {
+      let head = Ember.$(document.head);
+      let actualstyle = document.getElementById('live');
+      if (actualstyle !== null) {
+        actualstyle.remove();
+      }
+      let s = Ember.$('<style id="live"></style>');
+      s.html(`.background-color-default{background-color:${color}}`);
+      head.append(s);
+    },
+
+    colorRefresh() {
+      setTimeout(() => {
+        window.location.reload(1);
+      }, 100);
+    },
+  }
 });

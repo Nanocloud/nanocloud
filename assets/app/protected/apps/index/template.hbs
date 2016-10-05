@@ -10,15 +10,15 @@
           <div class="in-bl">Waiting for VM</div>
         </button>
       {{else}}
-        <button class="btn btn-primary" {{action 'startDesktop'}}>Desktop</button>
+        <button class="btn btn-primary btn-color-default" {{action "startDesktop"}}>Desktop</button>
       {{/if}}
     {{/if}}
     {{#if session.user.isAdmin}}
-      <button class="btn btn-primary" {{action "openFileExplorer"}}>Onboard an application</button>
+      <button class="btn btn-primary btn-color-default" {{action "openFileExplorer"}}>Onboard an application</button>
     {{/if}}
   </div>
   {{models-table
-    class="sortableTable"
+    class="sortableTable color-default"
     data=data
     columns=columns
     showColumnsDropdown=false

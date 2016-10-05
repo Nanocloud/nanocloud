@@ -1,5 +1,5 @@
 <div class="global-container">
-  <div class="sidebar bg-faded">
+  <div class="sidebar bg-faded background-color-default">
     <div class="sidebar-content">
       <div class="top-nav">
         {{#link-to 'protected.dashboard' disabled=session.user.isNotAdmin }}
@@ -145,7 +145,7 @@
           <a href={{redirectLink}} target="_blank">
             <li class="nav-item icon_link clickable">
               {{#tool-tipster content="Need help?" position="right"}}
-                {{icon-component class="va-mid" materialIcon="help"}} <div class="in-bl">Help</div>
+                {{icon-component class="va-mid color-default" materialIcon="help"}} <div class="in-bl color-default">Help</div>
               {{/tool-tipster}}
             </li>
           </a>
@@ -159,7 +159,7 @@
               <span class="caret"></span>
             </button>
             <ul class="dropdown-menu">
-              <li><button class="dropdown-item" type="button" {{ action "logout" }}>Logout</button></li>
+              <li><button class="dropdown-item btn-color-default" type="button" {{ action "logout" }}>Logout</button></li>
             </ul>
           </div>
         </li>

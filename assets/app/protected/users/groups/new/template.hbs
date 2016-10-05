@@ -19,12 +19,12 @@
       </fieldset>
     
       {{#if loadState}}
-        <button class="btn btn-info">
+        <button class="btn btn-info btn-color-default">
           {{ fa-icon "spinner" spin=true}}
           <div class="in-bl">Creating</div>
         </button>
       {{else}}
-        <button type="submit" class="btn btn-primary btn-block text-uppercase" disabled={{preventCreation}}>Create</button>
+        <button type="submit" class="btn btn-primary btn-block text-uppercase btn-color-default" disabled={{preventCreation}}>Create</button>
       {{/if}}
     </form>
   </div>

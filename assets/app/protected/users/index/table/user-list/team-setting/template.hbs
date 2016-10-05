@@ -1,13 +1,13 @@
 {{record.team.name}}
 {{#if targetObject.teams.length}}
   <div class='rel in-bl fright' {{ action toggleUserSetting record }}>
-      {{icon-component class='va-sub color-primary clickable' hover-darker=true materialIcon='settings' size=16}}
+      {{icon-component class='va-sub color-primary clickable color-default' hover-darker=true materialIcon='settings' size=16}}
       {{#if record.teamOptionIsOpen}}
         {{#popup-component isOpen=record.teamOptionIsOpen close=closePopup position="left"}}
         <div class="list-group">
           <a href="#" class="list-group-item list-group-item-action unclickable active"><span class='va-tb'>Teams</span></a>
           {{#each targetObject.teams as |team|}}
-          <a href="#" class="list-group-item list-group-item-action" {{ action changeUserTeam record team }} >{{team.name}}
+          <a href="#" class="list-group-item list-group-item-action background-color-default" {{ action changeUserTeam record team }} >{{team.name}}
             {{#if (is-equal team.id record.team.id)}}
             {{icon-component materialIcon='done' class='color-primary in-bl va-sub fright' size=16}}
             {{/if}}

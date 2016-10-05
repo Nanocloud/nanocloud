@@ -78,8 +78,80 @@ h1 {
   opacity: 1;
 }
 
-.color-primary {
+.background-selected-color {
+  &.selected {
+    background-color: $blue-default;
+  }
+}
+
+.background-color-active {
+  li, a {
+    &.selected {
+      background-color: $white;
+    }
+  }
+}
+
+.color-default {
+  span, a, i {
+    color: $blue-default;
+    &:hover {
+      color: $blue-lighten;
+    }
+  }
+}
+
+.nav-link .background-nav-default {
+  &.active {
+    background-color: $gray-lighter;
+  }
+  &:focus {
+    color: $blue-darken;
+  }
+}
+
+.btn-color-default {
+  border-color: $blue-lighten;
+  background-color: $blue-default;
+  &:hover, &:focus, &:active {
+    background-color: $blue-darken;
+  }
+  &:hover {
+    border-color: $blue-darken;
+  }
+  &:active {
+    background-color: $blue-darken;
+  }
+  &:disabled {
+    &:hover {
+      background-color: $blue-lighten;
+      border-color: $blue-default;
+    }
+  }
+  li {
+    &:hover {
+      background-color: $blue-lighten;
+    }
+  }
+}
+
+.icon-color-default {
   color: $blue-default;
+    &:hover {
+      color: $blue-lighten;
+    }
+}
+
+.background-color-default {
+  background-color: $blue-default;
+  a, li {
+    &:hover {
+      background-color: $blue-lighten;
+    }
+    &.active {
+      color: $blue-default;
+    }
+  }
 }
 
 .color-success {
@@ -126,6 +198,9 @@ h1 {
 .link {
   color: $blue-default;
   cursor: pointer;
+  a {
+    color: $blue-default;
+  }
   &:hover {
     color: darken($blue-default, 20%);
   }
@@ -286,6 +361,7 @@ h1 {
 
 .btn-primary {
   box-shadow: none;
+  border-color: none;
 }
 
 .ember-modal-dialog {

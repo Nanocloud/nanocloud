@@ -13,7 +13,7 @@
     <ul class="nav navbar-nav">
       {{#each tab as |item index |}}
         <li {{ action "setCurrentTab" index }} class="nav-item">
-          {{#link-to item.link model class='nav-link'}}
+          {{#link-to item.link model class='background-nav-default'}}
             {{item.title}}
           {{/link-to}}
         </li>

@@ -53,7 +53,7 @@
             {{/each}}
           </p>
 
-          <button {{action "uploadCallback" uploadData.flushHistory }} type="button" class="btn btn-primary">Clear upload history</button>
+          <button {{action "uploadCallback" uploadData.flushHistory }} type="button" class="btn btn-primary btn-color-default">Clear upload history</button>
         {{/if}}
       </p>
       <div class='content-wrapper'>
@@ -61,7 +61,7 @@
         </div>
         {{#unless modelIsEmpty}}
           {{models-table
-            class="sortableTable"
+            class="sortableTable color-default"
             data=data
             filteringIgnoreCase=sortableTableConfig.filteringIgnoreCase
             columns=columns
