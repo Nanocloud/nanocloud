@@ -124,7 +124,7 @@ module.exports = {
           `.color-default a:hover{color:${config.primaryColor}}`,
           `a:focus{color:${darkenColor}}`,
           `.spinner > div{background-color:${config.primaryColor}}`,
-          `.sk-folding-cube{background-color:${config.primaryColor}}`,
+          `.sk-folding-cube .sk-cube:before{background-color:${config.primaryColor}}`,
           `.edit{color:${config.primaryColor}}`,
           `.edit:hover{color:${lightenColor}}`,
           `.alert-info{color:${darkenColor}}`,
@@ -145,6 +145,12 @@ module.exports = {
           `.icon_link{color:${config.primaryColor}}`,
           `.icon_link:hover{color:${lightenColor}}`,
           `.icon_link.focus{color:${darkenColor}}`,
+          `.vdi .vdi-topbar .item:hover{color:${lightenColor}}`,
+          `.vdi .vdi-topbar .item:hover i{color:${lightenColor} !important}`,
+          `.vdi .vdi-topbar .selected, .vdi .vdi-topbar .selected i{color:${config.primaryColor} !important}`,
+          `.file-explorer .file-list-wrapper > .item.selected{background-color:${config.primaryColor}}`,
+          `.file-explorer .file-list-wrapper > .item:hover{color:${darkenColor}}`,
+          `.file-explorer .file-list-wrapper > .item:hover.selected{color:#ffffff}`,
         ].join('');
 
         res.send({
