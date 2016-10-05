@@ -49,7 +49,11 @@ export default Ember.Service.extend({
     'teamEnabled',
     'machinesName',
     'neverTerminateMachine',
-    'machinePoolSize'
+    'machinePoolSize',
+    'ldapActivated',
+    'ldapUrl',
+    'ldapBaseDn',
+    'defaultGroupLdap',
   ],
   keyToBeRetrievedAsString: Ember.computed('keyToBeRetrieved', function() {
     let params = this.get('keyToBeRetrieved');

@@ -5,6 +5,7 @@
   "description": "Nanocloud",
   "keywords": [],
   "dependencies": {
+    "activedirectory": "^0.7.2",
     "bcryptjs": "^2.3.0",
     "ejs": "2.3.4",
     "extend": "^3.0.0",

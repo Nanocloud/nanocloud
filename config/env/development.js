@@ -119,6 +119,11 @@ module.exports = {
     qemuMemory: '2048',
     qemuCPU: '2',
     qemuMachineUsername: 'Administrator',
-    qemuMachinePassword: ''
+    qemuMachinePassword: '',
+
+    ldapActivated: false,
+    ldapUrl: 'ldap://localhost:389',
+    ldapBaseDn: 'dc=nanocloud,dc=com',
+    defaultGroupLdap: ''
   }
 };

@@ -1,0 +1,51 @@
+<div class="form-group row m-t-1">
+  <div class="checkbox">
+    <label>
+      {{input type="checkbox" checked=configController.ldapActivated}}
+      Activate authentication against LDAP
+    </label>
+  </div>
+</div>
+{{#if configController.ldapActivated}}
+  <div class="form-group row m-t-1">
+    <div class="col-sm-2">
+      <p class="confirm-input-item color-primary in-bl fl">LDAP URL</p>
+    </div>
+    <div class="col-sm-3">
+      {{input-confirm placeholder=configController.ldapUrl value=configController.ldapUrl type="text"}}
+    </div>
+  </div>
+  <div class="form-group row m-t-1">
+    <div class="col-sm-2">
+      <p class="confirm-input-item color-primary in-bl fl">Base DN</p>
+    </div>
+    <div class="col-sm-3">
+      {{input-confirm placeholder=configController.ldapBaseDn value=configController.ldapBaseDn type="text"}}
+    </div>
+  </div>
+  <p class='m-t-1 color-primary'>Select LDAP users default group</p>
+  <ul class="selectable-list">
+    <div class="row">
+      <div class="col-md-6">
+        <table class="table">
+          <tbody>
+            {{#each model.groups as |group|}}
+              <tr>
+                <td scope="row">
+                  <span class="link in-bl">
+                    {{#link-to 'protected.users.groups.group' group}}
+                      {{group.name}}
+                    {{/link-to}}
+                  </span>
+                </td>
+                <td {{action "selectGroup" group.id}}>
+                  {{nano-switch checked=(is-equal group.id defaultGroupLdap)}}
+                </td>
+              </tr>
+            {{/each}}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </ul>
+{{/if}}

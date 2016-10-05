@@ -122,6 +122,12 @@ Qemu use *10.0.2.2* to contact host, you should replace default 'localhost' by t
 
 Once loaded, Nanocloud will be accessible on **localhost**.
 
+Authentication with LDAP:
+- ldapActivated (defaults to false) if true activates LDAP features
+- ldapUrl (defaults to 'ldap://localhost:389')
+- ldapBaseDn (defaults to empty string)
+- ldapDefaultGroup (defaults to empty string (no default group)) id of the group users should be attached to automatically
+
 # Run in developer mode
 
 Nanocloud also relies on Docker to run its development stack:
