@@ -111,7 +111,7 @@ passport.use(
                   return reject(null);
                 }
               });
-           });
+            });
           };
 
           ConfigService.get('ldapActivated', 'ldapUrl', 'ldapBaseDn')
@@ -165,8 +165,8 @@ passport.use(
                     }
                   }
                 });
+              });
             });
-          });
         });
     }
   ));

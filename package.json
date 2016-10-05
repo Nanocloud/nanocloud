@@ -6,9 +6,7 @@
   "keywords": [],
   "dependencies": {
     "activedirectory": "^0.7.2",
-    "async": "^2.0.1",
     "bcryptjs": "^2.3.0",
-    "bunyan": "^1.8.1",
     "ejs": "2.3.4",
     "extend": "^3.0.0",
     "grunt": "0.4.5",
@@ -27,7 +25,6 @@
     "handlebars": "^4.0.5",
     "include-all": "~0.1.6",
     "knex": "^0.11.10",
-    "ldapjs": "^1.0.0",
     "lodash": "^4.14.0",
     "moment": "^2.13.0",
     "morgan": "^1.7.0",
@@ -49,7 +46,6 @@
     "sails-json-api-blueprints": "0.13.1",
     "sails-postgresql": "^0.11.4",
     "sha1": "^1.1.1",
-    "underscore": "^1.8.3",
     "ursa-purejs": "^0.0.3",
     "uuid": "^2.0.2"
   },
