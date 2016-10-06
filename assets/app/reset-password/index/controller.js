@@ -38,6 +38,7 @@ export default Ember.Controller.extend({
         .validate({ on: ['email'] })
         .then(({ validations }) => {
           if (validations.get('isInvalid') === true) {
+            this.set('loadState', 0);
             return this.toast.error('Please enter valid informations');
           }
 
