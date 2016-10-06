@@ -28,7 +28,7 @@ export default Ember.Controller.extend({
   defaultGroupLdap: Ember.computed.alias('configController.defaultGroupLdap'),
   actions: {
     selectGroup(id) {
-      this.get('configController').send('selectGroup', id);
+      this.get('configController').send('selectGroupLdap', id);
     },
   }
 });

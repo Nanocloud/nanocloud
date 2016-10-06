@@ -76,5 +76,12 @@ export default Ember.Controller.extend({
         this.set('defaultGroup', id);
       }
     },
+    selectGroupLdap(id) {
+      if (this.get('defaultGroupLdap') === id) {
+        this.set('defaultGroupLdap', false);
+      } else {
+        this.set('defaultGroupLdap', id);
+      }
+    },
   }
 });
