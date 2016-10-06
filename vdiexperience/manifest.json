@@ -3,19 +3,12 @@
 
   "name": "Nanocloud VDI Experience",
   "description": "This extension offers you a better experience with Nanocloud's VDI",
-  "version": "0.1",
+  "version": "1.0",
 
   "background": {
-    "scripts": ["background.js"]
+    "scripts": ["background.js"],
+    "persistent": false
   },
-
-  "content_scripts": [
-    {
-      "matches": ["*://*/#/apps"],
-      "js": ["agent.js"],
-      "all_frames": true
-    }
-  ],
 
   "icons": {
     "48": "icon48.png",
@@ -23,9 +16,9 @@
   },
 
   "permissions": [
-    "webRequest",
+    "webNavigation",
     "clipboardWrite",
     "clipboardRead",
-    "*://*/#/apps"
+    "*://*/#/vdi*"
   ]
 }

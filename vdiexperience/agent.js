@@ -20,7 +20,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-var executed = false;
 var port = chrome.runtime.connect();
 
 // Listen messages from nanocloud's frontend
@@ -30,16 +29,10 @@ window.addEventListener('message', function(event) {
     port.postMessage(event.data);
   } else if (event.data.type === 'onfocus') {
     port.postMessage(event.data);
+  } else if (event.data.type === 'check') {
+    window.postMessage({type: 'returnCheck', value: 'yes'}, '*');
   }
 }, false);
-
-// Send a message when user is on focus
-if (executed === false && navigator.userAgent.indexOf('Chrome') !== -1) {
-  executed = true;
-  window.onfocus = function() {
-    window.postMessage({type: 'onfocus'}, '*');
-  };
-}
 
 // Listen messages from extension's background,
 // paste data in VDI clipboard text area
@@ -55,3 +48,10 @@ port.onMessage.addListener(function(msg) {
     }
   }
 });
+
+var getUserClipboard = function() {
+  window.postMessage({type: 'onfocus'}, '*');
+};
+
+window.onfocus = getUserClipboard;
+getUserClipboard();
