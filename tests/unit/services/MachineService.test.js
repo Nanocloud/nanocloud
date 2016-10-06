@@ -25,7 +25,9 @@
 /* global MachineService, Machine, ConfigService, BrokerLog */
 
 const adminId = 'aff17b8b-bf91-40bf-ace6-6dfc985680bb';
-const assert = require('chai').assert;
+const chai = require('chai');
+const expect = chai.expect;
+const assert = chai.assert;
 const request = require('request-promise');
 const Promise = require('bluebird');
 
@@ -417,6 +419,51 @@ describe('Machine Service', () => {
               }, 100); // Give broker time to cleanup instances
             });
         });
+    });
+
+    desbribe('Images', function() {
+
+      before('Create images', function(done) {
+        MachineService.getMachineForUser({
+          id: adminId
+        })
+          .then((machine) => {
+            return MachineService.createImage({
+              buildFrom: machine.id,
+              name: 'New image'
+            });
+          })
+          .then(() => {
+            return done();
+          });
+      });
+
+      after('Destroy images', function(done) {
+
+        Image.destroy({
+          name: 'New image'
+        })
+          .then(() => {
+            return done();
+          });
+      });
+
+      it('should exist as much VM in the pool as there are images', function(done) {
+
+        MachineService.updateMachinesPool()
+          .then(() => {
+            Machine.find({
+              status: 'running',
+              user: null
+            })
+              .then((machines) => {
+                expect(machines).to.have.length(2);
+              })
+              .then(() => {
+                return done();
+              });
+          });
+      });
     });
   });
 
