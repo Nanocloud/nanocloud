@@ -111,7 +111,7 @@ module.exports = {
       });
 
       return request.getAsync(plazaAddr)
-        .timeout(500)
+        .timeout(10000)
         .then((res) => {
           let body = res.body;
 
