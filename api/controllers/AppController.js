@@ -108,20 +108,6 @@ module.exports = {
       });
   },
 
-  create(req, res) {
-
-    var values = JsonApiService.deserialize(req.body.data.attributes);
-
-    MachineService.getDefaultImage()
-      .then((defaultImage) => {
-
-        values.image = defaultImage.id;
-        App.create(values)
-          .then(res.created)
-          .catch(res.negotiate);
-      });
-  },
-
   update(req, res) {
 
     let applicationData = JsonApiService.deserialize(req.body.data);

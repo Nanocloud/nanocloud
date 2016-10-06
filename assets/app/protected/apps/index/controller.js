@@ -62,62 +62,30 @@ export default Ember.Controller.extend({
 
   modelIsEmpty: Ember.computed.empty('items'),
 
-  hasDesktop: Ember.computed('items', function() {
-    var res = this.get('items').filterBy('alias', 'Desktop').get('length');
-    return res > 0 ? true : false;
-  }),
-
-  sortableTableConfig: {
-
-    filteringIgnoreCase: true,
-    messageConfig: {
-      searchLabel: '',
-      searchPlaceholder: 'Search',
-    },
-
-    customIcons: {
-      'sort-asc': 'fa fa-caret-up',
-      'sort-desc': 'fa fa-caret-down',
-      caret: 'fa fa-minus',
-      'column-visible': 'fa fa-minus',
-    },
-
-    customClasses: {
-      pageSizeSelectWrapper: 'pagination-number'
-    }
-  },
-
   data : Ember.computed('items.@each', 'items', function() {
 
     const ret = Ember.A();
     const remoteSession = this.get('remoteSession');
 
-    this.get('items').forEach((app) => {
-      if (app.get('alias') !== 'Desktop') {
-        ret.push(App.create({
+    this.get('items').forEach((image) => {
+      const appRet = Ember.A();
+      image.get('apps').forEach((app) => {
+        appRet.push(App.create({
           model: app,
           remoteSession: remoteSession,
           session: this.get('session'),
           controller: this
         }));
-      }
+      });
+
+      ret.push({
+        apps: appRet,
+        name: image.get('name')
+      });
     });
+
     return ret;
   }),
-
-  columns: function() {
-
-    return [
-      {
-        propertyName: 'name',
-        title: 'Name',
-        disableFiltering: true,
-        filterWithSelect: false,
-        disableSorting: true,
-        template: 'protected/apps/index/table/package-list/name'
-      },
-    ];
-  }.property(),
 
   launchVDI(appId) {
 
@@ -174,6 +142,11 @@ export default Ember.Controller.extend({
         });
         desktop.launch();
       }
+    },
+
+    handleVdiClose() {
+      this.get('remoteSession').disconnectSession(this.get('connectionName'));
+      this.send('refreshModel');
     },
 
     toggleFileExplorer() {

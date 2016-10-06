@@ -2214,7 +2214,7 @@ definitions:
             type: string
           build-from:
             type: string
-          default:
+          deleted:
             type: boolean
           password:
             type: string

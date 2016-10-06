@@ -104,7 +104,7 @@ function initialize() {
       _initializing = ConfigService.get('iaas')
         .then((config) => {
           return Image.findOrCreate({
-            default: true
+            buildFrom: null
           }, {
             iaasId: null,
             name: 'Default',
@@ -457,9 +457,9 @@ function updateMachinesPool() {
 
       return Promise.props({
         config: ConfigService.get('machinePoolSize'),
-        machineCount: Machine.count({
-          status: 'running',
-          user: null
+        machineCount: Promise.promisify(Machine.query)({
+          text: 'SELECT image, COUNT(image) FROM machine WHERE "machine"."status" = \'running\' AND "machine"."user" IS NULL GROUP BY "machine"."image"',
+          values: []
         }),
         unassignedMachine: Machine.find({
           user: null
@@ -467,6 +467,7 @@ function updateMachinesPool() {
       })
         .then(({config, machineCount, unassignedMachine}) => {
 
+          // TODO determine the number of machine per image to boot
           let machineToCreate = config.machinePoolSize - machineCount;
           let machineToDestroy = machineCount - config.machinePoolSize;
           let machines = null;
@@ -628,47 +629,16 @@ function machines() {
  *
  * @method createImage
  * @param {Object} Image object with `buildFrom` attribute set to the machine id to create image from
- * @return {Promise[Image]} resolves to the new default image
+ * @return {Promise[Image]} resolves to the created image
  */
 function createImage(image) {
   return _driver.createImage(image)
     .then((newImage) => {
-
-      newImage.default = true;
-      return getDefaultImage()
-        .then((defaultImage) => {
-
-          return Image.update(defaultImage.id, {
-            default: false
-          })
-            .then(() => {
-              return Image.create(newImage);
-            })
-            .then((newImage) => {
-              return ImageGroup.update({
-                image: defaultImage.id
-              }, {
-                image: newImage.id
-              })
-                .then(() => {
-                  return Promise.resolve(newImage);
-                });
-            });
-        });
+      return Image.create(newImage);
+    })
+    .then((newImage) => {
+      return Promise.resolve(newImage);
     });
-}
-
-/*
- * Return default image to create instance from
- *
- * @method getDefaultImage
- * @return {Promise[Image]} the default image
- */
-function getDefaultImage() {
-
-  return Image.findOne({
-    default: true
-  });
 }
 
 /*
@@ -777,6 +747,6 @@ function rebootMachine(machine) {
 
 module.exports = {
   initialize, getMachineForUser, driverName, sessionOpen, sessionEnded,
-  machines, createImage, getDefaultImage, refresh, getPassword,
-  rebootMachine, startMachine, stopMachine, updateMachinesPool
+  machines, createImage, refresh, getPassword, rebootMachine, startMachine,
+  stopMachine, updateMachinesPool
 };

@@ -43,7 +43,7 @@ class QemuDriver extends Driver {
     return ConfigService.get('qemuServiceURL', 'qemuServicePort')
       .then((config) => {
         return Image.update({
-          default: true
+          buildFrom: null
         }, {
           iaasId: 'image.qcow2',
           name: 'Qemu default image',
@@ -203,21 +203,17 @@ class QemuDriver extends Driver {
 
   /*
    * Create an image from a machine
-   * The image will be used as default image for future execution servers
    *
    * @method createImage
    * @param {Object} Image object with `buildFrom` attribute set to the machine id to create image from
-   * @return {Promise[Image]} resolves to the new default image
+   * @return {Promise[Image]} resolves to the new image image
    */
   createImage(imageToCreate) {
     return new Promise((resolve, reject) => {
-      return Promise.props({
-        config: ConfigService.get('qemuServiceURL', 'qemuServicePort'),
-        image: MachineService.getDefaultImage()
-      })
-        .then((res) => {
+      return ConfigService.get('qemuServiceURL', 'qemuServicePort')
+        .then((config) => {
           return request({
-            url: 'http://' + res.config.qemuServiceURL + ':' + res.config.qemuServicePort + '/images',
+            url: 'http://' + config.qemuServiceURL + ':' + config.qemuServicePort + '/images',
             json: true,
             method: 'POST',
             body: {
@@ -230,7 +226,7 @@ class QemuDriver extends Driver {
 
           let imageModel = new Machine._model({
             iaasId: res.iaasId,
-            name: 'Qemu default image',
+            name: 'Qemu image',
             password: null,
             buildFrom: imageToCreate.buildFrom
           });

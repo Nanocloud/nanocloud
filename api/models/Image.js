@@ -42,10 +42,12 @@ module.exports = {
       type: 'string'
     },
     buildFrom: {
-      type: 'string'
+      type: 'string',
+      defaultsTo: null
     },
-    default: {
-      type: 'boolean'
+    deleted: {
+      type: 'boolean',
+      defaultsTo: false
     },
     password: {
       type: 'string',
