@@ -39,6 +39,7 @@ export default Ember.Controller.extend(
     remoteSession: Ember.inject.service('remote-session'),
     queryParams: ['machine_id', 'connection_name'],
     session: Ember.inject.service('session'),
+    configuration: Ember.inject.service('configuration'),
     showHomeBtn: Ember.computed.not('configuration.autoLogoff'),
     dimBackground: Ember.computed.or('enabledWindow', 'windowCollector.onboardApp'),
     connectionName: Ember.computed.alias('connection_name'),
