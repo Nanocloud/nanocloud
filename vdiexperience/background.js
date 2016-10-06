@@ -20,41 +20,35 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-var executed = false;
-
 // Listen when a webrequest in *://*/api/apps/* is completed
-chrome.webRequest.onCompleted.addListener(function(res) {
+chrome.webNavigation.onCompleted.addListener(function(res) {
 
-  if (executed === false) {
-    executed = true;
-    // Inject agent.js in the page
-    chrome.tabs.executeScript(res.tabId, {
-      file: 'agent.js'
-    });
+  // Inject agent.js in the page
+  chrome.tabs.executeScript(res.tabId, {
+    file: 'agent.js'
+  });
+}, {urlMatches: ['http*://*/#/vdi*']});
 
-    chrome.runtime.onConnect.addListener(function(port){
-      port.onMessage.addListener(function(msg) {
+chrome.runtime.onConnect.addListener(function(port){
+  port.onMessage.addListener(function(msg) {
 
-        // Copy from virtual machine to host
-        if (msg.type === 'VDIExperience') {
-          var textArea = document.createElement('textarea');
-          textArea.value = msg.value;
-          document.body.appendChild(textArea);
-          textArea.select();
-          document.execCommand('copy');
-          document.body.removeChild(textArea);
-        }
-        // Copy from host to virtual machine
-        else if (msg.type === 'onfocus') {
-          var paste = document.createElement('textarea');
-          document.body.appendChild(paste);
-          paste.select();
-          document.execCommand('paste');
-          port.postMessage({type: 'paste', value: paste.value});
-          document.body.removeChild(paste);
-        }
-      });
-    });
-  }
-},
-{urls: ['*://*/api/apps/*']});
+    // Copy from virtual machine to host
+    if (msg.type === 'VDIExperience') {
+      var textArea = document.createElement('textarea');
+      textArea.value = msg.value;
+      document.body.appendChild(textArea);
+      textArea.select();
+      document.execCommand('copy');
+      document.body.removeChild(textArea);
+    }
+    // Copy from host to virtual machine
+    else if (msg.type === 'onfocus') {
+      var paste = document.createElement('textarea');
+      document.body.appendChild(paste);
+      paste.select();
+      document.execCommand('paste');
+      port.postMessage({type: 'paste', value: paste.value});
+      document.body.removeChild(paste);
+    }
+  });
+});
