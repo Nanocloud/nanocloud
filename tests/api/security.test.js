@@ -391,8 +391,15 @@ module.exports = function() {
                   alias: 'tempo',
                   'collection-name': 'tempo',
                   'display-name': 'tempo',
-                  'file-path': 'C:\\Windows\\System32\\notepad.exe',
-                  'image': imageId
+                  'file-path': 'C:\\Windows\\System32\\notepad.exe'
+                },
+                relationships: {
+                  image: {
+                    data: {
+                      type: 'images',
+                      id: imageId
+                    }
+                  }
                 },
                 type: 'apps'
               }

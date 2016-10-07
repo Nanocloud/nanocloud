@@ -53,6 +53,7 @@ Router.map(function() {
     });
     this.route('apps', function() {
       this.route('app', { path: '/:app_id' });
+      this.route('image', { path: '/:image_id' });
     });
     this.route('apps');
     this.route('images', function() {

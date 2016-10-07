@@ -93,7 +93,9 @@ export default Ember.Controller.extend({
 
       ret.push({
         apps: appRet,
-        name: image.get('name')
+        name: image.get('name'),
+        id: image.get('id'),
+        buildFrom: image.get('buildFrom')
       });
     });
 

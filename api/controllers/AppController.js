@@ -68,6 +68,20 @@ module.exports = {
     });
   },
 
+  create(req, res) {
+    req.body = JsonApiService.deserialize(req.body);
+
+    let app = req.body.data.attributes;
+    app.image = req.body.data.relationships.image.data.id;
+
+    App.create(app)
+      .populate('image')
+      .then((app) => {
+        return res.created(app);
+      })
+      .catch(res.negotiate);
+  },
+
   findOne(req, res) {
     if (req.user.isAdmin) {
       App.findOne({

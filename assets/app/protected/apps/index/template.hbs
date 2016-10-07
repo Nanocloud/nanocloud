@@ -17,7 +17,14 @@
       {{#each data as |image|}}
       <div class="col-sm-4">
         <div class="card card-block">
-          <h4 class="card-title">{{image.name}}</h4>
+          <h4 class="card-title">{{image.name}}
+          {{#if session.user.isAdmin}}
+            {{#link-to 'protected.apps.image' image}}
+            <span class="fright">
+              {{icon-component class='color-gray-dark icon_link va-bl-mid' materialIcon="settings" size=14}}
+            </span>
+            {{/link-to}}
+          {{/if}}</h4>
           <ul class="list-group list-group-flush">
             {{#each image.apps as |app|}}
             <li {{action 'launch' target='app'}} class="list-group-item">{{app.model.displayName}}
