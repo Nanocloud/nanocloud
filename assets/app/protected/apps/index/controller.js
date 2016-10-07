@@ -40,19 +40,6 @@ let App = Ember.Object.extend({
     this.set('remoteSession.plazaHasFinishedLoading', false);
     this.get('controller')
       .launchVDI(this.get('id'))
-      .then(() => {
-        let app = this.get('model');
-        app.reload()
-          .then(() => {
-            app.set('state', 'running');
-            app.save()
-              .catch(() => {
-                this.toast.error('Cannot start application');
-              })
-              .finally(() => {
-                this.set('remoteSession.plazaHasFinishedLoading', true);
-              });
-          });
       })
       .catch((err) => {
         if (err === 'Exceeded credit') {
