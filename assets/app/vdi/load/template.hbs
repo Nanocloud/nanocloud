@@ -8,7 +8,7 @@
           Status: {{display-guac-status remoteSession.loadState}}<br/>
           Waiting for plaza: {{plazaStatus}}<br/>
           <div class='abs'>
-            {{#if vdiIsLoading}}
+            {{#if vdiIsLoadingAndNoError}}
               Starting..
             {{/if}}
           </div>
@@ -17,7 +17,7 @@
     </div>
   </div>
 {{else}}
-  {{#if remoteSession.isError}} 
+  {{#if guacError}} 
     <div class="vdi-load-background centered fixed">
       <div>
         <h2>An error occured.</h2>
@@ -26,9 +26,20 @@
           <p>
             Message: {{vdiLoadErrorMessage}}
           </p>
-          <p {{action remoteSessionData.retryConnection}} class='clickable color-primary'>
-            Retry connection 
-          </p>
+          <div>
+            {{#icon-component action=(action 'retryConnection' remoteSessionData.retryConnection) materialIcon="refresh" hover-lighter=true class='clickable color-primary va-sup'}}
+              <span class='color-primary va-sup'>
+                Retry connection 
+              </span>
+            {{/icon-component}}
+          </div>
+          <div>
+            {{#icon-component action='goToApp' materialIcon="replay" hover-lighter=true class='clickable color-primary va-sup'}}
+              <span class='color-primary va-sup'>
+                Go back
+              </span>
+            {{/icon-component}}
+          </div>
         </div>
       </div>
     </div>
