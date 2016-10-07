@@ -40,7 +40,6 @@ let App = Ember.Object.extend({
     this.set('remoteSession.plazaHasFinishedLoading', false);
     this.get('controller')
       .launchVDI(this.get('id'))
-      })
       .catch((err) => {
         if (err === 'Exceeded credit') {
           this.toast.error('Exceeded credit');
