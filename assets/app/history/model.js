@@ -34,7 +34,7 @@ export default DS.Model.extend({
   startDate: DS.attr('date'),
   endDate: DS.attr('date'),
   machineId: DS.attr('string'),
-  machineSize: DS.attr('string'),
+  machineType: DS.attr('string'),
   machineDriver: DS.attr('string'),
   duration: Ember.computed('startDate', 'endDate', function() {
     var start = window.moment(this.get('startDate'));
