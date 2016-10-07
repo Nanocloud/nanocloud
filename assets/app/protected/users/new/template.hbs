@@ -7,7 +7,7 @@
   <h1 class='m-t-1 color-primary'>
     Users
     <div class='in-bl'>
-      {{icon-component class="va-sub" materialIcon="navigate_next" size=36}} 
+      {{icon-component class="va-sub" materialIcon="navigate_next" size=36}}
     </div>
     Create a new user
   </h1>
@@ -18,7 +18,7 @@
         {{nano-input hideError=userHasSubmitted placeholder='Email address' model=model valuePath="email"}}
         {{nano-input hideError=userHasSubmitted placeholder='Password' type="password" model=model valuePath="password"}}
         {{nano-input hideError=userHasSubmitted placeholder='Password confirmation' type="password" model=model valuePath="passwordConfirmation"}}
-        {{nano-input hideError=userHasSubmitted placeholder='Days left before expiration' model=model valuePath="expirationDate"}}
+        {{nano-input hideError=userHasSubmitted placeholder='Days left before expiration' model=model valuePath="expirationDate" type="number" min="1" max="1000"}}
 
         {{#if loadState}}
           <button type="submit" class="btn btn-info btn-block text-uppercase btn-color-default">
