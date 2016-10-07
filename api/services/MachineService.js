@@ -508,20 +508,21 @@ function updateMachinesPool() {
 function _shouldTerminateMachine(machine) {
   Promise.props({
     isActive: machine.isSessionActive(),
-    config: ConfigService.get('neverTerminateMachine')
+    config: ConfigService.get('neverTerminateMachine'),
+    machineToTerminate: Machine.findOne({id: machine.id})
   })
-    .then(({isActive, config}) => {
+    .then(({isActive, config, machineToTerminate}) => {
       if (!isActive) {
         const now = new Date();
-        if (machine.endDate < now) {
+        if (machineToTerminate.endDate < now) {
           if (config.neverTerminateMachine) {
-            stopMachine(machine);
+            stopMachine(machineToTerminate);
           } else {
-            machine.user = null;
+            machineToTerminate.user = null;
 
-            Machine.update(machine.id, machine)
+            Machine.update(machineToTerminate.id, machineToTerminate)
               .then(() => {
-                _terminateMachine(machine);
+                _terminateMachine(machineToTerminate);
               });
           }
         }
