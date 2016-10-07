@@ -175,6 +175,10 @@ export default Ember.Service.extend(Ember.Evented, {
     }
   },
 
+  resetState(){
+    this.set('loadState', this.get('STATE_IDLE'));
+  },
+
   stateChanged(state, isError, errorMessage) {
     if (isError) {
       this.set('isError', true);

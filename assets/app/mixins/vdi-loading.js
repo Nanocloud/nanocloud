@@ -33,17 +33,23 @@ export default Ember.Mixin.create({
   plazaHasFinishedLoading: Ember.computed.alias('remoteSession.plazaHasFinishedLoading'),
 
   guacHasFinishedLoading: Ember.computed('remoteSession.loadState', function() {
-    if (this.get('remoteSession.loadState') !== 3) {
+    if (this.get('remoteSession.loadState') === 3) {
+      return true;
+    }
+    return false;
+  }),
+  guacError: Ember.computed.gt('remoteSession.loadState', 3),
+
+  vdiIsLoading: Ember.computed('guacHasFinishedLoading', 'plazaHasFinishedLoading', 'guacError', function() {
+    if (this.get('guacHasFinishedLoading') && this.get('plazaHasFinishedLoading') && this.get('guacError') === false) {
       return false;
     }
     return true;
   }),
-
-  vdiIsLoading: Ember.computed.and('guacHasFinishedLoading', 'plazaHasFinishedLoading'),
   showVdi: false,
   showVdiAnimation: function() {
     this.set('showVdi', false);
-    if (this.get('vdiIsLoading') === true) {
+    if (this.get('vdiIsLoading') === false && this.get('guacError') === false) {
       Ember.run.later(() => {
         $('.vdi-load-background').velocity({
           opacity: 0
@@ -61,6 +67,9 @@ export default Ember.Mixin.create({
           }.bind(this)
         });
       }, 1500);
+    }
+    else if (this.get('guacError') === true) {
+      this.set('showVdi', true);
     }
   }.observes('vdiIsLoading'),
 
@@ -101,4 +110,11 @@ export default Ember.Mixin.create({
           });
       });
   },
+
+  actions: {
+    retryConnection(callback) {
+      this.get('remoteSession').resetState();
+      callback();
+    }
+  }
 });

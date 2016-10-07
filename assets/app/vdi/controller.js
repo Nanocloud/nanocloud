@@ -89,7 +89,9 @@ export default Ember.Controller.extend(
 
     actions: {
       goToApp() {
+        this.get('remoteSession').pauseInputs(this.get('connection_name'));
         this.get('remoteSession').disconnectSession(this.get('connection_name'));
+        this.send('closeAllWindow');
         this.transitionToRoute('protected.apps');
       },
 
