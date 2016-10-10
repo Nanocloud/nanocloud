@@ -9,7 +9,7 @@
 		        {{nano-input placeholder='Lastname' model=model valuePath="lastName"}}
 		        {{nano-input placeholder='Email address' model=model valuePath="email"}}
 		        {{nano-input placeholder='Password' type="password" model=model valuePath="password"}}
-		        {{nano-input placeholder='Password confirmation' type="password" value=passwordConfirmation}}
+		        {{nano-input placeholder='Password confirmation' type="password" model=model valuePath="passwordConfirmation"}}
 
             <button {{ action "submitForm" }} type="submit" class="btn btn-primary btn-block text-uppercase btn-color-default {{ if loadState 'loadState btn-color-default' }}">
               <span class='text'>Sign Up</span>
