@@ -8,14 +8,17 @@
   cursor: pointer;
 }
 
-.icon-component.hover-enabled:hover i {
+.icon-component.hover-enabled:hover i ,
+.icon-component.hover-enabled:hover .content{
   color: $blue-default;
 }
 
-.icon-component.hover-darker:hover i {
+.icon-component.hover-darker:hover i,
+.icon-component.hover-darker:hover .content{
   color: $blue-darken;
 }
 
-.icon-component.hover-lighter:hover i {
+.icon-component.hover-lighter:hover i,
+.icon-component.hover-lighter:hover .content {
   color: $blue-lighten;
 }
