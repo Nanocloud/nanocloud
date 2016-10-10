@@ -33,6 +33,8 @@ export default Ember.Component.extend({
   type: 'text',
   validation: null,
   isFocused: false,
+  min: '',
+  max: '',
 
   didInsertElement() {
     if (this.get('autofocus') === true) {
