@@ -453,7 +453,7 @@ function updateMachinesPool() {
 
       return Promise.props({
         config: ConfigService.get('machinePoolSize'),
-        machineCount: Promise.promisify(Machine.query)({
+        machinesCount: Promise.promisify(Machine.query)({
           text: 'SELECT image, COUNT(image) FROM machine WHERE "machine"."user" IS NULL GROUP BY "machine"."image"',
           values: []
         }),
@@ -461,18 +461,34 @@ function updateMachinesPool() {
           deleted: false
         })
       })
-        .then(({config, machineCount, images}) => {
+        .then(({config, machinesCount, images}) => {
           images.forEach((image) => {
-            let machineCreated = _.find(machineCount.rows, (m) => m.image === image.id) || {count: 0};
+            let machineCreated = _.find(machinesCount.rows, (m) => m.image === image.id) || {count: 0};
             let machineToCreate = config.machinePoolSize - machineCreated.count;
-            _.times(machineToCreate, () => _createMachine(image));
+            let machineToDestroy = machineCreated.count - config.machinePoolSize;
 
-            if (machineToCreate > 0) {
+            if (machineToDestroy > 0) {
+              return Machine.find({
+                image: image.id,
+                user: null
+              })
+                .limit(machineToDestroy)
+                .then((machines) => {
+                  machines.forEach((machine) => {
+                    _terminateMachine(machine);
+                    _createBrokerLog({
+                      type: _driver.name()
+                    }, `Update machine pool for image ${image.name} from ${machineCreated.count} to ${machineCreated.count - machineToDestroy} (-${machineToDestroy})`);
+                  });
+                });
+            } else if (machineToCreate > 0) {
+              _.times(machineToCreate, () => _createMachine(image));
               _createBrokerLog({
                 type: _driver.name()
               }, `Update machine pool for image ${image.name} from ${machineCreated.count} to ${machineCreated.count + machineToCreate} (+${machineToCreate})`);
             }
           });
+
         })
         .then(() => {
           return _createBrokerLog({

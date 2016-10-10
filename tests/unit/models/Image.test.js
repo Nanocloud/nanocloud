@@ -24,7 +24,7 @@
 
 // jshint mocha:true
 
-/* globals App, Image, MachineService */
+/* globals App, Image, MachineService, Machine */
 
 const adminId = 'aff17b8b-bf91-40bf-ace6-6dfc985680bb';
 const chai = require('chai');
@@ -58,6 +58,21 @@ describe('Images', () => {
       App.destroy({
         alias: 'app1'
       })
+        .then(() => {
+          return Image.findOne({
+            name: 'Parent image'
+          });
+        })
+        .then((image) => {
+          return Machine.destroy({
+            image: image.id
+          });
+        })
+        .then(() => {
+          return Image.destroy({
+            name: 'Parent image'
+          });
+        })
         .then(() => done());
     });
 
