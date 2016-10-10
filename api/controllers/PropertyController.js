@@ -124,7 +124,6 @@ module.exports = {
           `.color-default a:hover{color:${config.primaryColor}}`,
           `a:focus{color:${darkenColor}}`,
           `.spinner > div{background-color:${config.primaryColor}}`,
-          `.sk-folding-cube .sk-cube:before{background-color:${config.primaryColor}}`,
           `.edit{color:${config.primaryColor}}`,
           `.edit:hover{color:${lightenColor}}`,
           `.alert-info{color:${darkenColor}}`,
