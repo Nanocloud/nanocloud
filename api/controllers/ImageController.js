@@ -22,15 +22,57 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-/* globals MachineService, Image */
+/* globals Machine, MachineService, Image */
 
+const Promise = require('bluebird');
 const uuid = require('node-uuid');
+const _ = require('lodash');
 
 module.exports = {
 
+  /*
+   * Retrieves images a given user can access
+   *
+   * @param {Object} a user object (usually req.user)
+   * @return {Promise[array]} a promise resolving to an array of Images
+   */
+  _getImages(user) {
+
+    return new Promise((resolve, reject) => {
+      return Image.query({
+        text: `SELECT DISTINCT
+                 "image".id,
+                 "image".name,
+                 "image".deleted,
+                 "image".password
+                 FROM "image"
+                 LEFT JOIN "imagegroup" on imagegroup.image = image.id
+                 LEFT JOIN "group" on imagegroup.group = "group".id
+                 LEFT JOIN "usergroup" on usergroup.group = "group".id
+                 WHERE (usergroup.user = $1::varchar OR $2::boolean = true) AND "image".deleted = false`,
+        values: [
+          user.id,
+          user.isAdmin
+        ]
+      }, (err, images) => {
+
+        if (err) {
+          return reject(err);
+        }
+
+        return resolve(images);
+      });
+    });
+  },
+
   create: function(req, res) {
 
-    MachineService.getMachineForUser(req.user)
+    let machineId = _.get(req, 'body.data.attributes.build-from');
+    if (!machineId) {
+      return res.badRequest('Invalid base machine ID');
+    }
+
+    Machine.findOne(machineId)
       .then((machine) => {
 
         return MachineService.createImage({
@@ -43,20 +85,41 @@ module.exports = {
   },
 
   findOne: function(req, res) {
-    Image.findOne({
-      id: req.allParams().id
-    })
-      .populate('apps')
-      .then(res.ok)
-      .catch(res.negotiate);
+    if (req.user.isAdmin) {
+      Image.findOne({
+        id: req.allParams().id
+      })
+        .populate('apps')
+        .then(res.ok)
+        .catch(res.negotiate);
+    } else {
+      this._getImages(req.user)
+        .then((images) => {
+          images = images.rows;
+          var image = _.find(images, function(element) { return element.id === req.allParams().id; });
+          if (image) {
+            return res.ok(image);
+          }
+          return res.notFound();
+        });
+    }
   },
 
   find: function(req, res) {
-    Image.find({
-      deleted: false
-    })
-      .populate('apps')
-      .then(res.ok)
-      .catch(res.negotiate);
+
+    this._getImages(req.user)
+      .then((images) => {
+        let imageIds = _.map(images.rows, 'id');
+
+        // TODO: deleted must be false
+        Image.find(imageIds)
+          .populate('apps')
+          .then((images) => {
+            return res.ok(images);
+          });
+      })
+      .catch((err) => {
+        return res.negociate(err);
+      });
   }
 };

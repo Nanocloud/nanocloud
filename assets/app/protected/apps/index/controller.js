@@ -39,7 +39,21 @@ let App = Ember.Object.extend({
   launch() {
     this.set('remoteSession.plazaHasFinishedLoading', false);
     this.get('controller')
-      .launchVDI(this.get('id'))
+      .launchVDI(this.get('id'), this.get('image'))
+      .then(() => {
+        let app = this.get('model');
+        app.reload()
+          .then(() => {
+            app.set('state', 'running');
+            app.save()
+              .catch(() => {
+                this.toast.error('Cannot start application');
+              })
+              .finally(() => {
+                this.set('remoteSession.plazaHasFinishedLoading', true);
+              });
+          });
+      })
       .catch((err) => {
         if (err === 'Exceeded credit') {
           this.toast.error('Exceeded credit');
@@ -52,12 +66,10 @@ let App = Ember.Object.extend({
 
 export default Ember.Controller.extend({
   showSingleTab: false,
-  showFileExplorer: false,
   connectionName: null,
   session: Ember.inject.service('session'),
   remoteSession: Ember.inject.service('remote-session'),
   configuration: Ember.inject.service('configuration'),
-  isPublishing: false,
   isCheckingMachine: false,
 
   modelIsEmpty: Ember.computed.empty('items'),
@@ -74,6 +86,7 @@ export default Ember.Controller.extend({
           model: app,
           remoteSession: remoteSession,
           session: this.get('session'),
+          image: image.get('id'),
           controller: this
         }));
       });
@@ -87,12 +100,11 @@ export default Ember.Controller.extend({
     return ret;
   }),
 
-  launchVDI(appId) {
-
+  launchVDI(appId, imageId) {
     return new Ember.RSVP.Promise((res, rej) => {
 
       this.set('isCheckingMachine', true);
-      this.get('store').query('machines/user', {})
+      this.get('store').query('machines/user', {image: imageId})
         .then((machines) => {
           if (machines.get('length') > 0) {
             this.get('remoteSession').one('connected', () => {
@@ -102,7 +114,8 @@ export default Ember.Controller.extend({
             this.transitionToRoute('vdi', {
               queryParams: {
                 connection_name: this.get('connectionName'),
-                machine_id: machines.objectAt(0).get('id')
+                machine_id: machines.objectAt(0).get('id'),
+                image_id: imageId
               }
             });
           }
@@ -149,21 +162,5 @@ export default Ember.Controller.extend({
       this.send('refreshModel');
     },
 
-    toggleFileExplorer() {
-      this.toggleProperty('showFileExplorer');
-    },
-
-    closeFileExplorer() {
-      this.set('showFileExplorer', false);
-    },
-
-    openFileExplorer() {
-      this.set('showFileExplorer', true);
-    },
-
-    onboardAppSucceeded() {
-      this.send('closeFileExplorer');
-      this.send('refreshModel');
-    }
   }
 });

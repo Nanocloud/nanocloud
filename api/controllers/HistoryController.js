@@ -25,7 +25,7 @@
  * @help        :: See http://sailsjs.org/#!/documentation/concepts/Controllers
  */
 
-/* global Machine, MachineService, JsonApiService, User */
+/* global App, MachineService, Image, JsonApiService */
 
 const _= require('lodash');
 
@@ -33,21 +33,49 @@ module.exports = {
   create(req, res) {
     req.body = JsonApiService.deserialize(req.body);
 
-    let machineId = _.get(req.body, 'data.attributes.machineId');
+    let userId = _.get(req.body, 'data.attributes.userId');
+    let connectionId = _.get(req.body, 'data.attributes.connectionId');
 
-    if (!machineId) {
-      return res.badRequest('Invalid machine id');
+    if (!connectionId) {
+      return res.badRequest('Invalid connection id');
     }
 
-    Machine.findOne(machineId)
-      .then((machine) => {
-        if (req.body.data.attributes.endDate === '') {
-          MachineService.sessionOpen({
-            id: machine.user
-          });
+    App.findOne(connectionId)
+      .then((app) => {
+        if (!app) {
+          throw new Error('Connection not found');
         }
 
+        return Image.findOne(app.image);
+      })
+      .then((image) => {
+        return MachineService.getMachineForUser({
+          id: userId
+        }, {
+          id: image.id
+        });
+      })
+      .then((machine) => {
+        _.set(req.body, 'data.attributes.machineId', machine.id);
+        _.set(req.body, 'data.attributes.machineType', machine.driver);
+        _.set(req.body, 'data.attributes.machineDriver', machine.type);
+        if (req.body.data.attributes.endDate === '') {
+          return MachineService.sessionOpen({
+            id: machine.user
+          }, {
+            id: machine.image
+          });
+        }
+      })
+      .then(() => {
         return JsonApiService.createRecord(req, res);
+      })
+      .catch((err) => {
+        if (err.message === 'Connection not found') {
+          return res.notFound(err);
+        } else {
+          return res.negotiate(err);
+        }
       });
   },
 
@@ -55,26 +83,46 @@ module.exports = {
 
     req.body = JsonApiService.deserialize(req.body);
 
-    let machineId = _.get(req.body, 'data.attributes.machineId');
-
-    if (!machineId) {
-      return res.badRequest('Invalid machine id');
+    let userId = _.get(req.body, 'data.attributes.userId');
+    let connectionId = _.get(req.body, 'data.attributes.connectionId');
+    if (!connectionId) {
+      return res.badRequest('Invalid connectionId id');
     } else if (req.body.data.attributes.endDate === '') {
       return res.badRequest('Invalid end date');
     }
 
-    Machine.findOne(machineId)
-      .then((machine) => {
-        return User.findOne({
-          id: machine.user
-        });
+    App.findOne(connectionId)
+      .then((app) => {
+        if (!app) {
+          throw new Error('Connection not found');
+        }
+
+        return Image.findOne(app.image);
       })
-      .then((user) => {
-        MachineService.sessionEnded(user);
+      .then((image) => {
+        return MachineService.sessionEnded({
+          id: userId
+        }, {
+          id: image.id
+        })
+          .then(() => {
+            return MachineService.getMachineForUser({
+              id: userId
+            }, {
+              id: image.id
+            });
+          });
+      })
+      .then((machine) => {
+        _.set(req.body, 'data.attributes.machineId', machine.id);
         return JsonApiService.updateOneRecord(req, res);
       })
       .catch((err) => {
-        return res.negotiate(err);
+        if (err.message === 'Connection not found') {
+          return res.notFound(err);
+        } else {
+          return res.negotiate(err);
+        }
       });
   }
 };

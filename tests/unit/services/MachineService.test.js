@@ -22,7 +22,7 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-/* global MachineService, Machine, ConfigService, BrokerLog */
+/* global Image, MachineService, Machine, ConfigService, BrokerLog */
 
 const adminId = 'aff17b8b-bf91-40bf-ace6-6dfc985680bb';
 const chai = require('chai');
@@ -48,15 +48,22 @@ describe('Machine Service', () => {
         user: null
       })
         .then((machines) => {
-          ConfigService.get('machinePoolSize')
-            .then((conf) => {
-              if (machines.length !== conf.machinePoolSize) {
+          Promise.props({
+            conf: ConfigService.get('machinePoolSize'),
+            images: Image.find({
+              deleted: false
+            })
+          })
+            .then(({conf, images}) => {
+              if (machines.length !== conf.machinePoolSize * images.length) {
                 throw new Error('Available machines should be equal to machine pool size');
               }
 
               return MachineService.getMachineForUser({
                 id: adminId,
                 name: 'Admin'
+              }, {
+                id: images[0].id
               })
                 .then(() => {
                   return new Promise((resolve, reject) => {
@@ -64,7 +71,7 @@ describe('Machine Service', () => {
                       Machine.count()
                         .then((machineNbr) => {
 
-                          if (machineNbr !== conf.machinePoolSize + 1) {
+                          if (machineNbr !== conf.machinePoolSize * images.length + 1) {
                             return reject('A new machine should be created');
                           }
 
@@ -79,7 +86,7 @@ describe('Machine Service', () => {
                   });
                 })
                 .then((machineNbr) => {
-                  if (machineNbr !== conf.machinePoolSize) {
+                  if (machineNbr !== conf.machinePoolSize * images.length) {
                     throw new Error('One machine should belongs to the admin');
                   }
                   return new Promise((resolve) => {
@@ -138,11 +145,11 @@ describe('Machine Service', () => {
                   });
                 })
                 .then((logs) => {
-                  if (logs.length !== 2) {
+                  if (logs.length !== 3) {
                     throw new Error('Broker should log when machine pool need to be update');
                   }
                   assert.isNull(logs[0].machineId);
-                  assert.equal(logs[0].state, 'Update machine pool from 0 to 1 (+1)');
+                  assert.equal(logs[0].state, 'Update machine pool for image Default from 0 to 1 (+1)');
                   assert.equal(logs[0].machineDriver, 'dummy');
                 })
                 .then(() => {
@@ -153,17 +160,19 @@ describe('Machine Service', () => {
     });
 
     it('Should return the same machine for a user', (done) => {
-      MachineService.getMachineForUser({
-        id: adminId,
-        name: 'Admin'
+      Machine.findOne({
+        user: adminId,
       })
         .then((res) => {
 
           const userMachine = res.id;
+          const machineImage = res.image;
 
           MachineService.getMachineForUser({
             id: adminId,
             name: 'Admin'
+          }, {
+            id: machineImage
           })
             .then((res) => {
               assert.equal(res.id, userMachine);
@@ -175,9 +184,8 @@ describe('Machine Service', () => {
     });
 
     it('Should return an inactive session', (done) => {
-      MachineService.getMachineForUser({
-        id: adminId,
-        name: 'Admin'
+      Machine.findOne({
+        user: adminId
       })
         .then((machine) => {
           return machine.getSessions();
@@ -190,13 +198,19 @@ describe('Machine Service', () => {
     });
 
     it('Opening a session should considere it as active', (done) => {
-      MachineService.sessionOpen({
-        id: adminId
+      Machine.findOne({
+        user: adminId
       })
+        .then((machine) => {
+          return MachineService.sessionOpen({
+            id: adminId
+          }, {
+            id: machine.image
+          });
+        })
         .then(() => {
-          return MachineService.getMachineForUser({
-            id: adminId,
-            name: 'Admin'
+          return Machine.findOne({
+            user: adminId
           })
             .then((machine) => {
               return request('http://' + machine.ip + ':' + machine.plazaport + '/sessionOpen')
@@ -233,9 +247,8 @@ describe('Machine Service', () => {
     });
 
     it('Should return an active session', (done) => {
-      MachineService.getMachineForUser({
-        id: adminId,
-        name: 'Admin'
+      Machine.findOne({
+        user: adminId
       })
         .then((machine) => {
           return machine.getSessions();
@@ -248,9 +261,8 @@ describe('Machine Service', () => {
     });
 
     it('Should end the active session', (done) => {
-      MachineService.getMachineForUser({
-        id: adminId,
-        name: 'Admin'
+      Machine.findOne({
+        user: adminId
       })
         .then((machine) => {
           return machine.killSession()
@@ -265,9 +277,8 @@ describe('Machine Service', () => {
     });
 
     it('Should stop machine', (done) => {
-      return MachineService.getMachineForUser({
-        id: adminId,
-        name: 'Admin'
+      return Machine.findOne({
+        user: adminId
       })
         .then((machine) => {
           return MachineService.stopMachine(machine)
@@ -303,9 +314,8 @@ describe('Machine Service', () => {
     });
 
     it('Should start machine', (done) => {
-      return MachineService.getMachineForUser({
-        id: adminId,
-        name: 'Admin'
+      return Machine.findOne({
+        user: adminId
       })
         .then((machine) => {
           return MachineService.startMachine(machine)
@@ -341,129 +351,116 @@ describe('Machine Service', () => {
     });
 
     it('Should terminate machine if no connection occured after the maximum session duration time', (done) => {
-      return MachineService.getMachineForUser({
-        id: adminId,
-        name: 'Admin'
+      return Image.findOne({
+        name: 'Default'
       })
-        .then((machine) => {
-          return request('http://' + machine.ip + ':' + machine.plazaport + '/sessionClose')
-            .then(() => {
-              return MachineService.sessionEnded({
-                id: adminId
-              });
-            })
-            .then(() => {
-              return Machine.findOne({
-                user: adminId
-              });
-            })
-            .then((userMachine) => {
-              assert.isNotNull(userMachine.endDate);
-              return new Promise((resolve) => {
-                return setTimeout(function() {
+        .then((image) => {
+          return MachineService.getMachineForUser({
+            id: adminId
+          }, image)
+            .then((machine) => {
+              return request('http://' + machine.ip + ':' + machine.plazaport + '/sessionClose')
+                .then(() => {
+                  return MachineService.sessionEnded({
+                    id: adminId
+                  }, image);
+                })
+                .then(() => {
+                  return Machine.findOne({
+                    user: adminId,
+                    image: image.id
+                  });
+                })
+                .then((userMachine) => {
+                  assert.isNotNull(userMachine.endDate);
                   return BrokerLog.find({
                     userId: adminId,
                     state: 'Closed'
-                  })
-                    .then((log) => {
-                      return resolve(log);
-                    });
-                }, 100);
-              });
-            })
-            .then((logs) => {
-              if (!logs.length || !logs[0].machineId.length) {
-                throw new Error('Broker should log when a session ended');
-              }
-              assert.equal(logs[0].userId, adminId);
-              assert.isNotNull(logs[0].machineId);
-              assert.equal(logs[0].state, 'Closed');
-              assert.equal(logs[0].machineDriver, 'dummy');
-              assert.equal(logs[0].machineFlavor, 'dummy');
-              setTimeout(() => {
-                return Machine.findOne({
-                  id: machine.id
+                  });
                 })
-                  .then((res) => {
-                    assert.isUndefined(res);
-                  })
-                  .then(() => {
-                    return Machine.find({
-                      user: null
-                    });
-                  })
-                  .then((machines) => {
-                    assert.equal(machines.length, 1);
-                    assert.isNull(machines[0].user);
-                    return new Promise((resolve) => {
-                      return setTimeout(function() {
+                .then((logs) => {
+                  if (!logs.length || !logs[0].machineId.length) {
+                    throw new Error('Broker should log when a session ended');
+                  }
+                  assert.equal(logs[0].userId, adminId);
+                  assert.isNotNull(logs[0].machineId);
+                  assert.equal(logs[0].state, 'Closed');
+                  assert.equal(logs[0].machineDriver, 'dummy');
+                  assert.equal(logs[0].machineFlavor, 'dummy');
+                  setTimeout(() => {
+                    return Machine.findOne({
+                      id: machine.id
+                    })
+                      .then((res) => {
+                        assert.isUndefined(res);
+                      })
+                      .then(() => {
+                        return Machine.find({
+                          user: null
+                        });
+                      })
+                      .then((machines) => {
+                        assert.equal(machines.length, 2);
+                        assert.isNull(machines[0].user);
                         return BrokerLog.find({
                           state: 'Deleted'
-                        })
-                          .then((log) => {
-                            return resolve(log);
-                          });
-                      }, 100);
-                    });
-                  })
-                  .then((logs) => {
-                    if (!logs.length || !logs[0].machineId.length) {
-                      throw new Error('Broker should log when a machine is terminated');
-                    }
-                    assert.isNotNull(logs[0].machineId);
-                    assert.equal(logs[0].state, 'Deleted');
-                    assert.equal(logs[0].machineDriver, 'dummy');
-                    assert.equal(logs[0].machineFlavor, 'dummy');
-                    return done();
-                  });
-              }, 100); // Give broker time to cleanup instances
+                        });
+                      })
+                      .then((logs) => {
+                        if (!logs.length || !logs[0].machineId.length) {
+                          throw new Error('Broker should log when a machine is terminated');
+                        }
+                        assert.isNotNull(logs[0].machineId);
+                        assert.equal(logs[0].state, 'Deleted');
+                        assert.equal(logs[0].machineDriver, 'dummy');
+                        assert.equal(logs[0].machineFlavor, 'dummy');
+                        return done();
+                      });
+                  }, 100); // Give broker time to cleanup instances
+                });
             });
+        });
+      });
+    });
+
+  describe('Images', function() {
+
+    before('Create images', function(done) {
+
+      return Machine.find()
+        .then((machines) => {
+          return MachineService.createImage({
+            buildFrom: machines[0].id,
+            name: 'New image'
+          });
+        })
+        .then(() => {
+          return done();
+        });
+
+    });
+
+    after('Destroy images', function(done) {
+
+      return Image.destroy({
+        name: 'New image'
+      })
+        .then(() => {
+          return done();
         });
     });
 
-    desbribe('Images', function() {
-
-      before('Create images', function(done) {
-        MachineService.getMachineForUser({
-          id: adminId
+    it('should exist as much VM in the pool as there are images', function(done) {
+      Machine.find({
+        status: 'running',
+        user: null
+      })
+        .then((machines) => {
+          expect(machines).to.have.length(2);
         })
-          .then((machine) => {
-            return MachineService.createImage({
-              buildFrom: machine.id,
-              name: 'New image'
-            });
-          })
-          .then(() => {
-            return done();
-          });
-      });
-
-      after('Destroy images', function(done) {
-
-        Image.destroy({
-          name: 'New image'
-        })
-          .then(() => {
-            return done();
-          });
-      });
-
-      it('should exist as much VM in the pool as there are images', function(done) {
-
-        MachineService.updateMachinesPool()
-          .then(() => {
-            Machine.find({
-              status: 'running',
-              user: null
-            })
-              .then((machines) => {
-                expect(machines).to.have.length(2);
-              })
-              .then(() => {
-                return done();
-              });
-          });
-      });
+        .then(() => {
+          return done();
+        });
     });
   });
 

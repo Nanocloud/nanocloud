@@ -26,7 +26,7 @@ import Ember from 'ember';
 
 export default Ember.Route.extend({
   setupController(controller, model) {
-    controller.set('images', model.filterBy('default', true).toArray());
+    controller.set('images', model.filterBy('deleted', false).toArray());
     controller.reset();
   },
 

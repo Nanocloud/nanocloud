@@ -25,7 +25,7 @@
 const Promise = require('bluebird');
 const _ = require('lodash');
 
-/* globals Machine, MachineService */
+/* globals Machine */
 
 module.exports = {
 
@@ -40,7 +40,7 @@ module.exports = {
         });
 
         Promise.all(sessionsRequest)
-          .timeout(2000)
+          .timeout(10000)
           .then((sessions) => {
 
             sessions = _.reject(sessions, _.isEmpty);
@@ -54,7 +54,12 @@ module.exports = {
 
   disconnect: function(req, res) {
 
-    MachineService.getMachineForUser(req.user)
+    let machineId = _.get(req.body, 'machineId');
+    if (!machineId) {
+      return res.badRequest('Invalid machine id');
+    }
+
+    Machine.findOne(machineId)
       .then((machine) => {
         return machine.killSession();
       })

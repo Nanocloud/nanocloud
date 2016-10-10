@@ -29,7 +29,7 @@
  * @help        :: See http://sailsjs.org/#!/documentation/concepts/Controllers
  */
 
-/* globals AccessToken, ConfigService, MachineService, PlazaService, Storage, StorageService, Team, User */
+/* globals AccessToken, ConfigService, Machine, PlazaService, Storage, StorageService, Team, User */
 
 const Promise = require('bluebird');
 
@@ -179,9 +179,10 @@ module.exports = {
   files: function(req, res) {
 
     let getFiles;
+    let machine = req.allParams().machine;
 
-    if (req.allParams().machines) {
-      getFiles = MachineService.getMachineForUser(req.user)
+    if (machine) {
+      getFiles = Machine.findOne(machine)
         .then((machine) => {
           return PlazaService.files({
             hostname: machine.ip,

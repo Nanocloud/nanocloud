@@ -29,19 +29,19 @@
 const adminId = 'aff17b8b-bf91-40bf-ace6-6dfc985680bb';
 const chai = require('chai');
 const expect = chai.expect;
+const Promise = require('bluebird');
 
 describe('Images', () => {
 
   describe('Creating an image', function() {
 
-    let defaultImage =
+    let defaultImage = null;
 
     before('Create test app to associate to default image', function(done) {
       Image.findOne({
-        default: true
+        deleted: false
       })
         .then((image) => {
-
           defaultImage = image;
           return App.create({
             alias: 'app1',
@@ -65,6 +65,8 @@ describe('Images', () => {
 
       MachineService.getMachineForUser({
         id: adminId
+      }, {
+        id: defaultImage.id
       })
         .then((machine) => {
           return MachineService.createImage({
@@ -79,14 +81,18 @@ describe('Images', () => {
           });
         })
         .then(({defaultImage, newImage}) => {
-
-          let appToFind = defaultImage.apps[1];
           expect(newImage.apps).to.have.length(2);
-          expect(newImage.apps).to.deep.include(appToFind);
+
+          let application = newImage.apps[0];
+          if (application.alias === 'Desktop') {
+            application = newImage.apps[1];
+          }
+          expect(application.alias).to.be.equal('app1');
+          expect(application.filePath).to.be.equal('C:\\fake.exe');
         })
         .then(() => {
           return done();
         });
     });
   });
-})
+});

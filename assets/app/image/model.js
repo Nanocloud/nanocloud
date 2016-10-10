@@ -28,9 +28,10 @@ export default DS.Model.extend({
   iaasId: DS.attr('string'),
   name: DS.attr('string'),
   buildFrom: DS.attr('string'),
-  default: DS.attr('boolean'),
+  deleted: DS.attr('boolean'),
   password: DS.attr('string'),
   createdAt: DS.attr('string'),
+  updatedAt: DS.attr('string'),
 
   apps: DS.hasMany('app'),
 });

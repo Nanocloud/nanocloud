@@ -22,7 +22,7 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-/* globals sails */
+/* globals Machine, sails */
 
 const nano = require('./lib/nanotest');
 const expect = require('chai').expect;
@@ -60,14 +60,20 @@ module.exports = function() {
 
     describe('Delete current user\'s session', function() {
       it('Should end user\'s session', function(done) {
-        nano.request(sails.hooks.http.app)
-        .delete('/api/sessions')
-        .set(nano.adminLogin())
-        .expect(200)
-        .expect((res) => {
-          expect(res.body).to.have.property('meta');
-        })
-        .end(done);
+        Machine.find()
+          .then((machines) => {
+            nano.request(sails.hooks.http.app)
+              .delete('/api/sessions')
+              .send({
+                machineId: machines[0].id
+              })
+              .set(nano.adminLogin())
+              .expect(200)
+              .expect((res) => {
+                expect(res.body).to.have.property('meta');
+              })
+              .end(done);
+          });
       });
     });
   });

@@ -33,7 +33,17 @@ export default Ember.Mixin.create({
     var xhr = Ember.$.ajax({
       type: 'POST',
       headers: { Authorization : 'Bearer ' + this.get('session.access_token')},
+      contentType: "application/json; charset=utf-8",
       url: '/api/images',
+      dataType: 'json',
+      data: JSON.stringify({
+        data: {
+          attributes: {
+            'build-from': this.get('machine_id')
+          },
+          type: 'images'
+        }
+      })
     });
     xhr.then(() => {
       window.swal({

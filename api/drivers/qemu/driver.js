@@ -20,7 +20,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* global Machine, ConfigService, Image, MachineService */
+/* global Machine, ConfigService, Image */
 
 const request = require('request-promise');
 const Driver = require('../driver');

@@ -24,7 +24,7 @@
 const Promise = require('bluebird');
 const _ = require('lodash');
 
-/* globals App, ConfigService, MachineService, JsonApiService, PlazaService, StorageService, Team */
+/* globals App, UserGroup, Image, ImageGroup, Machine, MachineService, JsonApiService, PlazaService */
 
 /**
  * Controller of apps resource.
@@ -59,7 +59,6 @@ module.exports = {
           user.isAdmin
         ]
       }, (err, apps) => {
-
         if (err) {
           return reject(err);
         }
@@ -116,161 +115,37 @@ module.exports = {
     App.update({
       id: req.allParams().id
     }, (req.user.isAdmin) ? attributes : {state: attributes.state})
-      .then((applications) => {
+      .then((apps) => {
+        let app = apps.pop();
 
-        let application = applications.pop();
-
-        if (application.state === 'running') {
-          MachineService.getMachineForUser(req.user)
-            .then((machine) => {
-              return PlazaService.exec(machine.ip, machine.plazaport, {
-                command: [
-                  application.filePath
-                ],
-                username: machine.username
-              })
-                .then(() => {
-                  return StorageService.findOrCreate(req.user);
-                })
-                .then((storage) => {
-                  return PlazaService.exec(machine.ip, machine.plazaport, {
-                    command: [
-                      `C:\\Windows\\System32\\net.exe`,
-                      'use',
-                      'z:',
-                      `\\\\${storage.hostname}\\${storage.username}`,
-                      `/user:${storage.username}`,
-                      storage.password
-                    ],
-                    wait: true,
-                    hideWindow: true,
-                    username: machine.username
-                  })
-                    .catch(() => {
-                      // User storage is probably already mounted
-                      // When an image is published, sometimes storage does not work again
-                      // Let's delete the currupted storage and recreate it
-                      // Let's ignore the error silently
-
-                      return PlazaService.exec(machine.ip, machine.plazaport, {
-                        command: [
-                          `C:\\Windows\\System32\\net.exe`,
-                          'use',
-                          'z:',
-                          `/DELETE`,
-                          `/YES`
-                        ],
-                        wait: true,
-                        hideWindow: true,
-                        username: machine.username
-                      })
-                        .then(() => {
-                          return PlazaService.exec(machine.ip, machine.plazaport, {
-                            command: [
-                              `C:\\Windows\\System32\\net.exe`,
-                              'use',
-                              'z:',
-                              `\\\\${storage.hostname}\\${storage.username}`,
-                              `/user:${storage.username}`,
-                              storage.password
-                            ],
-                            wait: true,
-                            hideWindow: true,
-                            username: machine.username
-                          });
-                        })
-                        .then(() => {
-                          return Promise.resolve();
-                        });
-                    });
-                })
-                .then(() => {
-                  return PlazaService.exec(machine.ip, machine.plazaport, {
-                    command: [
-                      `C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe`,
-                      '-Command',
-                      '-'
-                    ],
-                    wait: true,
-                    hideWindow: true,
-                    username: machine.username,
-                    stdin: '$a = New-Object -ComObject shell.application;$a.NameSpace( "Z:\" ).self.name = "Personal Storage"'
-                  });
-                })
-                .then(() => {
-                  if (req.user.team) {
-                    Promise.props({
-                      team: Team.findOne(req.user.team),
-                      config: ConfigService.get('teamStorageAddress'),
-                    })
-                      .then(({team, config}) => {
-
-                        let command = [
-                          `C:\\Windows\\System32\\net.exe`,
-                          'use',
-                          'y:',
-                          `\\\\${config.teamStorageAddress}\\${team.username}`,
-                          `/user:${team.username}`,
-                          team.password
-                        ];
-                        return PlazaService.exec(machine.ip, machine.plazaport, {
-                          command: command,
-                          wait: true,
-                          hideWindow: true,
-                          username: machine.username
-                        })
-                          .catch(() => {
-                            // Team storage is probably already mounted like user storage
-                            // When an image is published, sometimes team storage does not work again
-                            // Let's delete the currupted team storage and recreate it
-                            // Let's ignore the error silently
-
-                            return PlazaService.exec(machine.ip, machine.plazaport, {
-                              command: [
-                                `C:\\Windows\\System32\\net.exe`,
-                                'use',
-                                'y:',
-                                `/DELETE`,
-                                `/YES`
-                              ],
-                              wait: true,
-                              hideWindow: true,
-                              username: machine.username
-                            })
-                              .then(() => {
-                                return PlazaService.exec(machine.ip, machine.plazaport, {
-                                  command: command,
-                                  wait: true,
-                                  hideWindow: true,
-                                  username: machine.username
-                                });
-                              })
-                              .then(() => {
-                                return Promise.resolve();
-                              });
-                          });
-                      })
-                      .then(() => {
-                        return PlazaService.exec(machine.ip, machine.plazaport, {
-                          command: [
-                            `C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe`,
-                            '-Command',
-                            '-'
-                          ],
-                          wait: true,
-                          hideWindow: true,
-                          username: machine.username,
-                          stdin: '$a = New-Object -ComObject shell.application;$a.NameSpace( "Y:\" ).self.name = "Team"'
-                        });
-                      });
-                  }
-                });
+        if (app.state === 'running') {
+          return MachineService.getMachineForUser(req.user, {
+            id: app.image
+          })
+          .then((machine) => {
+            if (!machine) {
+              throw new Error('A machine is booting for you');
+            }
+            return PlazaService.exec(machine.ip, machine.plazaport, {
+              command: [
+                app.filePath
+              ],
+              username: machine.username
             });
+          })
+          .then(() => {
+            return res.ok(app);
+          });
+        } else {
+          return res.ok(app);
         }
-        return res.ok(application);
       })
       .catch((err) => {
-        return res.negotiate(err);
+        if (err.message === 'A machine is booting for you') {
+          return res.notFound(err);
+        } else {
+          return res.negotiate(err);
+        }
       });
   },
 
@@ -280,31 +155,67 @@ module.exports = {
    * @method connections
    */
   connections(req, res) {
-    MachineService.getMachineForUser(req.user)
-      .then((machine) => {
-        return this._getApps(req.user)
-          .then((apps) => {
 
-            var connections = [];
-            apps.rows.forEach((app) => {
+    var connections = [];
+    var getImagesPromise = null;
 
-              connections.push({
-                id: app.id,
-                hostname: machine.ip,
-                machineId: machine.id,
-                machineType: machine.flavor,
-                machineDriver: machine.type,
-                port: machine.rdpPort,
-                username: machine.username,
-                password: machine.password,
-                'remote-app': '',
-                protocol: 'rdp',
-                'app-name': app.id
-              });
-            });
-
-            return res.ok(connections);
+    if (req.user.isAdmin) {
+      getImagesPromise = Image
+        .find()
+        .populate('apps');
+    } else {
+      getImagesPromise = UserGroup.find({
+        user: req.user.id
+      })
+      .then((userGroups) => {
+        return Promise.map(userGroups, function(userGroup) {
+          return ImageGroup.find({
+            group: userGroup.group
           });
+        });
+      })
+      .then((images) => {
+        images = _.flatten(images);
+        let imagesId = _.map(images, 'image');
+        return Image
+          .find(imagesId)
+          .populate('apps');
+      });
+    }
+
+    return getImagesPromise
+      .then((images) => {
+        return Promise.map(images, function(image) {
+          // TODO : Warning : We assume a user has only one machine per image.
+          // But we don't handle the case there is no VM assigned for this
+          // image
+          return Machine.findOne({
+            user: req.user.id,
+            image: image.id
+          })
+            .then((machine) => {
+              if (machine) {
+                image.apps.forEach((app) => {
+                  connections.push({
+                    id: app.id,
+                    hostname: machine.ip,
+                    machineId: machine.id,
+                    machineType: machine.flavor,
+                    machineDriver: machine.type,
+                    port: machine.rdpPort,
+                    username: machine.username,
+                    password: machine.password,
+                    'remote-app': '',
+                    protocol: 'rdp',
+                    'app-name': app.id
+                  });
+                });
+              }
+            });
+        });
+      })
+      .then(() => {
+        return res.ok(connections);
       })
       .catch((err) => {
         if (err === 'Exceeded credit') {

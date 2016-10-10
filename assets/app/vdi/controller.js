@@ -37,7 +37,7 @@ export default Ember.Controller.extend(
   windowManagerMixin, {
 
     remoteSession: Ember.inject.service('remote-session'),
-    queryParams: ['machine_id', 'connection_name'],
+    queryParams: ['image_id', 'machine_id', 'connection_name'],
     session: Ember.inject.service('session'),
     configuration: Ember.inject.service('configuration'),
     showHomeBtn: Ember.computed.not('configuration.autoLogoff'),
@@ -53,7 +53,10 @@ export default Ember.Controller.extend(
         type: 'DELETE',
         headers: { Authorization : 'Bearer ' + this.get('session.access_token')},
         url: '/api/sessions',
-        data: { user: './' + this.get('session.user')}
+        data: {
+          user: './' + this.get('session.user'),
+          machineId: this.get('machine_id')
+        }
       })
       .then(() => {
         this.set('logoff', false);

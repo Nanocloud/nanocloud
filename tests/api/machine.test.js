@@ -22,8 +22,11 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-/* globals sails, AccessToken, User, Machine */
+/* globals sails, AccessToken, User, Image, Machine, MachineService */
 
+var chai = require('chai');
+var expect = chai.expect;
+var Promise = require('bluebird');
 var nano = require('./lib/nanotest');
 
 module.exports = function() {
@@ -32,33 +35,54 @@ module.exports = function() {
 
     let user = null;
     let token = null;
+    let machineId = null;
+    let imageId = null;
 
     before('Add proper user and machines for testing', function(done) {
-      User.create({
-        firstName: 'Test',
-        lastName: 'Test',
-        password: 'tests',
-        email: 'test@test.com',
-        isAdmin: false,
-        expirationDate: null,
+
+      Image.findOne({
+        deleted: false
       })
-        .then((res) => {
-          user = res;
+        .then((image) => {
+          imageId = image.id;
+          return Promise.props({
+            newUser: User.create({
+              firstName: 'Test',
+              lastName: 'Test',
+              password: 'tests',
+              email: 'test@test.com',
+              isAdmin: false,
+              expirationDate: null
+            }),
+            newImage: Image.create({
+              buildFrom: machineId,
+              name: 'AnotherImage'
+            })
+          });
+        })
+        .then(({newUser, newImage}) => {
+          user = newUser;
           return Machine.create({
             user: user.id,
             name: 'essai1',
             type: 'manual',
             ip: '1.1.1.1',
+            image: imageId,
             username: 'Administrator',
             password: 'admin'
-          },
-          {
-            name: 'essai2',
-            type: 'manual',
-            ip: '2.2.2.2',
-            username: 'Administrator',
-            password: 'admin'
-          });
+          })
+            .then((machine) => {
+              machineId = machine.id;
+              return Machine.create({
+                name: 'essai2',
+                type: 'manual',
+                ip: '2.2.2.2',
+                status: 'running',
+                username: 'Administrator',
+                image: newImage.id,
+                password: 'admin'
+              });
+            });
         })
         .then(() => {
           return AccessToken.create({
@@ -76,6 +100,21 @@ module.exports = function() {
         .then(() => {
           return Machine.destroy({
             name: ['essai1', 'essai2']
+          });
+        })
+        .then(() => {
+          return Image.findOne({
+            name: 'AnotherImage'
+          });
+        })
+        .then((image) => {
+          return Machine.destroy({
+            image: image.id
+          });
+        })
+        .then(() => {
+          return Image.destroy({
+            name: 'AnotherImage'
           });
         })
         .then(() => done());
@@ -104,13 +143,44 @@ module.exports = function() {
         })
         .then(() => {
           nano.request(sails.hooks.http.app)
-            .get('/api/machines/users')
+            .get('/api/machines/users?image=' + imageId)
             .set('Authorization', 'Bearer ' + token.token)
             .expect(200)
             .expect((res) => {
               if (res.body.data.length !== 1) {
                 throw new Error('All users should be able to list only their machines');
               }
+            })
+            .end(done);
+        });
+    });
+
+    it('Should return the same machine if asking twice', function(done) {
+      nano.request(sails.hooks.http.app)
+        .get('/api/machines/users?image=' + imageId)
+        .set('Authorization', 'Bearer ' + token.token)
+        .expect(200)
+        .expect((res) => {
+          expect(res.body.data[0].id).to.equal(machineId);
+        })
+        .end(done);
+    });
+
+    it('Should return a new machine when asking for a new image', function(done) {
+
+      Image.findOne({
+        name: 'AnotherImage'
+      })
+        .then((image) => {
+          return MachineService.getMachineForUser(user, image);
+        })
+        .then((machine) => {
+          nano.request(sails.hooks.http.app)
+            .get('/api/machines/users?image=' + machine.image)
+            .set('Authorization', 'Bearer ' + token.token)
+            .expect(200)
+            .expect((res) => {
+              expect(res.body.data[0].id).to.not.equal(machineId);
             })
             .end(done);
         });

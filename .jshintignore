@@ -5,4 +5,5 @@ assets/node_modules/**
 assets/bower_components/**
 node_modules/**
 plaza/vendor
+qemu/node_modules/**
 vdiexperience/**

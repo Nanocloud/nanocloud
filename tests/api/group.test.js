@@ -463,7 +463,7 @@ module.exports = function() {
 
             groupID = res.body.data.id;
             return Image.findOne({
-              default: true
+              deleted: false
             })
               .then((image) => {
                 return nano.request(sails.hooks.http.app)
@@ -529,7 +529,7 @@ module.exports = function() {
             groupID = res.body.data.id;
 
             return Image.findOne({
-              default: true
+              deleted: false
             })
               .then((image) => {
                 nano.request(sails.hooks.http.app)

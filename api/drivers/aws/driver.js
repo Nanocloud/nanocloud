@@ -132,7 +132,7 @@ class AWSDriver extends Driver {
           })
           .then(() => {
             return Image.update({
-              default: true
+              deleted: false
             }, {
               iaasId: config.awsImage,
               name: 'AWS default',

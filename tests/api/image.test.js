@@ -23,7 +23,7 @@
  */
 
 // jshint mocha:true
-/* globals sails, MachineService */
+/* globals sails, Machine */
 
 var nano = require('./lib/nanotest');
 var chai = require('chai');
@@ -31,6 +31,9 @@ var expect = chai.expect;
 
 module.exports = function() {
   describe('Images', function() {
+
+    var defaultImageId = null;
+    var baseMachineId = null;
 
     it('Should exist a single default image', function(done) {
 
@@ -42,27 +45,30 @@ module.exports = function() {
           expect(res.body.data).to.have.length(1);
         })
         .then((res) => {
-          let image = res.body.data.pop().attributes;
+          let imageData = res.body.data.pop();
 
-          expect(image.name).to.be.equal('Default');
-          expect(image['build-from']).to.be.equal(null);
+          expect(imageData.attributes.name).to.be.equal('Default');
+          expect(imageData.attributes['build-from']).to.be.equal(null);
+
+          defaultImageId = imageData.id;
           return done();
         });
     });
 
     it('Should be possible to save an image', function(done) {
 
-      MachineService.getMachineForUser({
-        id: nano.adminId()
+      Machine.findOne({
+        image: defaultImageId
       })
-        .then((userMachine) => {
+        .then((machine) => {
+          baseMachineId = machine.id;
           nano.request(sails.hooks.http.app)
             .post('/api/images')
             .set(nano.adminLogin())
             .send({
               data: {
                 attributes: {
-                  'build-from': userMachine.id
+                  'build-from': baseMachineId,
                 },
                 type: 'images'
               }
@@ -71,10 +77,34 @@ module.exports = function() {
             .then((res) => {
               let image = res.body.data;
 
-              expect(image.attributes.default).to.be.equal(true);
-              expect(image.attributes['build-from']).to.be.equal(userMachine.id);
+              expect(image.attributes.deleted).to.be.equal(false);
+              expect(image.attributes['build-from']).to.be.equal(machine.id);
               return done();
             });
+        });
+    });
+
+    it('Should exist two images now', function(done) {
+
+      nano.request(sails.hooks.http.app)
+        .get('/api/images')
+        .set(nano.adminLogin())
+        .expect(200)
+        .expect((res) => {
+          expect(res.body.data).to.have.length(2);
+        })
+        .then((res) => {
+
+          res.body.data.forEach((imageData) => {
+            let image = imageData.attributes;
+
+            if (image.name === 'Default') {
+              expect(image['build-from']).to.be.equal(null);
+            } else {
+              expect(image['build-from']).to.be.equal(baseMachineId);
+            }
+          });
+          return done();
         });
     });
   });

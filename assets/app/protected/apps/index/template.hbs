@@ -2,21 +2,16 @@
   <h1 class='color-primary'>
     Applications
   </h1>
-  <div class='action-btn-wrapper'>
-    {{#if hasDesktop}}
-      {{#if isCheckingMachine}}
+  {{#if hasDesktop}}
+    {{#if isCheckingMachine}}
+      <div class='action-btn-wrapper'>
         <button class="btn btn-info btn-color-default">
           {{ fa-icon "spinner" spin=true}}
           <div class="in-bl">Waiting for VM</div>
         </button>
-      {{else}}
-        <button class="btn btn-primary btn-color-default" {{action "startDesktop"}}>Desktop</button>
-      {{/if}}
+      </div>
     {{/if}}
-    {{#if session.user.isAdmin}}
-      <button class="btn btn-primary btn-color-default" {{action "openFileExplorer"}}>Onboard an application</button>
-    {{/if}}
-  </div>
+  {{/if}}
   <div class="container">
     <div class="row">
       {{#each data as |image|}}
@@ -42,31 +37,3 @@
     </div>
   </div>
 </div>
-
-{{#single-tab
-  togglable=true
-  disconnectBtn=true
-  homeBtn=(reverse configuration.autoLogoff)
-  isVisible=showSingleTab
-  onClose="handleVdiClose"
-  connectionName=connectionName
-  retryConnection="retryConnection"
-}}
-  {{remote-session connectionName=connectionName activator=activator}}
-{{/single-tab}}
-
-{{dim-background show=showFileExplorer preventAction=isPublishing action="closeFileExplorer"}}
-{{#floating-sidebar-component
-  isVisible=showFileExplorer
-}}
-{{#if showFileExplorer}}
-  {{#application-publisher
-    requestParams=(hash machines=true)
-    isPublishing=isPublishing
-    api="file"
-    system='windows'
-    action="onboardAppSucceeded"
-  }}
-  {{/application-publisher}}
-{{/if}}
-{{/floating-sidebar-component}}

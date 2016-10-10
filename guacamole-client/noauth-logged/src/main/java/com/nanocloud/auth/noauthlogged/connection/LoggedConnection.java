@@ -75,14 +75,6 @@ public class LoggedConnection extends SimpleConnection {
       String firstname = dataAttribute.getString("first-name");
       String lastname = dataAttribute.getString("last-name");
 
-      resp = NanocloudHttpConnection.HttpGet("http://" + hostname + ":" + port + "/api/machines/users", token);
-      JSONArray dataArray = resp.getJSONArray("data");
-      data = dataArray.getJSONObject(0);
-      String machineId = data.getString("id");
-      dataAttribute = data.getJSONObject("attributes");
-      String machineDriver = dataAttribute.getString("type");
-      String flavor = dataAttribute.getString("flavor");
-
       URL myUrl = new URL("http://" + hostname + ":" + port + "/" + endpoint);
       HttpURLConnection urlConn = (HttpURLConnection)myUrl.openConnection();
       urlConn.setInstanceFollowRedirects(false);
@@ -99,10 +91,7 @@ public class LoggedConnection extends SimpleConnection {
               .add("user-lastname", lastname)
               .add("connection-id", connection.getConnectionName())
               .add("start-date", connection.getStartDate().toString())
-              .add("end-date", "")
-              .add("machine-id", machineId)
-              .add("machine-driver", machineDriver)
-              .add("machine-type", flavor)))
+              .add("end-date", "")))
         .build();
 
       urlConn.setUseCaches(false);
@@ -155,7 +144,6 @@ public class LoggedConnection extends SimpleConnection {
     private String email;
     private String firstname;
     private String lastname;
-    private String machineId;
 
     public ConnectionCleanupTask(ActiveConnectionRecord connection, String token) throws GuacamoleException {
       this.connection = connection;
@@ -178,11 +166,6 @@ public class LoggedConnection extends SimpleConnection {
         this.email = dataAttribute.getString("email");
         this.firstname = dataAttribute.getString("first-name");
         this.lastname = dataAttribute.getString("last-name");
-
-        JSONObject resp = NanocloudHttpConnection.HttpGet("http://" + hostname + ":" + port + "/api/machines/users", token);
-        JSONArray dataArray = resp.getJSONArray("data");
-        data = dataArray.getJSONObject(0);
-        this.machineId = data.getString("id");
 
       } catch (IOException e) {
         // TODO Auto-generated catch block
@@ -216,8 +199,7 @@ public class LoggedConnection extends SimpleConnection {
                 .add("user-lastname", this.lastname)
                 .add("connection-id", this.connection.getConnectionName())
                 .add("start-date", this.connection.getStartDate().toString())
-                .add("end-date", new Date().toString())
-                .add("machine-id", this.machineId)))
+                .add("end-date", new Date().toString())))
           .build();
 
         urlConn.setUseCaches(false);

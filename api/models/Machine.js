@@ -71,8 +71,7 @@ module.exports = {
       type: 'string'
     },
     user: {
-      model: 'user',
-      unique: true
+      model: 'user'
     },
     image: {
       model: 'image',

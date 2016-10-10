@@ -22,11 +22,16 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-import DS from 'ember-data';
+function up(knex) {
+  return knex.schema.table('machine', (table) => {
+    table.dropUnique('user');
+  });
+}
 
-export default DS.Model.extend({
-  name: DS.attr('string'),
+function down(knex) {
+  return knex.schema.table('machine', (table) => {
+    table.unique('user');
+  });
+}
 
-  members: DS.hasMany('user'),
-  images: DS.hasMany(),
-});
+module.exports = { up, down };

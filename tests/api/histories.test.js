@@ -22,7 +22,7 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-/* global MachineService, sails */
+/* global App, sails */
 
 var nano = require('./lib/nanotest');
 var expect = require('chai').expect;
@@ -43,8 +43,7 @@ module.exports = function() {
         'end-date': {type: 'string'},
         'machine-id': {type: 'string'},
         'machine-driver': {type: 'string'},
-        'machine-size': {type: 'string'},
-        'machine-type': {type: 'string'},
+        'machine-type': {type: ['string', 'null']},
         'created-at': {type: 'string'},
         'updated-at': {type: 'string'}
       },
@@ -53,10 +52,10 @@ module.exports = function() {
     };
 
     it('Should create history', (done) => {
-      MachineService.getMachineForUser({
-        id: nano.adminId()
+      App.findOne({
+        alias: 'Desktop'
       })
-        .then((machine) => {
+        .then((app) => {
           nano.request('http://localhost:1337')
             .post('/api/histories')
             .send({
@@ -66,12 +65,9 @@ module.exports = function() {
                   'user-id': 'aff17b8b-bf91-40bf-ace6-6dfc985680bb',
                   'user-firstname': 'Admin',
                   'user-lastname': 'Nanocloud',
-                  'connection-id': 'Desktop',
+                  'connection-id': app.id,
                   'start-date': 'Wed Jul 21 14:10:00 UTC 2016',
-                  'end-date': '',
-                  'machine-id': machine.id,
-                  'machine-driver': 'dummy',
-                  'machine-type': ''
+                  'end-date': ''
                 },
                 type: 'histories'
               }
@@ -97,11 +93,9 @@ module.exports = function() {
                           'user-id': 'aff17b8b-bf91-40bf-ace6-6dfc985680bb',
                           'user-firstname': 'Admin',
                           'user-lastname': 'Nanocloud',
-                          'connection-id': 'Desktop',
+                          'connection-id': app.id,
                           'start-date': 'Wed Jul 21 14:10:00 UTC 2016',
-                          'end-date': 'Wed Jul 21 14:20:00 UTC 2016',
-                          'machine-id': machine.id,
-                          'machine-driver': 'dummy'
+                          'end-date': 'Wed Jul 21 14:20:00 UTC 2016'
                         },
                         type: 'histories'
                       }
@@ -116,6 +110,29 @@ module.exports = function() {
                     });
                 });
             });
+        });
+    });
+
+    it('Should not found a wrong connection ID', (done) => {
+      nano.request('http://localhost:1337')
+        .post('/api/histories')
+        .send({
+          data: {
+            attributes: {
+              'user-mail': 'admin@nanocloud.com',
+              'user-id': 'aff17b8b-bf91-40bf-ace6-6dfc985680bb',
+              'user-firstname': 'Admin',
+              'user-lastname': 'Nanocloud',
+              'connection-id': 'wrong connection id',
+              'start-date': 'Wed Jul 21 14:10:00 UTC 2016',
+              'end-date': ''
+            },
+            type: 'histories'
+          }
+        })
+        .expect(404)
+        .then(() => {
+          return done();
         });
     });
   });
