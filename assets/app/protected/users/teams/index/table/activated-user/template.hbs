@@ -10,7 +10,7 @@
   </div>
 {{/if}}
 <div class='rel in-bl fright'{{ action toggleUserSetting record }}>
-  {{icon-component class='va-sub color-primary clickable fright' hover-darker=true materialIcon='settings' size=16}}
+  {{icon-component class='color-primary clickable fright' hover-darker=true materialIcon='settings' size=16}}
   {{#if record.teamOptionIsOpen}}
     {{#popup-component isOpen=record.teamOptionIsOpen close=closePopup position="left"}}
       <div class="list-group">
@@ -24,4 +24,4 @@
     {{/popup-component}}
   {{/if}}
 </div>
-{{dim-background show=record.teamOptionIsOpen action=(action closePopup record) opacity=0.2 duration=500}}
+{{dim-background show=record.teamOptionIsOpen action=(action closePopup record) opacity=0.01 duration=500}}
