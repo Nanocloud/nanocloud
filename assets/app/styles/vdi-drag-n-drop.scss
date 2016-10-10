@@ -9,16 +9,13 @@
     top: 0;
     left: 0;
     z-index: 4;
-    background-color: rgba(0, 144, 255, 0.8);
+    background-color: rgb(0, 144, 255);
+    opacity:0.8;
     pointer-events: none;
 
     .text {
       font-size: 40px;
       color: #fff;
-    }
-
-    &.state-show {
-      opacity: 1;
     }
 
     &.state-hide {
