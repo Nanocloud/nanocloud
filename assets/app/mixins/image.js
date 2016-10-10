@@ -84,31 +84,6 @@ export default Ember.Mixin.create({
     return xhr;
   },
 
-  vdiDisconnectHandler(options) {
-    this.set('logoff', true);
-    Ember.$.ajax({
-      type: 'DELETE',
-      headers: { Authorization : 'Bearer ' + this.get('session.access_token')},
-      url: '/api/sessions',
-      data: { user: './' + this.get('session.user')}
-    })
-      .then(() => {
-        this.set('logoff', false);
-        if (!options) {
-          this.toast.success('You have been disconnected successfully');
-        }
-        else {
-          if (options.error === true) {
-            this.toast.error(options.message);
-          }
-          else {
-            this.toast.success(options.message);
-          }
-        }
-        this.send('goToApp');
-      });
-  },
-
   askSaveImage() {
     this.send('closeAll');
     window.swal({
