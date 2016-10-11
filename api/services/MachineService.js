@@ -31,6 +31,7 @@ const DummyDriver = require('../drivers/dummy/driver');
 const QemuDriver = require('../drivers/qemu/driver');
 const OpenstackDriver = require('../drivers/openstack/driver');
 const promisePoller = require('promise-poller').default;
+const request = Promise.promisify(require('request'));
 
 /**
  * Service responssible of the machine pool
@@ -701,30 +702,19 @@ function getPassword(machine) {
 function rebootMachine(machine) {
   return _driver.rebootMachine(machine)
     .then((rebootedMachine) => {
+      return new Promise((resolve) => {
+        setTimeout(() => {
+          let requestOptions = {
+            url: 'http://' + machine.ip + ':' + machine.plazaport,
+            method: 'GET'
+          };
 
-      return promisePoller({
-        taskFn: () => {
-          return rebootedMachine.refresh()
-            .then((refreshedMachine) => {
-
-              if (refreshedMachine.status === 'running') {
-                _createBrokerLog(refreshedMachine, 'Rebooted');
-                return Promise.resolve(refreshedMachine);
-              } else {
-                return Promise.reject(refreshedMachine);
-              }
+          request(requestOptions)
+            .then(() => {
+              return resolve(rebootedMachine);
             });
-        },
-        interval: 5000,
-        retries: 100
-      })
-        .catch((errs) => { // If timeout is reached
-
-          let machine = errs.pop(); // On timeout, promisePoller rejects with an array of all rejected promises. In our case, MachineService rejects the still booting machine. Let's pick the last one.
-
-          _createBrokerLog(machine, 'Error waiting for machine to reboot');
-          throw machine;
-        });
+        }, 10000);
+      });
     });
 }
 
