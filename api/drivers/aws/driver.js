@@ -267,6 +267,10 @@ class AWSDriver extends Driver {
         C:\\plaza.exe install
         rm C:\\plaza.exe
         New-NetFirewallRule -Protocol TCP -LocalPort ${config.plazaPort} -Direction Inbound -Action Allow -DisplayName PLAZA
+        Invoke-WebRequest https://enterprise.nanocloud.com/Cameyo.zip -Outfile \"C:\\Cameyo.zip\" -Headers $header
+        Add-Type -AssemblyName System.IO.Compression.FileSystem
+        [System.IO.Compression.ZipFile]::ExtractToDirectory(\"C:\\Cameyo.zip\", \"C:\\Cameyo\")
+        rm C:\\Cameyo.zip
         </powershell>
       `;
 

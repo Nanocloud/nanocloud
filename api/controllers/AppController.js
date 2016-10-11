@@ -152,7 +152,7 @@ module.exports = {
                 .then(() => {
                   return PlazaService.exec(machine.ip, machine.plazaport, {
                     command: [
-                      `C:\\Windows\\photon\\photon.exe`
+                      `C:\\Windows\\photon\\photon.bat`
                     ],
                     username: machine.username
                   });
