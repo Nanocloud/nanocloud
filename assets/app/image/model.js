@@ -23,8 +23,19 @@
  */
 
 import DS from 'ember-data';
+import {validator, buildValidations} from 'ember-cp-validations';
 
-export default DS.Model.extend({
+const Validations = buildValidations({
+  name: [
+    validator('presence', true),
+    validator('length', {
+      min: 2,
+      max: 255
+    })
+  ]
+});
+
+export default DS.Model.extend(Validations, {
   iaasId: DS.attr('string'),
   name: DS.attr('string'),
   buildFrom: DS.attr('string'),

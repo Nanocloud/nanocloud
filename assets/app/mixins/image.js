@@ -33,7 +33,7 @@ export default Ember.Mixin.create({
     var xhr = Ember.$.ajax({
       type: 'POST',
       headers: { Authorization : 'Bearer ' + this.get('session.access_token')},
-      contentType: "application/json; charset=utf-8",
+      contentType: 'application/json; charset=utf-8',
       url: '/api/images',
       dataType: 'json',
       data: JSON.stringify({
@@ -45,7 +45,8 @@ export default Ember.Mixin.create({
         }
       })
     });
-    xhr.then(() => {
+    xhr.then((res) => {
+      this.set('image_id', res.data.id);
       window.swal({
         title: 'Success!',
         text: 'Your image has been saved successfully!',

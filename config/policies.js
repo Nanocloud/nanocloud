@@ -82,8 +82,8 @@ module.exports.policies = {
 
   imageController: {
     create: 'isAdmin',
-    update: false,
-    destroy: false
+    update: 'isAdmin',
+    destroy: 'isAdmin'
   },
 
   PendingUserController: {

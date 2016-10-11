@@ -22,7 +22,7 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-/* globals Machine, MachineService, Image */
+/* globals Machine, MachineService, JsonApiService, Image */
 
 const Promise = require('bluebird');
 const uuid = require('node-uuid');
@@ -110,16 +110,25 @@ module.exports = {
     this._getImages(req.user)
       .then((images) => {
         let imageIds = _.map(images.rows, 'id');
-
-        // TODO: deleted must be false
         Image.find(imageIds)
           .populate('apps')
           .then((images) => {
             return res.ok(images);
           });
       })
-      .catch((err) => {
-        return res.negociate(err);
-      });
+      .catch(res.negociate);
+  },
+
+  destroy: function(req, res) {
+    return Image.update({
+      id: req.allParams().id
+    }, {
+      deleted: true
+    })
+      .then((image) => {
+        res.status(202);
+        res.send(JsonApiService.serialize('images', image[0]));
+      })
+      .catch(res.negociate);
   }
 };

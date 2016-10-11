@@ -46,17 +46,18 @@ export default Ember.Controller.extend({
     },
 
     deleteImage() {
+      let _this2 = this;
       if (!this.get('preventDeletion')) {
         let image = this.get('model');
         image.destroyRecord()
-        .then(() => {
-          this.send('toggleModal');
-          this.transitionToRoute('protected.apps');
-          this.toast.success('The application has been deleted');
-        })
-        .catch((reason) => {
-          this.toast.error(reason.errors[0].title);
-        });
+          .then(() => {
+            _this2.send('toggleModal');
+            _this2.transitionToRoute('protected.apps');
+            _this2.toast.success('The image has been deleted');
+          })
+          .catch((reason) => {
+            _this2.toast.error(reason.errors[0].title);
+          });
       }
     },
 

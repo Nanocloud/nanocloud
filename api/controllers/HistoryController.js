@@ -86,7 +86,7 @@ module.exports = {
     let userId = _.get(req.body, 'data.attributes.userId');
     let connectionId = _.get(req.body, 'data.attributes.connectionId');
     if (!connectionId) {
-      return res.badRequest('Invalid connectionId id');
+      return res.badRequest('Invalid connection id');
     } else if (req.body.data.attributes.endDate === '') {
       return res.badRequest('Invalid end date');
     }

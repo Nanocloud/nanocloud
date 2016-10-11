@@ -242,7 +242,7 @@ function increaseMachineEndDate(machine) {
  *  - machinesName: the name of the machine to be created
  *
  * @method _createMachine
- * @param image {Object[Image]} image to build to machine from
+ * @param image {Object[Image]} image to build the machine from
  * @private
  * @return {Promise}
  */
@@ -464,8 +464,15 @@ function updateMachinesPool() {
         .then(({config, machinesCount, images}) => {
           images.forEach((image) => {
             let machineCreated = _.find(machinesCount.rows, (m) => m.image === image.id) || {count: 0};
-            let machineToCreate = config.machinePoolSize - machineCreated.count;
-            let machineToDestroy = machineCreated.count - config.machinePoolSize;
+            let machineToCreate = 0;
+            let machineToDestroy = 0;
+            if (image.deleted === true) {
+              machineToCreate = 0;
+              machineToDestroy = machineCreated.count;
+            } else {
+              machineToCreate = config.machinePoolSize - machineCreated.count;
+              machineToDestroy = machineCreated.count - config.machinePoolSize;
+            }
 
             if (machineToDestroy > 0) {
               return Machine.find({
@@ -726,7 +733,7 @@ function sessionEnded(user, image) {
         .then(() => {
           return increaseMachineEndDate(userMachine);
         });
-      });
+    });
 
   if (isUserCreditSupported()) {
     promise.then(() => {
@@ -809,7 +816,7 @@ function createImage(image) {
           .then(() => {
             updateMachinesPool();
             return Promise.resolve(newImage);
-        });
+          });
     });
 }
 

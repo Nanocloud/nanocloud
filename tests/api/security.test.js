@@ -1606,7 +1606,7 @@ module.exports = function() {
 
         after('Delete created image', function(done) {
           return Image.destroy({
-            name: 'AnotherImage'
+            name: 'a new name'
           })
             .then(() => {
               return done();
@@ -1716,13 +1716,22 @@ module.exports = function() {
         });
       });
 
-      describe('Update an image - not available', function() {
+      describe('Update an image', function() {
 
-        it('Admins should be fobidden to update an image', function(done) {
+        it('Admins should be authorized to update an image', function(done) {
           return nano.request(sails.hooks.http.app)
             .patch('/api/images/' + image)
+            .send({
+              data: {
+                id: image,
+                type: 'images',
+                attributes: {
+                  name: 'a new name'
+                }
+              }
+            })
             .set(nano.adminLogin())
-            .expect(403)
+            .expect(200)
             .end(done);
         });
 
@@ -1737,20 +1746,12 @@ module.exports = function() {
         it('Not logged in user should be forbidden to update an image', function(done) {
           return nano.request(sails.hooks.http.app)
             .patch('/api/images/' + image)
-            .expect(403)
+            .expect(401)
             .end(done);
         });
       });
 
-      describe('Delete an image - not available', function() {
-
-        it('Admins should be forbidden to delete an image', function(done) {
-          return nano.request(sails.hooks.http.app)
-            .delete('/api/images/' + image)
-            .set(nano.adminLogin())
-            .expect(403)
-            .end(done);
-        });
+      describe('Delete an image', function() {
 
         it('Regular users should be forbidden to delete an image', function(done) {
           return nano.request(sails.hooks.http.app)
@@ -1763,7 +1764,15 @@ module.exports = function() {
         it('Not logged in user should be forbidden to delete an image', function(done) {
           return nano.request(sails.hooks.http.app)
             .delete('/api/images/' + image)
-            .expect(403)
+            .expect(401)
+            .end(done);
+        });
+
+        it('Admins should be authorized to delete an image', function(done) {
+          return nano.request(sails.hooks.http.app)
+            .delete('/api/images/' + image)
+            .set(nano.adminLogin())
+            .expect(202)
             .end(done);
         });
       });

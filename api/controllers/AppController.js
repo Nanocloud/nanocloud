@@ -71,14 +71,15 @@ module.exports = {
   create(req, res) {
     req.body = JsonApiService.deserialize(req.body);
 
-    let app = req.body.data.attributes;
+    let app = _.get(req, 'body.data.attributes');
+    if (!app) {
+      return res.badRequest('Invalid application attributes');
+    }
     app.image = req.body.data.relationships.image.data.id;
 
     App.create(app)
       .populate('image')
-      .then((app) => {
-        return res.created(app);
-      })
+      .then(res.created)
       .catch(res.negotiate);
   },
 
@@ -88,9 +89,7 @@ module.exports = {
         id: req.allParams().id
       })
         .populate('image')
-        .then((app) => {
-          return res.ok(app);
-        });
+        .then(res.ok);
     } else {
       this._getApps(req.user)
         .then((apps) => {
@@ -200,9 +199,6 @@ module.exports = {
     return getImagesPromise
       .then((images) => {
         return Promise.map(images, function(image) {
-          // TODO : Warning : We assume a user has only one machine per image.
-          // But we don't handle the case there is no VM assigned for this
-          // image
           return Machine.findOne({
             user: req.user.id,
             image: image.id

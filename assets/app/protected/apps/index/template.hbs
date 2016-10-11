@@ -19,7 +19,7 @@
         <div class="card card-block">
           <h4 class="card-title">{{image.name}}
           {{#if session.user.isAdmin}}
-            {{#link-to 'protected.apps.image' image}}
+            {{#link-to 'protected.apps.image' image.id}}
             <span class="fright">
               {{icon-component class='color-gray-dark icon_link va-bl-mid' materialIcon="settings" size=14}}
             </span>

@@ -23,7 +23,7 @@
  */
 
 // jshint mocha:true
-/* globals sails, Machine */
+/* globals sails, Machine, Image */
 
 var nano = require('./lib/nanotest');
 var chai = require('chai');
@@ -33,6 +33,7 @@ module.exports = function() {
   describe('Images', function() {
 
     var defaultImageId = null;
+    var anotherImageId = null;
     var baseMachineId = null;
 
     it('Should exist a single default image', function(done) {
@@ -76,6 +77,7 @@ module.exports = function() {
             .expect(201)
             .then((res) => {
               let image = res.body.data;
+              anotherImageId = image.id;
 
               expect(image.attributes.deleted).to.be.equal(false);
               expect(image.attributes['build-from']).to.be.equal(machine.id);
@@ -107,5 +109,24 @@ module.exports = function() {
           return done();
         });
     });
+
+    it('Should delete an image', function(done) {
+
+      nano.request(sails.hooks.http.app)
+        .delete('/api/images/' + anotherImageId)
+        .set(nano.adminLogin())
+        .expect(202)
+        .then(() => {
+          return Image.find({
+            deleted: false
+          });
+        })
+        .then((images) => {
+          expect(images.length).to.be.equal(1);
+          expect(images[0].buildFrom).to.be.equal(null);
+          return done();
+        });
+    });
+
   });
 };
