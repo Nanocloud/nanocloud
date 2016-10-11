@@ -57,8 +57,8 @@ module.exports = {
       })
       .then((machine) => {
         _.set(req.body, 'data.attributes.machineId', machine.id);
-        _.set(req.body, 'data.attributes.machineType', machine.driver);
         _.set(req.body, 'data.attributes.machineDriver', machine.type);
+        _.set(req.body, 'data.attributes.machineType', machine.flavor);
         if (req.body.data.attributes.endDate === '') {
           return MachineService.sessionOpen({
             id: machine.user
