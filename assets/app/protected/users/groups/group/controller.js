@@ -30,7 +30,7 @@ export default Ember.Controller.extend({
   tab: [
     { title: 'General', link: 'protected.users.groups.group.index' },
     { title: 'Members', link: 'protected.users.groups.group.members' },
-    { title: 'Applications', link: 'protected.users.groups.group.apps' },
+    { title: 'Images', link: 'protected.users.groups.group.images' },
   ],
   selectedTab: Ember.computed('currentTab', 'currentTab', function() {
     return this.get('tab')[this.get('currentTab')].title;

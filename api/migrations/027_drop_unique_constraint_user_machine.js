@@ -22,27 +22,16 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-import { moduleForComponent, test } from 'ember-qunit';
-import hbs from 'htmlbars-inline-precompile';
+function up(knex) {
+  return knex.schema.table('machine', (table) => {
+    table.dropUnique('user');
+  });
+}
 
-moduleForComponent('app-item', 'Integration | Component | app item', {
-  integration: true
-});
+function down(knex) {
+  return knex.schema.table('machine', (table) => {
+    table.unique('user');
+  });
+}
 
-test('it renders', function(assert) {
-  // Set any properties with this.set('myProperty', 'value');
-  // Handle any actions with this.on('myAction', function(val) { ... });"
-
-  this.render(hbs`{{app-item}}`);
-
-  assert.equal(this.$().text().trim(), '');
-
-  // Template block usage:"
-  this.render(hbs`
-    {{#app-item}}
-      template block text
-    {{/app-item}}
-  `);
-
-  assert.equal(this.$().text().trim(), 'template block text');
-});
+module.exports = { up, down };

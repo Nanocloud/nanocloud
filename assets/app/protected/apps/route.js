@@ -31,7 +31,7 @@ export default Ember.Route.extend({
   },
   model() {
     this.get('configuration').loadData();
-    return this.store.query('app', {});
+    return this.store.query('image', {});
   },
   actions: {
     refreshModel() {

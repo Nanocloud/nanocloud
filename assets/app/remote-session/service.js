@@ -36,7 +36,6 @@ export default Ember.Service.extend(Ember.Evented, {
   session: Ember.inject.service('session'),
   guacamole: null,
   openedGuacSession: Ember.Object.create({}),
-  plazaHasFinishedLoading: false,
   guacToken: Ember.computed('session', 'session.access_token', function() {
     return Ember.$.post(config.GUACAMOLE_URL + 'api/tokens', {
       access_token: this.get('session.access_token')

@@ -39,7 +39,21 @@ let App = Ember.Object.extend({
   launch() {
     this.set('remoteSession.plazaHasFinishedLoading', false);
     this.get('controller')
-      .launchVDI(this.get('id'))
+      .launchVDI(this.get('id'), this.get('image'))
+      .then(() => {
+        let app = this.get('model');
+        app.reload()
+          .then(() => {
+            app.set('state', 'running');
+            app.save()
+              .catch(() => {
+                this.toast.error('Cannot start application');
+              })
+              .finally(() => {
+                this.set('remoteSession.plazaHasFinishedLoading', true);
+              });
+          });
+      })
       .catch((err) => {
         if (err === 'Exceeded credit') {
           this.toast.error('Exceeded credit');
@@ -52,79 +66,47 @@ let App = Ember.Object.extend({
 
 export default Ember.Controller.extend({
   showSingleTab: false,
-  showFileExplorer: false,
   connectionName: null,
   session: Ember.inject.service('session'),
   remoteSession: Ember.inject.service('remote-session'),
   configuration: Ember.inject.service('configuration'),
-  isPublishing: false,
   isCheckingMachine: false,
 
   modelIsEmpty: Ember.computed.empty('items'),
-
-  hasDesktop: Ember.computed('items', function() {
-    var res = this.get('items').filterBy('alias', 'Desktop').get('length');
-    return res > 0 ? true : false;
-  }),
-
-  sortableTableConfig: {
-
-    filteringIgnoreCase: true,
-    messageConfig: {
-      searchLabel: '',
-      searchPlaceholder: 'Search',
-    },
-
-    customIcons: {
-      'sort-asc': 'fa fa-caret-up',
-      'sort-desc': 'fa fa-caret-down',
-      caret: 'fa fa-minus',
-      'column-visible': 'fa fa-minus',
-    },
-
-    customClasses: {
-      pageSizeSelectWrapper: 'pagination-number'
-    }
-  },
 
   data : Ember.computed('items.@each', 'items', function() {
 
     const ret = Ember.A();
     const remoteSession = this.get('remoteSession');
 
-    this.get('items').forEach((app) => {
-      if (app.get('alias') !== 'Desktop') {
-        ret.push(App.create({
+    this.get('items').forEach((image) => {
+      const appRet = Ember.A();
+      image.get('apps').forEach((app) => {
+        appRet.push(App.create({
           model: app,
           remoteSession: remoteSession,
           session: this.get('session'),
+          image: image.get('id'),
           controller: this
         }));
-      }
+      });
+
+      ret.push({
+        apps: appRet,
+        name: image.get('name'),
+        id: image.get('id'),
+        buildFrom: image.get('buildFrom')
+      });
     });
+
     return ret;
   }),
 
-  columns: function() {
-
-    return [
-      {
-        propertyName: 'name',
-        title: 'Name',
-        disableFiltering: true,
-        filterWithSelect: false,
-        disableSorting: true,
-        template: 'protected/apps/index/table/package-list/name'
-      },
-    ];
-  }.property(),
-
-  launchVDI(appId) {
-
+  launchVDI(appId, imageId) {
     return new Ember.RSVP.Promise((res, rej) => {
 
       this.set('isCheckingMachine', true);
-      this.get('store').query('machines/user', {})
+      this.get('store').query('machines/user', {image: imageId})
         .then((machines) => {
           if (machines.get('length') > 0) {
             this.get('remoteSession').one('connected', () => {
@@ -134,7 +116,8 @@ export default Ember.Controller.extend({
             this.transitionToRoute('vdi', {
               queryParams: {
                 connection_name: this.get('connectionName'),
-                machine_id: machines.objectAt(0).get('id')
+                machine_id: machines.objectAt(0).get('id'),
+                image_id: imageId
               }
             });
           }
@@ -163,7 +146,7 @@ export default Ember.Controller.extend({
     },
 
     startDesktop() {
-      var list = this.get('items').filterBy('alias', 'Desktop');
+      var list = this.get('items').filterBy('alias', 'Desktop').filterBy('image.default', true);
       if (list.length === 1) {
         var app = list.objectAt(0);
 
@@ -176,21 +159,10 @@ export default Ember.Controller.extend({
       }
     },
 
-    toggleFileExplorer() {
-      this.toggleProperty('showFileExplorer');
-    },
-
-    closeFileExplorer() {
-      this.set('showFileExplorer', false);
-    },
-
-    openFileExplorer() {
-      this.set('showFileExplorer', true);
-    },
-
-    onboardAppSucceeded() {
-      this.send('closeFileExplorer');
+    handleVdiClose() {
+      this.get('remoteSession').disconnectSession(this.get('connectionName'));
       this.send('refreshModel');
-    }
+    },
+
   }
 });

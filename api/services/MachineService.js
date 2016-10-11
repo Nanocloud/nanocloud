@@ -21,7 +21,7 @@
  *
  */
 
-/* global ConfigService, Machine, Image, User, BrokerLog */
+/* global App, ConfigService, BrokerLog, Machine, Image, User, ConfigService, Machine, PlazaService, StorageService, Team */
 
 const _ = require('lodash');
 const Promise = require('bluebird');
@@ -104,7 +104,7 @@ function initialize() {
       _initializing = ConfigService.get('iaas')
         .then((config) => {
           return Image.findOrCreate({
-            default: true
+            buildFrom: null
           }, {
             iaasId: null,
             name: 'Default',
@@ -113,7 +113,6 @@ function initialize() {
           })
             .then(() => {
               _driver = new (drivers[config.iaas])();
-
               return _driver.initialize()
                 .then(() => {
                   updateMachinesPool();
@@ -133,9 +132,10 @@ function initialize() {
  *
  * @method getMachineForUser
  * @param {User} The user associated to the machine
+ * @param {Image} The image associated to the machine
  * @return {Promise[Machine]} The user's machine
  */
-function getMachineForUser(user) {
+function getMachineForUser(user, image) {
   return assert(!!_driver, driverNotInitializedError)
     .then(() => {
       return ConfigService.get('creditLimit');
@@ -148,11 +148,12 @@ function getMachineForUser(user) {
     .then(() => {
       return Machine.findOne({
         where: {
-          user: user.id
+          user: user.id,
+          image: image.id
         }
       })
-        .then((res) => {
-          if (!res) {
+        .then((machine) => {
+          if (!machine) {
             return new Promise((resolve, reject) => {
               Machine.query({
                 text: `UPDATE machine m
@@ -160,28 +161,27 @@ function getMachineForUser(user) {
             FROM (
               SELECT machine.id
               FROM machine
-              WHERE "user" IS NULL AND "status" = 'running'
+              WHERE "user" IS NULL AND "status" = 'running' AND "image" = $2::varchar
               LIMIT 1
               FOR UPDATE SKIP LOCKED
             ) sub
             WHERE m.id = sub.id
             RETURNING *`,
-                values: [user.id]
+                values: [user.id, image.id]
               }, (err, res) => {
                 if (err) {
                   return reject(err);
                 }
 
                 if (res.rows.length) {
-                  updateMachinesPool();
                   _createBrokerLog(res.rows[0], 'Assigned')
                     .then(() => {
+                      updateMachinesPool();
                       return resolve(Machine.findOne({
                         id: res.rows[0].id
                       }));
                     });
                 } else {
-
                   return reject('A machine is booting for you. Please retry in one minute.');
                 }
               });
@@ -190,16 +190,16 @@ function getMachineForUser(user) {
             return ConfigService.get('neverTerminateMachine')
               .then((config) => {
                 if (config.neverTerminateMachine) {
-                  if (res.status === 'stopped') {
-                    startMachine(res);
+                  if (machine.status === 'stopped') {
+                    startMachine(machine);
                     return Promise.reject('Your machine is starting. Please retry in one minute.');
-                  } else if (res.status === 'running') {
-                    return Promise.resolve(res);
+                  } else if (machine.status === 'running') {
+                    return Promise.resolve(machine);
                   } else {
-                    return Promise.reject(`Your machine is ${res.status}. Please retry in one minute.`);
+                    return Promise.reject(`Your machine is ${machine.status}. Please retry in one minute.`);
                   }
                 } else {
-                  return Promise.resolve(res);
+                  return Promise.resolve(machine);
                 }
               });
           }
@@ -220,23 +220,18 @@ function driverName() {
 /**
  * Set the user's machine endDate to now + `ConfigService:sessionDuration`
  *
- * @method increaseUsersMachineEndDate
+ * @method increaseMachineEndDate
  * @param {User} user The user to which the machine belongs
  * @return {Promise}
  */
-function increaseUsersMachineEndDate(user) {
+function increaseMachineEndDate(machine) {
   return ConfigService.get('sessionDuration')
     .then((config) => {
-      return Machine.findOne({
-        user: user.id
-      })
-        .then((machine) => {
-          return machine.setEndDate(config.sessionDuration)
-            .then(() => {
-              setTimeout(() => {
-                _shouldTerminateMachine(machine);
-              }, config.sessionDuration * 1000);
-            });
+      return machine.setEndDate(config.sessionDuration)
+        .then(() => {
+          setTimeout(() => {
+            _shouldTerminateMachine(machine);
+          }, config.sessionDuration * 1000);
         });
     });
 }
@@ -247,20 +242,22 @@ function increaseUsersMachineEndDate(user) {
  *  - machinesName: the name of the machine to be created
  *
  * @method _createMachine
+ * @param image {Object[Image]} image to build the machine from
  * @private
  * @return {Promise}
  */
-function _createMachine() {
+function _createMachine(image) {
 
   return ConfigService.get('machinesName')
     .then((config) => {
       return _driver.createMachine({
         name: config.machinesName
-      });
+      }, image);
     })
     .then((machine) => {
 
       machine.status = 'booting';
+      machine.image = image.id;
       _createBrokerLog(machine, 'Created');
       return Machine.create(machine);
     })
@@ -353,7 +350,7 @@ function startMachine(machine) {
       })
       .then((machines) => {
         if (machines[0].user) {
-          increaseUsersMachineEndDate({id: machines[0].user});
+          increaseMachineEndDate(machines[0]);
         }
         return (machines[0]);
       });
@@ -450,39 +447,53 @@ function _terminateMachine(machine) {
  * @return {Promise}
  */
 function updateMachinesPool() {
+
   return assert(!!_driver, driverNotInitializedError)
     .then(() => {
 
       return Promise.props({
         config: ConfigService.get('machinePoolSize'),
-        machineCount: Machine.count({
-          status: 'running',
-          user: null
+        machinesCount: Promise.promisify(Machine.query)({
+          text: 'SELECT image, COUNT(image) FROM machine WHERE "machine"."user" IS NULL GROUP BY "machine"."image"',
+          values: []
         }),
-        unassignedMachine: Machine.find({
-          user: null
-        })
+        images: Image.find()
       })
-        .then(({config, machineCount, unassignedMachine}) => {
+        .then(({config, machinesCount, images}) => {
+          images.forEach((image) => {
+            let machineCreated = _.find(machinesCount.rows, (m) => m.image === image.id) || {count: 0};
+            let machineToCreate = 0;
+            let machineToDestroy = 0;
+            if (image.deleted === true) {
+              machineToCreate = 0;
+              machineToDestroy = machineCreated.count;
+            } else {
+              machineToCreate = config.machinePoolSize - machineCreated.count;
+              machineToDestroy = machineCreated.count - config.machinePoolSize;
+            }
 
-          let machineToCreate = config.machinePoolSize - machineCount;
-          let machineToDestroy = machineCount - config.machinePoolSize;
-          let machines = null;
+            if (machineToDestroy > 0) {
+              return Machine.find({
+                image: image.id,
+                user: null
+              })
+                .limit(machineToDestroy)
+                .then((machines) => {
+                  machines.forEach((machine) => {
+                    _terminateMachine(machine);
+                    _createBrokerLog({
+                      type: _driver.name()
+                    }, `Update machine pool for image ${image.name} from ${machineCreated.count} to ${machineCreated.count - machineToDestroy} (-${machineToDestroy})`);
+                  });
+                });
+            } else if (machineToCreate > 0) {
+              _.times(machineToCreate, () => _createMachine(image));
+              _createBrokerLog({
+                type: _driver.name()
+              }, `Update machine pool for image ${image.name} from ${machineCreated.count} to ${machineCreated.count + machineToCreate} (+${machineToCreate})`);
+            }
+          });
 
-
-          if (machineToDestroy > 0) {
-            machines = _.times(machineToDestroy, (index) => _terminateMachine(unassignedMachine[index]));
-            _createBrokerLog({
-              type: _driver.name()
-            }, `Update machine pool from ${machineCount} to ${machineCount - machineToDestroy} (-${machineToDestroy})`);
-          } else if (machineToCreate > 0) {
-            machines = _.times(machineToCreate, () => _createMachine());
-            _createBrokerLog({
-              type: _driver.name()
-            }, `Update machine pool from ${machineCount} to ${machineCount + machineToCreate} (+${machineToCreate})`);
-          }
-
-          return Promise.all(machines);
         })
         .then(() => {
           return _createBrokerLog({
@@ -534,21 +545,157 @@ function _shouldTerminateMachine(machine) {
 
 /**
  * Inform the broker that the user has open a session on his machine.
- * It basically just call `increaseUsersMachineEndDate`.
+ * It basically just call `increaseMachineEndDate`.
  *
  * @method sessionOpen
  * @param {User} user The user that open the session
+ * @param {Image} image The image machine has boot with
  * @return {Promise}
  */
-function sessionOpen(user) {
-  return getMachineForUser(user)
+function sessionOpen(user, image) {
+  return getMachineForUser(user, image)
     .then((machine) => {
       machine.endDate = null;
       _createBrokerLog(machine, 'Opened')
+        .then(() => {
+          return StorageService.findOrCreate(user)
+            .then((storage) => {
+              return PlazaService.exec(machine.ip, machine.plazaport, {
+                command: [
+                  `C:\\Windows\\System32\\net.exe`,
+                  'use',
+                  'z:',
+                  `\\\\${storage.hostname}\\${storage.username}`,
+                  `/user:${storage.username}`,
+                  storage.password
+                ],
+                wait: true,
+                hideWindow: true,
+                username: machine.username
+              })
+                .catch(() => {
+                  // User storage is probably already mounted
+                  // When an image is published, sometimes storage does not work again
+                  // Let's delete the currupted storage and recreate it
+                  // Let's ignore the error silently
+
+                  return PlazaService.exec(machine.ip, machine.plazaport, {
+                    command: [
+                      `C:\\Windows\\System32\\net.exe`,
+                      'use',
+                      'z:',
+                      `/DELETE`,
+                      `/YES`
+                    ],
+                    wait: true,
+                    hideWindow: true,
+                    username: machine.username
+                  })
+                    .then(() => {
+                      return PlazaService.exec(machine.ip, machine.plazaport, {
+                        command: [
+                          `C:\\Windows\\System32\\net.exe`,
+                          'use',
+                          'z:',
+                          `\\\\${storage.hostname}\\${storage.username}`,
+                          `/user:${storage.username}`,
+                          storage.password
+                        ],
+                        wait: true,
+                        hideWindow: true,
+                        username: machine.username
+                      });
+                    })
+                    .then(() => {
+                      return Promise.resolve();
+                    });
+                });
+            })
+            .then(() => {
+              return PlazaService.exec(machine.ip, machine.plazaport, {
+                command: [
+                  `C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe`,
+                  '-Command',
+                  '-'
+                ],
+                wait: true,
+                hideWindow: true,
+                username: machine.username,
+                stdin: '$a = New-Object -ComObject shell.application;$a.NameSpace( "Z:\" ).self.name = "Personal Storage"'
+              });
+            })
+            .then(() => {
+              if (user.team) {
+                Promise.props({
+                  team: Team.findOne(user.team),
+                  config: ConfigService.get('teamStorageAddress'),
+                })
+                  .then(({team, config}) => {
+
+                    let command = [
+                      `C:\\Windows\\System32\\net.exe`,
+                      'use',
+                      'y:',
+                      `\\\\${config.teamStorageAddress}\\${team.username}`,
+                      `/user:${team.username}`,
+                      team.password
+                    ];
+                    return PlazaService.exec(machine.ip, machine.plazaport, {
+                      command: command,
+                      wait: true,
+                      hideWindow: true,
+                      username: machine.username
+                    })
+                      .catch(() => {
+                        // Team storage is probably already mounted like user storage
+                        // When an image is published, sometimes team storage does not work again
+                        // Let's delete the currupted team storage and recreate it
+                        // Let's ignore the error silently
+
+                        return PlazaService.exec(machine.ip, machine.plazaport, {
+                          command: [
+                            `C:\\Windows\\System32\\net.exe`,
+                            'use',
+                            'y:',
+                            `/DELETE`,
+                            `/YES`
+                          ],
+                          wait: true,
+                          hideWindow: true,
+                          username: machine.username
+                        })
+                          .then(() => {
+                            return PlazaService.exec(machine.ip, machine.plazaport, {
+                              command: command,
+                              wait: true,
+                              hideWindow: true,
+                              username: machine.username
+                            });
+                          })
+                          .then(() => {
+                            return Promise.resolve();
+                          });
+                      });
+                  })
+                  .then(() => {
+                    return PlazaService.exec(machine.ip, machine.plazaport, {
+                      command: [
+                        `C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe`,
+                        '-Command',
+                        '-'
+                      ],
+                      wait: true,
+                      hideWindow: true,
+                      username: machine.username,
+                      stdin: '$a = New-Object -ComObject shell.application;$a.NameSpace( "Y:\" ).self.name = "Team"'
+                    });
+                  });
+              }
+            });
+        })
         .finally(() => {
           return Machine.update(machine.id, machine);
         });
-
     });
 }
 
@@ -569,15 +716,22 @@ function isUserCreditSupported() {
 
 /**
  * Inform the broker that the user's session has ended.
- * It basically just call `increaseUsersMachineEndDate`.
+ * It basically just call `increaseMachineEndDate`.
  *
  * @method sessionEnded
  * @param {User} user The user that ended the session
+ * @param {Image} image The image used to boot user's machine
  * @return {Promise}
  */
-function sessionEnded(user) {
+function sessionEnded(user, image) {
 
-  let promise = increaseUsersMachineEndDate(user);
+  let promise = getMachineForUser(user, image)
+    .then((userMachine) => {
+      return _createBrokerLog(userMachine, 'Closed')
+        .then(() => {
+          return increaseMachineEndDate(userMachine);
+        });
+    });
 
   if (isUserCreditSupported()) {
     promise.then(() => {
@@ -591,10 +745,7 @@ function sessionEnded(user) {
         });
     });
   }
-  getMachineForUser(user)
-    .then((userMachine) => {
-      _createBrokerLog(userMachine, 'Closed');
-    });
+
   return promise;
 }
 
@@ -627,23 +778,44 @@ function machines() {
  *
  * @method createImage
  * @param {Object} Image object with `buildFrom` attribute set to the machine id to create image from
- * @return {Promise[Image]} resolves to the new default image
+ * @return {Promise[Image]} resolves to the created image
  */
 function createImage(image) {
-  return _driver.createImage(image);
-}
 
-/*
- * Return default image to create instance from
- *
- * @method getDefaultImage
- * @return {Promise[Image]} the default image
- */
-function getDefaultImage() {
+  let newImage = null;
 
-  return Image.findOne({
-    default: true
-  });
+  return Machine.findOne(image.buildFrom)
+    .then((machine) => {
+      return Image.findOne(machine.image)
+        .populate('apps');
+    })
+    .then((oldImage) => {
+      return _driver.createImage(image)
+        .then((image) => {
+          return Image.create(image);
+        })
+        .then((image) => {
+          newImage = image;
+          let promises = [];
+
+          oldImage.apps.forEach((app) => {
+            if (app.alias !== 'Desktop') {
+              promises.push(App.create({
+                alias: app.alias,
+                displayName: app.displayName,
+                filePath: app.filePath,
+                image: newImage.id
+              }));
+            }
+          });
+
+          return Promise.all(promises);
+        })
+          .then(() => {
+            updateMachinesPool();
+            return Promise.resolve(newImage);
+          });
+    });
 }
 
 /*
@@ -752,6 +924,6 @@ function rebootMachine(machine) {
 
 module.exports = {
   initialize, getMachineForUser, driverName, sessionOpen, sessionEnded,
-  machines, createImage, getDefaultImage, refresh, getPassword,
-  rebootMachine, startMachine, stopMachine, updateMachinesPool
+  machines, createImage, refresh, getPassword, rebootMachine, startMachine,
+  stopMachine, updateMachinesPool
 };

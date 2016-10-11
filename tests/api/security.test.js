@@ -22,7 +22,7 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-/* globals sails, User, AccessToken, MachineService, Group */
+/* globals sails, User, Image, AccessToken, Group */
 /* globals ConfigService, StorageService, Machine, Team, BrokerLog */
 /* globals PendingUser, Template  */
 
@@ -92,16 +92,11 @@ module.exports = function() {
             .end(done);
         });
         it('Should not create history if coming from Guacamole', function(done) {
-          MachineService.getMachineForUser({
-            id: nano.adminId()
-          })
-            .then(() => {
-              nano.request('http://localhost:1337')
-                .post('/api/histories')
-                .send()
-                .expect(400)
-                .end(done);
-            });
+          nano.request('http://localhost:1337')
+            .post('/api/histories')
+            .send()
+            .expect(400)
+            .end(done);
         });
       });
 
@@ -139,16 +134,11 @@ module.exports = function() {
             .end(done);
         });
         it('Should not create history if coming from Guacamole', function(done) {
-          MachineService.getMachineForUser({
-            id: nano.adminId()
-          })
-            .then(() => {
-              nano.request('http://localhost:1337')
-                .post('/api/histories/' + 'fakeid')
-                .send([])
-                .expect(400)
-                .end(done);
-            });
+          nano.request('http://localhost:1337')
+            .post('/api/histories/' + 'fakeid')
+            .send([])
+            .expect(400)
+            .end(done);
         });
       });
 
@@ -363,14 +353,29 @@ module.exports = function() {
 
     describe('api/apps', function() {
       let appId = null;
+      let imageId = null;
       let localGroupId = null;
 
-      after('Delete the created group', function(done) {
-        Group.destroy({
-          id: localGroupId
+      before('Get default image ID', function(done) {
+        Image.create({
+          name: 'test',
+          default: true
         })
-          .then(() => {
+          .then((image) => {
+            imageId = image.id;
             done();
+          });
+      });
+
+      after('Delete the created group', function(done) {
+        Image.destroy(imageId)
+          .then(() => {
+            Group.destroy({
+              id: localGroupId
+            })
+              .then(() => {
+                done();
+              });
           });
       });
 
@@ -388,23 +393,37 @@ module.exports = function() {
                   'display-name': 'tempo',
                   'file-path': 'C:\\Windows\\System32\\notepad.exe'
                 },
+                relationships: {
+                  image: {
+                    data: {
+                      type: 'images',
+                      id: imageId
+                    }
+                  }
+                },
                 type: 'apps'
               }
             })
             .expect(201)
             .expect((res) => {
               appId = res.body.data.id;
-              Group.create({
+              return Group.create({
                 name: 'groupTest',
                 members: {
                   id: userId
                 },
-                apps: {
-                  id: res.body.data.id
+                images: {
+                  id: imageId
                 }
               })
                 .then((group) => {
                   localGroupId = group.id;
+
+                  return Image.update(imageId, {
+                    apps: [
+                      appId
+                    ]
+                  });
                 });
             })
             .end(done);
@@ -420,7 +439,8 @@ module.exports = function() {
                   alias: 'tempo',
                   'collection-name': 'tempo',
                   'display-name': 'tempo',
-                  'file-path': 'C:\\Windows\\System32\\notepad.exe'
+                  'file-path': 'C:\\Windows\\System32\\notepad.exe',
+                  'image': imageId
                 },
                 type: 'apps'
               }
@@ -438,7 +458,8 @@ module.exports = function() {
                   alias: 'tempo',
                   'collection-name': 'tempo',
                   'display-name': 'tempo',
-                  'file-path': 'C:\\Windows\\System32\\notepad.exe'
+                  'file-path': 'C:\\Windows\\System32\\notepad.exe',
+                  'image': imageId
                 },
                 type: 'apps'
               }
@@ -904,19 +925,33 @@ module.exports = function() {
       describe('Get user machines - only machines assigned to this user', function() {
 
         it('Admins should be authorized', function(done) {
-          return nano.request(sails.hooks.http.app)
-            .get('/api/machines/users')
-            .set(nano.adminLogin())
-            .expect(200)
-            .end(done);
+          return Image.findOne({
+            name: 'Default'
+          })
+            .then((image) => {
+              return nano.request(sails.hooks.http.app)
+                .get('/api/machines/users?image=' + image.id)
+                .set(nano.adminLogin())
+                .expect(200);
+            })
+            .then(() => {
+              return done();
+            });
         });
 
         it('Regular users should be authorized', function(done) {
-          return nano.request(sails.hooks.http.app)
-            .get('/api/machines/users')
-            .set('Authorization', 'Bearer ' + token)
-            .expect(200)
-            .end(done);
+          return Image.findOne({
+            name: 'Default'
+          })
+            .then((image) => {
+              return nano.request(sails.hooks.http.app)
+                .get('/api/machines/users?image=' + image.id)
+                .set('Authorization', 'Bearer ' + token)
+                .expect(200);
+            })
+            .then(() => {
+              return done();
+            });
         });
 
         it('Request without authorization should be unauthorized', function(done) {
@@ -1359,6 +1394,13 @@ module.exports = function() {
       let ruPendingUser = null;
       let nologPendingUser = null;
 
+      before(function(done) {
+        return ConfigService.set('autoRegister', true)
+          .then(() => {
+            return done();
+          });
+      });
+
       describe('Create pending user - available for everyone', function() {
 
         it('Admins should be authorized to create a pending user', function(done) {
@@ -1562,15 +1604,37 @@ module.exports = function() {
 
       describe('Create an image - available for admins only', function() {
 
+        after('Delete created image', function(done) {
+          return Image.destroy({
+            name: 'a new name'
+          })
+            .then(() => {
+              return done();
+            });
+        });
+
         it('Admins should be authorized to create an image', function(done) {
-          return nano.request(sails.hooks.http.app)
-            .post('/api/images')
-            .set(nano.adminLogin())
-            .expect((res) => {
-              image = res.body.data.id;
+          return Machine.find()
+            .then((machines) => {
+              return nano.request(sails.hooks.http.app)
+                .post('/api/images')
+                .send({
+                  'data': {
+                    'attributes': {
+                      'build-from': machines[0].id,
+                      'name': 'AnotherImage'
+                    }
+                  }
+                })
+                .set(nano.adminLogin())
+                .expect((res) => {
+                  image = res.body.data.id;
+                })
+                .expect(201);
             })
-            .expect(201)
-            .end(done);
+            .then(() => {
+              return done();
+            });
         });
 
         it('Regular users should be forbidden to create an image', function(done) {
@@ -1617,6 +1681,17 @@ module.exports = function() {
 
       describe('Get an image - available for logged in users', function() {
 
+        before('Associate user with group to access its image', function(done) {
+          return Group.create({
+            name: 'groupTest',
+            members: [userId],
+            images: [image]
+          })
+            .then(() => {
+              done();
+            });
+        });
+
         it('Admins should be authorized to get an image', function(done) {
           return nano.request(sails.hooks.http.app)
             .get('/api/images/' + image)
@@ -1641,13 +1716,22 @@ module.exports = function() {
         });
       });
 
-      describe('Update an image - not available', function() {
+      describe('Update an image', function() {
 
-        it('Admins should be fobidden to update an image', function(done) {
+        it('Admins should be authorized to update an image', function(done) {
           return nano.request(sails.hooks.http.app)
             .patch('/api/images/' + image)
+            .send({
+              data: {
+                id: image,
+                type: 'images',
+                attributes: {
+                  name: 'a new name'
+                }
+              }
+            })
             .set(nano.adminLogin())
-            .expect(403)
+            .expect(200)
             .end(done);
         });
 
@@ -1662,20 +1746,12 @@ module.exports = function() {
         it('Not logged in user should be forbidden to update an image', function(done) {
           return nano.request(sails.hooks.http.app)
             .patch('/api/images/' + image)
-            .expect(403)
+            .expect(401)
             .end(done);
         });
       });
 
-      describe('Delete an image - not available', function() {
-
-        it('Admins should be forbidden to delete an image', function(done) {
-          return nano.request(sails.hooks.http.app)
-            .delete('/api/images/' + image)
-            .set(nano.adminLogin())
-            .expect(403)
-            .end(done);
-        });
+      describe('Delete an image', function() {
 
         it('Regular users should be forbidden to delete an image', function(done) {
           return nano.request(sails.hooks.http.app)
@@ -1688,7 +1764,15 @@ module.exports = function() {
         it('Not logged in user should be forbidden to delete an image', function(done) {
           return nano.request(sails.hooks.http.app)
             .delete('/api/images/' + image)
-            .expect(403)
+            .expect(401)
+            .end(done);
+        });
+
+        it('Admins should be authorized to delete an image', function(done) {
+          return nano.request(sails.hooks.http.app)
+            .delete('/api/images/' + image)
+            .set(nano.adminLogin())
+            .expect(202)
             .end(done);
         });
       });
@@ -2589,12 +2673,12 @@ module.exports = function() {
 
     describe('api/sessions', function() {
 
+      var machineId = null;
       before('clear', function(done) {
-        MachineService.getMachineForUser({id: userId})
-          .then(() => {
-            MachineService.getMachineForUser({id: nano.adminId()});
-          })
-          .then(() => {
+
+        Machine.find()
+          .then((machines) => {
+            machineId = machines[0].id;
             done();
           });
       });
@@ -2630,14 +2714,21 @@ module.exports = function() {
         it('Admin should be authorized', function(done) {
           nano.request(sails.hooks.http.app)
             .delete('/api/sessions')
+            .send({
+              machineId: machineId
+            })
             .set(nano.adminLogin())
             .expect(200)
             .end(done);
         });
 
         it('Regular users should be authorized', function(done) {
+
           nano.request(sails.hooks.http.app)
             .delete('/api/sessions')
+            .send({
+              machineId: machineId
+            })
             .set('Authorization', 'Bearer ' + token)
             .expect(200)
             .end(done);

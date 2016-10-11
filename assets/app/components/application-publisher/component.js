@@ -39,33 +39,36 @@ export default fileExplorer.extend(focusInputsHandlerMixin, {
 
     let name = this.get('selectedFile').get('name').replace(/\.[^/.]+$/, '');
 
-    let m = this.get('store').createRecord('app', {
-      alias: name,
-      displayName: name,
-      collectionName: 'collection',
-      filePath: this.get('pathToString') + this.get('selectedFile.name')
-    });
-
-    this.set('isPublishing', true);
-    m.save()
-    .then(() => {
-      this.set('isPublishing', false);
-      this.sendAction('action');
-      window.swal({
-        title: 'Success!',
-        text: 'Your application has been onboarded.',
-        type: 'success',
-        showCancelButton: false,
-        confirmButtonText: 'Great.',
-        closeOnConfirm: true,
-        animation: false
+    this.get('store').findRecord('image', this.get('requestParams.image'))
+      .then((image) => {
+        let m = this.get('store').createRecord('app', {
+          alias: name,
+          displayName: name,
+          collectionName: 'collection',
+          image: image,
+          filePath: this.get('pathToString') + this.get('selectedFile.name')
+        });
+        this.set('isPublishing', true);
+        m.save()
+          .then(() => {
+            this.set('isPublishing', false);
+            this.sendAction('action');
+            window.swal({
+              title: 'Success!',
+              text: 'Your application has been onboarded.',
+              type: 'success',
+              showCancelButton: false,
+              confirmButtonText: 'Great.',
+              closeOnConfirm: true,
+              animation: false
+            });
+          }, (error) => {
+            this.set('isPublishing', false);
+            this.set('publishError', true);
+            this.set('selectedFile', null);
+            this.toast.error(error.errors[0].status + ' : ' + error.errors[0].title);
+          });
       });
-    }, (error) => {
-      this.set('isPublishing', false);
-      this.set('publishError', true);
-      this.set('selectedFile', null);
-      this.toast.error(error.errors[0].status + ' : ' + error.errors[0].title);
-    });
   },
 
   selectFile(file) {

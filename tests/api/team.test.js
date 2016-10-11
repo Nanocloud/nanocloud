@@ -75,6 +75,9 @@ module.exports = function() {
         return ConfigService.set('testMail', true);
       })
       .then(() => {
+        return ConfigService.set('autoRegister', true);
+      })
+      .then(() => {
         return User.create({
           firstName: 'TeamAdminFirstname',
           lastName: 'TeamAdminLastname',

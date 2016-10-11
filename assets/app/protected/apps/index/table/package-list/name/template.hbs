@@ -1,8 +1,0 @@
-<span {{action 'launch' target='record'}} class='link'>{{record.name}}</span>
-{{#if record.session.user.isAdmin}}
-  {{#link-to 'protected.apps.app' record.model}}
-    <span class="fright">
-      {{icon-component class='color-gray-dark icon_link va-bl-mid' materialIcon="settings" size=14}}
-    </span>
-  {{/link-to}}
-{{/if}}

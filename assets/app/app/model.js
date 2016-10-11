@@ -38,11 +38,11 @@ const Validations = buildValidations({
 export default DS.Model.extend(Validations, {
   state: DS.attr('string'),
   createdAt: DS.attr('string'),
-  groups: DS.hasMany('group'),
   alias: DS.attr('string'),
   collectionName: DS.attr('string'),
   displayName: DS.attr('string'),
   filePath: DS.attr('string'),
   iconContent: DS.attr('string'),
+  image: DS.belongsTo('image'),
   path: DS.attr('string'),
 });

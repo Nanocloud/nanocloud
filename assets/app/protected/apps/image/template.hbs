@@ -1,0 +1,75 @@
+<div class='content-wrapper m-t-2'>
+  <h4 class='m-b-2'>
+    {{#link-to 'protected.apps'}}Applications{{/link-to}}
+    > {{model.name}}
+  </h4>
+  <table class="table detail-table">
+    <tbody>
+      <tr>
+        <th scope="row">Image name</th>
+        <td>
+          {{#edit-text
+          type="text"
+          confirmation=false
+          textInput=model.name
+          textInputPlaceholder="Image name"
+          onClose="saveImageName"
+          }}
+            {{model.name}}
+          {{/edit-text}}
+        </td>
+      </tr>
+      <tr>
+        <th scope="row">Publication date</th>
+        <td>{{moment-calendar model.createdAt}}</td>
+      </tr>
+      <tr>
+        <th scope="row">UUID</th>
+        <td>
+          {{model.id}}
+          {{copy-clipboard class='in-bl va-top' value=model.id title='UUID'}}
+        </td>
+      </tr>
+{{#if isRemoveable}}
+      <tr>
+        <th class='p-t-2' scope="row">Delete image</th>
+        <td class='p-t-2'>
+          <button type="button" class="btn btn-danger" {{ action "toggleModal" }}>
+          Delete this image
+          </button>
+        </td>
+      </tr>
+{{/if}}
+    </tbody>
+  </table>
+</div>
+
+{{#if showModal}}
+  {{#modal-dialog close="toggleModal"
+                  targetAttachment="center"
+                  containerClassNames="modal-dialog"
+                  translucentOverlay=true}}
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" {{action "toggleModal"}} aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+        <h4 class="modal-title text-xs-center">Delete image</h4>
+      </div>
+      <div class="modal-body">
+        Deleting an image is irreversible. Enter the image name
+        (<code>{{model.name}}</code>) below to confirm you want to permanently delete it
+
+        <form class="m-y-1" {{ action "deleteImage" on="submit" }}>
+          <fieldset class="form-group">
+            {{input class="form-control" placeholder="Image name" value=imageNameConfirm}}
+          </fieldset>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" {{action "toggleModal"}}>Cancel</button>
+        <button type="button" class="btn btn-primary" {{action "deleteImage"}} disabled={{preventDeletion}}>Delete image</button>
+      </div>
+    </div>
+  {{/modal-dialog}}
+{{/if}}

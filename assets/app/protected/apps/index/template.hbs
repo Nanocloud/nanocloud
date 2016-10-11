@@ -2,48 +2,45 @@
   <h1 class='color-primary'>
     Applications
   </h1>
-  <div class='action-btn-wrapper'>
-    {{#if hasDesktop}}
-      {{#if isCheckingMachine}}
+  {{#if hasDesktop}}
+    {{#if isCheckingMachine}}
+      <div class='action-btn-wrapper'>
         <button class="btn btn-info btn-color-default">
           {{ fa-icon "spinner" spin=true}}
           <div class="in-bl">Waiting for VM</div>
         </button>
-      {{else}}
-        <button class="btn btn-primary btn-color-default" {{action "startDesktop"}}>Desktop</button>
-      {{/if}}
+      </div>
     {{/if}}
-    {{#if session.user.isAdmin}}
-      <button class="btn btn-primary btn-color-default" {{action "openFileExplorer"}}>Onboard an application</button>
-    {{/if}}
+  {{/if}}
+  <div class="container">
+    <div class="row">
+      {{#each data as |image|}}
+      <div class="col-sm-4">
+        <div class="card card-block">
+          <h4 class="card-title">{{image.name}}
+          {{#if session.user.isAdmin}}
+            {{#link-to 'protected.apps.image' image.id}}
+            <span class="fright">
+              {{icon-component class='color-gray-dark icon_link va-bl-mid' materialIcon="settings" size=14}}
+            </span>
+            {{/link-to}}
+          {{/if}}</h4>
+          <ul class="list-group list-group-flush">
+            {{#each image.apps as |app|}}
+            <li {{action 'launch' target='app'}} class="list-group-item">{{app.model.displayName}}
+              {{#if session.user.isAdmin}}
+                {{#link-to 'protected.apps.app' app.model}}
+                <span class="fright">
+                  {{icon-component class='color-gray-dark icon_link va-bl-mid' materialIcon="settings" size=14}}
+                </span>
+                {{/link-to}}
+              {{/if}}
+            </li>
+            {{/each}}
+          </ul>
+        </div>
+      </div>
+      {{/each}}
+    </div>
   </div>
-  {{models-table
-    class="sortableTable color-default"
-    data=data
-    columns=columns
-    showColumnsDropdown=false
-    delete='downloadFile'
-    filteringIgnoreCase=sortableTableConfig.filteringIgnoreCase
-    customMessages=sortableTableConfig.messageConfig
-    customIcons=sortableTableConfig.customIcons
-    customClasses=sortableTableConfig.customClasses
-    useNumericPagination=true
-    multipleColumnsSorting=false
-  }}
 </div>
-
-{{dim-background show=showFileExplorer action="closeFileExplorer"}}
-{{#floating-sidebar-component
-  isVisible=showFileExplorer
-}}
-{{#if showFileExplorer}}
-  {{#application-publisher
-    requestParams=(hash machines=true)
-    isPublishing=isPublishing
-    api="file"
-    system='windows'
-    action="onboardAppSucceeded"
-  }}
-  {{/application-publisher}}
-{{/if}}
-{{/floating-sidebar-component}}

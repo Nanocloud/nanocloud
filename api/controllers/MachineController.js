@@ -104,7 +104,14 @@ module.exports = {
    * @method users
    */
   users(req, res) {
-    MachineService.getMachineForUser(req.user)
+    let image = req.allParams().image;
+    if (!image) {
+      return res.badRequest('Invalid image id');
+    }
+
+    MachineService.getMachineForUser(req.user, {
+      id: image
+    })
       .then((machines) => {
         return res.ok([machines]);
       })
