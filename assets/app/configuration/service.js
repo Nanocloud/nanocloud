@@ -54,6 +54,7 @@ export default Ember.Service.extend({
     'ldapUrl',
     'ldapBaseDn',
     'defaultGroupLdap',
+    'photon'
   ],
   keyToBeRetrievedAsString: Ember.computed('keyToBeRetrieved', function() {
     let params = this.get('keyToBeRetrieved');
