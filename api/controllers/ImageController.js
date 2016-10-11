@@ -126,8 +126,11 @@ module.exports = {
       deleted: true
     })
       .then((image) => {
-        res.status(202);
-        res.send(JsonApiService.serialize('images', image[0]));
+        return MachineService.updateMachinesPool()
+          .then(() => {
+            res.status(202);
+            return res.send(JsonApiService.serialize('images', image[0]));
+          });
       })
       .catch(res.negociate);
   }

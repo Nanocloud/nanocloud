@@ -457,9 +457,7 @@ function updateMachinesPool() {
           text: 'SELECT image, COUNT(image) FROM machine WHERE "machine"."user" IS NULL GROUP BY "machine"."image"',
           values: []
         }),
-        images: Image.find({
-          deleted: false
-        })
+        images: Image.find()
       })
         .then(({config, machinesCount, images}) => {
           images.forEach((image) => {

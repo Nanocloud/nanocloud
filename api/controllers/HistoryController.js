@@ -25,9 +25,10 @@
  * @help        :: See http://sailsjs.org/#!/documentation/concepts/Controllers
  */
 
-/* global App, MachineService, Image, JsonApiService */
+/* global App, User, MachineService, Image, JsonApiService */
 
 const _= require('lodash');
+const Promise = require('bluebird');
 
 module.exports = {
   create(req, res) {
@@ -97,14 +98,13 @@ module.exports = {
           throw new Error('Connection not found');
         }
 
-        return Image.findOne(app.image);
+        return Promise.props({
+          image: Image.findOne(app.image),
+          user: User.findOne(userId)
+        });
       })
-      .then((image) => {
-        return MachineService.sessionEnded({
-          id: userId
-        }, {
-          id: image.id
-        })
+      .then(({image, user}) => {
+        return MachineService.sessionEnded(user, image)
           .then(() => {
             return MachineService.getMachineForUser({
               id: userId
