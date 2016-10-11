@@ -198,7 +198,7 @@ export default Ember.Component.extend({
       if (event.type === 'dragleave') {
         return this.dragLeave();
       }
-      else if (event.type === 'drop') { 
+      else if (event.type === 'drop') {
         return this.drop(event);
       }
 
