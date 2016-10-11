@@ -27,6 +27,149 @@
 import Ember from 'ember';
 import getKeyFromVal from '../../utils/get-key-from-value';
 
+/*
+ * KeyboardManager
+ */
+var KeyboardManager  = function(element, rtcChannel) {
+  this._element = element;
+  this._rtcChannel = rtcChannel;
+
+  var keyevent = function(event) {
+    event.preventDefault();
+    rtcChannel.send(((event.type === 'keydown') ? 'D':'U') + String.fromCharCode(event.keyCode));
+  };
+
+  element.addEventListener('keydown', keyevent);
+  element.addEventListener('keyup', keyevent);
+};
+
+/*
+ * MouseManager
+ */
+
+var MouseManager = function(element, rtcChannel) {
+  this._element = element;
+  this._rtcChannel = rtcChannel;
+
+  var mouseButtonEvent = function(event) {
+    event.preventDefault();
+
+    var mess = 'C';
+
+    if (event.type === 'mousedown') {
+      mess += 'D';
+    } else {
+      mess += 'U';
+    }
+
+    if (event.button === 0) { // Left button
+      mess += 'L';
+    } else { // Right button
+      mess += 'R';
+    }
+
+    rtcChannel.send(mess);
+  };
+
+  element.addEventListener('contextmenu', function(event) {
+    event.preventDefault();
+  });
+
+  element.addEventListener('mousedown', mouseButtonEvent);
+  element.addEventListener('mouseup', mouseButtonEvent);
+  element.addEventListener('mousewheel', function(event) {
+    event.preventDefault();
+    rtcChannel.send('W' + event.wheelDelta);
+  });
+
+  element.addEventListener('mousemove', this._OnMove.bind(this));
+};
+
+MouseManager.prototype._OnMove = function(event) {
+  var x = event.offsetX * 0xFFFF / this._element.clientWidth;
+  var y = event.offsetY * 0xFFFF / this._element.clientHeight;
+
+  this._rtcChannel.send('M' + Math.floor(x) + '|' + Math.floor(y));
+};
+
+
+var PeerConnectionManager = function(videoElement, serverAddress) {
+  this._videoElement = videoElement;
+  this._serverAddress = serverAddress;
+
+  var peerConnection = new RTCPeerConnection({
+    iceServers:[{
+      urls: ['stun:stun.l.google.com:19302']
+    }]
+  }, {
+    optional: [{
+      DtlsSrtpKeyAgreement: true
+    }]
+  });
+
+  this._peerConnection = peerConnection;
+
+  peerConnection.onicecandidate = this._OnICECandidate.bind(this);
+  peerConnection.onaddstream = this._OnAddStream.bind(this);
+
+  var dataChannel = peerConnection.createDataChannel('userinput', {
+    ordered: true,
+    reliable: true
+  });
+  this._dataChannel = dataChannel;
+
+  dataChannel.onopen = this._OnDataChannelOpen.bind(this);
+
+  peerConnection.createOffer(function(offer) {
+    peerConnection.setLocalDescription(offer);
+  }, function() {
+  }, {
+    offerToReceiveAudio: true,
+    offerToReceiveVideo: true
+  });
+};
+
+PeerConnectionManager.prototype._OnDataChannelOpen = function() {
+  var mouseManager = new MouseManager(this._videoElement, this._dataChannel);
+  var keyboardManager = KeyboardManager(document.body, this._dataChannel);
+
+  return [
+    mouseManager,
+    keyboardManager
+  ];
+};
+
+PeerConnectionManager.prototype._OnICECandidate = function(event) {
+  var self = this;
+
+  if (event.candidate === null) {
+    var sdp = this._peerConnection.localDescription.sdp;
+
+    var req = new XMLHttpRequest();
+
+    req.open('POST', this._serverAddress, true);
+
+    req.onreadystatechange = function () {
+      if (req.readyState !== 4 || req.status !== 200) {
+        return;
+      }
+      var answer = req.responseText;
+      self._peerConnection.setRemoteDescription(new RTCSessionDescription({
+        type: 'answer',
+        sdp: answer
+      }));
+    };
+
+    req.send(sdp);
+  }
+};
+
+PeerConnectionManager.prototype._OnAddStream = function(event) {
+  var url = URL.createObjectURL(event.stream);
+  this._videoElement.src = url;
+};
+
+
 export default Ember.Component.extend({
   remoteSession: Ember.inject.service('remote-session'),
   guacamole: null,
@@ -59,6 +202,13 @@ export default Ember.Component.extend({
 
     let width = this.getWidth();
     let height = this.getHeight();
+
+    var vidContainer = document.getElementById('vid-container');
+    vidContainer.style.display = 'initial';
+
+    var video = document.getElementById('video');
+    new PeerConnectionManager(video, 'https://localhost/webrtc');
+
     let guacSession = this.get('remoteSession').getSession(this.get('connectionName'), width, height);
 
     this.set('guacamole', guacSession);

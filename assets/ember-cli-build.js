@@ -57,6 +57,11 @@ module.exports = function(defaults) {
     prepend: true
   });
 
+  app.import('vendor/webrtc-lib.js', {
+    type: 'vendor',
+    prepend: true
+  });
+
   app.import('bower_components/bootstrap/dist/js/bootstrap.js');
   app.import('bower_components/humanize-duration/humanize-duration.js');
 
