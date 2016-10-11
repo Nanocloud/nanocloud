@@ -140,8 +140,13 @@ var PeerConnectionManager;
   };
 
   PeerConnectionManager.prototype._OnDataChannelOpen = function() {
-    new MouseManager(this._videoElement, this._dataChannel);
-    new KeyboardManager(document.body, this._dataChannel);
+    var mouseManager = new MouseManager(this._videoElement, this._dataChannel);
+    var keyboardManager = KeyboardManager(document.body, this._dataChannel);
+
+    return [
+      mouseManager,
+      keyboardManager
+    ];
   };
 
   PeerConnectionManager.prototype._OnICECandidate = function(event) {

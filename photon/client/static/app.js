@@ -40,7 +40,7 @@ function main_rtc(server_address) {
   }, false);
 
   var video = document.getElementById('video');
-  new PeerConnectionManager(video, 'http://' + server_address + '/webrtc');
+  return new PeerConnectionManager(video, 'http://' + server_address + '/webrtc');
 }
 
 main_rtc('localhost:8080');
