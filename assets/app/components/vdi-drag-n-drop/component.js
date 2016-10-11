@@ -30,6 +30,7 @@ var FileUploader = Ember.Object.extend(Ember.Evented, {
   progress: 0,
   uploading: false,
   forbidden: false,
+  dragAndDropActive: false,
 
   init() {
     this._super(...arguments);
@@ -191,10 +192,16 @@ export default Ember.Component.extend({
   },
 
   didInsertElement() {
-    Ember.$('body').on('dragenter dragover', (event) => {
+    Ember.$('body').on('dragenter dragover dragleave drop', (event) => {
       event.preventDefault();
 
-      this.set('show', true);
+      if (event.type === 'dragleave') {
+        return this.dragLeave();
+      }
+      else if (event.type === 'drop') { 
+        return this.drop(event);
+      }
+
       if (this.get('dragAndDropActive') === false) {
         this.set('dragAndDropActive', true);
         this.showElement();
@@ -218,6 +225,10 @@ export default Ember.Component.extend({
           input.click();
         });
     }
+  },
+
+  willDestroy() {
+    Ember.$('body').off('dragenter dragover dragleave drop');
   },
 
   completeNotif() {
