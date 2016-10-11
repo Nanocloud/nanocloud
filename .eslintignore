@@ -7,3 +7,4 @@ node_modules/**
 plaza/vendor
 tests/**
 vdiexperience/**
+photon/client/static/libs/**

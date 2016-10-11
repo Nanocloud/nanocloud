@@ -6,6 +6,7 @@
       "guacamole-client/*",
       "proxy/*",
       "qemu/*",
-      "vdiexperience/*"
+      "vdiexperience/*",
+      "photon/*"
     ]
 }
