@@ -53,7 +53,14 @@ export default Ember.Controller.extend({
     let machine = this.get('model');
 
     machine.set('status', 'rebooting');
-    machine.save();
+    this.toast.info('Your machine will reboot');
+    machine.save()
+      .then(() => {
+        this.toast.success('Your machine was successfully rebooted');
+      })
+      .catch(() => {
+        this.toast.error('Fail to reboot your machine');
+      });
   },
 
   terminateMachine() {

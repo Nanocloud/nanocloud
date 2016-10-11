@@ -78,8 +78,10 @@ module.exports = {
       })
         .then((machine) => {
           if (status === 'rebooting') {
-            machine.reboot();
-            return machine;
+            return machine.reboot()
+              .then(() => {
+                return machine;
+              });
           } else if (status === 'starting') {
             return MachineService.startMachine(machine);
           } else if (status === 'stopping') {
