@@ -702,19 +702,51 @@ function getPassword(machine) {
 function rebootMachine(machine) {
   return _driver.rebootMachine(machine)
     .then((rebootedMachine) => {
+      rebootedMachine.status = 'booting';
+      return Machine.update({
+        id: machine.id
+      }, rebootedMachine);
+    })
+    .then((machines) => {
+      let updatedMachine = machines[0];
+      let requestOptions = {
+        url: 'http://' + updatedMachine.ip + ':' + updatedMachine.plazaport,
+        method: 'GET'
+      };
       return new Promise((resolve) => {
         setTimeout(() => {
-          let requestOptions = {
-            url: 'http://' + machine.ip + ':' + machine.plazaport,
-            method: 'GET'
-          };
+          return promisePoller({
+            taskFn: () => {
+              return request(requestOptions)
+                .then(() => {
+                  return resolve(updatedMachine);
+                })
+                .catch(() => {
+                  return Promise.reject(updatedMachine);
+                });
+            },
+            interval: 5000,
+            retries: 100
+          })
+            .catch((errs) => { // If timeout is reached
 
-          request(requestOptions)
-            .then(() => {
-              return resolve(rebootedMachine);
+              let machine = errs.pop(); // On timeout, promisePoller rejects with an array of all rejected promises. In our case, MachineService rejects the still booting machine. Let's pick the last one.
+
+              _createBrokerLog(machine, `Error rebooting machine ${machine.id}`);
+              _terminateMachine(machine);
+              throw machine;
             });
         }, 10000);
       });
+    })
+    .then((updatedMachine) => {
+      _createBrokerLog(updatedMachine, `Machine rebooted`);
+      return Machine.update({
+        id: updatedMachine.id
+      }, {status: 'running'})
+        .then((machines) => {
+          return machines[0];
+        });
     });
 }
 
