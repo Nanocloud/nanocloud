@@ -1,0 +1,134 @@
+# Nanocloud turns any traditional software into a cloud solution, without
+# changing or redeveloping existing source code.
+#
+# Copyright (C) 2016 Nanocloud Software
+#
+# This file is part of Nanocloud.
+#
+# Nanocloud is free software; you can redistribute it and/or modify
+# it under the terms of the GNU Affero General Public License as
+# published by the Free Software Foundation, either version 3 of the
+# License, or (at your option) any later version.
+#
+# Nanocloud is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU Affero General Public License for more details.
+#
+# You should have received a copy of the GNU Affero General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+import("//build/config/linux/pkg_config.gni")
+import("//build/config/sanitizers/sanitizers.gni")
+import("//webrtc/build/webrtc.gni")
+import("//third_party/protobuf/proto_library.gni")
+
+if (is_mac || is_linux || is_win) {
+  config("photon_warnings_config") {
+    if (is_win && is_clang) {
+      cflags = [
+        # Disable warnings failing when compiling with Clang on Windows.
+        # https://bugs.chromium.org/p/webrtc/issues/detail?id=5366
+        "-Wno-format",
+
+        # See https://bugs.chromium.org/p/webrtc/issues/detail?id=6271
+        # for -Wno-reorder and -Wno-sign-compare
+        "-Wno-reorder",
+        "-Wno-sign-compare",
+      ]
+    }
+    if (is_linux && target_cpu == "x86") {
+      cflags = [
+        # Needed to compile on Linux 32-bit.
+        "-Wno-sentinel",
+      ]
+    }
+  }
+
+  rtc_executable("photon") {
+    deps = []
+
+    sources = [
+      "conductor.cc",
+      "conductor.h",
+      "http/server/connection.cc",
+      "http/server/connection.h",
+      "http/server/connection_manager.cc",
+      "http/server/connection_manager.h",
+      "defaults.cc",
+      "defaults.h",
+      "http/server/header.h",
+      "main.cc",
+      "http/server/response.h",
+      "http/server/response.cc",
+      "http/server/request.h",
+      "http/server/request_handler.h",
+      "http/server/request_parser.cc",
+      "http/server/request_parser.h",
+      "http/server/server.cc",
+      "http/server/server.h",
+    ]
+
+    if (is_mac) {
+      include_dirs = [
+        "/usr/local/Cellar/boost/1.61.0_1/include",
+      ]
+
+      libs = [
+        "boost_system",
+        "boost_thread-mt",
+      ]
+
+      lib_dirs = [
+       "/usr/local/Cellar/boost/1.61.0_1/lib",
+      ]
+    }
+
+    if (is_win) {
+      sources += [
+        "capturer.cc",
+        "capturer.h",
+        "capture_thread.cc",
+        "capture_thread.h",
+        "input_manager.cc",
+        "input_manager.h",
+      ]
+
+      cflags = [ "/EHsc" ]
+      lib_dirs = [
+        "C:\Users\Nanocloud\boost_1_60_0\stage\lib"
+      ]
+
+      libs = [
+        "libboost_system-vc140-mt-gd-1_60.lib",
+        "libboost_thread-vc140-mt-gd-1_60.lib",
+      ]
+
+      include_dirs = [
+        "C:\\Users\\Nanocloud\\boost_1_60_0",
+      ]
+
+      deps += [ "//webrtc/modules/desktop_capture" ]
+    }
+
+    # TODO: Make photon compile with the standard
+    # set of warnings.
+    # See https://bugs.chromium.org/p/webrtc/issues/detail?id=6306
+    suppressed_configs += [ rtc_common_config ]
+    if (is_clang) {
+      # Suppress warnings from the Chromium Clang plugin.
+      # See http://code.google.com/p/webrtc/issues/detail?id=163 for details.
+      suppressed_configs += [ "//build/config/clang:find_bad_constructs" ]
+    }
+    deps += [
+      "//third_party/libyuv",
+      "//webrtc/api:libjingle_peerconnection",
+      "//webrtc/system_wrappers:field_trial_default",
+      "//webrtc/system_wrappers:metrics_default",
+    ]
+    configs += [ ":photon_warnings_config" ]
+    if (rtc_build_json) {
+      deps += [ "//third_party/jsoncpp" ]
+    }
+  }
+}

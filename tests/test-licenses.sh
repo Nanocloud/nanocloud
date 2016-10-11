@@ -139,3 +139,18 @@ for file in $(find plaza -path plaza/vendor -prune -o -name "*.go"); do
     fi
   fi
 done
+
+echo "### Looking for source files in *photon* directory"
+for file in $(find photon -path -prune -o -name "*.cc" -o -name "*.h" -o -name "*.js"); do
+  echo "Scanning ${file}" >> add_license.log
+  if [ -z "$(grep ${LICENCE_PATTERN} "${file}")" ]; then
+    if [ "tests" = "${ACTION}" ]; then
+      echo "Missing license in : ${file}"
+      exit 1
+    else
+      echo "Adding license in : ${file}"
+      { echo -n "${LICENSE_TEXT}"; cat "${file}"; } > "${file}.new"
+      mv "${file}.new" "${file}"
+    fi
+  fi
+done
