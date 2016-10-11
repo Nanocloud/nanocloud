@@ -30,7 +30,7 @@
 
 function main_rtc(server_address) {
   var vidContainer = document.getElementById('vid-container');
-  vidContainer.style.display = "initial";
+  vidContainer.style.display = 'initial';
   vidContainer.addEventListener('dblclick', function() {
     if (vidContainer.mozRequestFullScreen) {
       vidContainer.mozRequestFullScreen();
@@ -43,4 +43,4 @@ function main_rtc(server_address) {
   new PeerConnectionManager(video, 'http://' + server_address + '/webrtc');
 }
 
-main_rtc("localhost:8080");
+main_rtc('localhost:8080');

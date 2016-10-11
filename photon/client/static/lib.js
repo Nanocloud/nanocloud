@@ -39,7 +39,6 @@ var KeyboardManager;
 
     var keyevent = function(event) {
       event.preventDefault();
-      console.log(event);
       rtcChannel.send(((event.type === 'keydown') ? 'D':'U') + String.fromCharCode(event.keyCode));
     };
 
@@ -133,8 +132,7 @@ var PeerConnectionManager;
 
     peerConnection.createOffer(function(offer) {
       peerConnection.setLocalDescription(offer);
-    }, function(err) {
-      console.error(err);
+    }, function() {
     }, {
       offerToReceiveAudio: true,
       offerToReceiveVideo: true
@@ -152,12 +150,10 @@ var PeerConnectionManager;
     if (event.candidate === null) {
       var sdp = this._peerConnection.localDescription.sdp;
 
-      console.log(sdp);
-
       var req = new XMLHttpRequest();
-	  
+
       req.open('POST', this._serverAddress, true);
-	  
+
       req.onreadystatechange = function () {
         if (req.readyState !== 4 || req.status !== 200) {
           return;
