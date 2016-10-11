@@ -73,6 +73,7 @@ module.exports = {
     iaas: 'manual',
     machinePoolSize: 1,
 
+    photon: false,
     neverTerminateMachine: false,
     sessionDuration: 600, // 10 minutes
     machinesName: 'Nanocloud Exec Server',
