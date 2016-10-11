@@ -23,29 +23,31 @@
       {{input-confirm placeholder=configController.ldapBaseDn value=configController.ldapBaseDn type="text"}}
     </div>
   </div>
-  <p class='m-t-1 color-primary'>Select LDAP users default group</p>
-  <ul class="selectable-list">
-    <div class="row">
-      <div class="col-md-6">
-        <table class="table">
-          <tbody>
-            {{#each model.groups as |group|}}
-              <tr>
-                <td scope="row">
-                  <span class="link in-bl">
-                    {{#link-to 'protected.users.groups.group' group}}
-                      {{group.name}}
-                    {{/link-to}}
-                  </span>
-                </td>
-                <td {{action "selectGroup" group.id}}>
-                  {{nano-switch checked=(is-equal group.id defaultGroupLdap)}}
-                </td>
-              </tr>
-            {{/each}}
-          </tbody>
-        </table>
+  {{#if model.groups.length}}
+    <p class='m-t-1 color-primary'>Select LDAP users default group</p>
+    <ul class="selectable-list">
+      <div class="row">
+        <div class="col-md-6">
+          <table class="table">
+            <tbody>
+              {{#each model.groups as |group|}}
+                <tr>
+                  <td scope="row">
+                    <span class="link in-bl">
+                      {{#link-to 'protected.users.groups.group' group}}
+                        {{group.name}}
+                      {{/link-to}}
+                    </span>
+                  </td>
+                  <td {{action "selectGroup" group.id}}>
+                    {{nano-switch checked=(is-equal group.id defaultGroupLdap)}}
+                  </td>
+                </tr>
+              {{/each}}
+            </tbody>
+          </table>
+        </div>
       </div>
-    </div>
-  </ul>
+    </ul>
+  {{/if}}
 {{/if}}
