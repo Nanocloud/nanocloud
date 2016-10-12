@@ -7,3 +7,4 @@ node_modules/**
 plaza/vendor
 qemu/node_modules/**
 vdiexperience/**
+photon/client/static/libs/**
