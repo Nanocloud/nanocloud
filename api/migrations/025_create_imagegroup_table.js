@@ -56,13 +56,17 @@ function up(knex, Promise) {
               image: images[0].id
             }),
 
-            knex('appgroup').select('*')
+            knex('machine').update({
+              image: images[0].id
+            }),
+
+            knex('appgroup').select('group').groupBy('group')
               .then((appgroupRelations) => {
                 return Promise.map(appgroupRelations, function(appgroupRelation) {
-                  return knex.insert({
-                    image: images[0].id,
-                    group: appgroupRelation.group
-                  }).into('imagegroup');
+                    return knex.insert({
+                      image: images[0].id,
+                      group: appgroupRelation.group
+                    }).into('imagegroup')
                 });
               }),
           ]);

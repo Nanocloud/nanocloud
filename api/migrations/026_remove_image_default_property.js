@@ -22,11 +22,22 @@
  * <http://www.gnu.org/licenses/>.
  */
 
+const uuid = require('uuid');
+
 function up(knex) {
   return knex.schema.table('image', (table) => {
     table.dropColumn('default');
-    table.boolean('deleted');
-  });
+    table.boolean('deleted').defaultTo('false');
+  })
+    .then(() => {
+      return knex.insert({
+        id: uuid.v4(),
+        iaasId: null,
+        buildFrom: null,
+        name: 'Default',
+        deleted: true
+      }).into('image');
+    });
 }
 
 function down(knex) {
