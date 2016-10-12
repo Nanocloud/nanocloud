@@ -77,6 +77,10 @@ module.exports = {
       via: 'members',
       through: 'usergroup'
     },
+    ldapUser: {
+      type: 'boolean',
+      defaultsTo: false
+    },
 
     toJSON: function() {
       var obj = this.toObject();

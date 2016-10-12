@@ -10,6 +10,7 @@
       textInput=model.firstName
       textInputPlaceholder="First name"
       onClose="changeFirstName"
+      disabledInput=model.ldapUser
     }}
       {{model.firstName}}
     {{/edit-text}}
@@ -20,6 +21,7 @@
       textInput=model.lastName
       textInputPlaceholder="Last name"
       onClose="changeLastName"
+      disabledInput=model.ldapUser
     }}
       {{model.lastName}}
     {{/edit-text}}
@@ -40,6 +42,7 @@
               textInput=model.email
               textInputPlaceholder="Email"
               onClose="changeEmail"
+              disabledInput=model.ldapUser
             }}
               {{model.email}}
             {{/edit-text}}
@@ -56,6 +59,7 @@
               confirmInput=passwordConfirmation
               confirmInputPlaceholder="Confirmation"
               onClose="changePassword"
+              disabledInput=model.ldapUser
             }}
               <span class="va-bottom">
                 ******
@@ -98,6 +102,7 @@
                 textInput=expirationDays
                 textInputPlaceholder="Days left before expiration"
                 onClose="changeExpirationDays"
+                disabledInput=model.ldapUser
               }}
                 {{#if model.expirationDate}}
                   {{moment-calendar model.expirationDateInMs}}
