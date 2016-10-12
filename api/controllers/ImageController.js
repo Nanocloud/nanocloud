@@ -72,6 +72,7 @@ module.exports = {
       return res.badRequest('Invalid base machine ID');
     }
 
+    res.setTimeout(500000);
     Machine.findOne(machineId)
       .then((machine) => {
 
