@@ -72,7 +72,13 @@ module.exports = {
       return res.badRequest('Invalid base machine ID');
     }
 
-    res.setTimeout(500000);
+    /**
+     * Sometimes AWS can take several minutes to create an image.
+     * but the default timeout is 120 secondes (2 minutes).
+     * Upping it to 600 secondes (10 minutes, it's arbitrary) allows
+     * you to make sure that AWS has enough time to create an image.
+     */
+    res.setTimeout(600000);
     Machine.findOne(machineId)
       .then((machine) => {
 
