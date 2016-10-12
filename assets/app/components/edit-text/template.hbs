@@ -19,8 +19,10 @@
     <span class="content">
     {{ yield }}
     </span>
-    <span class='link' {{ action "toggle" bubbles=false }} >
-      {{icon-component class='edit va-mid' materialIcon="editmode" size=14}}
-    </span>
+    {{#unless disabledInput}}
+      <span class='link' {{ action "toggle" bubbles=false }} >
+        {{icon-component class='edit va-mid' materialIcon="editmode" size=14}}
+      </span>
+    {{/unless}}
   {{/if}}
 </div>
