@@ -47,6 +47,9 @@ sed -i "s/guacamole-client:/guacamole-client-42${PR_NUMBER}:/" "proxy/nginx.pr.c
 cp docker-compose-pr.yml "${DOCKER_COMPOSE_YML}"
 sed -i "s/PRPORTS/42${PR_NUMBER}/" "${DOCKER_COMPOSE_YML}"
 
+cp guacamole-client/guac_home/guacamole.properties guacamole-client/guac_home/guacamole.properties.backup
+sed -i "s/noauthlogged-server-url: backend/noauthlogged-server-url: backend-42${PR_NUMBER}/" "guacamole-client/guac_home/guacamole.properties"
+
 cp config/connections.js backupConnection.js
 sed -i "s/host: 'postgres'/host: 'postgres-42${PR_NUMBER}'/" "config/connections.js"
 
@@ -57,6 +60,7 @@ docker-compose -f "${DOCKER_COMPOSE_YML}" up -d
 
 # Erase custom configurations
 mv backupConnection.js config/connections.js
+mv guacamole-client/guac_home/guacamole.properties.backup guacamole-client/guac_home/guacamole.properties
 rm -rf proxy/nginx.pr.conf
 rm -rf "${DOCKER_COMPOSE_YML}"
 git checkout master
