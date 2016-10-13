@@ -93,9 +93,10 @@ MouseManager.prototype._OnMove = function(event) {
 };
 
 
-var PeerConnectionManager = function(videoElement, serverAddress) {
+var PeerConnectionManager = function(videoElement, serverAddress, access_token) {
   this._videoElement = videoElement;
   this._serverAddress = serverAddress;
+  this._access_token = access_token;
 
   var peerConnection = new RTCPeerConnection({
     iceServers:[{
@@ -148,6 +149,7 @@ PeerConnectionManager.prototype._OnICECandidate = function(event) {
     var req = new XMLHttpRequest();
 
     req.open('POST', this._serverAddress, true);
+    req.setRequestHeader('Authorization', 'Bearer ' + this._access_token);
 
     req.onreadystatechange = function () {
       if (req.readyState !== 4 || req.status !== 200) {
@@ -160,7 +162,9 @@ PeerConnectionManager.prototype._OnICECandidate = function(event) {
       }));
     };
 
-    req.send(sdp);
+    req.send(JSON.stringify({
+      sdp: sdp
+    }));
   }
 };
 
@@ -175,6 +179,7 @@ export default Ember.Component.extend({
   guacamole: null,
   connectionName: null,
   plazaHasFinishedLoading: false,
+  session: Ember.inject.service('session'),
 
   getWidth: function() {
     return Ember.$(this.element).parent().width();
@@ -207,7 +212,7 @@ export default Ember.Component.extend({
     vidContainer.style.display = 'initial';
 
     var video = document.getElementById('video');
-    new PeerConnectionManager(video, 'https://localhost/webrtc');
+    new PeerConnectionManager(video, 'https://localhost/api/webrtc?machine-id=' + this.get('machineId'), this.get('session.access_token'));
 
     let guacSession = this.get('remoteSession').getSession(this.get('connectionName'), width, height);
 

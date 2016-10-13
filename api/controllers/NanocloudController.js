@@ -67,5 +67,39 @@ module.exports = {
 
   update: function(req, res) {
     return JsonApiService.updateMethod(req, res);
+  },
+
+  webrtc: function(req, res) {
+
+    let machineId = req.allParams()['machine-id'];
+
+    Machine.findOne(machineId)
+      .then((machine) => {
+
+        return new Promise((resolve, reject) => {
+          setTimeout(() => {
+            const spawn = require('child_process').spawn;
+            const ls = spawn('curl', ['http://52.28.172.217:8888/webrtc', '--data', req.body.sdp]);
+            let message = '';
+            let error = '';
+
+            ls.stdout.on('data', (data) => {
+              message += data;
+            });
+
+            ls.stderr.on('data', (data) => {
+              error += data;
+            });
+
+            ls.on('close', (code) => {
+              return (code === 0) ? resolve(message) : reject(error);
+            });
+          }, 2000);
+        });
+      })
+      .then((response) => {
+        return res.send(200, response);
+      })
+      .catch(res.negotiate);
   }
 };
