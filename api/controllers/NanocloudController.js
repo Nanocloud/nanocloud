@@ -32,6 +32,7 @@ const url = require('url');
 const guessType = require('guess-content-type');
 const path = require('path');
 const spawn = require('child_process').spawn;
+const Promise = require('bluebird');
 
 module.exports = {
 
