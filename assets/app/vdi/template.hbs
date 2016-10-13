@@ -1,7 +1,7 @@
 <div class='vdi'>
   {{#vdi-drag-n-drop onDrop=(action 'toggleWindow' 'upload') dragAndDropActive=dragAndDropActive as |uploadData|}}
     {{partial 'vdi/topbar'}}
-    {{#remote-session class='canva-fullscreen fixed' machineId=machine_id connectionName=connection_name as |remoteSessionData|}}
+    {{#remote-session class='canva-fullscreen fixed' machineId=machine_id isPhoton=isPhoton connectionName=connection_name as |remoteSessionData|}}
       {{partial 'vdi/load'}}
     {{/remote-session}}
     {{dim-background show=dimBackground action="closeAll"}}

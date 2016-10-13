@@ -30,6 +30,7 @@ import clipboardMixin from 'nanocloud/mixins/clipboard';
 import downloadFileMixin from 'nanocloud/mixins/dl-file';
 
 export default Ember.Controller.extend(
+
   imageMixin,
   vdiLoadingMixin,
   downloadFileMixin,
@@ -43,6 +44,7 @@ export default Ember.Controller.extend(
     showHomeBtn: Ember.computed.not('configuration.autoLogoff'),
     dimBackground: Ember.computed.or('enabledWindow', 'windowCollector.onboardApp'),
     connectionName: Ember.computed.alias('connection_name'),
+    configController: Ember.inject.controller('protected.configs'),
 
     // state
     logoff: false,
@@ -90,6 +92,10 @@ export default Ember.Controller.extend(
         this.vdiDisconnectHandler();
       });
     },
+
+    isPhoton: Ember.computed('configController.photon', function() {
+      return this.get('configController.photon');
+    }),
 
     actions: {
       goToApp() {

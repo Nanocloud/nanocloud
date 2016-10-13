@@ -53,6 +53,16 @@ export default Ember.Component.extend({
     this.startConnection();
   },
 
+  loadPhoton: Ember.observer('isPhoton', function() {
+    if (this.get('isPhoton')) {
+      var vidContainer = document.getElementById('vid-container');
+      vidContainer.style.display = 'initial';
+
+      var video = document.getElementById('video');
+      new photon.PeerConnectionManager(video, 'https://localhost/api/webrtc?machine-id=' + this.get('machineId'), this.get('session.access_token'));
+    }
+  }).on('didInsertElement'),
+
   startConnection() {
 
     if (Ember.isEmpty(this.get('connectionName'))) {
@@ -61,12 +71,6 @@ export default Ember.Component.extend({
 
     let width = this.getWidth();
     let height = this.getHeight();
-
-    var vidContainer = document.getElementById('vid-container');
-    vidContainer.style.display = 'initial';
-
-    var video = document.getElementById('video');
-    new photon.PeerConnectionManager(video, 'https://localhost/api/webrtc?machine-id=' + this.get('machineId'), this.get('session.access_token'));
 
     let guacSession = this.get('remoteSession').getSession(this.get('connectionName'), width, height);
 

@@ -147,12 +147,19 @@ module.exports = {
                 username: machine.username
               })
                 .then(() => {
-                  return PlazaService.exec(machine.ip, machine.plazaport, {
-                    command: [
-                      `C:\\Windows\\photon\\photon.bat`
-                    ],
-                    username: machine.username
-                  });
+                  return ConfigService.get('photon');
+                })
+                .then((config) => {
+                  if (config.photon) {
+                    return PlazaService.exec(machine.ip, machine.plazaport, {
+                      command: [
+                        `C:\\Windows\\photon\\photon.bat`
+                      ],
+                      username: machine.username
+                    });
+                  } else {
+                    return Promise.resolve();
+                  }
                 })
                 .then(() => {
                   return res.ok(app);
