@@ -79,20 +79,25 @@ module.exports = {
 
         return new Promise((resolve, reject) => {
           setTimeout(() => {
-            let message = '';
-            let error = '';
+            try {
+              const curl = spawn('curl', ['http://' + machine.ip + ':8888/webrtc', '--data', req.body.sdp]);
+              let message = '';
+              let error = '';
 
-            curl.stdout.on('data', (data) => {
-              message += data;
-            });
+              curl.stdout.on('data', (data) => {
+                message += data;
+              });
 
-            curl.stderr.on('data', (data) => {
-              error += data;
-            });
+              curl.stderr.on('data', (data) => {
+                error += data;
+              });
 
-            curl.on('close', (code) => {
-              return (code === 0) ? resolve(message) : reject(error);
-            });
+              curl.on('close', (code) => {
+                return (code === 0) ? resolve(message) : reject(error);
+              });
+            } catch (e) {
+              return reject(e);
+            }
           }, 2000);
         });
       })
