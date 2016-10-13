@@ -477,20 +477,17 @@ function updateMachinesPool() {
                 image: image.id,
                 user: null
               })
-                .limit(machineToDestroy)
                 .then((machines) => {
-                  machines.forEach((machine) => {
-                    _terminateMachine(machine);
-                    _createBrokerLog({
-                      type: _driver.name()
-                    }, `Update machine pool for image ${image.name} from ${machineCreated.count} to ${machineCreated.count - machineToDestroy} (-${machineToDestroy})`);
-                  });
+                  _.times(machineToDestroy, (index) => _terminateMachine(machines[index]));
+                  _createBrokerLog({
+                    type: _driver.name()
+                  }, `Update machine pool for image ${image.name} from ${machineCreated.count} to ${+machineCreated.count - machineToDestroy} (-${machineToDestroy})`);
                 });
             } else if (machineToCreate > 0) {
               _.times(machineToCreate, () => _createMachine(image));
               _createBrokerLog({
                 type: _driver.name()
-              }, `Update machine pool for image ${image.name} from ${machineCreated.count} to ${machineCreated.count + machineToCreate} (+${machineToCreate})`);
+              }, `Update machine pool for image ${image.name} from ${machineCreated.count} to ${+machineCreated.count + machineToCreate} (+${machineToCreate})`);
             }
           });
 
