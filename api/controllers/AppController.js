@@ -128,12 +128,10 @@ module.exports = {
     App.update({
       id: req.allParams().id
     }, (req.user.isAdmin) ? attributes : {state: attributes.state})
-      .then((applications) => {
-
-        let app = applications.pop();
+      .then((apps) => {
+        let app = apps.pop();
 
         if (app.state === 'running') {
-
           return MachineService.getMachineForUser(req.user, {
             id: app.image
           })
@@ -173,77 +171,77 @@ module.exports = {
       });
   },
 
-/**
- * Handles the /apps/connections endpoint
- *
- * @method connections
- */
-connections(req, res) {
+  /**
+   * Handles the /apps/connections endpoint
+   *
+   * @method connections
+   */
+  connections(req, res) {
 
-  var connections = [];
-  var getImagesPromise = null;
+    var connections = [];
+    var getImagesPromise = null;
 
-  if (req.user.isAdmin) {
-    getImagesPromise = Image
-      .find()
-      .populate('apps');
-  } else {
-    getImagesPromise = UserGroup.find({
-      user: req.user.id
-    })
-      .then((userGroups) => {
-        return Promise.map(userGroups, function(userGroup) {
-          return ImageGroup.find({
-            group: userGroup.group
+    if (req.user.isAdmin) {
+      getImagesPromise = Image
+        .find()
+        .populate('apps');
+    } else {
+      getImagesPromise = UserGroup.find({
+        user: req.user.id
+      })
+        .then((userGroups) => {
+          return Promise.map(userGroups, function(userGroup) {
+            return ImageGroup.find({
+              group: userGroup.group
+            });
           });
+        })
+        .then((images) => {
+          images = _.flatten(images);
+          let imagesId = _.map(images, 'image');
+          return Image
+            .find(imagesId)
+            .populate('apps');
+        });
+    }
+
+    return getImagesPromise
+      .then((images) => {
+        return Promise.map(images, function(image) {
+          return Machine.findOne({
+            user: req.user.id,
+            image: image.id
+          })
+            .then((machine) => {
+              if (machine) {
+                image.apps.forEach((app) => {
+                  connections.push({
+                    id: app.id,
+                    hostname: machine.ip,
+                    machineId: machine.id,
+                    machineType: machine.flavor,
+                    machineDriver: machine.type,
+                    port: machine.rdpPort,
+                    username: machine.username,
+                    password: machine.password,
+                    'remote-app': '',
+                    protocol: 'rdp',
+                    'app-name': app.id
+                  });
+                });
+              }
+            });
         });
       })
-      .then((images) => {
-        images = _.flatten(images);
-        let imagesId = _.map(images, 'image');
-        return Image
-          .find(imagesId)
-          .populate('apps');
+      .then(() => {
+        return res.ok(connections);
+      })
+      .catch((err) => {
+        if (err === 'Exceeded credit') {
+          return res.send(402, err);
+        } else {
+          return res.negotiate(err);
+        }
       });
   }
-
-  return getImagesPromise
-    .then((images) => {
-      return Promise.map(images, function(image) {
-        return Machine.findOne({
-          user: req.user.id,
-          image: image.id
-        })
-          .then((machine) => {
-            if (machine) {
-              image.apps.forEach((app) => {
-                connections.push({
-                  id: app.id,
-                  hostname: machine.ip,
-                  machineId: machine.id,
-                  machineType: machine.flavor,
-                  machineDriver: machine.type,
-                  port: machine.rdpPort,
-                  username: machine.username,
-                  password: machine.password,
-                  'remote-app': '',
-                  protocol: 'rdp',
-                  'app-name': app.id
-                });
-              });
-            }
-          });
-      });
-    })
-    .then(() => {
-      return res.ok(connections);
-    })
-    .catch((err) => {
-      if (err === 'Exceeded credit') {
-        return res.send(402, err);
-      } else {
-        return res.negotiate(err);
-      }
-    });
-}
 };
