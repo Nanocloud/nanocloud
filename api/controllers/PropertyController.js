@@ -40,6 +40,11 @@ module.exports = {
     return color;
   },
 
+  SingleColorToHexString(color) {
+    color = color.toString(16); // Convert to a string in base 16
+    return (color.length === 1) ? '0' + color : color;
+  },
+
   LightenDarkenColor(col, amt) {
 
     var usePound = false;
@@ -58,7 +63,11 @@ module.exports = {
     blue = this.LimitCheck(blue);
     red = this.LimitCheck(red);
 
-    return (usePound ? '#' : '') + (green | (blue << 8) | (red << 16)).toString(16);
+    green = this.SingleColorToHexString(green);
+    blue = this.SingleColorToHexString(blue);
+    red = this.SingleColorToHexString(red);
+
+    return (usePound ? '#' : '') + red + blue + green;
   },
 
   /**
