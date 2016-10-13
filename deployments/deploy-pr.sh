@@ -23,7 +23,9 @@
 # <http://www.gnu.org/licenses/>.
 
 # Detect where is the absolute path to repository
-NANOCLOUD_REPO_DIR=$(dirname "$(readlink -e "${0}")")
+NANOCLOUD_DEPLOY_SCRIPT="$(readlink -e "${0}")"
+NANOCLOUD_DEPLOY_DIR=$(dirname "${NANOCLOUD_DEPLOY_SCRIPT}")
+NANOCLOUD_REPO_DIR=$(dirname "${NANOCLOUD_DEPLOY_DIR}")
 
 PR_NUMBER=${1}
 REMOTE_NAME=${2:-"origin"}
