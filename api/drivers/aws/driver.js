@@ -271,7 +271,7 @@ class AWSDriver extends Driver {
         Add-Type -AssemblyName System.IO.Compression.FileSystem
         [System.IO.Compression.ZipFile]::ExtractToDirectory("C:\\photon.zip", "C:\\Windows")
         rm C:\\photon.zip
-        New-NetFirewallRule -Protocol TCP -LocalPort 8888 -Direction Inbound -Action Allow -DisplayName PHOTON
+        New-NetFirewallRule -DisplayName “Photon” -Direction Inbound -Program C:\\Windows\\photon\\photon.exe -RemoteAddress any -Action Allow
         </powershell>
       `;
 
