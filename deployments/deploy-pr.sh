@@ -59,3 +59,4 @@ docker-compose -f "${DOCKER_COMPOSE_YML}" up -d
 mv backupConnection.js config/connections.js
 rm -rf proxy/nginx.pr.conf
 rm -rf "${DOCKER_COMPOSE_YML}"
+git checkout master
