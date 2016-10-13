@@ -119,13 +119,14 @@ var PeerConnectionManager = function(videoElement, serverAddress, access_token) 
   });
 };
 
+// Prevent double input by relying on Guacamole for inputs and disabling inputs on Photon
 PeerConnectionManager.prototype._OnDataChannelOpen = function() {
   var mouseManager = new MouseManager(this._videoElement, this._dataChannel);
-  var keyboardManager = new KeyboardManager(document.body, this._dataChannel);
+  //var keyboardManager = new KeyboardManager(document.body, this._dataChannel);
 
   return [
     mouseManager,
-    keyboardManager
+//    keyboardManager
   ];
 };
 
