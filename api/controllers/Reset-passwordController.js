@@ -44,6 +44,10 @@ module.exports = {
       .then((usr) => {
         if (!usr) {
           throw new Error('No user found');
+        } else if (usr.ldapUser === true) {
+          let err = new Error('You can not change your password because you have signed up via LDAP');
+          err.code = 'ELDAPUSER';
+          throw err;
         }
         user = usr;
         token = uuid.v4();
@@ -79,6 +83,8 @@ module.exports = {
           return res.notFound(err.message);
         } else if (err.code === 'ECONNECTION') {
           return res.serverError('Please check out your SMTP configuration');
+        } else if (err.code === 'ELDAPUSER') {
+          return res.badRequest(err.message);
         }
         return res.negotiate(err);
       });
