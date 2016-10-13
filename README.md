@@ -21,7 +21,7 @@ to avoid commiting those changes
 
 - iaas (mandatory) currently only "manual", "qemu" and "aws" are implemented
 - host (mandatory, defaults to localhost) nanocloud's host
-- photon (defaults to false) activate Photon as default streaming engine (experimental feature)
+- photon (defaults to false) activate Photon as default streaming engine (experimental feature, AWS only)
 - expirationDate (Defaults to 0 (deactivated)) number of days a user account should remain active
 - autoRegister (Defaults to false) user can signup to the platform
 - autoLogoff (Defaults to false) VDI sessions are signed off automatically
