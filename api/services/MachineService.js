@@ -109,7 +109,7 @@ function initialize() {
             iaasId: null,
             name: 'Default',
             buildFrom: null,
-            default: true
+            deleted: false
           })
             .then(() => {
               _driver = new (drivers[config.iaas])();

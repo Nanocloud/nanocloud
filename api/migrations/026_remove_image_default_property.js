@@ -22,11 +22,38 @@
  * <http://www.gnu.org/licenses/>.
  */
 
+const uuid = require('uuid');
+
 function up(knex) {
+
   return knex.schema.table('image', (table) => {
     table.dropColumn('default');
-    table.boolean('deleted');
-  });
+    table.boolean('deleted').defaultTo('false');
+  })
+    .then(() => {
+      return knex.select('*').from('image');
+    })
+    .then((image) => {
+      if (image.length !== 0) {
+        let imageId = uuid.v4();
+        return knex.insert({
+          id: imageId,
+          iaasId: null,
+          buildFrom: null,
+          name: 'Default',
+          deleted: true
+        }).into('image')
+          .then(() => {
+            return knex.insert({
+              id: uuid.v4(),
+              alias: 'Desktop',
+              displayName: 'Desktop',
+              filePath: 'C:\\Windows\\explorer.exe',
+              image: imageId
+            }).into('app');
+          });
+      }
+    });
 }
 
 function down(knex) {
