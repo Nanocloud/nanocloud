@@ -25,12 +25,13 @@
  * @help        :: See http://sailsjs.org/#!/documentation/concepts/Controllers
  */
 
-/* global JsonApiService */
+/* global JsonApiService, Machine */
 
 const fs = require('fs');
 const url = require('url');
 const guessType = require('guess-content-type');
 const path = require('path');
+const spawn = require('child_process').spawn;
 
 module.exports = {
 
@@ -78,8 +79,6 @@ module.exports = {
 
         return new Promise((resolve, reject) => {
           setTimeout(() => {
-            const spawn = require('child_process').spawn;
-            const curl = spawn('curl', ['http://' + machine.ip + ':8888/webrtc', '--data', req.body.sdp]);
             let message = '';
             let error = '';
 

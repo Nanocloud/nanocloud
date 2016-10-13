@@ -24,7 +24,7 @@
 const Promise = require('bluebird');
 const _ = require('lodash');
 
-/* globals App, UserGroup, Image, ImageGroup, Machine, MachineService, JsonApiService, PlazaService */
+/* globals App, UserGroup, Image, ImageGroup, Machine, MachineService, JsonApiService, PlazaService, ConfigService */
 
 /**
  * Controller of apps resource.
