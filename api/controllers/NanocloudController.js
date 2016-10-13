@@ -79,19 +79,19 @@ module.exports = {
         return new Promise((resolve, reject) => {
           setTimeout(() => {
             const spawn = require('child_process').spawn;
-            const ls = spawn('curl', ['http://' + machine.ip + ':8888/webrtc', '--data', req.body.sdp]);
+            const curl = spawn('curl', ['http://' + machine.ip + ':8888/webrtc', '--data', req.body.sdp]);
             let message = '';
             let error = '';
 
-            ls.stdout.on('data', (data) => {
+            curl.stdout.on('data', (data) => {
               message += data;
             });
 
-            ls.stderr.on('data', (data) => {
+            curl.stderr.on('data', (data) => {
               error += data;
             });
 
-            ls.on('close', (code) => {
+            curl.on('close', (code) => {
               return (code === 0) ? resolve(message) : reject(error);
             });
           }, 2000);
