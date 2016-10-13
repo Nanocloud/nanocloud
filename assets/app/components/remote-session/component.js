@@ -59,7 +59,7 @@ export default Ember.Component.extend({
       vidContainer.style.display = 'initial';
 
       var video = document.getElementById('video');
-      new photon.PeerConnectionManager(video, 'https://localhost/api/webrtc?machine-id=' + this.get('machineId'), this.get('session.access_token'));
+      new photon.PeerConnectionManager(video, '/api/webrtc?machine-id=' + this.get('machineId'), this.get('session.access_token'));
     }
   }).on('didInsertElement'),
 
