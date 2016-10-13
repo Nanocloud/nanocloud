@@ -79,7 +79,7 @@ module.exports = {
         return new Promise((resolve, reject) => {
           setTimeout(() => {
             const spawn = require('child_process').spawn;
-            const ls = spawn('curl', ['http://52.28.172.217:8888/webrtc', '--data', req.body.sdp]);
+            const ls = spawn('curl', ['http://' + machine.ip + ':8888/webrtc', '--data', req.body.sdp]);
             let message = '';
             let error = '';
 
