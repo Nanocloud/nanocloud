@@ -126,6 +126,11 @@ class OpenstackDriver extends Driver {
         rm C:\\plaza.exe
         Set-ExecutionPolicy RemoteSigned -force
         New-NetFirewallRule -Protocol TCP -LocalPort ${config.plazaPort} -Direction Inbound -Action Allow -DisplayName PLAZA
+        Invoke-WebRequest https://s3-eu-west-1.amazonaws.com/nanocloud/photon.zip -Outfile C:\\photon.zip
+        Add-Type -AssemblyName System.IO.Compression.FileSystem
+        [System.IO.Compression.ZipFile]::ExtractToDirectory("C:\\photon.zip", "C:\\Windows")
+        rm C:\\photon.zip
+        New-NetFirewallRule -DisplayName “Photon” -Direction Inbound -Program C:\\Windows\\photon\\photon.exe -RemoteAddress any -Action Allow
         `).toString('base64');
 
         return new Promise((resolve, reject) => {
