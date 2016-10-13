@@ -71,7 +71,6 @@ export default Ember.Component.extend({
 
     let width = this.getWidth();
     let height = this.getHeight();
-
     let guacSession = this.get('remoteSession').getSession(this.get('connectionName'), width, height);
 
     this.set('guacamole', guacSession);
