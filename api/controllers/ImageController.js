@@ -87,7 +87,16 @@ module.exports = {
           buildFrom: machine.id
         });
       })
-      .then(res.created)
+      .then((image) => {
+        return Machine.update({
+          id: image.buildFrom
+        }, {
+          image: image.id
+        })
+          .then(() => {
+            return res.created(image);
+          });
+      })
       .catch(res.negotiate);
   },
 
