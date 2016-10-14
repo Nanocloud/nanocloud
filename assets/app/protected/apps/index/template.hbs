@@ -24,13 +24,13 @@
         {{/if}}
         <hr>
         {{#each image.apps as |app|}}
-          <div class='clickable m-b-1 color-primary truncate'>
-            <div {{action 'launch' target='app'}} class='in-bl btn btn-primary'>
+          <div>
+            <div {{action 'launch' target='app'}} class='option-button clickable btn btn-primary'>
               {{app.name}}
             </div>
             {{#if session.user.isAdmin}}
               {{#link-to 'protected.apps.app' app.model}}
-                {{icon-component class='color-primary va-bl-mid' iconClass='' materialIcon="settings" size=14}}
+                {{icon-component class='va-tt color-primary fright' hover-lighter=true iconClass='va-bl-mid' materialIcon="settings" size=16}}
               {{/link-to}}
             {{/if}}
           </div>
