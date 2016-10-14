@@ -22,7 +22,7 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-/* globals ConfigService */
+/* globals sails, ConfigService */
 
 const nodemailer  = require('nodemailer');
 const stubTransport = require('nodemailer-stub-transport');
@@ -50,20 +50,26 @@ function sendMail(to, subject, message) {
       };
 
       if (configs.testMail === true) {
+        sails.log.info('Mail sender set to test mode.');
         smtpConfig = stubTransport();
       }
 
+      sails.log.info('Creating transporter....');
       let transporter = nodemailer.createTransport(smtpConfig);
+      sails.log.info('Transporter created....');
+      sails.log.info('Verifying SMTP...');
       let verified_transporter = transporter.verify();
 
       // verifying smtpConfig before sending a mail
       if (verified_transporter !== false) {
+        sails.log.info('SMTP verified...');
         return verified_transporter
           .then(() => {
             return sendMailOption(transporter);
           });
       } else {
         // test scenario. just send a mail
+        sails.log.info('SMTP verification failed...');
         return sendMailOption(transporter);
       }
 
@@ -74,6 +80,7 @@ function sendMail(to, subject, message) {
           subject: subject,
           html: message
         };
+        sails.log.info('Sending email...');
         return transporter.sendMail(mailOptions);
       }
     });
