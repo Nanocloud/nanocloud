@@ -272,7 +272,7 @@ h1 {
 }
 
 .in-bl {
-  display: inline-block;
+  display: inline-block !important;
 }
 
 .inl {
@@ -378,6 +378,12 @@ h1 {
 
 .maxWidth {
   width: 100%;
+}
+
+.image-card {
+  .card-title { 
+    max-width: 300px;
+  }
 }
 
 .sortableTable td, 

@@ -12,35 +12,30 @@
       </div>
     {{/if}}
   {{/if}}
-  <div class="container">
-    <div class="row">
-      {{#each data as |image|}}
-      <div class="col-sm-4">
-        <div class="card card-block">
-          <h4 class="card-title">{{image.name}}
-          {{#if session.user.isAdmin}}
-            {{#link-to 'protected.apps.image' image.id}}
-            <span class="fright">
-              {{icon-component class='color-gray-dark icon_link va-bl-mid' materialIcon="settings" size=14}}
-            </span>
-            {{/link-to}}
-          {{/if}}</h4>
-          <ul class="list-group list-group-flush">
-            {{#each image.apps as |app|}}
-            <li {{action 'launch' target='app'}} class="list-group-item">{{app.model.displayName}}
-              {{#if session.user.isAdmin}}
-                {{#link-to 'protected.apps.app' app.model}}
-                <span class="fright">
-                  {{icon-component class='color-gray-dark icon_link va-bl-mid' materialIcon="settings" size=14}}
-                </span>
-                {{/link-to}}
-              {{/if}}
-            </li>
-            {{/each}}
-          </ul>
-        </div>
+
+  {{#masonry-grid items=data customLayout=true itemSelector="" as |image|}}
+    {{#masonry-item class="card m-r-1 m-b-2 radius" item=item grid=grid}}
+      <div class="image-card card-block">
+        <h3 class="card-title truncate in-bl ">{{image.name}}</h3>
+        {{#if session.user.isAdmin}}
+          {{#link-to 'protected.apps.image' image.id}}
+            {{icon-component class='va-top' hover-lighter=true iconClass='va-bl-mid' materialIcon="settings" size=18}}
+          {{/link-to}}
+        {{/if}}
+        <hr>
+        {{#each image.apps as |app|}}
+          <div class='clickable m-b-1 color-primary truncate'>
+            <div {{action 'launch' target='app'}} class='in-bl btn btn-primary'>
+              {{app.name}}
+            </div>
+            {{#if session.user.isAdmin}}
+              {{#link-to 'protected.apps.app' app.model}}
+                {{icon-component class='color-primary va-bl-mid' iconClass='' materialIcon="settings" size=14}}
+              {{/link-to}}
+            {{/if}}
+          </div>
+        {{/each}}
       </div>
-      {{/each}}
-    </div>
-  </div>
+    {{/masonry-item}}
+  {{/masonry-grid}}
 </div>
