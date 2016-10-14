@@ -19,7 +19,7 @@
         <h3 class="card-title truncate in-bl ">{{image.name}}</h3>
         {{#if session.user.isAdmin}}
           {{#link-to 'protected.apps.image' image.id}}
-            {{icon-component class='va-top' hover-lighter=true iconClass='va-bl-mid' materialIcon="settings" size=18}}
+            {{icon-component class='va-top mx-l-1' hover-lighter=true iconClass='va-bl-mid' materialIcon="settings" size=18}}
           {{/link-to}}
         {{/if}}
         <hr>
