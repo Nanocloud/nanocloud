@@ -26,12 +26,14 @@
 
 import Ember from 'ember';
 import getKeyFromVal from '../../utils/get-key-from-value';
+import photon from '../../utils/photon';
 
 export default Ember.Component.extend({
   remoteSession: Ember.inject.service('remote-session'),
   guacamole: null,
   connectionName: null,
   plazaHasFinishedLoading: false,
+  session: Ember.inject.service('session'),
 
   getWidth: function() {
     return Ember.$(this.element).parent().width();
@@ -50,6 +52,16 @@ export default Ember.Component.extend({
   didInsertElement: function() {
     this.startConnection();
   },
+
+  loadPhoton: Ember.observer('isPhoton', function() {
+    if (this.get('isPhoton')) {
+      var vidContainer = document.getElementById('vid-container');
+      vidContainer.style.display = 'initial';
+
+      var video = document.getElementById('video');
+      return new photon.PeerConnectionManager(video, '/api/webrtc?machine-id=' + this.get('machineId'), this.get('session.access_token'));
+    }
+  }).on('didInsertElement'),
 
   startConnection() {
 

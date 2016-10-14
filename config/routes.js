@@ -172,6 +172,10 @@ module.exports.routes = {
   'DELETE /api/sessions': {
     controller: 'Session',
     action: 'disconnect'
-  }
+  },
 
+  'POST /api/webrtc': {
+    controller: 'Nanocloud',
+    action: 'webrtc'
+  }
 };

@@ -22,15 +22,9 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-'use strict';
-
-/* jshint browser: true */
 /* globals RTCPeerConnection, RTCSessionDescription */
 
-/*
- * KeyboardManager
- */
-var KeyboardManager  = function(element, rtcChannel) {
+let KeyboardManager  = function(element, rtcChannel) {
   this._element = element;
   this._rtcChannel = rtcChannel;
 
@@ -43,11 +37,7 @@ var KeyboardManager  = function(element, rtcChannel) {
   element.addEventListener('keyup', keyevent);
 };
 
-/*
- * MouseManager
- */
-
-var MouseManager = function(element, rtcChannel) {
+let MouseManager = function(element, rtcChannel) {
   this._element = element;
   this._rtcChannel = rtcChannel;
 
@@ -92,10 +82,10 @@ MouseManager.prototype._OnMove = function(event) {
   this._rtcChannel.send('M' + Math.floor(x) + '|' + Math.floor(y));
 };
 
-
-var PeerConnectionManager = function(videoElement, serverAddress) {
+var PeerConnectionManager = function(videoElement, serverAddress, access_token) {
   this._videoElement = videoElement;
   this._serverAddress = serverAddress;
+  this._access_token = access_token;
 
   var peerConnection = new RTCPeerConnection({
     iceServers:[{
@@ -129,13 +119,14 @@ var PeerConnectionManager = function(videoElement, serverAddress) {
   });
 };
 
+// Prevent double input by relying on Guacamole for inputs and disabling inputs on Photon
 PeerConnectionManager.prototype._OnDataChannelOpen = function() {
   var mouseManager = new MouseManager(this._videoElement, this._dataChannel);
-  var keyboardManager = KeyboardManager(document.body, this._dataChannel);
+  //var keyboardManager = new KeyboardManager(document.body, this._dataChannel);
 
   return [
     mouseManager,
-    keyboardManager
+//    keyboardManager
   ];
 };
 
@@ -148,6 +139,7 @@ PeerConnectionManager.prototype._OnICECandidate = function(event) {
     var req = new XMLHttpRequest();
 
     req.open('POST', this._serverAddress, true);
+    req.setRequestHeader('Authorization', 'Bearer ' + this._access_token);
 
     req.onreadystatechange = function () {
       if (req.readyState !== 4 || req.status !== 200) {
@@ -160,11 +152,19 @@ PeerConnectionManager.prototype._OnICECandidate = function(event) {
       }));
     };
 
-    req.send(sdp);
+    req.send(JSON.stringify({
+      sdp: sdp
+    }));
   }
 };
 
 PeerConnectionManager.prototype._OnAddStream = function(event) {
   var url = URL.createObjectURL(event.stream);
   this._videoElement.src = url;
+};
+
+export default {
+  KeyboardManager,
+  MouseManager,
+  PeerConnectionManager
 };

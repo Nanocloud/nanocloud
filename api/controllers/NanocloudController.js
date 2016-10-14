@@ -25,12 +25,14 @@
  * @help        :: See http://sailsjs.org/#!/documentation/concepts/Controllers
  */
 
-/* global JsonApiService */
+/* global JsonApiService, Machine */
 
 const fs = require('fs');
 const url = require('url');
 const guessType = require('guess-content-type');
 const path = require('path');
+const spawn = require('child_process').spawn;
+const Promise = require('bluebird');
 
 module.exports = {
 
@@ -67,5 +69,42 @@ module.exports = {
 
   update: function(req, res) {
     return JsonApiService.updateMethod(req, res);
+  },
+
+  webrtc: function(req, res) {
+
+    let machineId = req.allParams()['machine-id'];
+
+    Machine.findOne(machineId)
+      .then((machine) => {
+
+        return new Promise((resolve, reject) => {
+          setTimeout(() => {
+            try {
+              const curl = spawn('curl', ['http://' + machine.ip + ':8888/webrtc', '--data', req.body.sdp]);
+              let message = '';
+              let error = '';
+
+              curl.stdout.on('data', (data) => {
+                message += data;
+              });
+
+              curl.stderr.on('data', (data) => {
+                error += data;
+              });
+
+              curl.on('close', (code) => {
+                return (code === 0) ? resolve(message) : reject(error);
+              });
+            } catch (e) {
+              return reject(e);
+            }
+          }, 2000);
+        });
+      })
+      .then((response) => {
+        return res.send(200, response);
+      })
+      .catch(res.negotiate);
   }
 };

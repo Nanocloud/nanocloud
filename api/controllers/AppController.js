@@ -24,7 +24,7 @@
 const Promise = require('bluebird');
 const _ = require('lodash');
 
-/* globals App, UserGroup, Image, ImageGroup, Machine, MachineService, JsonApiService, PlazaService */
+/* globals App, UserGroup, Image, ImageGroup, Machine, MachineService, JsonApiService, PlazaService, ConfigService */
 
 /**
  * Controller of apps resource.
@@ -135,20 +135,36 @@ module.exports = {
           return MachineService.getMachineForUser(req.user, {
             id: app.image
           })
-          .then((machine) => {
-            if (!machine) {
-              throw new Error('A machine is booting for you');
-            }
-            return PlazaService.exec(machine.ip, machine.plazaport, {
-              command: [
-                app.filePath
-              ],
-              username: machine.username
+            .then((machine) => {
+              if (!machine) {
+                throw new Error('A machine is booting for you');
+              }
+
+              return PlazaService.exec(machine.ip, machine.plazaport, {
+                command: [
+                  app.filePath
+                ],
+                username: machine.username
+              })
+                .then(() => {
+                  return ConfigService.get('photon');
+                })
+                .then((config) => {
+                  if (config.photon) {
+                    return PlazaService.exec(machine.ip, machine.plazaport, {
+                      command: [
+                        `C:\\Windows\\photon\\photon.bat`
+                      ],
+                      username: machine.username
+                    });
+                  } else {
+                    return Promise.resolve();
+                  }
+                })
+                .then(() => {
+                  return res.ok(app);
+                });
             });
-          })
-          .then(() => {
-            return res.ok(app);
-          });
         } else {
           return res.ok(app);
         }
@@ -180,20 +196,20 @@ module.exports = {
       getImagesPromise = UserGroup.find({
         user: req.user.id
       })
-      .then((userGroups) => {
-        return Promise.map(userGroups, function(userGroup) {
-          return ImageGroup.find({
-            group: userGroup.group
+        .then((userGroups) => {
+          return Promise.map(userGroups, function(userGroup) {
+            return ImageGroup.find({
+              group: userGroup.group
+            });
           });
+        })
+        .then((images) => {
+          images = _.flatten(images);
+          let imagesId = _.map(images, 'image');
+          return Image
+            .find(imagesId)
+            .populate('apps');
         });
-      })
-      .then((images) => {
-        images = _.flatten(images);
-        let imagesId = _.map(images, 'image');
-        return Image
-          .find(imagesId)
-          .populate('apps');
-      });
     }
 
     return getImagesPromise
