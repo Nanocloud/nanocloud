@@ -68,7 +68,7 @@ passport.use(
             return new Promise(function(resolve, reject) {
               ad.authenticate(config.username, config.password, function(err, auth) {
                 if (err) {
-                  return done(null, null);
+                  return reject(err);
                 } else if (auth) { // User found in LDAP
                   ad.opts.bindDN = username;
                   ad.opts.bindCredentials = password;
@@ -76,42 +76,78 @@ passport.use(
                     if (err || !user) {
                       return reject(JSON.stringify(err));
                     }
-                    User.create({
+
+                    let ldapUser = {
+                      email: username,
+                      password: null, // we use the ldap password to authenticate ldap users
                       firstName: user.givenName,
                       lastName: user.sn,
-                      email: username,
-                      password: password
-                    })
-                      .then((user) => {
-                        return ConfigService.get('defaultGroupLdap')
-                          .then((config) => {
-                            return new Promise((resolve) => {
-                              if (config.defaultGroupLdap !== '') {
-                                user.groups.add(config.defaultGroupLdap);
-                                user.save((err) => {
-                                  if (err) {
-                                    return reject(null, err);
-                                  }
-                                  return resolve(user, null);
-                                });
-                              } else {
-                                return resolve(user, null);
-                              }
-                            });
-                          });
-                      })
-                      .then((user, err) => {
-                        if (err || !user) {
-                          return reject(err);
-                        }
-                        return resolve(user);
-                      });
+                      ldapUser: true // flag them
+                    };
+                    return setLdapUser(ldapUser);
                   });
                 } else { // User not found neither in databse nor in LDAP
                   return reject(null);
                 }
               });
             });
+          };
+
+          let setLdapUser = function(ldapUser){
+            return User.findOne({email: ldapUser.email})
+              .then((databaseUser) => {
+                if (!databaseUser) {
+                  // First connection
+                  // We create a new account for him
+                  return User.create(ldapUser)
+                    .then((user) => {
+                      if (!user) {
+                        throw new Error('Can not create user');
+                      } else if (user.ldapUser !== true) {
+                        return Promise.resolve(user); // Database's user
+                      }
+                      return ConfigService.get('defaultGroupLdap')
+                        .then((config) => {
+                          return new Promise(function(resolve, reject) {
+                            if (config.defaultGroupLdap !== '') {
+                              user.groups.add(config.defaultGroupLdap);
+                              user.save((err) => {
+                                if (err) {
+                                  return reject(err);
+                                }
+                                return resolve(user);
+                              });
+                            } else {
+                              return resolve(user);
+                            }
+                          });
+                        });
+                    })
+                    .then((user, err) => {
+                      if (err || !user) {
+                        return Promise.reject(err);
+                      }
+                      return Promise.resolve(user);
+                    });
+                } else if (databaseUser.firstName !== ldapUser.givenName
+                  || databaseUser.lastName !== ldapUser.sn) {
+                    // At least it's the second connection
+                    // Update user's first name and last name because they're
+                    // different from those which are in database
+                    return User.update({
+                      email: username
+                    }, {
+                      firstName: ldapUser.givenName,
+                      lastName: ldapUser.sn
+                    })
+                      .then((updatedUser) => {
+                        return Promise.resolve(updatedUser);
+                      });
+                  }
+                // At least it's the second connection
+                // No information has changed from the last connection
+                return Promise.resolve(databaseUser);
+              });
           };
 
           ConfigService.get('ldapActivated', 'ldapUrl', 'ldapBaseDn')
@@ -127,7 +163,7 @@ passport.use(
               }).exec(function (err, user) {
                 if (err) {
                   return done(err);
-                } else if (!user) {
+                } else if (!user || (user.ldapUser === true && ldapActivated === true)) {
                   // Can't retreive account in the DB with the specified email
                   // Is LDAP activated ? if so checking into LDAP if user exists
                   if (ldapActivated === false) {
