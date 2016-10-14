@@ -12,6 +12,8 @@
     "humanize-duration": "^3.9.0",
     "ckeditor": "^4.5.11",
     "sweetalert": "~1.1.0",
-    "spectrum": "^1.8.0"
+    "spectrum": "^1.8.0",
+    "masonry": "^4.1.1",
+    "imagesloaded": "^4.1.1"
   }
 }
