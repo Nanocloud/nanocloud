@@ -53,7 +53,9 @@ module.exports = {
                  LEFT JOIN "imagegroup" on imagegroup.image = app.image
                  LEFT JOIN "group" on imagegroup.group = "group".id
                  LEFT JOIN "usergroup" on usergroup.group = "group".id
-                 WHERE usergroup.user = $1::varchar OR $2::boolean = true`,
+                 LEFT JOIN "image" on image.id = "app".image
+                 WHERE (usergroup.user = $1::varchar OR $2::boolean = true)
+                 AND image.deleted = false`,
         values: [
           user.id,
           user.isAdmin
