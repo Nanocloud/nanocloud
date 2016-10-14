@@ -131,19 +131,19 @@ passport.use(
                     });
                 } else if (databaseUser.firstName !== ldapUser.givenName
                   || databaseUser.lastName !== ldapUser.sn) {
-                    // At least it's the second connection
-                    // Update user's first name and last name because they're
-                    // different from those which are in database
-                    return User.update({
-                      email: username
-                    }, {
-                      firstName: ldapUser.givenName,
-                      lastName: ldapUser.sn
-                    })
-                      .then((updatedUser) => {
-                        return Promise.resolve(updatedUser);
-                      });
-                  }
+                  // At least it's the second connection
+                  // Update user's first name and last name because they're
+                  // different from those which are in database
+                  return User.update({
+                    email: username
+                  }, {
+                    firstName: ldapUser.givenName,
+                    lastName: ldapUser.sn
+                  })
+                    .then((updatedUser) => {
+                      return Promise.resolve(updatedUser);
+                    });
+                }
                 // At least it's the second connection
                 // No information has changed from the last connection
                 return Promise.resolve(databaseUser);
