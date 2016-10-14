@@ -69,7 +69,7 @@ module.exports = {
         if (submittedUser.ldapUser === true && (currentUser.firstName !== submittedUser.firstName
           || currentUser.lastName !== submittedUser.lastName
           || submittedUser.password || submittedUser.expirationDate)) {
-              res.badRequest('Can not update LDAP user\'s informations');
+          res.badRequest('Can not update LDAP user\'s informations');
         } else if (req.user.id === req.allParams().id) {
           _.set(req.body, 'data.attributes.isAdmin', currentUser.isAdmin);
           _.set(req.body, 'data.attributes.isTeamAdmin', currentUser.isTeamAdmin);
