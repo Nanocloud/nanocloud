@@ -122,6 +122,17 @@ export default Ember.Component.extend({
     return path;
   }),
 
+  requestParamsAsString: Ember.computed('requestParams', function() {
+    let data = "";
+    for (var i in this.get('requestParams')) {
+      if (data !== "") {
+        data += "&";
+      }
+      data += i + '=' + this.get('requestParams')[i];
+    }
+    return data;
+  }),
+
   downloadFile(filename) {
     let path = this.get('pathToString').substring(1) + filename;
     Ember.$.ajax({
@@ -131,7 +142,7 @@ export default Ember.Component.extend({
       data: { filename: path }
     })
       .then((response) => {
-        let url = '/api/files/download?' + this.get('target') + '=true&filename=' + encodeURIComponent(path) + '&token=' + encodeURIComponent(response.token);
+        let url = '/api/files/download?' + this.get('requestParamsAsString') + '&filename=' + encodeURIComponent(path) + '&token=' + encodeURIComponent(response.token);
         window.location.assign(url);
       });
   },
@@ -170,9 +181,7 @@ export default Ember.Component.extend({
         type: 'PATCH',
         headers: { Authorization : 'Bearer ' + this.get('session.access_token')},
         url: '/api/files?filename=./' + old + '&newfilename=' + dest,
-        data: {
-          teams: true
-        }
+        data: this.get('requestParams')
       })
         .then(() => {
           this.toast.success('File has been moved successfully');
@@ -185,7 +194,7 @@ export default Ember.Component.extend({
     uploadFile(file) {
       let req = new XMLHttpRequest();
       this.set('req', req);
-      req.open('POST', '/api/upload?' + this.get('target') + '=true&filename=' + file.name + '&dest=' + this.get('targetDirectory') + file.name);
+      req.open('POST', '/api/upload?' + this.get('requestParamsAsString') + '&filename=' + file.name + '&dest=' + this.get('targetDirectory') + file.name);
       req.setRequestHeader('Authorization', 'Bearer ' + this.get('session.access_token'));
       req.upload.onprogress = (event) => {
         if (event.lengthComputable) {
@@ -227,9 +236,7 @@ export default Ember.Component.extend({
         type: 'POST',
         headers: { Authorization : 'Bearer ' + this.get('session.access_token')},
         url: '/api/files?filename=' + path,
-        data: {
-          teams: true
-        }
+        data: this.get('requestParams')
       })
         .then(() => {
           this.toast.success('File has been created successfully');
@@ -247,9 +254,7 @@ export default Ember.Component.extend({
         type: 'PATCH',
         headers: { Authorization : 'Bearer ' + this.get('session.access_token')},
         url: '/api/files?filename=' + oldName + '&newfilename=' + newName,
-        data: {
-          teams: true
-        }
+        data: this.get('requestParams')
       })
         .then(() => {
           this.toast.success('File has been renamed successfully');
@@ -266,9 +271,7 @@ export default Ember.Component.extend({
         type: 'DELETE',
         headers: { Authorization : 'Bearer ' + this.get('session.access_token')},
         url: '/api/files?filename=' + path,
-        data: {
-          teams: true
-        }
+        data: this.get('requestParams')
       })
         .then(() => {
           this.toast.success('File has been removed successfully');
