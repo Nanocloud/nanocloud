@@ -123,10 +123,10 @@ export default Ember.Component.extend({
   }),
 
   requestParamsAsString: Ember.computed('requestParams', function() {
-    let data = "";
+    let data = '';
     for (var i in this.get('requestParams')) {
-      if (data !== "") {
-        data += "&";
+      if (data !== '') {
+        data += '&';
       }
       data += i + '=' + this.get('requestParams')[i];
     }
