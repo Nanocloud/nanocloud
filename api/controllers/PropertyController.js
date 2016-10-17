@@ -117,6 +117,7 @@ module.exports = {
           `.btn-color-default:active:focus{background-color:${darkenColor}}`,
           `.btn-color-default:active:focus{border-color:${lightenColor}}`,
           `.btn-color-default:active:hover{border-color:${darkenColor}}`,
+          `.btn-color-default:active:hover{background-color:${darkenColor}}`,
           `.btn-color-default:focus{border-color:${lightenColor}}`,
           `.btn-color-default:active{border-color:${lightenColor}}`,
           `.btn-color-default:disabled:hover{border-color:${config.primaryColor}}`,
@@ -160,6 +161,7 @@ module.exports = {
           `.file-explorer .file-list-wrapper > .item:hover{color:${darkenColor}}`,
           `.file-explorer .file-list-wrapper > .item:hover.selected{color:#ffffff}`,
           `.vdi-drag-n-drop .drag-n-drop-area{background-color:${lightenColor}}`,
+          `.icon-component.hover-lighter:hover i{color:${lightenColor}}`,
         ].join('');
 
         res.send({

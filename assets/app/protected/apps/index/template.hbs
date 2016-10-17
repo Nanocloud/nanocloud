@@ -25,7 +25,7 @@
         <hr>
         {{#each image.apps as |app|}}
           <div class='m-b-1'>
-            <div {{action 'launch' target='app'}} class='option-button clickable btn btn-primary'>
+            <div {{action 'launch' target='app'}} class='option-button clickable btn btn-primary btn-color-default'>
               {{app.name}}
             </div>
             {{#if session.user.isAdmin}}
