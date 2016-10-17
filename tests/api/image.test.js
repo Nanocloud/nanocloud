@@ -86,6 +86,14 @@ module.exports = function() {
         });
     });
 
+    it('Should change machine\'s image when creating an image from it', function(done) {
+      Machine.findOne(baseMachineId)
+        .then((machine) => {
+          expect(machine.image).to.equal(anotherImageId);
+          return done();
+        });
+    });
+
     it('Should exist two images now', function(done) {
 
       nano.request(sails.hooks.http.app)
