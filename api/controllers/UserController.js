@@ -62,7 +62,7 @@ module.exports = {
   update: function(req, res) {
 
     req.body = JsonApiService.deserialize(req.body);
-    User.findOne(req.body.data.id)
+    User.findOne(req.allParams().id)
       .then((currentUser) => {
         let submittedUser = req.body.data.attributes;
 

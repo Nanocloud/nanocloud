@@ -84,7 +84,13 @@ passport.use(
                       lastName: user.sn,
                       ldapUser: true // flag them
                     };
-                    return setLdapUser(ldapUser);
+                    return setLdapUser(ldapUser)
+                      .then((res, err) => {
+                        if (err) {
+                          return reject(err);
+                        }
+                        return resolve(res);
+                      });
                   });
                 } else { // User not found neither in databse nor in LDAP
                   return reject(null);
@@ -109,17 +115,16 @@ passport.use(
                       return ConfigService.get('defaultGroupLdap')
                         .then((config) => {
                           return new Promise(function(resolve, reject) {
-                            if (config.defaultGroupLdap !== '') {
-                              user.groups.add(config.defaultGroupLdap);
-                              user.save((err) => {
-                                if (err) {
-                                  return reject(err);
-                                }
-                                return resolve(user);
-                              });
-                            } else {
+                            if (!config.defaultGroupLdap || config.defaultGroupLdap === 'false') {
                               return resolve(user);
                             }
+                            user.groups.add(config.defaultGroupLdap);
+                            user.save((err) => {
+                              if (err) {
+                                return reject(err);
+                              }
+                              return resolve(user);
+                            });
                           });
                         });
                     })
@@ -136,10 +141,7 @@ passport.use(
                   // different from those which are in database
                   return User.update({
                     email: username
-                  }, {
-                    firstName: ldapUser.givenName,
-                    lastName: ldapUser.sn
-                  })
+                  }, ldapUser)
                     .then((updatedUser) => {
                       return Promise.resolve(updatedUser);
                     });
