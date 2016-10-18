@@ -118,7 +118,8 @@ module.exports = {
       .catch((err) =>  {
         if (err === 'Exceeded credit') {
           return res.send(402, err);
-        } else if (err === 'A machine is booting for you. Please retry in one minute.') {
+        } else if (err === 'A machine is booting for you. Please retry in one minute.'
+        || err === 'A machine have been assigned to you, it will be available shortly.') {
           res.notFound(err);
         } else {
           return res.negotiate(err);

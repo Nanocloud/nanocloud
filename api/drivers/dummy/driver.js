@@ -20,7 +20,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* globals Machine, Image */
+/* globals Machine, Image, ConfigService */
 
 const Promise = require('bluebird');
 const uuid = require('node-uuid');
@@ -260,14 +260,24 @@ class DummyDriver extends BaseDriver {
    */
   refresh(machine) {
     return new Promise((resolve, reject) => {
-      if (machine.status === 'error') {
-        reject(machine.status);
-      } else if (machine.status === 'stopping') {
-        machine.status = 'stopped';
-        return resolve(machine);
-      }
-      machine.status = 'running';
-      return resolve(machine);
+      ConfigService.get('dummyBootingState')
+        .then((config) => {
+          if (machine.status === 'error') {
+            reject(machine.status);
+          } else if (machine.status === 'stopping') {
+            machine.status = 'stopped';
+            return resolve(machine);
+          } else if (config.dummyBootingState) {
+            setTimeout(function() {
+              machine.status = 'running';
+              return resolve(machine);
+            },
+            500);
+          } else {
+            machine.status = 'running';
+            return resolve(machine);
+          }
+        });
     });
   }
 

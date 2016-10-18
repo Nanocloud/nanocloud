@@ -990,4 +990,52 @@ describe('Machine Service', () => {
         });
     });
   });
+
+  describe('Assign booting machine', () => {
+
+    before('Set booting', function(done) {
+      return ConfigService.set('dummyBootingState', true)
+        .then(() => {
+          return Machine.destroy({type: 'dummy'});
+        })
+        .then(() => {
+          return MachineService.updateMachinesPool();
+        })
+        .then(() => {
+          return done();
+        });
+    });
+
+    after('Unset booting', function(done) {
+      return ConfigService.set('dummyBootingState', false)
+        .then(() => {
+          return done();
+        });
+    });
+
+    it('Should assign machine to user when booting', (done) => {
+      return MachineService.getMachineForUser({
+        id: adminId
+      }, {
+        id: imageId
+      })
+        .catch((err) => {
+          if (err !== 'A machine have been assigned to you, it will be available shortly.') {
+            throw new Error('Should have a comprehensive error message');
+          }
+        })
+        .then(() => {
+          return Machine.findOne({user: adminId});
+        })
+        .then((machine) => {
+          if (machine.status !== 'booting') {
+            throw new Error('Assigned machine should have been a booting machine');
+          } else if (machine.enDate === null) {
+            throw new Error('endDate should have been set when booting machine have been assigned');
+          } else {
+            return done();
+          }
+        });
+    });
+  });
 });

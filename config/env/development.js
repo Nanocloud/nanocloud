@@ -55,7 +55,6 @@ module.exports = {
     smtpLogin: '',
     smtpPassword: '',
     smtpSendFrom: 'mail@nanocloud.com',
-    testMail: false,
 
     storageAddress: 'localhost',
     storagePort: 9090,
@@ -125,6 +124,9 @@ module.exports = {
     ldapActivated: false,
     ldapUrl: 'ldap://localhost:389',
     ldapBaseDn: 'dc=nanocloud,dc=com',
-    defaultGroupLdap: ''
+    defaultGroupLdap: '',
+
+    testMail: false,
+    dummyBootingState: false
   }
 };

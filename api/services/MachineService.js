@@ -161,7 +161,7 @@ function getMachineForUser(user, image) {
             FROM (
               SELECT machine.id
               FROM machine
-              WHERE "user" IS NULL AND "status" = 'running' AND "image" = $2::varchar
+              WHERE "user" IS NULL AND ( "status" = 'running' OR "status" = 'booting' ) AND "image" = $2::varchar
               LIMIT 1
               FOR UPDATE SKIP LOCKED
             ) sub
@@ -174,15 +174,33 @@ function getMachineForUser(user, image) {
                 }
 
                 if (res.rows.length) {
-                  _createBrokerLog(res.rows[0], 'Assigned')
-                    .then(() => {
-                      updateMachinesPool();
-                      return resolve(Machine.findOne({
-                        id: res.rows[0].id
-                      }));
-                    });
+                  if (_.findIndex(res.rows, {status: 'running'}) !== -1) {
+                    let row = _.findIndex(res.rows, {status: 'running'});
+                    _createBrokerLog(res.rows[row], 'Assigned')
+                      .then(() => {
+                        updateMachinesPool();
+                        return resolve(Machine.findOne({
+                          id: res.rows[row].id
+                        }));
+                      });
+                  } else if (_.findIndex(res.rows, {status: 'booting'}) !== -1) {
+                    let row = _.findIndex(res.rows, {status: 'booting'});
+                    _createBrokerLog(res.rows[row], 'Assigned')
+                      .then(() => {
+                        return Machine.findOne({
+                          id: res.rows[row].id
+                        })
+                          .then((assignedMachine) => {
+                            return increaseMachineEndDate(assignedMachine);
+                          })
+                          .then(() => {
+                            updateMachinesPool();
+                            return reject(`A machine have been assigned to you, it will be available shortly.`);
+                          });
+                      });
+                  }
                 } else {
-                  return reject('A machine is booting for you. Please retry in one minute.');
+                  return Promise.reject('A machine is booting for you. Please retry in one minute.');
                 }
               });
             });
@@ -198,6 +216,8 @@ function getMachineForUser(user, image) {
                   } else {
                     return Promise.reject(`Your machine is ${machine.status}. Please retry in one minute.`);
                   }
+                } else if (machine.status === 'booting') {
+                  return Promise.reject(`A machine have been assigned to you, it will be available shortly.`);
                 } else {
                   return Promise.resolve(machine);
                 }
@@ -221,10 +241,11 @@ function driverName() {
  * Set the user's machine endDate to now + `ConfigService:sessionDuration`
  *
  * @method increaseMachineEndDate
- * @param {User} user The user to which the machine belongs
+ * @param {Machine} machine The machine to update
  * @return {Promise}
  */
 function increaseMachineEndDate(machine) {
+
   return ConfigService.get('sessionDuration')
     .then((config) => {
       return machine.setEndDate(config.sessionDuration)
@@ -291,7 +312,9 @@ function _createMachine(image) {
       return machine.getPassword()
         .then((password) => {
           machine.password = password;
-
+          // If machine have been assigned when booting we have to keep endDate and user
+          delete machine.endDate;
+          delete machine.user;
           return Machine.update({id: machine.id}, machine);
         })
         .then(() => {
