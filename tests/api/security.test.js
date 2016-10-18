@@ -74,7 +74,7 @@ module.exports = function() {
           });
         })
         .then((token) => {
-          ldapUserToken = token;
+          ldapUserToken = token.token;
           return done();
         });
     });
@@ -2215,7 +2215,8 @@ module.exports = function() {
             .send({
               data: {
                 attributes: {
-                  name: 'edited'
+                  'first-name': 'edited',
+                  'last-name': 'edited'
                 },
                 type: 'users'
               }
@@ -2231,7 +2232,8 @@ module.exports = function() {
             .send({
               data: {
                 attributes: {
-                  name: 'edited'
+                  'first-name': 'edited',
+                  'last-name': 'edited'
                 },
                 type: 'users'
               }
@@ -2763,7 +2765,7 @@ module.exports = function() {
           nano.request(sails.hooks.http.app)
             .get('/api/sessions')
             .set('Authorization', 'Bearer ' + token)
-            .expect(403)
+            .expect(401)
             .end(done);
         });
 

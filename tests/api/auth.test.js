@@ -179,13 +179,7 @@ module.exports = function() {
       });
 
       const expectedErrorSchema = {
-        type: 'object',
-        properties: {
-          error: {type: 'string'},
-          error_description: {type: 'string'}
-        },
-        required: ['error', 'error_description'],
-        additionalProperties: false
+        type: 'string'
       };
 
       it('Should reject login with invalid username/password', function(done) {
