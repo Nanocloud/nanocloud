@@ -70,7 +70,7 @@ export default Ember.Controller.extend({
       sumSessionDuration += item.get('duration') / 1000;
       ret.push(Ember.Object.create({
         user: item.get('userFullName'),
-        application: item.get('connectionId'),
+        application: item.get('applicationName'),
         machineDriver: item.get('machineDriver'),
         machineId: item.get('machineId'),
         machineSize: item.get('machineType'),
