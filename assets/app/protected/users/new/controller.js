@@ -52,9 +52,9 @@ export default Ember.Controller.extend({
               this.set('loadState', false);
               this.transitionToRoute('protected.users');
               this.toast.success('User has been created sucessfully');
-            }, (errorMessage) => {
+            }, () => {
               this.set('loadState', false);
-              this.toast.error('Cannot create new user : ' + errorMessage);
+              this.toast.error('Cannot create user');
             });
         });
     }
