@@ -103,6 +103,7 @@ module.exports = {
     awsMachineUsername: 'Administrator',
     awsMachinePassword: '',
     awsMachineSubnet: '',
+    awsDiskSize: 0,
 
     openstackUsername:  '',
     openstackPassword: '',
