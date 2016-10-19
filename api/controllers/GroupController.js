@@ -36,5 +36,14 @@ module.exports = {
       .populate('images')
       .then(res.ok)
       .catch(res.negotiate);
+  },
+
+  find: function(req, res) {
+
+    Group.find()
+      .populate('members')
+      .populate('images')
+      .then(res.ok)
+      .catch(res.negotiate);
   }
 };
