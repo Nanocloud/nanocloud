@@ -14,6 +14,8 @@
     "sweetalert": "~1.1.0",
     "spectrum": "^1.8.0",
     "masonry": "^4.1.1",
-    "imagesloaded": "^4.1.1"
+    "imagesloaded": "^4.1.1",
+    "hammer.js": "^2.0.8",
+    "matchMedia": "0.2.0"
   }
 }

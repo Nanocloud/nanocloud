@@ -94,11 +94,9 @@ h1 {
 }
 
 .color-default {
-  span, a, i {
-    color: $blue-default;
-    &:hover {
-      color: $blue-lighten;
-    }
+  color: $blue-default;
+  &.hover-enabled:hover {
+    color: $blue-lighten;
   }
 }
 
@@ -397,4 +395,13 @@ h1 {
     left: auto !important;
     margin-left: auto !important;
   }
+}
+
+.md-checkbox {
+  margin-bottom: 10px;
+}
+
+.md-checkbox.md-checked .md-icon:after {
+  left: 7px;
+  top: 2px;
 }
