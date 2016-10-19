@@ -69,6 +69,9 @@ module.exports = {
     },
     machineType: {
       type: 'string'
+    },
+    applicationName: {
+      type: 'string'
     }
   }
 };

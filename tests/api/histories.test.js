@@ -45,9 +45,10 @@ module.exports = function() {
         'machine-driver': {type: 'string'},
         'machine-type': {type: ['string', 'null']},
         'created-at': {type: 'string'},
-        'updated-at': {type: 'string'}
+        'updated-at': {type: 'string'},
+        'application-name': {type: 'string'}
       },
-      required: ['user-mail','user-id','user-firstname','user-lastname','connection-id','start-date','end-date','machine-id','machine-driver','created-at','updated-at'],
+      required: ['user-mail','user-id','user-firstname','user-lastname','connection-id','start-date','end-date','machine-id','machine-driver','created-at','updated-at','application-name'],
       additionalProperties: false
     };
 
