@@ -51,8 +51,8 @@ export default Ember.Controller.extend({
           this.transitionToRoute('protected.apps');
           this.toast.success('The application has been deleted');
         })
-        .catch((reason) => {
-          this.toast.error(reason.errors[0].title);
+        .catch(() => {
+          this.toast.error('The application can\'t be deleted');
         });
       }
     },
