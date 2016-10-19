@@ -410,7 +410,6 @@ class AWSDriver extends Driver {
       this._client.ec2.createImage({
         Name: imageToCreate.name,
         InstanceId: imageToCreate.buildFrom,
-        NoReboot: true
       }, (err, image) => {
 
         if (err) {
@@ -435,7 +434,8 @@ class AWSDriver extends Driver {
 
               return this._client.ec2
                 .waitFor('instanceStatusOk', {
-                  InstanceIds: [machine.id]
+                  InstanceIds: [machine.id],
+                  IncludeAllInstances: true
                 }, (err) => {
 
                   if (err) {

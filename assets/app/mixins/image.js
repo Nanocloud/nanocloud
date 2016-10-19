@@ -56,6 +56,7 @@ export default Ember.Mixin.create({
         closeOnConfirm: true,
         animation: false
       }, () => {
+        this.vdiDisconnectHandler();
         this.toast.success('Your image has been saved successfully');
       });
     });
@@ -76,6 +77,7 @@ export default Ember.Mixin.create({
       closeOnConfirm: true,
       animation: false,
     }, () => {
+      this.vdiDisconnectHandler();
       this.toast.error('The image has not been saved');
       xhr.abort();
     });
