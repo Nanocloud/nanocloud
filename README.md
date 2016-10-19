@@ -176,6 +176,7 @@ Alternativelly, tests can be run individually:
 
 Some environment variables can be set to customize tests:
 - testMail (boolean, defaults to false) load stub email transporter for testing purpose
+- dummyBootingState (boolean, defaults to false) force machine to stay in booting state for a moment
 
 **API tests expects a postgres database up and running on localhost**
 **Some tests may require storage and frontend to be up as well**
