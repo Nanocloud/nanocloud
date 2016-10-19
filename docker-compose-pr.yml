@@ -7,7 +7,7 @@ services:
       dockerfile: Dockerfile
     image: nanocloud/backend
     volumes:
-      - static:/opt/back/assets/dist
+      - static-PRPORTS:/opt/back/assets/dist
     env_file:
       - config.env
     networks:
@@ -23,7 +23,7 @@ services:
       dockerfile: Dockerfile
     image: nanocloud/frontend
     volumes:
-      - static:/opt/dist
+      - static-PRPORTS:/opt/dist
     networks:
       - nanocloud
     container_name: frontend-PRPORTS
@@ -65,7 +65,7 @@ networks:
     driver: bridge
 
 volumes:
-  static:
+  static-PRPORTS:
     driver: local
   plaza:
     driver: local
