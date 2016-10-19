@@ -152,8 +152,8 @@ export default Ember.Controller.extend({
         .then(({ validations }) => {
 
           if (validations.get('isInvalid') === true) {
-            this.toast.error(this.get('model.validations.attrs.firstname.messages'));
-            return defer.reject(this.get('model.validations.attrs.firstname.messages'));
+            this.toast.error(this.get('model.validations.attrs.firstName.messages'));
+            return defer.reject(this.get('model.validations.attrs.firstName.messages'));
           }
 
           this.model.save()
@@ -175,8 +175,8 @@ export default Ember.Controller.extend({
         .then(({ validations }) => {
 
           if (validations.get('isInvalid') === true) {
-            this.toast.error(this.get('model.validations.attrs.lastname.messages'));
-            return defer.reject(this.get('model.validations.attrs.lastname.messages'));
+            this.toast.error(this.get('model.validations.attrs.lastName.messages'));
+            return defer.reject(this.get('model.validations.attrs.lastName.messages'));
           }
 
           this.model.save()

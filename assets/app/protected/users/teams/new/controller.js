@@ -43,7 +43,7 @@ export default Ember.Controller.extend({
           }), 0);
         })
         .catch((err) => {
-          this.toast.error(err.errors[0].detail, 'Account not created');
+          this.toast.error('Some fields you entered are invalids', 'Account not created');
           return err.responseJSON;
         })
         .finally(() => {
