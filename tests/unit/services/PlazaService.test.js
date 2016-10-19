@@ -26,6 +26,7 @@
 
 const expect = require('chai').expect;
 const filename = 'PlazaService.test.js';
+const _ = require('lodash');
 var filesize = 0;
 
 describe('PlazaService', function() {
@@ -34,6 +35,22 @@ describe('PlazaService', function() {
     ConfigService.set('storageAddress', 'localhost')
       .then(() => {
         return ConfigService.set('storagePort', 9090);
+      })
+      .then(() => {
+        return User.findOne({
+          id: 'aff17b8b-bf91-40bf-ace6-6dfc985680bb'
+        });
+      })
+      .then((user) => {
+        return StorageService.findOrCreate(user);
+      })
+      .then((storage) => {
+        return PlazaService.files(storage, '/home/' + storage.username)
+          .then((files) => {
+            return _.map(files.data, (data) => {
+              return PlazaService.remove(storage, data.attributes.name);
+            });
+          });
       })
       .then(() => {
         return done();

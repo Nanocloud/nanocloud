@@ -41,6 +41,16 @@ describe('Machine Service', () => {
 
       ConfigService.set('sessionDuration', 0)
         .then(() => {
+          return BrokerLog.destroy();
+        })
+        .then(() => {
+          return Machine.destroy({
+            user: {
+              '!': null
+            }
+          });
+        })
+        .then(() => {
           return done();
         });
     });
@@ -113,7 +123,9 @@ describe('Machine Service', () => {
               return new Promise((resolve) => {
                 return setTimeout(function() {
                   return BrokerLog.find({
-                    machineId: logs[0].machineId,
+                    machineId: {
+                      '!': logs[0].machineId,
+                    },
                     state: 'Created'
                   })
                     .then((log) => {
@@ -145,7 +157,7 @@ describe('Machine Service', () => {
               });
             })
             .then((logs) => {
-              if (logs.length !== 3) {
+              if (logs.length !== 1) {
                 throw new Error('Broker should log when machine pool need to be update');
               }
               assert.isNull(logs[0].machineId);
@@ -503,7 +515,9 @@ describe('Machine Service', () => {
         .then(() => {
           return Promise.props({
             conf: ConfigService.get('machinePoolSize'),
-            images: Image.find(),
+            images: Image.find({
+              deleted: false
+            }),
             machines: Machine.find({
               user: null
             })
@@ -603,7 +617,7 @@ describe('Machine Service', () => {
               });
             })
             .then((logs) => {
-              if (logs.length !== 10) {
+              if (logs.length !== 8) {
                 throw new Error('Broker should log when machine pool need to be update');
               }
               assert.isNull(logs[0].machineId);
@@ -909,7 +923,9 @@ describe('Machine Service', () => {
           return MachineService.updateMachinesPool();
         })
         .then(() => {
-          return Image.find();
+          return Image.find({
+            deleted: false
+          });
         })
         .then((images) => {
           imageCount = images.length;
@@ -954,7 +970,9 @@ describe('Machine Service', () => {
             machines: Machine.find({
                 user: null
               }),
-            images: Image.find()
+            images: Image.find({
+              deleted: false
+            })
           });
         })
         .then(({machines, images}) => {
