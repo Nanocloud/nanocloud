@@ -257,10 +257,11 @@ class AWSDriver extends Driver {
    * @return {Promise[Machine]} The created machine
    */
   createMachine(machine, image) {
-    return ConfigService.get('awsFlavor', 'plazaURI', 'awsKeyName', 'plazaPort', 'awsMachineSubnet')
+    return ConfigService.get('awsFlavor', 'plazaURI', 'awsKeyName', 'plazaPort',
+      'awsMachineSubnet', 'awsDiskSize', 'awsMachineUsername')
       .then((config) => {
 
-        const userData = `<powershell>
+        let userData = new Buffer(`<powershell>
         REG.exe Add HKLM\\Software\\Microsoft\\ServerManager /V DoNotOpenServerManagerAtLogon /t REG_DWORD /D 0x1 /F
         Set-ExecutionPolicy RemoteSigned -force
         Invoke-WebRequest ${config.plazaURI} -OutFile C:\\plaza.exe
@@ -273,40 +274,68 @@ class AWSDriver extends Driver {
         rm C:\\photon.zip
         New-NetFirewallRule -DisplayName “Photon” -Direction Inbound -Program C:\\Windows\\photon\\photon.exe -RemoteAddress any -Action Allow
         </powershell>
-      `;
+        `).toString('base64');
+
+        let diskOptions = null;
+
+        if (config.awsDiskSize) {
+          diskOptions = [{
+            DeviceName: '/dev/sda1',
+            Ebs: {
+              DeleteOnTermination: true,
+              VolumeSize: config.awsDiskSize,
+              VolumeType: 'gp2'
+            }
+          }];
+        }
 
         return new Promise((resolve, reject) => {
-          this._client.createServer({
-            name     : machine.name,
-            image    : image.iaasId,
-            flavor   : config.awsFlavor,
-            KeyName  : config.awsKeyName,
-            UserData : userData,
-            subnetId : config.awsMachineSubnet
+          this._client.ec2.runInstances({
+            MinCount            : 1,
+            MaxCount            : 1,
+            ImageId             : image.iaasId,
+            InstanceType        : config.awsFlavor,
+            KeyName             : config.awsKeyName,
+            UserData            : userData,
+            SubnetId            : config.awsMachineSubnet,
+            BlockDeviceMappings : diskOptions
           }, (err, server) => {
             if (err) {
               return reject(err);
             }
 
-            const ip = server.addresses.public[0] || server.addresses.private[0];
+            server = server.Instances[0];
+
+            this._client.ec2.createTags({
+              Resources: [
+                server.InstanceId
+              ],
+              Tags: [{
+                Key: 'Name',
+                Value: machine.name
+              }]
+            }, function (err) {
+              if (err) {
+                reject(err);
+              }
+            });
+
+            const ip = server.IpAddress || server.PrivateIpAddress;
             const type = this.name();
 
-            ConfigService.get('awsMachineUsername', 'plazaPort', 'awsFlavor')
-              .then((config) => {
-                let machineModel = new Machine._model({
-                  id: server.id,
-                  name: machine.name,
-                  type: type,
-                  flavor: config.awsFlavor,
-                  ip: ip,
-                  username: config.awsMachineUsername,
-                  password: null,
-                  domain: '',
-                  plazaport: config.plazaPort,
-                  rdpPort: 3389
-                });
-                return resolve(machineModel);
-              });
+            let machineModel = new Machine._model({
+              id        : server.InstanceId,
+              name      : machine.name,
+              type      : type,
+              flavor    : config.awsFlavor,
+              ip        : ip,
+              username  : config.awsMachineUsername,
+              password  : null,
+              domain    : '',
+              plazaport : config.plazaPort,
+              rdpPort   : 3389
+            });
+            return resolve(machineModel);
           });
         });
       });
