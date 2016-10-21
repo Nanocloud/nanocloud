@@ -141,17 +141,21 @@ export default Ember.Controller.extend({
     },
 
     toRegularUser(user) {
-      user.set('isTeamAdmin', false);
-      user.save()
-        .then(() => {
-          this.toast.success(user.get('fullName') + ' is now a regular user');
-        })
-        .catch(() => {
-          this.toast.error('An error occurred while setting a team admin team member. Please try again.');
-        })
-        .finally(() => {
-          this.send('closePopup', user);
-        });
+      if (user.id !== this.get('session.user.id')) {
+        user.set('isTeamAdmin', false);
+        user.save()
+          .then(() => {
+            this.toast.success(user.get('fullName') + ' is now a regular user');
+          })
+          .catch(() => {
+            this.toast.error('An error occurred while setting a team admin team member. Please try again.');
+          })
+          .finally(() => {
+            this.send('closePopup', user);
+          });
+      } else {
+        this.toast.error('You can\'t downgrade yourself');
+      }
     },
 
     toggleFileExplorer() {
