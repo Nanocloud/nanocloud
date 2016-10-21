@@ -57,6 +57,8 @@ export default Ember.Controller.extend({
     }
     var ret = Ember.A([]);
     this.get('items').forEach(function(item) {
+      var timeNow = window.moment(new Date(),'DD/MM/YYYY HH:mm:ss');
+      var timeCreatedAt = window.moment(item.get('createdAt'),'DD/MM/YYYY HH:mm:ss');
       ret.push(Ember.Object.create({
         user: item.get('userId'),
         machineDriver: item.get('machineDriver'),
@@ -65,6 +67,7 @@ export default Ember.Controller.extend({
         state: item.get('state'),
         poolSize: item.get('poolSize'),
         createdAt: window.moment(item.get('createdAt')).format('MMMM Do YYYY, h:mm:ss A'),
+        secondsSinceCreatedAt: Math.floor(window.moment.duration(timeCreatedAt.diff(timeNow), 'milliseconds').asSeconds()),
       }));
     });
     this.set('data', ret);
@@ -113,6 +116,7 @@ export default Ember.Controller.extend({
       title: 'Created At',
       disableFiltering: true,
       filterWithSelect: false,
+      sortedBy: 'secondsSinceCreatedAt',
       sortPrecedence: true,
       sortDirection: 'desc',
     },

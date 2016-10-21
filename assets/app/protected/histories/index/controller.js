@@ -68,6 +68,8 @@ export default Ember.Controller.extend({
     var sumSessionDuration = 0;
     this.get('items').forEach(function(item) {
       sumSessionDuration += item.get('duration') / 1000;
+      var timeNow = window.moment(new Date(),'DD/MM/YYYY HH:mm:ss');
+      var timeStart = window.moment(item.get('startDate'),'DD/MM/YYYY HH:mm:ss');
       ret.push(Ember.Object.create({
         user: item.get('userFullName'),
         application: item.get('connectionId'),
@@ -75,6 +77,7 @@ export default Ember.Controller.extend({
         machineId: item.get('machineId'),
         machineSize: item.get('machineType'),
         start: window.moment(item.get('startDate')).format('MMMM Do YYYY, h:mm:ss A'),
+        secondsSinceStart: Math.floor(window.moment.duration(timeStart.diff(timeNow), 'milliseconds').asSeconds()),
         end: window.moment(item.get('endDate')).format('MMMM Do YYYY, h:mm:ss A'),
         isActive: item.get('isActive'),
         duration: item.get('duration') / 1000,
@@ -123,6 +126,7 @@ export default Ember.Controller.extend({
       title: 'Start Date',
       disableFiltering: true,
       filterWithSelect: false,
+      sortedBy: 'secondsSinceStart',
     },
     {
       title: 'End Date',
