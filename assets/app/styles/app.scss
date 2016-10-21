@@ -1,7 +1,8 @@
-
 $blue-default:             #006CB6 !default;
+$accent: "blue";
 
 @import "variables";
+@import "ember-paper";
 
 @import "ember-modal-dialog/ember-modal-structure";
 @import "ember-modal-dialog/ember-modal-appearance";
@@ -45,6 +46,7 @@ $blue-default:             #006CB6 !default;
 @import "popup-component";
 @import "draggable-zone";
 @import "specific/teams-index";
+@import "container-blocks";
 
 @import "vdi";
 @import "window-component";

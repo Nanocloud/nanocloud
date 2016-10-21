@@ -1,22 +1,30 @@
-<div class="form-group row m-t-1">
-  <div class="col-sm-2">
-    <p class="confirm-input-item color-primary in-bl fl">Host</p>
+{{#container-block}}
+  <h4 class='color-default m-b-1'>Host</h4>
+  <div class="form-group row m-t-1">
+    <div class="col-sm-3">
+      <p class="confirm-input-item color-primary in-bl fl va-sub">Host (example: localhost)</p>
+    </div>
+    <div class="col-sm-2">{{input-confirm value=configController.host placeholder="http://127.0.0.1" type="text"}}</div>
   </div>
-  <div class="col-sm-3">{{input-confirm value=configController.host placeholder="http://127.0.0.1" type="text"}}</div>
-</div>
-<div class="form-group row m-t-1">
-  <div class="col-sm-2">
-    <p  class="confirm-input-item color-primary in-bl fl">Machines name</p>
+{{/container-block}}
+
+{{#container-block}}
+  <h4 class='color-default m-b-1'>Machines</h4>
+  <div class="form-group row m-t-1">
+    <div class="col-sm-3">
+      <p  class="confirm-input-item color-primary in-bl fl va-sub">Machines name</p>
+    </div>
+    <div class="col-sm-2">
+      {{input-confirm placeholder=configController.machinesName value=configController.machinesName type="text"}}
+    </div>
   </div>
-  <div class="col-sm-3">
-    {{input-confirm placeholder=configController.machinesName value=configController.machinesName type="text"}}
-  </div>
-</div>
-<div class="form-group row m-t-1">
-  <div class="checkbox">
-    <label>
-      {{input type="checkbox" checked=configController.photon}}
+{{/container-block}}
+
+{{#container-block}}
+  <h4 class='color-default m-b-1'>Enable Photon</h4>
+  <div class="layout-column">
+    {{#paper-checkbox class="bl" value=configController.photon onChange=(action (mut configController.photon))}}
       Activate Photon (experimental)
-    </label>
+    {{/paper-checkbox}}
   </div>
-</div>
+{{/container-block}}

@@ -1,62 +1,58 @@
-<div class="checkbox">
-  <label>
-    {{input type="checkbox" checked=configController.autoRegister}}
-    User can register himself
-  </label>
-</div>
-{{#if configController.autoRegister}}
-  {{log model}}
-  {{#if model.groups.length}}
-    <p class='m-t-1 color-primary'>You can select a default group</p>
-    <ul class="selectable-list">
-      <div class="row">
-        <div class="col-md-6">
-          <table class="table">
-            <tbody>
-              {{#each model.groups as |group|}}
-                <tr>
-                  <td scope="row">
-                    <span class="link in-bl">
-                      {{#link-to 'protected.users.groups.group' group}}
-                        {{group.name}}
-                      {{/link-to}}
-                    </span>
-                  </td>
-                  <td {{action "selectGroup" group.id}}>
-                    {{nano-switch checked=(is-equal group.id defaultGroup)}}
-                  </td>
-                </tr>
-              {{/each}}
-            </tbody>
-          </table>
+{{#container-block}}
+  <h4 class='color-default m-b-1'>Self Registration</h4>
+  <div class="layout-column">
+    {{#paper-checkbox class="bl" value=configController.autoRegister onChange=(action (mut configController.autoRegister)) }}
+      User can register himself
+    {{/paper-checkbox}}
+  </div>
+  {{#if configController.autoRegister}}
+    {{#if model.groups.length}}
+      <p class='m-t-1 color-primary'>Select a default group for self-registered users</p>
+      {{#each model.groups as |group|}}
+        <div class='row m-b-1'>
+          <div class="col-sm-2 link in-bl">
+            {{#link-to 'protected.users.groups.group' group}}
+              {{group.name}}
+            {{/link-to}}
+          </div>
+          <div class='in-bl col-sm-4'{{action "selectGroup" group.id}}>
+            {{nano-switch checked=(is-equal group.id defaultGroup)}}
+          </div>
         </div>
+      {{/each}}
+    {{/if}}
+    <div class="form-group row">
+      <div class="col-sm-4">
+        <p class="confirm-input-item color-primary in-bl fl va-sub">Expiration date for new users (in days)</p>
       </div>
-    </ul>
+      <div class="col-sm-2">{{input-confirm value=configController.expirationDate type="number" min="0"}}</div>
+    </div>
   {{/if}}
-  <div class="form-group row">
-    <div class="col-sm-4">
-      <p class="confirm-input-item color-primary in-bl fl">You can enter an expiration date for new users (in days)</p>
-    </div>
-    <div class="col-sm-2">{{input-confirm value=configController.expirationDate type="number" min="1"}}</div>
-  </div>
-{{/if}}
+{{/container-block}}
+{{#container-block}}
 <div class="checkbox">
-  <label>
-    {{input type="checkbox" checked=configController.autoLogoff}}
+  <h4 class='color-default m-b-1'>VDI</h4>
+  {{#paper-checkbox class="bl" value=configController.autoLogoff onChange=(action (mut configController.autoLogoff)) }}
     Logoff after closing VDI
-  </label>
+  {{/paper-checkbox}}
 </div>
+{{/container-block}}
 {{#if isAws}}
-  <div class="form-group row">
-    <div class="col-sm-2">
-      <p class="confirm-input-item color-primary">Set a credit limit to users using AWS</p>
+  {{#container-block}}
+    <h4 class='color-default m-b-1'>Computation credits</h4>
+    <div class="form-group row">
+      <div class="col-sm-4">
+        <p class="confirm-input-item color-primary in-bl va-sub">Set a credit limit to users using AWS</p>
+      </div>
+      <div class="col-sm-2">{{input-confirm type="string" value=configController.creditLimit}}</div>
     </div>
-    <div class="col-sm-2">{{input-confirm type="string" value=configController.creditLimit}}</div>
-  </div>
+  {{/container-block}}
 {{/if}}
-<div class="checkbox">
-  <label>
-    {{input type="checkbox" checked=configController.teamEnabled}}
-    Enable team
-  </label>
-</div>
+{{#container-block}}
+  <h4 class='color-default m-b-1'>Team</h4>
+  <div class="checkbox">
+    {{#paper-checkbox class="bl" value=configController.teamEnabled onChange=(action (mut configController.teamEnabled))}}
+      Enable team
+    {{/paper-checkbox}}
+  </div>
+{{/container-block}}

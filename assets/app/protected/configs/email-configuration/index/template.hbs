@@ -1,35 +1,41 @@
-<h5 class="m-t-2 m-b-2">Email Configuration</h5>
-<div class="m-t-1 form-group row">
-  <div class="col-sm-2">
-    <p class="confirm-input-item color-primary in-bl fl">Server Host:</p>
+{{#container-block}}
+  <h4 class='color-default m-b-1'>Server</h4>
+  <div class="m-t-1 form-group row">
+    <div class="col-sm-2">
+      <p class="confirm-input-item color-primary in-bl fl">Server Host:</p>
+    </div>
+    <div class="col-sm-3">{{input-confirm placeholder=smtpServerHost value=configController.smtpServerHost type="text"}}</div>
   </div>
-  <div class="col-sm-3">{{input-confirm placeholder=smtpServerHost value=configController.smtpServerHost type="text"}}</div>
-</div>
 
-<div class="form-group row">
-  <div class="col-sm-2">
-    <p class="confirm-input-item color-primary in-bl fl">Server Port:</p>
+  <div class="form-group row">
+    <div class="col-sm-2">
+      <p class="confirm-input-item color-primary in-bl fl">Server Port:</p>
+    </div>
+    <div class="col-sm-3">{{input-confirm value=configController.smtpServerPort type="number" min="1"}}</div>
   </div>
-  <div class="col-sm-3">{{input-confirm value=configController.smtpServerPort type="number" min="1"}}</div>
-</div>
+{{/container-block}}
+{{#container-block}}
+  <h4 class='color-default m-b-1'>Login</h4>
+  <div class="form-group row">
+    <div class="col-sm-2">
+      <p class="confirm-input-item color-primary in-bl fl">Login:</p>
+    </div>
+    <div class="col-sm-3">{{input-confirm value=configController.smtpLogin type="text"}}</div>
+  </div>
 
-<div class="form-group row">
-  <div class="col-sm-2">
-    <p class="confirm-input-item color-primary in-bl fl">Login:</p>
+  <div class="form-group row">
+    <div class="col-sm-2">
+      <p class="confirm-input-item color-primary in-bl fl">Password:</p>
+    </div>
+    <div class="col-sm-3">{{input-confirm value=configController.smtpPassword placeholder="******" type="password" pattern=".{6,}"}}</div>
   </div>
-  <div class="col-sm-3">{{input-confirm value=configController.smtpLogin type="text"}}</div>
-</div>
-
-<div class="form-group row">
-  <div class="col-sm-2">
-    <p class="confirm-input-item color-primary in-bl fl">Password:</p>
+{{/container-block}}
+{{#container-block}}
+  <h4 class='color-default m-b-1'>Other</h4>
+  <div class="form-group row">
+    <div class="col-sm-2">
+      <p class="confirm-input-item color-primary in-bl fl">Send From:</p>
+    </div>
+    <div class="col-sm-3">{{input-confirm value=configController.smtpSendFrom type="email"}}</div>
   </div>
-  <div class="col-sm-3">{{input-confirm value=configController.smtpPassword placeholder="******" type="password" pattern=".{6,}"}}</div>
-</div>
-
-<div class="form-group row">
-  <div class="col-sm-2">
-    <p class="confirm-input-item color-primary in-bl fl">Send From:</p>
-  </div>
-  <div class="col-sm-3">{{input-confirm value=configController.smtpSendFrom type="email"}}</div>
-</div>
+{{/container-block}}
