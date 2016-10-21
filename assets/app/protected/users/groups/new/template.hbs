@@ -15,7 +15,7 @@
     <form {{action 'createGroup' on='submit'}}>
       <fieldset class="form-group">
         <label for="new-group-name">Give your group a name</label>
-        {{input class='form-control' id='new-group-name' placeholder='Name' value=groupName}}
+        {{input class='form-control' id='new-group-name' placeholder='Name' value=groupName autofocus=true}}
       </fieldset>
     
       {{#if loadState}}
