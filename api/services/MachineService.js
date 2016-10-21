@@ -548,6 +548,8 @@ function _shouldTerminateMachine(machine) {
         const now = new Date();
         if (machineToTerminate.endDate < now) {
           if (config.neverTerminateMachine) {
+            machineToTerminate.endDate = null;
+
             stopMachine(machineToTerminate);
           } else {
             machineToTerminate.user = null;
