@@ -84,6 +84,7 @@ export default DS.Model.extend(Validations, {
   createdAt: DS.attr('string'),
   expirationDate: DS.attr('number'),
   credit: DS.attr('string'),
+  ldapUser: DS.attr('boolean'),
 
   expirationDateInMs: Ember.computed('expirationDate', function() {
     return this.get('expirationDate') * 1000;
