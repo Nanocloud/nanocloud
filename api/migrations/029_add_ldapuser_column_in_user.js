@@ -24,7 +24,7 @@
 
 function up(knex) {
   return knex.schema.table('user', (table) => {
-    table.string('ldapUser');
+    table.boolean('ldapUser');
   });
 }
 

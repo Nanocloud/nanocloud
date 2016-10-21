@@ -64,12 +64,9 @@ module.exports = {
     req.body = JsonApiService.deserialize(req.body);
     User.findOne(req.allParams().id)
       .then((currentUser) => {
-        let submittedUser = req.body.data.attributes;
 
-        if (submittedUser.ldapUser === true && (currentUser.firstName !== submittedUser.firstName
-          || currentUser.lastName !== submittedUser.lastName
-          || submittedUser.password || submittedUser.expirationDate)) {
-          res.badRequest('Can not update LDAP user\'s informations');
+        if (currentUser.ldapUser === true) {
+          return res.send(403, 'You can\'t update LDAP user\'s informations');
         } else if (req.user.id === req.allParams().id) {
           _.set(req.body, 'data.attributes.isAdmin', currentUser.isAdmin);
           _.set(req.body, 'data.attributes.isTeamAdmin', currentUser.isTeamAdmin);
@@ -79,25 +76,25 @@ module.exports = {
           return JsonApiService.updateOneRecord(req, res);
         } else {
           return User.findOne(req.allParams().id)
-          .populate('groups')
-          .then((userToUpdate) => {
-            if (req.user.isTeamAdmin === false || req.user.team.id !== userToUpdate.team.id) {
-              return Promise.reject({
-                status: 403,
-                detail: 'You need to be an administrator or team admin to perform this operation'
-              });
-            }
+            .populate('groups')
+            .then((userToUpdate) => {
+              if (req.user.isTeamAdmin === false || req.user.team.id !== userToUpdate.team.id) {
+                return Promise.reject({
+                  status: 403,
+                  detail: 'You need to be an administrator or team admin to perform this operation'
+                });
+              }
 
-            return User.update({
-              id: req.allParams().id
-            }, {
-              isTeamAdmin: _.get(req.body, 'data.attributes.isTeamAdmin') || false
-            });
-          })
-          .then((users) => {
-            return res.ok(users.pop());
-          })
-          .catch(res.negotiate);
+              return User.update({
+                id: req.allParams().id
+              }, {
+                isTeamAdmin: _.get(req.body, 'data.attributes.isTeamAdmin') || false
+              });
+            })
+            .then((users) => {
+              return res.ok(users.pop());
+            })
+            .catch(res.negotiate);
         }
       });
   }

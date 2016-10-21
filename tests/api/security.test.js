@@ -452,6 +452,7 @@ module.exports = function() {
         it('Regular users should be unauthorized', function(done) {
           return nano.request(sails.hooks.http.app)
             .post('/api/apps')
+            .set('Authorization', 'Bearer ' + token)
             .send({
               data: {
                 attributes: {
@@ -2221,7 +2222,7 @@ module.exports = function() {
                 type: 'users'
               }
             })
-            .expect(400)
+            .expect(403)
             .end(done);
         });
 
@@ -2238,7 +2239,7 @@ module.exports = function() {
                 type: 'users'
               }
             })
-            .expect(400)
+            .expect(403)
             .end(done);
         });
 
@@ -2765,7 +2766,7 @@ module.exports = function() {
           nano.request(sails.hooks.http.app)
             .get('/api/sessions')
             .set('Authorization', 'Bearer ' + token)
-            .expect(401)
+            .expect(403)
             .end(done);
         });
 
