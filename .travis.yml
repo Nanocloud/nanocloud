@@ -32,6 +32,9 @@ before_script:
   - cd /home/travis/build/Nanocloud/nanocloud
   - npm install
   - cd assets && npm install && bower install && ./node_modules/ember-cli/bin/ember build --environment=production && cd ../
+  - export COVERALLS_SERVICE_NAME=travis-ci
+script:
+  - npm test && cat /home/travis/build/Nanocloud/nanocloud/coverage/lcov.info | coveralls
 notifications:
     slack:
         secure: VSXk/aqStX0JKbSHXmAngv9HMuTm8j4XG/vnbZNL6i1QnKIkvuAauDuk2c/GPzVzXfXubZjAkfHhX9JgxBSFW/NKV6gjAS1bfsHMx65yKREZrwx4VVwTM8GAjYANDeDp/7xw3Bk6o9GpkGxuIA4aKn8G0HdSE1YioCYMZc4UAqnbkbR8b0xMnuYP3zzaHjDMsL+NWz9gkitp5EsX3r0TpT/Gwu+5k//zPbIuDeudvD1jY7F8HQ6akuItrAlFVULJ4RlB/OlZ+yPusVi5TS0FIXgbNaiK6rkWoi5BIQBki5bLsy9qLWR6Sng4JEG31vSrMHRQnrZNQ9OiF3E8AjGbn6m/vdPYYlMw0V393N22zxa/XvdYVejYHGx96QfSart2faMrp38oHerpInRo5oz2OJKaLMJZRfL3h2rG+S7lynMLQaNVkOijub8q8Ze9G3NCx+dkIEteLwTD0A07N0vKNyhkYzSsbU+m8wWNBKSLTSGUZ5XfHAdJFcA3GKuDZ5sftMVQvHgufOffqWySN/d2EWwaTy2lqWla7X4fyrybdD5ujuYRLcOsPE2R85JAHYuHi2fCPjgG9OMjbO20vBTlH1IHc0ZzNTXM07yKLe+Xntu64F8pQZvvY26Qwwrd3qO136NQxOd52FR6332Faj1dca3VaqY6NOFAo1u7SLA+XY0=
