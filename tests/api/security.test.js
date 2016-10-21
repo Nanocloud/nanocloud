@@ -34,8 +34,10 @@ module.exports = function() {
 
     let token = null;
     let userId = null;
+    let ldapUserToken = null;
+    let ldapUserId = null;
 
-    before('Generate a regular user, a token, a group and storage', function(done) {
+    before('Generate a regular user and a ldap user, a token, a group and storage', function(done) {
 
       ConfigService.set('testMail', true);
 
@@ -55,17 +57,35 @@ module.exports = function() {
         })
         .then((res) => {
           token = res.token;
+          return User.create({
+            firstName: 'Ldap',
+            lastName: 'User',
+            password: 'Nanocloud123+',
+            email: 'ldapuser@test.com',
+            isAdmin: false,
+            expirationDate: null,
+            ldapUser: true
+          });
+        })
+        .then((ldapUser) => {
+          ldapUserId = ldapUser.id;
+          return AccessToken.create({
+            userId: ldapUserId
+          });
+        })
+        .then((token) => {
+          ldapUserToken = token.token;
           return done();
         });
     });
 
-    after('Delete created user', function(done) {
+    after('Delete created users', function(done) {
       User.destroy({
-        email: 'test@test.com'
+        email: ['test@test.com', 'ldapuser@test.com']
       })
         .then(() => {
           AccessToken.destroy({
-            userId: userId
+            userId: [userId, ldapUserId]
           });
         })
         .then(() => {
@@ -1868,7 +1888,7 @@ module.exports = function() {
             .end(done);
         });
 
-        it('Regular users  should be forbidden to update a property', function(done) {
+        it('Regular users should be forbidden to update a property', function(done) {
           return nano.request(sails.hooks.http.app)
             .patch('/api/properties/1')
             .set('Authorization', 'Bearer ' + token)
@@ -2189,6 +2209,40 @@ module.exports = function() {
             .end(done);
         });
 
+        it('Admin users should be unauthorized for ldap users', function(done) {
+          return nano.request(sails.hooks.http.app)
+            .patch('/api/users/' + ldapUserId)
+            .set(nano.adminLogin())
+            .send({
+              data: {
+                attributes: {
+                  'first-name': 'edited',
+                  'last-name': 'edited'
+                },
+                type: 'users'
+              }
+            })
+            .expect(403)
+            .end(done);
+        });
+
+        it('Ldap users should be unauthorized', function(done) {
+          return nano.request(sails.hooks.http.app)
+            .patch('/api/users/' + ldapUserId)
+            .set('Authorization', 'Bearer ' + ldapUserToken)
+            .send({
+              data: {
+                attributes: {
+                  'first-name': 'edited',
+                  'last-name': 'edited'
+                },
+                type: 'users'
+              }
+            })
+            .expect(403)
+            .end(done);
+        });
+
         it('Regular users should be authorized if it\'s their account', function(done) {
           return nano.request(sails.hooks.http.app)
             .patch('/api/users/' + userId)
@@ -2324,6 +2378,21 @@ module.exports = function() {
               }
             })
             .expect(200)
+            .end(done);
+        });
+
+        it('Request for a ldap users should be unauthorized', function(done) {
+          return nano.request(sails.hooks.http.app)
+            .post('/api/reset-passwords')
+            .send({
+              data: {
+                attributes: {
+                  email: 'ldapuser@test.com'
+                },
+                type: 'reset-passwords'
+              }
+            })
+            .expect(400)
             .end(done);
         });
       });
