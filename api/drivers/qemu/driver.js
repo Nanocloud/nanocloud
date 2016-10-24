@@ -226,7 +226,7 @@ class QemuDriver extends Driver {
 
           let imageModel = new Machine._model({
             iaasId: res.iaasId,
-            name: 'Qemu image',
+            name: imageToCreate.name,
             password: null,
             buildFrom: imageToCreate.buildFrom
           });
