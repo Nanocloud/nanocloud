@@ -30,9 +30,9 @@
 
 #include "boost/asio.hpp"
 
-#include "photon/http/server/connection.h"
-#include "photon/http/server/request_handler.h"
-#include "photon/http/server/connection_manager.h"
+#include "connection.h"
+#include "request_handler.h"
+#include "connection_manager.h"
 
 namespace photon {
 namespace http {

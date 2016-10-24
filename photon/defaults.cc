@@ -22,7 +22,7 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#include "photon/defaults.h"
+#include "defaults.h"
 
 const char kAudioLabel[] = "audio_label";
 const char kVideoLabel[] = "video_label";

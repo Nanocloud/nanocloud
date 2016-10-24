@@ -30,7 +30,7 @@
 
 #include "boost/asio.hpp"
 
-#include "photon/http/server/header.h"
+#include "header.h"
 
 namespace photon {
 namespace http {

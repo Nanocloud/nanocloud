@@ -35,10 +35,10 @@
 
 #include "boost/shared_ptr.hpp"
 
-#include "photon/http/server/response.h"
+#include "response.h"
 
 #if defined(WEBRTC_WIN)
-#include "photon/input_manager.h"
+#include "input_manager.h"
 #endif
 
 namespace webrtc {

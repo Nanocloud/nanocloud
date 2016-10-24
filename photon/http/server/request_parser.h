@@ -26,8 +26,8 @@
 #define PHOTON_HTTP_SERVER_REQUEST_PARSER_H
 
 #include <tuple>
-#include "photon/http/server/request.h"
-#include "photon/http/server/header.h"
+#include "request.h"
+#include "header.h"
 
 namespace photon {
 namespace http {

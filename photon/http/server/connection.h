@@ -31,9 +31,9 @@
 #include "boost/shared_ptr.hpp"
 #include "boost/asio.hpp"
 
-#include "photon/http/server/request.h"
-#include "photon/http/server/request_parser.h"
-#include "photon/http/server/request_handler.h"
+#include "request.h"
+#include "request_parser.h"
+#include "request_handler.h"
 
 namespace photon {
 namespace http {

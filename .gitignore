@@ -119,3 +119,8 @@ nbproject
 
 guacamole-client/noauth-logged/target
 guacamole-client/noauth-logged/.idea
+
+photon/.vs
+photon/Debug
+photon/packages
+photon/x64

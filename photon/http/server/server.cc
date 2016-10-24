@@ -22,7 +22,7 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#include "photon/http/server/server.h"
+#include "server.h"
 
 #include <iostream>
 #include <signal.h>

@@ -27,7 +27,7 @@
 
 #include "webrtc/base/thread.h"
 
-#include "photon/capturer.h"
+#include "capturer.h"
 
 namespace photon {
 

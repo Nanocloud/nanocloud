@@ -37,7 +37,7 @@
 
 #include "webrtc/modules/desktop_capture/win/screen_capturer_win_directx.h"
 
-#include "photon/capturer.h"
+#include "capturer.h"
 
 namespace photon {
 

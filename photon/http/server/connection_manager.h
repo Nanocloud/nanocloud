@@ -27,7 +27,7 @@
 
 #include <set>
 
-#include "photon/http/server/connection.h"
+#include "connection.h"
 
 namespace photon {
 namespace http {

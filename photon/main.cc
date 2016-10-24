@@ -29,8 +29,8 @@
 #include "boost/asio.hpp"
 #include "boost/thread/thread.hpp"
 
-#include "photon/conductor.h"
-#include "photon/http/server/server.h"
+#include "conductor.h"
+#include "server.h"
 
 namespace boost {
   void throw_exception(std::exception const & e) {

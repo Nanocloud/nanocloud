@@ -27,8 +27,8 @@
 
 #include "boost/shared_ptr.hpp"
 
-#include "photon/http/server/response.h"
-#include "photon/http/server/request.h"
+#include "response.h"
+#include "request.h"
 
 namespace photon {
 namespace http {
