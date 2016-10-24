@@ -100,6 +100,12 @@ include_directories(${CMAKE_SOURCE_DIR}/src)
 
 if(WIN32)
   include_directories(${CMAKE_SOURCE_DIR}/packages/boost.1.62.0.0/lib/native/include)
+
+  link_directories(${CMAKE_SOURCE_DIR}/packages/boost_system-vc140.1.62.0.0/lib/native/address-model-64/lib)
+  link_directories(${CMAKE_SOURCE_DIR}/packages/boost_date_time-vc140.1.62.0.0/lib/native/address-model-64/lib)
+  link_directories(${CMAKE_SOURCE_DIR}/packages/boost_chrono-vc140.1.62.0.0/lib/native/address-model-64/lib)
+  link_directories(${CMAKE_SOURCE_DIR}/packages/boost_regex-vc140.1.62.0.0/lib/native/address-model-64/lib)
+  link_directories(${CMAKE_SOURCE_DIR}/packages/boost_thread-vc140.1.62.0.0/lib/native/address-model-64/lib)
 endif(WIN32)
 
 if(WIN32)
@@ -122,3 +128,6 @@ if(NOT NUGET)
 else()
   execute_process(COMMAND ${NUGET} restore ${CMAKE_SOURCE_DIR}/Photon.sln)
 endif()
+
+include(ucm)
+ucm_set_runtime(STATIC)
