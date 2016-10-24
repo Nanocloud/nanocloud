@@ -28,7 +28,7 @@ export default Ember.Mixin.create({
 
   session: Ember.inject.service('session'),
 
-  saveImage() {
+  saveImage(imageName) {
 
     var xhr = Ember.$.ajax({
       type: 'POST',
@@ -39,6 +39,7 @@ export default Ember.Mixin.create({
       data: JSON.stringify({
         data: {
           attributes: {
+            name: imageName,
             'build-from': this.get('machine_id')
           },
           type: 'images'
@@ -83,18 +84,24 @@ export default Ember.Mixin.create({
   },
 
   askSaveImage() {
+    this.get('remoteSession').pauseInputs(this.get('connection_name'));
     this.send('closeAll');
     window.swal({
       title: 'Let\'s save an image!',
-      text: 'Please confirm that you want to save an image.',
-      type: 'info',
+      text: 'Please enter a name for your image.',
+      type: 'input',
+      inputType: 'text',
       showCancelButton: true,
-      confirmButtonText: 'Yes!',
-      cancelButtonText: 'Nope',
+      confirmButtonText: 'Continue',
+      cancelButtonText: 'Cancel',
       closeOnConfirm: false,
       animation: false
-    }, () => {
-      this.saveImage();
+    }, (imageName) => {
+      this.get('remoteSession').restoreInputs(this.get('connection_name'));
+
+      if (imageName !== false) {
+        this.saveImage(imageName);
+      }
     });
   },
 
@@ -115,9 +122,24 @@ export default Ember.Mixin.create({
       animation: false
     }, (isConfirm) => {
       if (isConfirm) {
-        this.saveImage()
-        .then(() => {
-          this.openAppPublisher();
+        this.get('remoteSession').pauseInputs(this.get('connection_name'));
+        window.swal({
+          title: 'Let\'s save an image!',
+          text: 'Please enter a name for your image.',
+          type: 'input',
+          showCancelButton: true,
+          confirmButtonText: 'Continue',
+          cancelButtonText: 'Cancel',
+          closeOnConfirm: false,
+          animation: false
+        }, (imageName) => {
+          this.get('remoteSession').restoreInputs(this.get('connection_name'));
+          if (imageName) {
+            this.saveImage(imageName)
+              .then(() => {
+                this.openAppPublisher();
+              });
+          }
         });
       }
       else {

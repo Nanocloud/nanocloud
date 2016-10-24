@@ -25,7 +25,6 @@
 /* globals Machine, MachineService, JsonApiService, Image */
 
 const Promise = require('bluebird');
-const uuid = require('node-uuid');
 const _ = require('lodash');
 
 module.exports = {
@@ -68,6 +67,7 @@ module.exports = {
   create: function(req, res) {
 
     let machineId = _.get(req, 'body.data.attributes.build-from');
+    let name = _.get(req, 'body.data.attributes.name');
     if (!machineId) {
       return res.badRequest('Invalid base machine ID');
     }
@@ -83,7 +83,7 @@ module.exports = {
       .then((machine) => {
 
         return MachineService.createImage({
-          name: uuid.v4(),
+          name: name,
           buildFrom: machine.id
         });
       })
