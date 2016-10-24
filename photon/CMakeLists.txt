@@ -118,7 +118,7 @@ add_executable(Photon
         ${PHOTON_SOURCE_FILES}
         ${PHOTON_HEADER_FILES})
 
-set(PHOTON_LIBRARIES ${LIBWEBRTC_LIBRARY_PATH})
+set(PHOTON_LIBRARIES ${LIBWEBRTC_LIBRARY_PATH} dxgi.lib d3d11.lib msdmo.lib wmcodecdspuuid.lib dmoguids.lib ole32.lib secur32.lib)
 
 target_link_libraries(Photon ${PHOTON_LIBRARIES})
 

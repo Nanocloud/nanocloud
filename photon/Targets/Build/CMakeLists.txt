@@ -28,7 +28,7 @@ add_libwebrtc_command(libwebrtc_generate_build
 #
 
 set(BUILD_WEBRTC_COMMAND
-    ninja -C out/Default libjingle_peerconnection field_trial_default metrics_default)
+    ninja -C out/Default libjingle_peerconnection field_trial_default metrics_default desktop_capture)
 
 add_libwebrtc_command(libwebrtc_build
                       ${CMAKE_BINARY_DIR}/src/out/Default/obj/root.stamp
