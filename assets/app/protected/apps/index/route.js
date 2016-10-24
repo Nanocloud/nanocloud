@@ -28,6 +28,9 @@ export default Ember.Route.extend({
   setupController(controller, model) {
     controller.set('items', model);
   },
+  model() {
+    return this.store.query('image', { reload: true });
+  },
 
   actions: {
     refreshModel() {

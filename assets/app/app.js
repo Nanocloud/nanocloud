@@ -39,6 +39,14 @@ App = Ember.Application.extend({
   Resolver
 });
 
+Ember.TextField.reopen({
+  didInsertElement() {
+    if (this.get('autofocus') === true) {
+      this.$().focus();
+    }
+  },
+});
+
 loadInitializers(App, config.modulePrefix);
 
 export default App;

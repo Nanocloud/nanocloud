@@ -39,7 +39,7 @@ export default Ember.Route.extend({
           this.toast.warning('You need to login once to an application to activate this feature');
           this.transitionTo('protected.files.notactivated');
         } else {
-          return this.send('error', err);
+          return this.send('error', 'No file found');
         }
       });
   },

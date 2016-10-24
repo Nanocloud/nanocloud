@@ -70,8 +70,9 @@ export default Ember.Controller.extend({
             return defer.reject(this.get('model.validations.attrs.name.messages'));
           }
 
-          this.get('model').save()
+          this.model.save()
             .then(() => {
+              this.send('refreshModel');
               defer.resolve();
               this.toast.success('Image name has been updated successfully!');
             })
