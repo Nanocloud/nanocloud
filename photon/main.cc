@@ -30,7 +30,7 @@
 #include "boost/thread/thread.hpp"
 
 #include "conductor.h"
-#include "server.h"
+#include "http/server/server.h"
 
 namespace boost {
   void throw_exception(std::exception const & e) {

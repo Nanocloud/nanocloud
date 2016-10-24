@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 2.8)
-project(libwebrtc)
+project(Photon)
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH}
     ${CMAKE_SOURCE_DIR}/CMakeModules)
@@ -63,3 +63,62 @@ add_subdirectory(Targets)
 if (BUILD_SAMPLES)
   add_subdirectory(Samples)
 endif (BUILD_SAMPLES)
+
+project(Photon)
+
+set(PHOTON_SOURCE_FILES
+        capture_thread.cc
+        capturer.cc
+        conductor.cc
+        defaults.cc
+        input_manager.cc
+        main.cc
+        http/server/connection.cc
+        http/server/connection_manager.cc
+        http/server/request_parser.cc
+        http/server/response.cc
+        http/server/server.cc
+)
+
+set(PHOTON_HEADER_FILES
+        capture_thread.h
+        capturer.h
+        conductor.h
+        defaults.h
+        input_manager.h
+        http/server/connection.h
+        http/server/connection_manager.h
+        http/server/header.h
+        http/server/request.h
+        http/server/request_handler.h
+        http/server/request_parser.h
+        http/server/response.h
+        http/server/server.h
+)
+
+include_directories(${CMAKE_SOURCE_DIR}/src)
+
+if(WIN32)
+  include_directories(${CMAKE_SOURCE_DIR}/packages/boost.1.62.0.0/lib/native/include)
+endif(WIN32)
+
+if(WIN32)
+    add_definitions(-DWEBRTC_WIN -DNOMINMAX)
+else(WIN32)
+    add_definitions(-DWEBRTC_POSIX -std=gnu++0x -D_GLIBCXX_USE_CXX11_ABI=0)
+endif(WIN32)
+
+add_executable(Photon
+        ${PHOTON_SOURCE_FILES}
+        ${PHOTON_HEADER_FILES})
+
+set(PHOTON_LIBRARIES ${LIBWEBRTC_LIBRARY_PATH})
+
+target_link_libraries(Photon ${PHOTON_LIBRARIES})
+
+find_program(NUGET nuget)
+if(NOT NUGET)
+  message(FATAL "Cannot find nuget command line tool.\nInstall it with e.g. choco install nuget.commandline")
+else()
+  execute_process(COMMAND ${NUGET} restore ${CMAKE_SOURCE_DIR}/Photon.sln)
+endif()

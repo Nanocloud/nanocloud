@@ -35,7 +35,7 @@
 
 #include "boost/shared_ptr.hpp"
 
-#include "response.h"
+#include "http/server/response.h"
 
 #if defined(WEBRTC_WIN)
 #include "input_manager.h"
