@@ -53,6 +53,7 @@ module.exports = {
       method: 'POST'
     };
 
+    console.log(options);
     return request(options);
   },
 

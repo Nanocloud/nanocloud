@@ -55,13 +55,29 @@ export default Ember.Component.extend({
   }.observes('retry_count'),
 
   connect: function() {
-    this.sendAction('beforeConnect');
-    let width = this.getWidth();
-    let height = this.getHeight();
-    this.startConnection(this.get('remoteSession.currentSession.connectionName'), width, height)
-      .then(() => {
-        this.switchScreen(this.get('remoteSession.currentSession.connectionName'));
-      });
+    Ember.run.later(() => {
+      console.log('start things');
+      var deferred = new Ember.RSVP.defer();
+      this.sendAction('beforeConnect', deferred);
+
+      let width = this.getWidth();
+      let height = this.getHeight();
+
+      this.startConnection(this.get('remoteSession.currentSession.connectionName'), width, height);
+      /*
+      deferred.promise
+        .then(() => {
+          console.log('connect but wait');
+          this.startConnection(this.get('remoteSession.currentSession.connectionName'), width, height)
+            .then(() => {
+              this.switchScreen(this.get('remoteSession.currentSession.connectionName'));
+            });
+        })
+        .catch(() => {
+          console.log('fail..');
+        });
+      */
+    }, 5000);
   },
 
   connectSession(connectionName, guacData) {
@@ -140,15 +156,6 @@ export default Ember.Component.extend({
   },
 
   switchScreen(connectionName) {
-    this.flushScreeen();
-    let guacSession = this.get('remoteSession.openedGuacSession')[connectionName];
-    let width = this.getWidth();
-    let height = this.getHeight();
-    if (guacSession) {
-      var element = this.get('remoteSession.openedGuacSession')[connectionName].guacamole.getDisplay().getElement();
-      this.get('element').appendChild(element);
-      this.get('remoteSession').attachInputs(connectionName, width, height);
-    }
   },
 
   initialize: function() {
@@ -179,6 +186,7 @@ export default Ember.Component.extend({
 
     this.set('guacamole', guacSession);
     return guacSession.then((guacData) => {
+      console.log('gete session shito k');
       guacData.tunnel.onerror = function(status) {
         this.get('element').removeChild(guacData.guacamole.getDisplay().getElement());
         var message = 'Opening a WebSocketTunnel has failed';
@@ -269,7 +277,9 @@ export default Ember.Component.extend({
 
   actions: {
     retryConnection() {
-      this.startConnection();
+      this.get('remoteSession').setSession({
+        connectionName: this.get('connectionName'),
+      });
     }
   }
 });

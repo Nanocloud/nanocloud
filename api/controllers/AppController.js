@@ -141,22 +141,12 @@ module.exports = {
               throw new Error('A machine is booting for you');
             }
 
-            return promisePoller({
-              taskFn: () => {
                 return PlazaService.exec(machine.ip, machine.plazaport, {
                   command: [
                     app.filePath
                   ],
                   username: machine.username
                 });
-              },
-              interval: 3000,
-              retries: 30
-            })
-              .catch((errs) => {
-                let attempt = errs.pop();
-                throw attempt;
-              });
           })
           .then(() => {
             return res.ok(app);

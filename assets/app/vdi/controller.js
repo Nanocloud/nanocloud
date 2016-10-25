@@ -49,9 +49,15 @@ export default Ember.Controller.extend(
     // state
     logoff: false,
 
+    /*
     passConnectionIdToRemoteSession: function() {
       this.set('retry_count', this.get('remoteSession.currentSession.retry_count'));
     }.observes('remoteSession.currentSession.retry_count'),
+    */
+
+    retry_count: Ember.computed('remoteSession.currentSession.retry_count', function() {
+      return this.get('remoteSession.currentSession.retry_count');
+    }),
 
     vdiDisconnectHandler(options) {
       this.set('logoff', true);
