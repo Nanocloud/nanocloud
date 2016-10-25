@@ -38,10 +38,10 @@ This solution contains everything to build Photon and its dependencies (includin
 To build Photon, simply right click on the solution and then click *Build*.
 The binary will be available in `photon/Release/Photon.exe`.
 
-## Known limitions
+## Known limitations
 
 Building:
-- Even the build system relies on `cmake`to build Photon, this has only been tested on Windows yet
+- Even though the build system relies on `cmake` to build Photon, this has only been tested on Windows yet
 - Photon is only compilable in Release mode for now
 
 Streaming engine compared to Guacamole (Nanocloud's current streaming engine):
