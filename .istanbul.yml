@@ -1,0 +1,10 @@
+instrumentation:
+  excludes: [
+    "assets/**",
+    "postgres/**",
+    "guacamole-client/**",
+    "proxy/**",
+    "qemu/**",
+    "vdiexperience/**",
+    "photon/**"
+  ]

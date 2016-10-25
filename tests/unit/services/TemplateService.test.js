@@ -28,13 +28,16 @@ const expect = require('chai').expect;
 
 describe('Template Service', function() {
   before(function(done) {
-    Template.create({
-      key: 'test',
-      subject: 'test',
-      content: 'This is a {{test}}'
-    })
+    Template.destroy()
       .then(() => {
-        done();
+        Template.create({
+          key: 'test',
+          subject: 'test',
+          content: 'This is a {{test}}'
+        })
+          .then(() => {
+            done();
+          });
       });
   });
 

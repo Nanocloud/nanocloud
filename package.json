@@ -64,10 +64,13 @@
   "devDependencies": {
     "ajv": "^4.1.7",
     "chai": "^3.5.0",
+    "coveralls": "^2.11.14",
     "eslint": "^3.2.2",
+    "istanbul": "^0.4.5",
     "jshint": "^2.9.2",
     "jsonapi-validator": "^2.1.0",
     "mocha": "2.4.5",
+    "mocha-lcov-reporter": "^1.2.0",
     "supertest": "^1.2.0",
     "supertest-as-promised": "^3.2.0"
   }
