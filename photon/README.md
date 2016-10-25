@@ -2,7 +2,7 @@
 
 Photon is an experimental high performance remote application streaming engine. It is a daemon relying on WebRTC to stream a Windows desktop to a web client.
 
-Photon is **still experimental** see known limitations at the end of this README.
+Photon is **still experimental**. See known limitations at the end of this README.
 
 ## Prerequisites
 
