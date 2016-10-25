@@ -8,9 +8,9 @@
           Status: {{display-guac-status remoteSession.loadState}}<br/>
           Waiting for plaza: {{plazaStatus}}<br/>
           <div class='abs'>
-            {{#if vdiIsLoadingAndNoError}}
+            {{#unless vdiIsLoading}}
               Starting..
-            {{/if}}
+            {{/unless}}
           </div>
         </p>
       </div>
@@ -27,7 +27,7 @@
             Message: {{vdiLoadErrorMessage}}
           </p>
           <div>
-            {{#icon-component action=(action 'retryConnection' remoteSessionData.retryConnection) materialIcon="refresh" hover-lighter=true class='clickable color-primary va-sup'}}
+            {{#icon-component action=(action 'retryConnection') materialIcon="refresh" hover-lighter=true class='clickable color-primary va-sup'}}
               <span class='color-primary va-sup'>
                 Retry connection 
               </span>

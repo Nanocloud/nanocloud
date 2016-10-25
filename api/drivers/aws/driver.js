@@ -463,7 +463,8 @@ class AWSDriver extends Driver {
 
               return this._client.ec2
                 .waitFor('instanceStatusOk', {
-                  InstanceIds: [machine.id]
+                  InstanceIds: [machine.id],
+                  IncludeAllInstances: true
                 }, (err) => {
 
                   if (err) {

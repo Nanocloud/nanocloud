@@ -49,9 +49,13 @@ export default Ember.Controller.extend(
     // state
     logoff: false,
 
+    passConnectionIdToRemoteSession: function() {
+      this.set('retry_count', this.get('remoteSession.currentSession.retry_count'));
+    }.observes('remoteSession.currentSession.retry_count'),
+
     vdiDisconnectHandler(options) {
       this.set('logoff', true);
-      Ember.$.ajax({
+      return Ember.$.ajax({
         type: 'DELETE',
         headers: { Authorization : 'Bearer ' + this.get('session.access_token')},
         url: '/api/sessions',
@@ -62,10 +66,7 @@ export default Ember.Controller.extend(
       })
       .then(() => {
         this.set('logoff', false);
-        if (!options) {
-          this.toast.success('You have been disconnected successfully');
-        }
-        else {
+        if (options) {
           if (options.error === true) {
             this.toast.error(options.message);
           }
@@ -73,7 +74,8 @@ export default Ember.Controller.extend(
             this.toast.success(options.message);
           }
         }
-        this.send('goToApp');
+      }, () => {
+        this.set('logoff', false);
       });
     },
 
@@ -89,7 +91,11 @@ export default Ember.Controller.extend(
         closeOnConfirm: true,
         animation: false
       }, () => {
-        this.vdiDisconnectHandler();
+        this.vdiDisconnectHandler()
+          .then(() => {
+            this.send('goToApp');
+            this.toast.success('You have been disconnected successfully');
+          });
       });
     },
 
@@ -111,6 +117,10 @@ export default Ember.Controller.extend(
 
       closeAll() {
         this.send('closeAllWindow');
+      },
+
+      disconnectHandler() {
+        this.vdiDisconnectHandler();
       },
     }
   }

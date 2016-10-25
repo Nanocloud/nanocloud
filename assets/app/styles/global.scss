@@ -30,6 +30,11 @@ h1 {
   }
 }
 
+.card-footer,
+.card-header {
+  background-color: $white;
+}
+
 .section {
   position: relative;
 	background: $gray-lightest;
@@ -356,6 +361,16 @@ h1 {
   border-radius: 0;
   background-color: $blue-default;
   color: $white;
+}
+
+.option-button {
+  display: inline-block;
+  background: #0083dc;
+  padding: 5px 10px;
+}
+
+.radius {
+  border-radius: 3px;
 }
 
 .btn-primary {

@@ -112,9 +112,14 @@ export default Ember.Mixin.create({
   },
 
   actions: {
-    retryConnection(callback) {
+    retryConnection() {
       this.get('remoteSession').resetState();
-      callback();
+      this.get('remoteSession').setSession({
+        connectionName: this.get('remoteSession.currentSession.connectionName')
+      });
+    },
+    updateAppState() {
+      this.updateAppStateToRunning();
     }
   }
 });

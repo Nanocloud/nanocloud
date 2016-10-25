@@ -22,9 +22,10 @@
  */
 
 const Promise = require('bluebird');
+const promisePoller = require('promise-poller').default;
 const _ = require('lodash');
 
-/* globals App, UserGroup, Image, ImageGroup, Machine, MachineService, JsonApiService, PlazaService, ConfigService */
+/* globals App, UserGroup, Image, ImageGroup, Machine, MachineService, JsonApiService, PlazaService */
 
 /**
  * Controller of apps resource.
@@ -53,9 +54,7 @@ module.exports = {
                  LEFT JOIN "imagegroup" on imagegroup.image = app.image
                  LEFT JOIN "group" on imagegroup.group = "group".id
                  LEFT JOIN "usergroup" on usergroup.group = "group".id
-                 LEFT JOIN "image" on image.id = "app".image
-                 WHERE (usergroup.user = $1::varchar OR $2::boolean = true)
-                 AND image.deleted = false`,
+                 WHERE usergroup.user = $1::varchar OR $2::boolean = true`,
         values: [
           user.id,
           user.isAdmin
@@ -137,36 +136,31 @@ module.exports = {
           return MachineService.getMachineForUser(req.user, {
             id: app.image
           })
-            .then((machine) => {
-              if (!machine) {
-                throw new Error('A machine is booting for you');
-              }
+          .then((machine) => {
+            if (!machine) {
+              throw new Error('A machine is booting for you');
+            }
 
-              return PlazaService.exec(machine.ip, machine.plazaport, {
-                command: [
-                  app.filePath
-                ],
-                username: machine.username
-              })
-                .then(() => {
-                  return ConfigService.get('photon');
-                })
-                .then((config) => {
-                  if (config.photon) {
-                    return PlazaService.exec(machine.ip, machine.plazaport, {
-                      command: [
-                        `C:\\Windows\\photon\\photon.bat`
-                      ],
-                      username: machine.username
-                    });
-                  } else {
-                    return Promise.resolve();
-                  }
-                })
-                .then(() => {
-                  return res.ok(app);
+            return promisePoller({
+              taskFn: () => {
+                return PlazaService.exec(machine.ip, machine.plazaport, {
+                  command: [
+                    app.filePath
+                  ],
+                  username: machine.username
                 });
-            });
+              },
+              interval: 3000,
+              retries: 30
+            })
+              .catch((errs) => {
+                let attempt = errs.pop();
+                throw attempt;
+              });
+          })
+          .then(() => {
+            return res.ok(app);
+          });
         } else {
           return res.ok(app);
         }
@@ -198,20 +192,20 @@ module.exports = {
       getImagesPromise = UserGroup.find({
         user: req.user.id
       })
-        .then((userGroups) => {
-          return Promise.map(userGroups, function(userGroup) {
-            return ImageGroup.find({
-              group: userGroup.group
-            });
+      .then((userGroups) => {
+        return Promise.map(userGroups, function(userGroup) {
+          return ImageGroup.find({
+            group: userGroup.group
           });
-        })
-        .then((images) => {
-          images = _.flatten(images);
-          let imagesId = _.map(images, 'image');
-          return Image
-            .find(imagesId)
-            .populate('apps');
         });
+      })
+      .then((images) => {
+        images = _.flatten(images);
+        let imagesId = _.map(images, 'image');
+        return Image
+          .find(imagesId)
+          .populate('apps');
+      });
     }
 
     return getImagesPromise

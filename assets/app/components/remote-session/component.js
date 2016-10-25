@@ -43,15 +43,119 @@ export default Ember.Component.extend({
     return Ember.$(this.element).parent().height() - 25; // minus topbar height
   },
 
+  didInsertElement: function() {
+    this._super(...arguments);
+    this.get('remoteSession').setSession({
+      connectionName: this.get('connectionName'),
+    });
+  },
+
+  lookForConnectionChange: function() {
+    this.connect();
+  }.observes('retry_count'),
+
+  connect: function() {
+    this.sendAction('beforeConnect');
+    let width = this.getWidth();
+    let height = this.getHeight();
+    this.startConnection(this.get('remoteSession.currentSession.connectionName'), width, height)
+      .then(() => {
+        this.switchScreen(this.get('remoteSession.currentSession.connectionName'));
+      });
+  },
+
+  connectSession(connectionName, guacData) {
+
+    guacData.tunnel.onerror = function(status) {
+      try {
+        this.get('element').removeChild(guacData.guacamole.getDisplay().getElement());
+      }
+      catch(err) {
+        return;
+      }
+      var message = 'Opening a WebSocketTunnel has failed';
+      var code = getKeyFromVal(Guacamole.Status.Code, status.code);
+      if (code !== -1) {
+        message += ' - ' + code;
+      }
+      this.get('remoteSession').stateChanged(this.get('remoteSession.STATE_DISCONNECTED'), true, message);
+      this.sendAction('disconnectHandler');
+      this.get('remoteSession').disconnectSession(this.get('connectionName'), this.get('element'));
+    }.bind(this);
+    let guac = guacData.guacamole;
+
+    guac.onfile = function(stream, mimetype, filename) {
+      let blob_reader = new Guacamole.BlobReader(stream, mimetype);
+
+      blob_reader.onprogress = function() {
+        stream.sendAck('Received', Guacamole.Status.Code.SUCCESS);
+      }.bind(this);
+
+      blob_reader.onend = function() {
+        //Download file in browser
+        var element = document.createElement('a');
+        element.setAttribute('href', window.URL.createObjectURL(blob_reader.getBlob()));
+        element.setAttribute('download', filename);
+        element.style.display = 'none';
+        document.body.appendChild(element);
+
+        element.click();
+
+        document.body.removeChild(element);
+      }.bind(this);
+
+      stream.sendAck('Ready', Guacamole.Status.Code.SUCCESS);
+    }.bind(this);
+
+    guac.onstatechange = (state) => {
+      this.get('remoteSession').stateChanged(state);
+    };
+
+    guac.onclipboard = function(stream, mimetype) {
+
+      let blob_reader = new Guacamole.BlobReader(stream, mimetype);
+      blob_reader.onprogress = function() {
+        stream.sendAck('Received', Guacamole.Status.Code.SUCCESS);
+      }.bind(this);
+
+      blob_reader.onend = function() {
+        var arrayBuffer;
+        var fileReader = new FileReader();
+        fileReader.onload = function(e) {
+          arrayBuffer = e.target.result;
+          this.setCloudClipboard(this.get('connectionName'), arrayBuffer);
+          if (navigator.userAgent.indexOf('Chrome') !== -1) {
+            window.postMessage({type: 'VDIExperience', value: arrayBuffer}, '*');
+          }
+        }.bind(this);
+        fileReader.readAsText(blob_reader.getBlob());
+      }.bind(this);
+    }.bind(this);
+
+    guac.connect();
+  },
+
+  flushScreeen() {
+    Ember.$(this.get('element')).html('');
+  },
+
+  switchScreen(connectionName) {
+    this.flushScreeen();
+    let guacSession = this.get('remoteSession.openedGuacSession')[connectionName];
+    let width = this.getWidth();
+    let height = this.getHeight();
+    if (guacSession) {
+      var element = this.get('remoteSession.openedGuacSession')[connectionName].guacamole.getDisplay().getElement();
+      this.get('element').appendChild(element);
+      this.get('remoteSession').attachInputs(connectionName, width, height);
+    }
+  },
+
   initialize: function() {
     if (this.get('autoload') === true) {
       this.connect();
     }
   }.on('didRender'),
-
-  didInsertElement: function() {
-    this.startConnection();
-  },
 
   loadPhoton: Ember.observer('isPhoton', function() {
     if (this.get('isPhoton')) {
@@ -74,7 +178,7 @@ export default Ember.Component.extend({
     let guacSession = this.get('remoteSession').getSession(this.get('connectionName'), width, height);
 
     this.set('guacamole', guacSession);
-    guacSession.then((guacData) => {
+    return guacSession.then((guacData) => {
       guacData.tunnel.onerror = function(status) {
         this.get('element').removeChild(guacData.guacamole.getDisplay().getElement());
         var message = 'Opening a WebSocketTunnel has failed';
