@@ -17,10 +17,7 @@
             Click here or drag and drop any file right here to upload it
           {{/if}}
         </span>
-
         {{#if uploadData.queue}}
-          <hr>
-          <p>
           <span class="state">
             {{ uploadData.state }}
           </span>
@@ -28,32 +25,6 @@
             {{ uploadData.progress }}%
             <span class="link" {{ action "uploadCallback" uploadData.stopUpload }}>Cancel All</span>
           {{/if}}
-          </p>
-          <p>
-            {{#each uploadData.queue as |file|}}
-              <div class='item'>
-                <div class='vdi-progress-item'>
-                  {{ file.name }}
-
-                  {{#if file.completed}}
-                    Completed
-                  {{else}}
-                    {{#if file.uploading }}
-                      {{ file.progress }}%
-                      {{ fa-icon "spinner" spin=true}}
-                      <span class="link" {{ action "cancel" target=file }}>
-                        Cancel
-                      </span>
-                    {{/if}}
-                  {{/if}}
-                </div>
-              </div>
-            {{else}}
-              No items
-            {{/each}}
-          </p>
-
-          <button {{action "uploadCallback" uploadData.flushHistory }} type="button" class="btn btn-primary btn-color-default">Clear upload history</button>
         {{/if}}
       </p>
       <div class='content-wrapper'>

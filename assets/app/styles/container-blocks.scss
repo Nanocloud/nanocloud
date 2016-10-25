@@ -12,11 +12,11 @@
   }
 
   .shadow {
-    width: 98%;
+    width: calc(100% - 50px);
     height: 35px;
     position: absolute;
     border-radius: 25px;
-    bottom: 3px;
+    bottom: 5px;
     left: 0;
     right: 0;
     margin: auto;

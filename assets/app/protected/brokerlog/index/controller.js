@@ -61,6 +61,8 @@ export default Ember.Controller.extend({
       var timeCreatedAt = window.moment(item.get('createdAt'),'DD/MM/YYYY HH:mm:ss');
       ret.push(Ember.Object.create({
         user: item.get('userId'),
+        userFirstname: item.get('userFirstname'),
+        userLastname: item.get('userLastname'),
         machineDriver: item.get('machineDriver'),
         machineId: item.get('machineId'),
         machineSize: item.get('machineFlavor'),
@@ -76,10 +78,10 @@ export default Ember.Controller.extend({
 
   columns: [
     {
-      propertyName: 'user',
       title: 'User',
       disableFiltering: true,
       filterWithSelect: false,
+      template: 'protected/histories/index/table/history-list/user-name',
     },
     {
       propertyName: 'state',

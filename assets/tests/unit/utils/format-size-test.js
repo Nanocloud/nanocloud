@@ -1,5 +1,6 @@
 /**
- * Nanocloud turns any traditional software into a cloud solution, without * changing or redeveloping existing source code.
+ * Nanocloud turns any traditional software into a cloud solution, without
+ * changing or redeveloping existing source code.
  *
  * Copyright (C) 2016 Nanocloud Software
  *
@@ -21,16 +22,13 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-import DS from 'ember-data';
+import formatSize from 'nanocloud/utils/format-size';
+import { module, test } from 'qunit';
 
-export default DS.Model.extend({
-  userId: DS.attr('string'),
-  userFirstname: DS.attr('string'),
-  userLastname: DS.attr('string'),
-  createdAt: DS.attr('date'),
-  machineId: DS.attr('string'),
-  machineFlavor: DS.attr('string'),
-  machineDriver: DS.attr('string'),
-  state: DS.attr('string'),
-  poolSize: DS.attr('number')
+module('Unit | Utility | format size');
+
+// Replace this with your real tests.
+test('it works', function(assert) {
+  let result = formatSize();
+  assert.ok(result);
 });

@@ -36,6 +36,7 @@ module.exports = {
     if (req.user.isAdmin) {
       Machine.find()
         .populate('user')
+        .populate('image')
         .then((machines) => {
           return res.ok(machines);
         })

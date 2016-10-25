@@ -3,7 +3,7 @@
     <blockquote class="card-blockquote">
       <h1>
         {{#if (is-equal wait 0)}}
-          <span {{ action "clickOnContent" }} class='clickable link'>
+          <span {{ action "clickOnContent" }} class="{{unless unclickable 'clickable link'}}">
             {{ content }}
           </span>
         {{else}}

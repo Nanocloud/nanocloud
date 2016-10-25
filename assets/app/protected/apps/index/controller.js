@@ -94,8 +94,11 @@ export default Ember.Controller.extend({
       ret.push({
         apps: appRet,
         name: image.get('name'),
+        iaasId: image.get('iaasId'),
+        createdAt: image.get('createdAt'),
+        updatedAt: image.get('updatedAt'),
+        buildFrom: image.get('buildFrom'),
         id: image.get('id'),
-        buildFrom: image.get('buildFrom')
       });
     });
 
@@ -163,6 +166,5 @@ export default Ember.Controller.extend({
       this.get('remoteSession').disconnectSession(this.get('connectionName'));
       this.send('refreshModel');
     },
-
   }
 });

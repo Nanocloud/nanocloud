@@ -22,6 +22,8 @@
  * <http://www.gnu.org/licenses/>.
  */
 
+/* global $:false */
+
 import Ember from 'ember';
 
 export default Ember.Controller.extend({
@@ -71,7 +73,10 @@ export default Ember.Controller.extend({
       var timeNow = window.moment(new Date(),'DD/MM/YYYY HH:mm:ss');
       var timeStart = window.moment(item.get('startDate'),'DD/MM/YYYY HH:mm:ss');
       ret.push(Ember.Object.create({
-        user: item.get('userFullName'),
+        user: item.get('userId'),
+        userFirstname: item.get('userFirstname'),
+        userLastname: item.get('userLastname'),
+        connectionId: item.get('connectionId'),
         application: item.get('applicationName'),
         machineDriver: item.get('machineDriver'),
         machineId: item.get('machineId'),
@@ -92,16 +97,16 @@ export default Ember.Controller.extend({
 
   columns: [
     {
-      propertyName: 'user',
       title: 'User',
       disableFiltering: true,
       filterWithSelect: false,
+      template: 'protected/histories/index/table/history-list/user-name',
     },
     {
-      propertyName: 'application',
       title: 'Application',
       disableFiltering: true,
       filterWithSelect: false,
+      template: 'protected/histories/index/table/history-list/app-name',
     },
     {
       propertyName: 'machineDriver',
@@ -143,12 +148,21 @@ export default Ember.Controller.extend({
   ],
 
   downloadCsvLink: Ember.computed(function() {
-    let content = this.get('downloadCSVService').getCsvBase64(this.get('sessionService.access_token'), this.get('items'));
+    let content = this.get('downloadCSVService').getCsvBase64(this.get('items'));
     return 'data:text/csv;base64,' + content;
   }),
 
   downloadCsvFilename: Ember.computed(function() {
     let current_date = window.moment(new Date()).format('YYYY-MM-DD');
     return 'nanocloud-history-' + current_date;
-  })
+  }),
+
+  actions: {
+    updateDownloadLink() {
+      $('#downloadCSVBtn').attr({
+        href: this.get('downloadCsvLink'),
+        download: this.get('downloadCsvFilename'),
+      });
+    }
+  }
 });

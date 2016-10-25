@@ -27,6 +27,8 @@ function up(knex) {
     table.string('id').primary();
 
     table.string('userId');
+    table.string('userFirstname');
+    table.string('userLastname');
     table.string('machineId');
     table.string('machineDriver');
     table.string('machineFlavor');

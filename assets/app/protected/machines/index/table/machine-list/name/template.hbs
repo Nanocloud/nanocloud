@@ -1,3 +1,5 @@
 {{#link-to 'protected.machines.machine' record.id}}
-  {{ record.name }}
+  {{#text-component class='in-bl' content=record.id position="right"}}
+    {{ record.name }}
+  {{/text-component}}
 {{/link-to}}

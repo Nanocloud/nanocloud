@@ -61,6 +61,7 @@ export default Ember.Controller.extend({
       }
       ret.push(Ember.Object.create({
         name: item.get('machineName'),
+        image: item.get('image'),
         id: item.get('id'),
         ip: item.get('ip'),
         expiration: secondsLeft,
@@ -78,23 +79,17 @@ export default Ember.Controller.extend({
 
   columns: [
     {
-      propertyName: 'id',
-      title: 'ID',
-      disableFiltering: true,
-    },
-    {
-      propertyName: 'boot',
-      title: 'Status',
-      disableFiltering: true,
-      filterWithSelect: false,
-      template: 'protected/machines/index/table/machine-list/boot',
-    },
-    {
       propertyName: 'name',
       title: 'Name',
       disableFiltering: true,
       filterWithSelect: false,
       template: 'protected/machines/index/table/machine-list/name',
+    },
+    {
+      title: 'Image',
+      disableFiltering: true,
+      filterWithSelect: false,
+      template: 'protected/machines/index/table/machine-list/image',
     },
     {
       propertyName: 'ip',
@@ -113,6 +108,13 @@ export default Ember.Controller.extend({
       disableFiltering: true,
       filterWithSelect: false,
       template: 'protected/machines/index/table/machine-list/expiration',
+    },
+    {
+      propertyName: 'boot',
+      title: 'Status',
+      disableFiltering: true,
+      filterWithSelect: false,
+      template: 'protected/machines/index/table/machine-list/boot',
     },
   ],
 
