@@ -167,6 +167,14 @@ make tests
 
 This will run all tests defined in `./tests/test-all.sh`.
 
+To run test coverage:
+
+```
+make test-coverage
+```
+
+This will run api and unit tests, with code coverage
+
 Alternativelly, tests can be run individually:
 
 - `make test-api` to test the API
