@@ -34,7 +34,7 @@ var Promise = require('bluebird');
 const request = require('request-promise');
 
 function createImage(backFile, newImage) {
-  var cmd = `qemu-img create -f qcow2 -b ${backFile} ${newImage}`;
+  var cmd = `qemu-img create -f qcow2 -b "${backFile}" "${newImage}"`;
 
   return new Promise((resolve, reject) => {
     return exec(cmd, (err) => {
