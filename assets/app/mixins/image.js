@@ -73,8 +73,7 @@ export default Ember.Mixin.create({
         Please wait while the image is being saved`,
       html: true,
       showCancelButton: false,
-      confirmButtonText: 'Cancel',
-      closeOnConfirm: true,
+      showConfirmButton: false,
       animation: false,
     }, () => {
       this.toast.error('The image has not been saved');
