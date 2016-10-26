@@ -20,7 +20,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* global Machine, ConfigService */
+/* global Machine, ConfigService, Image */
 
 const Promise = require('bluebird');
 const Driver = require('../driver');
@@ -37,11 +37,15 @@ class ManualDriver extends Driver {
   initialize() {
     return ConfigService.set('machinePoolSize', 0)
       .then(() => {
-        return ConfigService.get('machines');
+        return Promise.props({
+          config: ConfigService.get('machines'),
+          image: Image.findOne({ name: 'Default' })
+        });
       })
-      .then((config) => {
+      .then(({config, image}) => {
 
         let machines = config.machines.map((machine) => {
+          machine.image = image.id;
           return Machine.findOrCreate(machine);
         });
 
