@@ -273,6 +273,7 @@ class AWSDriver extends Driver {
         [System.IO.Compression.ZipFile]::ExtractToDirectory("C:\\photon.zip", "C:\\Windows")
         rm C:\\photon.zip
         New-NetFirewallRule -DisplayName “Photon” -Direction Inbound -Program C:\\Windows\\photon\\photon.exe -RemoteAddress any -Action Allow
+        reg.exe add "HKLM\\SOFTWARE\\Policies\\Microsoft\\Windows NT\\Reliability" /v ShutDownReasonOn /t REG_DWORD /d 0 /f
         </powershell>
         `).toString('base64');
 
