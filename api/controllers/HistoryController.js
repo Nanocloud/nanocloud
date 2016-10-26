@@ -56,18 +56,17 @@ module.exports = {
           }, {
             id: image.id
           }),
-          app: App.findOne({id: connectionId})
+          app: App.findOne({id: connectionId}),
+          user: User.findOne({id: userId})
         });
       })
-      .then(({machine, app}) => {
+      .then(({machine, app, user}) => {
         _.set(req.body, 'data.attributes.machineId', machine.id);
         _.set(req.body, 'data.attributes.machineDriver', machine.type);
         _.set(req.body, 'data.attributes.machineType', machine.flavor);
         _.set(req.body, 'data.attributes.applicationName', app.displayName);
         if (req.body.data.attributes.endDate === '') {
-          return MachineService.sessionOpen({
-            id: machine.user
-          }, {
+          return MachineService.sessionOpen(user, {
             id: machine.image
           });
         }
