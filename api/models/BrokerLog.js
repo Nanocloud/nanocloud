@@ -43,12 +43,6 @@ module.exports = {
     userId: {
       type: 'string'
     },
-    userFirstname: {
-      type: 'string'
-    },
-    userLastname: {
-      type: 'string'
-    },
     machineId: {
       type: 'string'
     },
