@@ -59,6 +59,18 @@ export default Ember.Mixin.create({
       }, () => {
         this.toast.success('Your image has been saved successfully');
       });
+    }, (err) => {
+      var message = ((err.responseText === '"InvalidAMIName.Duplicate"') ?
+        'This name is already used by another Ami!' : 'An unexpected error occured!');
+      window.swal({
+        title: 'An error occured',
+        text: message,
+        type: 'error',
+        showCancelButton: false,
+        confirmButtonText: 'Ok.',
+        closeOnConfirm: true,
+        animation: false
+      });
     });
 
     window.swal({

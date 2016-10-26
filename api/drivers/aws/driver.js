@@ -444,7 +444,7 @@ class AWSDriver extends Driver {
       }, (err, image) => {
 
         if (err) {
-          return reject(err);
+          return reject(err.code);
         }
 
         Machine.findOne(imageToCreate.buildFrom)
