@@ -22,8 +22,8 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#include "photon/capture_thread.h"
-#include "photon/capturer.h"
+#include "capture_thread.h"
+#include "capturer.h"
 
 namespace photon {
 

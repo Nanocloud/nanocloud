@@ -22,7 +22,7 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#include "photon/http/server/response.h"
+#include "response.h"
 
 #include <iostream>
 

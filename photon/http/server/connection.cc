@@ -22,13 +22,13 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#include "photon/http/server/connection.h"
+#include "connection.h"
 
 #include <utility>
 #include <vector>
 
-#include "photon/http/server/request_handler.h"
-#include "photon/http/server/connection_manager.h"
+#include "request_handler.h"
+#include "connection_manager.h"
 
 namespace photon {
 namespace http {

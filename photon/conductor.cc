@@ -32,12 +32,12 @@
 #include "webrtc/base/common.h"
 #include "webrtc/base/logging.h"
 
-#include "photon/conductor.h"
-#include "photon/defaults.h"
+#include "conductor.h"
+#include "defaults.h"
 
 #if defined(WEBRTC_WIN)
-#include "photon/capture_thread.h"
-#include "photon/capturer.h"
+#include "capture_thread.h"
+#include "capturer.h"
 #else
 #include "webrtc/media/base/fakevideocapturer.h"
 #endif

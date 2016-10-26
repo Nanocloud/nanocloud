@@ -22,7 +22,7 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#include "photon/http/server/connection_manager.h"
+#include "connection_manager.h"
 
 namespace photon {
 namespace http {

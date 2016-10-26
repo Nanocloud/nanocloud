@@ -22,8 +22,8 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#include "photon/http/server/request_parser.h"
-#include "photon/http/server/request.h"
+#include "request_parser.h"
+#include "request.h"
 
 #include <iostream>
 

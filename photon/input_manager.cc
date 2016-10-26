@@ -22,7 +22,7 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#include "photon/input_manager.h"
+#include "input_manager.h"
 
 namespace photon {
 
