@@ -25,7 +25,7 @@ Configure where *ansible* will deploy your installation by modifying the
 
 ```
 [nanocloud]
-api ansible_host=127.0.0.1
+api ansible_host=127.0.0.1 ansible_user=user
 ```
 
 In this file, you can specify several servers and give name to them to deploy
@@ -33,15 +33,8 @@ multiple instances of Nanocloud:
 
 ```
 [nanocloud]
-api-instance1 ansible_host=10.0.0.2
-api-customerX ansible_host=10.0.0.3
-```
-
-You can change hosts username to use in *nanocloud.yml*:
-
-```
-- hosts: all
-  remote_user: your-username-here
+api-instance1 ansible_host=10.0.0.2 ansible_user=user1
+api-customerX ansible_host=10.0.0.3 ansible_user=user2
 ```
 
 Use the file *deployments/roles/nanocloud/files/nanocloud/config.env* to
