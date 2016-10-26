@@ -30,6 +30,7 @@ const expect = chai.expect;
 const assert = chai.assert;
 const request = require('request-promise');
 const Promise = require('bluebird');
+const _ = require('lodash');
 
 describe('Machine Service', () => {
 
@@ -511,7 +512,7 @@ describe('Machine Service', () => {
         })
         .then(({conf, images, machines}) => {
           var machineId = null;
-          imageId = images[0].id;
+          imageId = _.find(images, { deleted: false, name: 'Default'}).id;
           if (machines.length !== conf.machinePoolSize * images.length) {
             throw new Error('Available machines should be equal to machine pool size');
           }
@@ -593,7 +594,7 @@ describe('Machine Service', () => {
                   return BrokerLog.find({
                     userId: null,
                     state: {
-                      like: '%Update machine pool%'
+                      like: '%Update machine pool for image Default%'
                     }
                   })
                     .then((log) => {
