@@ -50,20 +50,21 @@ module.exports = {
         return Image.findOne(app.image);
       })
       .then((image) => {
-        return MachineService.getMachineForUser({
-          id: userId
-        }, {
-          id: image.id
+        return Promise.props({
+          machine: MachineService.getMachineForUser({
+            id: userId
+          }, {
+            id: image.id
+          }),
+          user: User.findOne({id: userId})
         });
       })
-      .then((machine) => {
+      .then(({machine, user}) => {
         _.set(req.body, 'data.attributes.machineId', machine.id);
         _.set(req.body, 'data.attributes.machineDriver', machine.type);
         _.set(req.body, 'data.attributes.machineType', machine.flavor);
         if (req.body.data.attributes.endDate === '') {
-          return MachineService.sessionOpen({
-            id: machine.user
-          }, {
+          return MachineService.sessionOpen(user, {
             id: machine.image
           });
         }
