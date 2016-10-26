@@ -30,7 +30,7 @@ module.exports = function(req, res, next) {
 
   let host = req.get('host');
 
-  if (host === 'localhost:1337' || host === 'backend:1337') {
+  if (host === 'localhost:1337' || /backend(-42[0-9]+)?:1337/.test(host)) {
     return next(null);
   }
 
