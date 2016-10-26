@@ -5,12 +5,18 @@
       <div class='white '>
         Please wait, we're trying to open a session.
         <p>
-          Status: {{display-guac-status remoteSession.loadState}}<br/>
+          Status:
+          {{#if isUpdatingAppStatus}}
+            Initializing..
+          {{else}}
+            {{display-guac-status remoteSession.loadState}}
+          {{/if}}
+          <br/>
           Waiting for plaza: {{plazaStatus}}<br/>
           <div class='abs'>
-            {{#if vdiIsLoadingAndNoError}}
+            {{#unless vdiIsLoading}}
               Starting..
-            {{/if}}
+            {{/unless}}
           </div>
         </p>
       </div>
@@ -22,12 +28,13 @@
       <div>
         <h2>An error occured.</h2>
         <div class='white '>
+    {{remoteSession.loadState}}
           Connection has failed.
           <p>
             Message: {{vdiLoadErrorMessage}}
           </p>
           <div>
-            {{#icon-component action=(action 'retryConnection' remoteSessionData.retryConnection) materialIcon="refresh" hover-lighter=true class='clickable color-primary va-sup'}}
+            {{#icon-component action=(action 'retryConnection') materialIcon="refresh" hover-lighter=true class='clickable color-primary va-sup'}}
               <span class='color-primary va-sup'>
                 Retry connection 
               </span>

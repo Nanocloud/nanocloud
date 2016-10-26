@@ -421,7 +421,6 @@ function stopMachine(machine) {
           retries: 100
         })
           .catch((errs) => { // If timeout is reached
-
             let machine = errs.pop(); // On timeout, promisePoller rejects with an array of all rejected promises. In our case, MachineService rejects the still booting machine. Let's pick the last one.
 
             _createBrokerLog(machine, 'Error waiting to stop machine');
@@ -836,10 +835,45 @@ function createImage(image) {
 
           return Promise.all(promises);
         })
-          .then(() => {
-            updateMachinesPool();
-            return Promise.resolve(newImage);
-          });
+        .then(() => {
+          return Machine.update({
+            id: image.buildFrom
+          }, {status: 'booting'});
+        })
+        .then((machines) => {
+          return promisePoller({
+            taskFn: () => {
+              return machines[0].refresh()
+                .then((machineRefreshed) => {
+
+                  if (machineRefreshed.status === 'running') {
+                    return Promise.resolve(machineRefreshed);
+                  } else {
+                    return Promise.reject(machineRefreshed);
+                  }
+                });
+            },
+            interval: 5000,
+            retries: 100
+          })
+            .catch((errs) => { // If timeout is reached
+              let machine = errs.pop(); // On timeout, promisePoller rejects with an array of all rejected promises. In our case, MachineService rejects the still booting machine. Let's pick the last one.
+
+              _createBrokerLog(machine, 'Error waiting to create an image');
+              _terminateMachine(machine);
+              throw machine;
+            });
+        })
+        .then((machineRebooted) => {
+          _createBrokerLog(machineRebooted, 'Rebooted');
+          return Machine.update({
+            id: image.buildFrom
+          }, machineRebooted);
+        })
+        .then(() => {
+          updateMachinesPool();
+          return Promise.resolve(newImage);
+        });
     });
 }
 

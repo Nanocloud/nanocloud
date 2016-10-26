@@ -31,6 +31,7 @@ export default Ember.Mixin.create({
   isWaiting: !Ember.computed.equal('remoteSession.loadState', 'remoteSession.STATE_WAITING'),
   isConnecting: !Ember.computed.equal('remoteSession.loadState', 'remoteSession.STATE_CONNECTING'),
   plazaHasFinishedLoading: Ember.computed.alias('remoteSession.plazaHasFinishedLoading'),
+  isUpdatingAppStatus: false,
 
   guacHasFinishedLoading: Ember.computed('remoteSession.loadState', function() {
     if (this.get('remoteSession.loadState') === 3) {
@@ -38,7 +39,7 @@ export default Ember.Mixin.create({
     }
     return false;
   }),
-  guacError: Ember.computed.gt('remoteSession.loadState', 3),
+  guacError: Ember.computed.equal('remoteSession.loadState', 4),
 
   vdiIsLoading: Ember.computed('guacHasFinishedLoading', 'plazaHasFinishedLoading', 'guacError', function() {
     if (this.get('guacHasFinishedLoading') && this.get('plazaHasFinishedLoading') && this.get('guacError') === false) {
@@ -96,25 +97,46 @@ export default Ember.Mixin.create({
     this.get('vdiIsLoading');
   },
 
-  updateAppStateToRunning() {
+  updateAppStateToRunning(deferred) {
+    this.set('isUpdatingAppStatus', true);
     this.set('remoteSession.plazaHasFinishedLoading', false);
-    this.get('app')
+    console.log('get app lol');
+    return this.get('app')
       .then((record) => {
+        console.log('get app ok. saving..');
         record.set('state', 'running');
-        record.save()
+        return record.save()
+          .then(() => {
+            console.log('saving ok');
+            console.log(deferred);
+            if (deferred) {
+              console.log('defeerred ok');
+              deferred.resolve();
+            }
+          })
           .catch(() => {
+            console.log('patch fail');
             this.toast.error('Cannot start application');
+            if(deferred) {
+              deferred.reject();
+            }
           })
           .finally(() => {
+            this.set('isUpdatingAppStatus', false);
             this.set('remoteSession.plazaHasFinishedLoading', true);
           });
       });
   },
 
   actions: {
-    retryConnection(callback) {
+    retryConnection() {
       this.get('remoteSession').resetState();
-      callback();
+      this.get('remoteSession').setSession({
+        connectionName: this.get('remoteSession.currentSession.connectionName')
+      });
+    },
+    updateAppState(deferred) {
+      this.updateAppStateToRunning(deferred);
     }
   }
 });

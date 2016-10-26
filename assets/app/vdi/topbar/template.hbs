@@ -1,5 +1,5 @@
 <div class="vdi-topbar">
-  <div class="fl color-default">
+  <div class="fl">
     {{#if uploadData.progress}}
       {{#icon-component
         class="item"
@@ -109,6 +109,24 @@
 
   </div>
   <div class="fl">
+    <div>
+      {{#each remoteSession.openedGuacSession as |session index|}}
+        {{#icon-component
+          clickable=true
+          class="item"
+          hover-enabled=true
+          hover-lighter=true
+          materialIcon="power_settings_new"
+          click=(action "disconnectVDI")
+          content="Session"
+          size=16
+        }}
+          <span class='va-tb hidden-sm-down'>
+            Session {{index}}
+          </span>
+        {{/icon-component}}
+      {{/each}} 
+    </div>
     {{#if logoff}}
       {{icon-component
         class="item"

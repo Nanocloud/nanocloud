@@ -40,20 +40,6 @@ let App = Ember.Object.extend({
     this.set('remoteSession.plazaHasFinishedLoading', false);
     this.get('controller')
       .launchVDI(this.get('id'), this.get('image'))
-      .then(() => {
-        let app = this.get('model');
-        app.reload()
-          .then(() => {
-            app.set('state', 'running');
-            app.save()
-              .catch(() => {
-                this.toast.error('Cannot start application');
-              })
-              .finally(() => {
-                this.set('remoteSession.plazaHasFinishedLoading', true);
-              });
-          });
-      })
       .catch((err) => {
         if (err === 'Exceeded credit') {
           this.toast.error('Exceeded credit');
@@ -74,7 +60,7 @@ export default Ember.Controller.extend({
 
   modelIsEmpty: Ember.computed.empty('items'),
 
-  data : Ember.computed('items.@each', 'items', function() {
+  data : Ember.computed('items.@each', function() {
 
     const ret = Ember.A();
     const remoteSession = this.get('remoteSession');
@@ -95,6 +81,7 @@ export default Ember.Controller.extend({
         apps: appRet,
         name: image.get('name'),
         id: image.get('id'),
+        iaasId: image.get('iaasId'),
         buildFrom: image.get('buildFrom')
       });
     });

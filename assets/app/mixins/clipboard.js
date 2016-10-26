@@ -35,8 +35,10 @@ export default Ember.Mixin.create({
 
   setupClipboardObservers() {
     var connectionName = this.get('connectionName');
-    Ember.defineProperty(this, 'localClipboardContent', Ember.computed.alias(`remoteSession.openedGuacSession.${connectionName}.localClipboard`));
-    Ember.defineProperty(this, 'cloudClipboardContent', Ember.computed.alias(`remoteSession.openedGuacSession.${connectionName}.cloudClipboard`));
+    if (this.get('remoteSession.openedGuacSession')[connectionName]) {
+      Ember.defineProperty(this, 'localClipboardContent', Ember.computed.alias(`remoteSession.openedGuacSession.${connectionName}.localClipboard`));
+      Ember.defineProperty(this, 'cloudClipboardContent', Ember.computed.alias(`remoteSession.openedGuacSession.${connectionName}.cloudClipboard`));
+    }
   },
 
   actions: {

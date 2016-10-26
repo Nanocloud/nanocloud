@@ -31,7 +31,6 @@ export default Ember.Route.extend({
   setupController(controller) {
     this.get('configuration').loadData();
     controller.set('app', this.store.findRecord('app', controller.get('connection_name')));
-    controller.updateAppStateToRunning();
     controller.setupClipboardObservers();
   },
 
