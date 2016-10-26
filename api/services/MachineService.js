@@ -276,13 +276,13 @@ function _createMachine(image) {
             });
         },
         interval: 5000,
-        retries: 100
+        retries: 240 // Waiting 20 minutes maximum before considering that the machine have a problem
       })
         .catch((errs) => { // If timeout is reached
 
           let machine = errs.pop(); // On timeout, promisePoller rejects with an array of all rejected promises. In our case, MachineService rejects the still booting machine. Let's pick the last one.
 
-          _createBrokerLog(machine, 'Error');
+          _createBrokerLog(machine, 'Machine take to many time to boot.');
           _terminateMachine(machine);
           throw machine;
         });
@@ -297,6 +297,9 @@ function _createMachine(image) {
         .then(() => {
           _createBrokerLog(machine, 'Available');
         });
+    })
+    .catch((errs) => {
+      return (errs);
     });
 }
 
