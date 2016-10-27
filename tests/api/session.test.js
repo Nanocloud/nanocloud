@@ -36,7 +36,8 @@ module.exports = function() {
       properties: {
         'username': {type: 'string'},
         'state': {type: 'string'},
-        'user-id': {type: ['string', 'null']}
+        'user-id': {type: ['string', 'null']},
+        'machine-id': {type: ['string', 'null']}
       },
       required: ['username', 'state'],
       additionalProperties: false
