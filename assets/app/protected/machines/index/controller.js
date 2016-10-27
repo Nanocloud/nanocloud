@@ -51,30 +51,33 @@ export default Ember.Controller.extend({
   setData: function() {
     var ret = Ember.A([]);
     var neverTerminateMachine = this.get('configController.neverTerminateMachine');
-    this.get('items').forEach(function(item) {
-      let now = new Date();
-      let endDate = window.moment(item.get('endDate'));
-      let secondsLeft = Math.floor(window.moment.duration(window.moment(endDate,'DD/MM/YYYY HH:mm:ss').diff(window.moment(now,'DD/MM/YYYY HH:mm:ss')), 'milliseconds').asSeconds());
+    this.get('store').query('session', {})
+      .then((sessions) => {
+        this.get('items').forEach(function(item) {
+          let now = new Date();
+          let endDate = window.moment(item.get('endDate'));
+          let secondsLeft = Math.floor(window.moment.duration(window.moment(endDate,'DD/MM/YYYY HH:mm:ss').diff(window.moment(now,'DD/MM/YYYY HH:mm:ss')), 'milliseconds').asSeconds());
 
-      if (secondsLeft < 0) {
-        secondsLeft = 0;
-      }
-      ret.push(Ember.Object.create({
-        name: item.get('machineName'),
-        image: item.get('image'),
-        id: item.get('id'),
-        ip: item.get('ip'),
-        expiration: secondsLeft,
-        status: item.get('status'),
-        user: item.get('user'),
-        endDate: item.get('endDate'),
-        stopped: item.get('isStopped'),
-        starting: item.get('isStarting'),
-        neverTerminateMachine: neverTerminateMachine,
-      }));
-    });
-    this.set('data', ret);
-    return ret;
+          if (secondsLeft < 0) {
+            secondsLeft = 0;
+          }
+          ret.push(Ember.Object.create({
+            name: item.get('machineName'),
+            image: item.get('image'),
+            id: item.get('id'),
+            ip: item.get('ip'),
+            expiration: secondsLeft,
+            status: item.get('status'),
+            user: item.get('user'),
+            endDate: item.get('endDate'),
+            // Here we check if a session(s) is open on this machine.
+            isInUse: ((sessions.filterBy('machineId', item.get('id')).length === 0) ? false : true),
+            neverTerminateMachine: neverTerminateMachine,
+          }));
+        });
+        this.set('data', ret);
+        return ret;
+      });
   },
 
   columns: [
