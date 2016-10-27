@@ -63,6 +63,7 @@ export default Ember.Controller.extend({
           }
           ret.push(Ember.Object.create({
             name: item.get('machineName'),
+            image: item.get('image'),
             id: item.get('id'),
             ip: item.get('ip'),
             expiration: secondsLeft,
