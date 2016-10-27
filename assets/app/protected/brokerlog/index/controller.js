@@ -76,12 +76,6 @@ export default Ember.Controller.extend({
 
   columns: [
     {
-      propertyName: 'user',
-      title: 'User',
-      disableFiltering: true,
-      filterWithSelect: false,
-    },
-    {
       propertyName: 'state',
       title: 'State',
       disableFiltering: true,

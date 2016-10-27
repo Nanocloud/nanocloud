@@ -23,6 +23,7 @@
  */
 
 import Ember from 'ember';
+import formatSize from 'nanocloud/utils/format-size';
 
 export default Ember.Controller.extend({
 
@@ -35,22 +36,45 @@ export default Ember.Controller.extend({
     machine: 0,
   },
 
-  users: Ember.computed('model.users', 'model.users', function() {
+  users: Ember.computed('model.users', function() {
     return this.get('model.users')
       .rejectBy('isAdmin', true);
   }),
 
-  apps: Ember.computed('model.apps', 'model.apps', function() {
+  apps: Ember.computed('model.apps', function() {
     return this.get('model.apps')
       .rejectBy('alias', 'Desktop');
   }),
 
-  sessions: Ember.computed('model.sessions', 'model.sessions', function() {
+  sessions: Ember.computed('model.sessions', function() {
     return this.get('model.sessions');
   }),
 
-  machines: Ember.computed('model.machines', 'model.machines', function() {
+  machines: Ember.computed('model.machines', function() {
     return this.get('model.machines').filterBy('status', 'running');
+  }),
+
+  images: Ember.computed('model.images', function() {
+    return this.get('model.images');
+  }),
+
+  files: Ember.computed('model.files', function() {
+    return this.get('model.files');
+  }),
+
+  cumulatedSizeUploaded: Ember.computed('loadState.file', function() {
+    let sum = 0;
+    if (this.get('loadState.file') === 0) {
+      let files = this.get('files');
+      files.forEach((item) => {
+        sum += item.get('size');
+      });
+    }
+    return sum;
+  }),
+
+  fileTitle: Ember.computed('cumulatedSizeUploaded', function() {
+    return 'File uploaded ( total : ' + formatSize(this.get('cumulatedSizeUploaded')) + ' )';
   }),
 
   activator: function() {
@@ -58,6 +82,8 @@ export default Ember.Controller.extend({
     this.loadData('user', 'users');
     this.loadData('session', 'sessions');
     this.loadData('machine', 'machines');
+    this.loadData('image', 'images');
+    this.loadData('file', 'files');
   },
 
   loadData(data, dest) {
@@ -84,6 +110,9 @@ export default Ember.Controller.extend({
     },
     goToMachines() {
       this.transitionToRoute('protected.machines');
+    },
+    goToFiles() {
+      this.transitionToRoute('protected.files');
     },
   }
 });

@@ -1,5 +1,6 @@
 /**
- * Nanocloud turns any traditional software into a cloud solution, without * changing or redeveloping existing source code.
+ * Nanocloud turns any traditional software into a cloud solution, without
+ * changing or redeveloping existing source code.
  *
  * Copyright (C) 2016 Nanocloud Software
  *
@@ -21,14 +22,15 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-import DS from 'ember-data';
-
-export default DS.Model.extend({
-  userId: DS.attr('string'),
-  createdAt: DS.attr('date'),
-  machineId: DS.attr('string'),
-  machineFlavor: DS.attr('string'),
-  machineDriver: DS.attr('string'),
-  state: DS.attr('string'),
-  poolSize: DS.attr('number')
-});
+export default function formatSize(value) {
+  if (value < 1024) {
+    return Number(value).toFixed(2) + ' bytes';
+  }
+  if (value < (1024 * 1024)) {
+    return Number(value/1024).toFixed(2) + ' Ko';
+  }
+  if (value < (1024 * 1024 * 1024)) {
+    return Number(value/1024/1024).toFixed(2) + ' Mo';
+  }
+  return Number(value/1024/1024/1024).toFixed(2) + ' Go';
+}

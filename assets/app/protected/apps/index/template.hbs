@@ -1,4 +1,4 @@
-<div class='content-wrapper'>
+<div class='application content-wrapper'>
   <h1 class='color-primary'>
     Applications
   </h1>
@@ -12,30 +12,47 @@
       </div>
     {{/if}}
   {{/if}}
-
-  {{#masonry-grid items=data customLayout=true itemSelector="" as |image|}}
-    {{#masonry-item class="card m-r-1 m-b-2 radius" item=item grid=grid}}
-      <div class="image-card card-block">
-        <h3 class="card-title truncate in-bl ">{{image.name}}</h3>
-        {{#if session.user.isAdmin}}
-          {{#link-to 'protected.apps.image' image.id}}
-            {{icon-component class='va-top mx-l-1' hover-lighter=true iconClass='va-bl-mid' materialIcon="settings" size=18}}
+  {{#masonry-grid items=data customLayout=true as |item index grid|}}
+    {{#masonry-item item=item grid=grid }}
+      {{#container-block class="in-bl m-r-1"}}
+        <div class="card-block">
+          <h3 class="card-title truncate in-bl ">{{item.name}}</h3>
+          {{#link-to 'protected.apps.image' item.id}}
+            {{icon-component class='fright color-default' iconClass='va-bottom' materialIcon="pageview"}}
           {{/link-to}}
-        {{/if}}
-        <hr>
-        {{#each image.apps as |app|}}
-          <div class='m-b-1'>
-            <div {{action 'launch' target='app'}} class='option-button clickable btn btn-primary btn-color-default'>
-              {{app.name}}
+          <p class="card-text">
+            <div>
+              Created at {{item.createdAt}}
             </div>
-            {{#if session.user.isAdmin}}
-              {{#link-to 'protected.apps.app' app.model}}
-                {{icon-component class='va-tt color-primary fright' hover-lighter=true iconClass='va-bl-mid' materialIcon="settings" size=16}}
-              {{/link-to}}
-            {{/if}}
-          </div>
-        {{/each}}
-      </div>
+          </p>
+          <p class='fright'>
+            {{item.apps.length}} application(s)
+          </p>
+          <div class="clearfix"></div>
+          <ul class="list-group list-group-flush color-default">
+            {{#each item.apps as |app|}}
+              <div class='m-b-1'>
+                <div {{ action 'launch' target='app' }} class='in-bl'>
+                  {{#icon-component
+                    clickable=true
+                    iconClass='va-bottom'
+                    materialIcon="play_circle_filled"
+                    hover-lighter=true}}
+                    {{app.name}}
+                  {{/icon-component}}
+                </div>
+                {{#if session.user.isAdmin}}
+                  {{#link-to 'protected.apps.app' app.model}}
+                    {{icon-component class='va-tt color-primary fright' hover-lighter=true iconClass='va-bl-mid' materialIcon="settings" size=16}}
+                  {{/link-to}}
+                {{/if}}
+              </div>
+            {{else}}
+              There are no applications available.
+            {{/each}}
+          </ul>
+        </div>
+      {{/container-block}}
     {{/masonry-item}}
   {{/masonry-grid}}
 </div>

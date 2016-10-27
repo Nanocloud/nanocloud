@@ -41,8 +41,8 @@ export default DS.Model.extend(Validations, {
   buildFrom: DS.attr('string'),
   deleted: DS.attr('boolean'),
   password: DS.attr('string'),
-  createdAt: DS.attr('string'),
-  updatedAt: DS.attr('string'),
+  createdAt: DS.attr('date'),
+  updatedAt: DS.attr('date'),
 
   apps: DS.hasMany('app'),
 });

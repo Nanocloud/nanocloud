@@ -27,15 +27,18 @@ import formatTimeDuration from 'nanocloud/utils/format-duration';
 
 export default Ember.Service.extend({
 
-  getCsvBase64(accessToken, model) {
+  getCsvBase64(model) {
 
-    var csvContent = 'USERNAME,USERID,CONNECTION,START,END,DURATION\n';
+    var csvContent = 'USERID,USER,APPLICATION,DRIVER,MACHINEID,MACHINESIZE,STARTDATE,ENDDATE,DURATION\n';
 
     model.forEach(function(item) {
       csvContent +=
-        item.get('userFullName') + ',' +
         item.get('userId') + ',' +
-        item.get('connectionId') + ',' +
+        item.get('userFullName') + ',' +
+        item.get('applicationName') + ',' +
+        item.get('machineDriver') + ',' +
+        item.get('machineId') + ',' +
+        item.get('machineType') + ',' +
         item.get('startDate') + ',' +
         item.get('endDate') + ',' +
         formatTimeDuration(item.get('duration') / 1000) + '\n';

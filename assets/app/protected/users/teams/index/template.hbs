@@ -1,6 +1,5 @@
 {{#if protectedController.hasNoTeam}}
-  <div class="teams-focus-input group in-bl {{if dimBackground 'focus' }}">
-
+  <div class="group m-t-1 in-bl">
     <h1 class='color-primary'>Teams</h1>
     <p class="color-primary in-bl">
       <span class="text">
@@ -35,7 +34,11 @@
 <div class='m-t-2'>
   {{#if protectedController.hasTeam}}
     <h4 class='pull-xs-right'>
-        {{#link-to 'protected.users.teams.new' class='btn btn-primary'}}Create a new user{{/link-to}}
+      {{#link-to 'protected.users.teams.new'}}
+        <button class='btn btn-primary'>
+          Create a new user
+        </button>
+      {{/link-to}}
     </h4>
     <div class="clearfix"></div>
     {{#file-explorer

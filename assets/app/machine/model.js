@@ -51,6 +51,7 @@ export default DS.Model.extend({
   machineName: Ember.computed('name', function() {
     return this.get('name') || 'No name';
   }),
+  image: DS.belongsTo('image'),
   user: DS.belongsTo('user'),
   isStopped: Ember.computed('status', function() {
     return (this.get('status') === 'stopping' || this.get('status') === 'stopped');
