@@ -30,7 +30,8 @@ export default Ember.Controller.extend({
   password: '',
   configuration: Ember.inject.service('configuration'),
   teamModal: false,
-
+  name: config.APP.name,
+  version: config.APP.version,
 
   reset() {
     this.setProperties({
