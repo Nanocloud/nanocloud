@@ -60,8 +60,12 @@ export default Ember.Mixin.create({
         this.toast.success('Your image has been saved successfully');
       });
     }, (err) => {
-      var message = ((err.responseText === '"InvalidAMIName.Duplicate"') ?
-        'This name is already used by another Ami!' : 'An unexpected error occured!');
+      var message = 'An unexpected error occured!';
+      if (err.responseText === '"InvalidAMIName.Duplicate"') {
+        message = 'This name is already used by another Ami!';
+      } else if (err.responseText === '"InvalidAMIName.Malformed"') {
+        message = 'Wrong name, must be between 3 and 128 characters long and may contain only letters, numbers, and these following characters: ( ) . - / _';
+      }
       window.swal({
         title: 'An error occured',
         text: message,
