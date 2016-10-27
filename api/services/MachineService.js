@@ -218,6 +218,17 @@ function driverName() {
 }
 
 /**
+ * Check if the driver support session duration.
+ * Manual driver don't support it.
+ *
+ * @method isSessionDurationSupported
+ * @return {Boolean}
+ */
+function isSessionDurationSupported() {
+  return driverName() !== 'manual';
+}
+
+/**
  * Set the user's machine endDate to now + `ConfigService:sessionDuration`
  *
  * @method increaseMachineEndDate
@@ -225,15 +236,19 @@ function driverName() {
  * @return {Promise}
  */
 function increaseMachineEndDate(machine) {
-  return ConfigService.get('sessionDuration')
-    .then((config) => {
-      return machine.setEndDate(config.sessionDuration)
-        .then(() => {
-          setTimeout(() => {
-            _shouldTerminateMachine(machine);
-          }, config.sessionDuration * 1000);
-        });
-    });
+  if (isSessionDurationSupported()) {
+    return ConfigService.get('sessionDuration')
+      .then((config) => {
+        return machine.setEndDate(config.sessionDuration)
+          .then(() => {
+            setTimeout(() => {
+              _shouldTerminateMachine(machine);
+            }, config.sessionDuration * 1000);
+          });
+      });
+  } else {
+    return Promise.resolve();
+  }
 }
 
 /**

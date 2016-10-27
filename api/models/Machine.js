@@ -128,6 +128,7 @@ module.exports = {
           body.data.forEach((session) => {
             sessions.push({
               id: uuid.v4(), // id does not matter for session but is required for JSON API
+              machineId: this.id,
               username: session[1],
               state: session[3],
               userId: this.user

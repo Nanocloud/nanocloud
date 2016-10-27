@@ -605,7 +605,7 @@ describe('Machine Service', () => {
               });
             })
             .then((logs) => {
-              if (logs.length !== 10) {
+              if (logs.length !== 5) {
                 throw new Error('Broker should log when machine pool need to be update');
               }
               assert.isNull(logs[0].machineId);
