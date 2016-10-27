@@ -53,9 +53,9 @@
         <tr>
           <th scope="row">Assigned user</th>
           <td>
-            {{#if user}}
+            {{#if model.user}}
               {{#link-to 'protected.users.user' user.id}}
-                {{ user.fullName }}
+                {{ model.user.fullName }}
               {{/link-to}}
             {{else}}
               None
