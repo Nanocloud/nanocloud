@@ -23,7 +23,6 @@
  */
 
 import Ember from 'ember';
-import config from 'nanocloud/config/environment';
 
 export default Ember.Controller.extend({
   session: Ember.inject.service('session'),
@@ -54,9 +53,6 @@ export default Ember.Controller.extend({
         }
       });
   },
-
-  name: config.APP.name,
-  version: config.APP.version,
 
   showSidebar: false,
 
