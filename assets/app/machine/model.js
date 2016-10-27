@@ -53,10 +53,4 @@ export default DS.Model.extend({
   }),
   image: DS.belongsTo('image'),
   user: DS.belongsTo('user'),
-  isStopped: Ember.computed('status', function() {
-    return (this.get('status') === 'stopping' || this.get('status') === 'stopped');
-  }),
-  isStarting: Ember.computed('status', function() {
-    return (this.get('status') === 'starting');
-  }),
 });
