@@ -60,6 +60,8 @@ module.exports = {
     Machine.findOne({
       id: req.params.id
     })
+      .populate('user')
+      .populate('image')
       .then((machine) => {
         if (req.user.isAdmin || machine.user === req.user.id) {
           return res.ok(machine);
