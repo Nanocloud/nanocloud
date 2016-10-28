@@ -102,7 +102,7 @@ export default Ember.Controller.extend(
         this.get('remoteSession').pauseInputs(this.get('connection_name'));
         this.get('remoteSession').disconnectSession(this.get('connection_name'));
         this.send('closeAllWindow');
-        this.transitionToRoute('protected.apps');
+        this.transitionToRoute('protected.images');
       },
 
       disconnectVDI() {

@@ -1,6 +1,6 @@
-<div class='content-wrapper'>
+<div class='section content-wrapper'>
   <h1 class='m-b-2'>
-    {{#link-to 'protected.apps'}}Applications{{/link-to}} 
+    {{#link-to 'protected.images'}}Applications{{/link-to}} 
     <div class='in-bl'>
       {{icon-component class="va-sub" materialIcon="navigate_next" size=30}}
     </div>
@@ -29,7 +29,7 @@
       <tr>
         <th scope="row">Belongs to the image</th>
         <td>
-          {{#link-to 'protected.apps.image' model.image}}
+          {{#link-to 'protected.images.image' model.image}}
             {{model.image.name}}
           {{/link-to}}
         </td>

@@ -1,4 +1,4 @@
-<div class='application content-wrapper'>
+<div class='application section content-wrapper'>
   <h1 class='color-primary'>
     Applications
   </h1>
@@ -17,7 +17,7 @@
       {{#container-block class="in-bl m-r-1"}}
         <div class="card-block">
           <h3 class="card-title truncate in-bl ">{{item.name}}</h3>
-          {{#link-to 'protected.apps.image' item.id}}
+          {{#link-to 'protected.images.image' item.id}}
             {{icon-component class='fright color-default' iconClass='va-bottom' materialIcon="pageview"}}
           {{/link-to}}
           <p class="card-text">
@@ -42,7 +42,7 @@
                   {{/icon-component}}
                 </div>
                 {{#if session.user.isAdmin}}
-                  {{#link-to 'protected.apps.app' app.model}}
+                  {{#link-to 'protected.images.app' app.model}}
                     {{icon-component class='va-tt color-primary fright' hover-lighter=true iconClass='va-bl-mid' materialIcon="settings" size=16}}
                   {{/link-to}}
                 {{/if}}

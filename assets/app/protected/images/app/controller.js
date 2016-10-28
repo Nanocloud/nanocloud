@@ -26,59 +26,55 @@ import Ember from 'ember';
 
 export default Ember.Controller.extend({
 
+
   publicationDate: Ember.computed(function() {
     return window.moment(new Date(this.get('model.publicationDate'))).format('MMMM Do YYYY, h:mm:ss A');
   }),
 
-  preventDeletion: Ember.computed('imageNameConfirm', 'model.name', function() {
-    return this.get('imageNameConfirm') !== this.get('model.name');
-  }),
-
-  isRemoveable: Ember.computed('model.id', function() {
-    return this.get('model.buildFrom') !== null;
+  preventDeletion: Ember.computed('appNameConfirm', 'model.displayName', function() {
+    return this.get('appNameConfirm') !== this.get('model.displayName');
   }),
 
   actions: {
 
     toggleModal() {
-      this.set('imageNameConfirm', '');
+      this.set('appNameConfirm', '');
       this.toggleProperty('showModal');
     },
 
-    deleteImage() {
-      let _this2 = this;
+    deleteApp() {
       if (!this.get('preventDeletion')) {
-        let image = this.get('model');
-        image.destroyRecord()
-          .then(() => {
-            _this2.send('toggleModal');
-            _this2.transitionToRoute('protected.apps');
-            _this2.toast.success('The image has been deleted');
-          })
-          .catch((reason) => {
-            _this2.toast.error(reason.errors[0].title);
-          });
+        let app = this.get('model');
+        app.destroyRecord()
+        .then(() => {
+          this.send('toggleModal');
+          this.transitionToRoute('protected.images');
+          this.toast.success('The application has been deleted');
+        })
+        .catch(() => {
+          this.toast.error('The application can\'t be deleted');
+        });
       }
     },
 
-    saveImageName: function(defer) {
-      this.get('model').validate({ on: ['name'] })
+    saveAppName: function(defer) {
+      this.get('model').validate({ on: ['displayName'] })
         .then(({ validations }) => {
 
           if (validations.get('isInvalid') === true) {
-            this.toast.error(this.get('model.validations.attrs.name.messages'));
-            return defer.reject(this.get('model.validations.attrs.name.messages'));
+            this.toast.error(this.get('model.validations.attrs.displayName.messages'));
+            return defer.reject(this.get('model.validations.attrs.displayName.messages'));
           }
 
           this.model.save()
             .then(() => {
               this.send('refreshModel');
               defer.resolve();
-              this.toast.success('Image name has been updated successfully!');
+              this.toast.success('Application name has been updated successfully!');
             })
             .catch(() => {
               defer.reject();
-              this.toast.error('Image name has not been updated');
+              this.toast.error('Application name has not been updated');
               this.get('model').rollbackAttributes();
             });
         });

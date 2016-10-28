@@ -100,7 +100,7 @@ export default Ember.Controller.extend({
 
   actions : {
     goToApps() {
-      this.transitionToRoute('protected.apps');
+      this.transitionToRoute('protected.images');
     },
     goToUsers() {
       this.transitionToRoute('protected.users');

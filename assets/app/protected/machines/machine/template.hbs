@@ -44,7 +44,7 @@
           <th scope="row">Image</th>
           <td>
             {{#if model.image}}
-              {{#link-to 'protected.apps.image' model.image.id}}
+              {{#link-to 'protected.images.image' model.image.id}}
                 {{#text-component class='in-bl' content=model.image.id position="right"}}
                   {{model.image.name}}
                 {{/text-component}}
