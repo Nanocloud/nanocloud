@@ -1,4 +1,6 @@
-{{#if record.endDate}}
+{{#if record.isInUse}}
+  <span class='color-success'>Currently in use</span>
+{{else if record.endDate}}
   {{#if record.expiration}}
     {{live-countdown class='color-primary' value=record.expiration isTime=true}}
   {{else}}
@@ -7,14 +9,6 @@
     {{else}}
       This machine will be terminated soon.
     {{/if}}
-  {{/if}}
-{{else if record.user}}
-  {{#if record.stopped}}
-    -
-  {{else if record.starting}}
-    -
-  {{else}}
-    <span class='color-success'>Currently in use</span>
   {{/if}}
 {{else}}
   -

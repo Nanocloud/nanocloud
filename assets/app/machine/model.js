@@ -52,10 +52,4 @@ export default DS.Model.extend({
     return this.get('name') || 'No name';
   }),
   user: DS.belongsTo('user'),
-  isStopped: Ember.computed('status', function() {
-    return (this.get('status') === 'stopping' || this.get('status') === 'stopped');
-  }),
-  isStarting: Ember.computed('status', function() {
-    return (this.get('status') === 'starting');
-  }),
 });
