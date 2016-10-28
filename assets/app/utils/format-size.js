@@ -24,7 +24,7 @@
 
 export default function formatSize(value) {
   if (value < 1024) {
-    return Number(value).toFixed(2) + ' bytes';
+    return Number(value).toFixed(0) + ' bytes';
   }
   if (value < (1024 * 1024)) {
     return Number(value/1024).toFixed(2) + ' Kb';
