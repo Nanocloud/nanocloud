@@ -41,6 +41,20 @@
           </td>
         </tr>
         <tr>
+          <th scope="row">Image</th>
+          <td>
+            {{#if model.image}}
+              {{#link-to 'protected.apps.image' model.image.id}}
+                {{#text-component class='in-bl' content=model.image.id position="right"}}
+                  {{model.image.name}}
+                {{/text-component}}
+              {{/link-to}}
+            {{else}}
+              None
+            {{/if}}
+          </td>
+        </tr>
+        <tr>
           <th scope="row">Driver</th>
           <td>
             {{#if model.type}}
