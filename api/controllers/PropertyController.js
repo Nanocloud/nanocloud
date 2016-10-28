@@ -132,6 +132,7 @@ module.exports = {
           `.color-default i:hover{color:${config.primaryColor}}`,
           `.color-default a{color:${config.primaryColor}}`,
           `.color-default a:hover{color:${config.primaryColor}}`,
+          `.color-default {color:${config.primaryColor}}`,
           `a:focus{color:${darkenColor}}`,
           `.spinner > div{background-color:${config.primaryColor}}`,
           `.edit{color:${config.primaryColor}}`,
@@ -162,6 +163,7 @@ module.exports = {
           `.file-explorer .file-list-wrapper > .item:hover.selected{color:#ffffff}`,
           `.vdi-drag-n-drop .drag-n-drop-area{background-color:${lightenColor}}`,
           `.icon-component.hover-lighter:hover i{color:${lightenColor}}`,
+          `md-checkbox.md-default-theme.md-checked .md-icon, md-checkbox.md-checked .md-icon{background-color:${lightenColor}}`,
         ].join('');
 
         res.send({
