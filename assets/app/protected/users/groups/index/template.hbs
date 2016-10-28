@@ -11,7 +11,9 @@
     {{#if modelIsEmpty}}
       <p class="color-primary indication in-bl">
         <span class="text">
-          Looks like you haven’t created any group yet! Click here to create your first group!
+          {{#link-to 'protected.users.groups.new'}}
+            Looks like you haven’t created any group yet! Click here to create your first group!
+          {{/link-to}}
         </span>
       </p>
     {{else}}

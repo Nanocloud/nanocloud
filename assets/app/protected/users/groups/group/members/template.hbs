@@ -12,7 +12,9 @@
           {{#each users as |user|}}
             <tr>
               <td scope="row">
-                {{user.fullName}}
+                {{#link-to 'protected.users.user' user}}
+                  {{user.fullName}}
+                {{/link-to}}
               </td>
               <td>
                 {{toggle-item-from-list list=group.members item=user property='id' addAction="addMember" removeAction="removeMember"}}
