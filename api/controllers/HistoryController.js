@@ -25,7 +25,7 @@
  * @help        :: See http://sailsjs.org/#!/documentation/concepts/Controllers
  */
 
-/* global App, User, MachineService, Image, JsonApiService */
+/* global App, User, MachineService, Image, JsonApiService, History, Machine */
 
 const _= require('lodash');
 const Promise = require('bluebird');
@@ -50,20 +50,22 @@ module.exports = {
         return Image.findOne(app.image);
       })
       .then((image) => {
-        return MachineService.getMachineForUser({
-          id: userId
-        }, {
-          id: image.id
+        return Promise.props({
+          machine: MachineService.getMachineForUser({
+            id: userId
+          }, {
+            id: image.id
+          }),
+          app: App.findOne({id: connectionId}),
+          user: User.findOne({id: userId})
         });
       })
-      .then((machine) => {
+      .then(({machine, user}) => {
         _.set(req.body, 'data.attributes.machineId', machine.id);
         _.set(req.body, 'data.attributes.machineDriver', machine.type);
         _.set(req.body, 'data.attributes.machineType', machine.flavor);
         if (req.body.data.attributes.endDate === '') {
-          return MachineService.sessionOpen({
-            id: machine.user
-          }, {
+          return MachineService.sessionOpen(user, {
             id: machine.image
           });
         }
@@ -83,6 +85,7 @@ module.exports = {
   update(req, res) {
 
     req.body = JsonApiService.deserialize(req.body);
+    var historyId = req.allParams().id;
 
     let userId = _.get(req.body, 'data.attributes.userId');
     let connectionId = _.get(req.body, 'data.attributes.connectionId');
@@ -98,24 +101,23 @@ module.exports = {
           throw new Error('Connection not found');
         }
 
+        return History.findOne({
+          id: historyId
+        });
+      })
+      .then((history) => {
+
         return Promise.props({
-          image: Image.findOne(app.image),
+          machine: Machine.findOne({ id: history.machineId }),
           user: User.findOne(userId)
         });
       })
-      .then(({image, user}) => {
-        return MachineService.sessionEnded(user, image)
+      .then(({machine, user}) => {
+        return MachineService.sessionEnded(user, { id: machine.image })
           .then(() => {
-            return MachineService.getMachineForUser({
-              id: userId
-            }, {
-              id: image.id
-            });
+            _.set(req.body, 'data.attributes.machineId', machine.id);
+            return JsonApiService.updateOneRecord(req, res);
           });
-      })
-      .then((machine) => {
-        _.set(req.body, 'data.attributes.machineId', machine.id);
-        return JsonApiService.updateOneRecord(req, res);
       })
       .catch((err) => {
         if (err.message === 'Connection not found') {

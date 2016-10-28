@@ -218,6 +218,17 @@ function driverName() {
 }
 
 /**
+ * Check if the driver support session duration.
+ * Manual driver don't support it.
+ *
+ * @method isSessionDurationSupported
+ * @return {Boolean}
+ */
+function isSessionDurationSupported() {
+  return driverName() !== 'manual';
+}
+
+/**
  * Set the user's machine endDate to now + `ConfigService:sessionDuration`
  *
  * @method increaseMachineEndDate
@@ -225,15 +236,19 @@ function driverName() {
  * @return {Promise}
  */
 function increaseMachineEndDate(machine) {
-  return ConfigService.get('sessionDuration')
-    .then((config) => {
-      return machine.setEndDate(config.sessionDuration)
-        .then(() => {
-          setTimeout(() => {
-            _shouldTerminateMachine(machine);
-          }, config.sessionDuration * 1000);
-        });
-    });
+  if (isSessionDurationSupported()) {
+    return ConfigService.get('sessionDuration')
+      .then((config) => {
+        return machine.setEndDate(config.sessionDuration)
+          .then(() => {
+            setTimeout(() => {
+              _shouldTerminateMachine(machine);
+            }, config.sessionDuration * 1000);
+          });
+      });
+  } else {
+    return Promise.resolve();
+  }
 }
 
 /**
@@ -276,13 +291,13 @@ function _createMachine(image) {
             });
         },
         interval: 5000,
-        retries: 100
+        retries: 240 // Waiting 20 minutes maximum before considering that the machine have a problem
       })
         .catch((errs) => { // If timeout is reached
 
           let machine = errs.pop(); // On timeout, promisePoller rejects with an array of all rejected promises. In our case, MachineService rejects the still booting machine. Let's pick the last one.
 
-          _createBrokerLog(machine, 'Error');
+          _createBrokerLog(machine, 'Machine take to many time to boot.');
           _terminateMachine(machine);
           throw machine;
         });
@@ -297,6 +312,9 @@ function _createMachine(image) {
         .then(() => {
           _createBrokerLog(machine, 'Available');
         });
+    })
+    .catch((errs) => {
+      return (errs);
     });
 }
 

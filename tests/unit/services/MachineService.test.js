@@ -22,7 +22,7 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-/* global Image, MachineService, Machine, ConfigService, BrokerLog */
+/* global Image, MachineService, Machine, ConfigService, BrokerLog, User */
 
 const adminId = 'aff17b8b-bf91-40bf-ace6-6dfc985680bb';
 const chai = require('chai');
@@ -30,6 +30,7 @@ const expect = chai.expect;
 const assert = chai.assert;
 const request = require('request-promise');
 const Promise = require('bluebird');
+const _ = require('lodash');
 
 describe('Machine Service', () => {
 
@@ -197,13 +198,14 @@ describe('Machine Service', () => {
     });
 
     it('Opening a session should considere it as active', (done) => {
-      Machine.findOne({
+      Promise.props({
+        machine: Machine.findOne({
         user: adminId
+        }),
+        user: User.findOne({id: adminId})
       })
-        .then((machine) => {
-          return MachineService.sessionOpen({
-            id: adminId
-          }, {
+        .then(({machine, user}) => {
+          return MachineService.sessionOpen(user, {
             id: machine.image
           });
         })
@@ -511,7 +513,7 @@ describe('Machine Service', () => {
         })
         .then(({conf, images, machines}) => {
           var machineId = null;
-          imageId = images[0].id;
+          imageId = _.find(images, { deleted: false, name: 'Default'}).id;
           if (machines.length !== conf.machinePoolSize * images.length) {
             throw new Error('Available machines should be equal to machine pool size');
           }
@@ -593,7 +595,7 @@ describe('Machine Service', () => {
                   return BrokerLog.find({
                     userId: null,
                     state: {
-                      like: '%Update machine pool%'
+                      like: '%Update machine pool for image Default%'
                     }
                   })
                     .then((log) => {
@@ -603,7 +605,7 @@ describe('Machine Service', () => {
               });
             })
             .then((logs) => {
-              if (logs.length !== 10) {
+              if (logs.length !== 5) {
                 throw new Error('Broker should log when machine pool need to be update');
               }
               assert.isNull(logs[0].machineId);
@@ -657,11 +659,12 @@ describe('Machine Service', () => {
     });
 
     it('Opening a session should considere it as active', (done) => {
-      MachineService.sessionOpen({
-        id: adminId
-      }, {
-        id: imageId
-      })
+      User.findOne({id: adminId})
+        .then((user) => {
+          return MachineService.sessionOpen(user, {
+            id: imageId
+          });
+        })
         .then(() => {
           return MachineService.getMachineForUser({
             id: adminId,
