@@ -35,7 +35,7 @@ export default Ember.Route.extend({
       }
       else {
         controller.set('teamModal', true);
-        this.transitionTo('protected.apps');
+        this.transitionTo('protected.images');
       }
     }
   },

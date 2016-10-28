@@ -38,7 +38,10 @@ Router.map(function() {
       this.route('groups', function() {
         this.route('group', { path: '/:group_id' }, function() {
           this.route('members');
-          this.route('images');
+          this.route('images', function() {
+            this.route('app');
+            this.route('image');
+          });
         });
         this.route('new');
       });
@@ -46,14 +49,14 @@ Router.map(function() {
         this.route('new');
       });
     });
+    this.route('images', function() {
+      this.route('image', { path: '/image/:image_id' });
+      this.route('app', { path: '/app/:app_id' });
+    });
     this.route('machines', function() {
       this.route('user');
       this.route('new');
       this.route('machine', { path: '/:machine_id' });
-    });
-    this.route('apps', function() {
-      this.route('app', { path: '/:app_id' });
-      this.route('image', { path: '/:image_id' });
     });
     this.route('files', function() {
       this.route('nowindows');

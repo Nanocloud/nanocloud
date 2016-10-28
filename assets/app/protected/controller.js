@@ -62,8 +62,6 @@ export default Ember.Controller.extend({
     'protected.machines.index' : 'overview-of-the-machines-tab',
     'protected.machines.machine' : 'access-the-information-of-the-machine',
     'protected.histories.index' : 'overview-of-the-history-tab',
-    'protected.apps.index' : 'overview-of-the-applications-tab',
-    'protected.apps.app' : 'rename-an-application',
     'protected.files.index' : 'overview-of-the-files-tab',
     'protected.users.index' : 'overview-of-the-users-tab',
     'protected.users.new' : 'create-a-new-user',
