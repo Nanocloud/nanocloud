@@ -45,4 +45,5 @@ export default DS.Model.extend(Validations, {
   updatedAt: DS.attr('date'),
 
   apps: DS.hasMany('app'),
+  groups: DS.hasMany('group'),
 });

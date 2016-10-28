@@ -106,6 +106,7 @@ module.exports = {
         id: req.allParams().id
       })
         .populate('apps')
+        .populate('groups')
         .then(res.ok)
         .catch(res.negotiate);
     } else {
@@ -128,6 +129,7 @@ module.exports = {
         let imageIds = _.map(images.rows, 'id');
         Image.find(imageIds)
           .populate('apps')
+          .populate('groups')
           .then((images) => {
             return res.ok(images);
           });

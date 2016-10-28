@@ -27,24 +27,11 @@
         <td>{{moment-calendar model.createdAt}}</td>
       </tr>
       <tr>
-        <th scope="row">
-          <span class="in-bl">
-            {{#link-to 'protected.users.groups.index'}}
-              Group(s)
-            {{/link-to}}
-          </span>
-        </th>
+        <th scope="row">Belongs to the image</th>
         <td>
-          {{#each model.groups as |group index|}}
-            {{#if index}},{{/if}}
-            <span class="link in-bl">
-              {{#link-to 'protected.users.groups.group' group}}
-                {{group.name}}
-              {{/link-to}}
-            </span>
-          {{else}}
-            No group
-          {{/each}}
+          {{#link-to 'protected.apps.image' model.image}}
+            {{model.image.name}}
+          {{/link-to}}
         </td>
       </tr>
       <tr>
