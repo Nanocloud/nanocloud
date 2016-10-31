@@ -55,14 +55,13 @@
     overflow: auto;
     cursor: pointer;
     height: calc(100% - 180px);
-    border: 2px solid $white;
+    border: 2px solid #fff;
     padding: 10px 0px 10px 0px;
 
     > .item {
       padding: 4px 10px 4px 5px;
 
       &:hover {
-        color: $blue-default;
         background-color: $gray-lighter;
 
         .filename {
@@ -71,10 +70,9 @@
       }
 
       &.selected {
-        background-color: $blue-default;
-        color: $white;
+        color: #fff;
         .icon-component {
-          color :$white;
+          color :#fff;
         }
       }
     }

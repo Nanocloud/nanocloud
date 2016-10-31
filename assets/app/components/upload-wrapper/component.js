@@ -89,7 +89,7 @@ var FileUploader = Ember.Object.extend(Ember.Evented, {
 });
 
 export default Ember.Component.extend({
-  classNames: ['vdi-drag-n-drop'],
+  classNames: ['upload-wrapper'],
   classNameBindings: ['show:state-show:state-hide'],
   session: Ember.inject.service('session'),
   store: Ember.inject.service('store'),

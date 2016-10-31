@@ -1,31 +1,26 @@
 .dragging {
 
   .draggableDropzone {
-    border-left: 2px solid $blue-lighter;
+    border-left: 2px solid #f1faff;
   }
 }
 
 .target-current-folder {
   margin-top: 10px;
-  border: 2px solid $white !important;
+  border: 2px solid #fff !important;
   padding: 10px 0px 30px 0px;
-
-  &.active {
-    border: 2px solid $blue-default !important;
-  }
 }
 
 .draggableDropzone {
-  border-left: 2px solid $white;
+  border-left: 2px solid #fff;
 
   &.deactivated .container {
     background-color: none;
   }
 
   &.activated {
-    background-color: $blue-lighter;
+    background-color: #f1faff;
     font-weight: bold;
-    border-left: 2px solid $blue-default !important;
   }
 
   .draggableItem {
@@ -37,7 +32,7 @@
     }
 
     &:hover {
-      background-color: $blue-lighter;
+      background-color: #f1faff;
     }
   }
 }

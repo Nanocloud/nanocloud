@@ -1,0 +1,134 @@
+.global-container {
+  @extend .max;
+  position: absolute;
+  top: 0;
+  font-size: $global_font_size;
+  -webkit-font-smoothing: antialiased;
+}
+
+.main-content {
+  @extend .animated;
+  position: relative;
+  width: calc(100% - 250px);
+  height: 100%;
+  float: right;
+  overflow: auto;
+  background-color: #fff;
+  padding-top: 20px;
+}
+
+.section {
+  position: relative;
+  padding: 30px;
+  height: inherit;
+}
+
+@media (max-width: 991px) {
+  .main-content {
+    width: 100%;
+
+    &.show-sidebar {
+      transform: translate3d(250px, 0px, 0px);
+    }
+  }
+}
+
+.sidebar-content {
+  height: 100%;
+  overflow: auto;
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.sidebar {
+  &.hidden {
+    display: none;
+  }
+  width: 250px;
+  position: absolute;
+  height: 100%;
+
+  ul {
+    margin: 0;
+    margin-top: 20px;
+  }
+
+  li {
+    list-style-type: none;
+
+    a, button {
+      border: none;
+      background: none;
+      display: flex;
+      align-items: center;
+      color: #fff;
+      width: 100%;
+      padding: 10px;
+
+      &.active {
+        background-color: #fff;
+      }
+
+      .icon {
+        margin-right: 10px;
+      }
+    }
+  }
+}
+
+.sidebar-logo {
+  background-image: url('/assets/images/logo.png');
+  height: 60px;
+  background-repeat: no-repeat;
+  background-position: 70px 25px;
+  background-size: 34%;
+}
+
+.version-number {
+  padding: 0px 0px 6px 10px;
+  font-size: 12px;
+  color: rgba(255,255,255,0.8);
+}
+
+.main-navbar {
+  background-color: #fff;
+  position: fixed;
+  top: 0;
+  left: $sidebar_width;
+  width: calc(100% - #{$sidebar_width} - 15px);
+  z-index: 1;
+}
+
+.logout-btn {
+  display: flex;
+  align-items: center;
+}
+
+.logout-dropdown {
+
+  button {
+    @extend .reset-btn;
+  }
+
+  button.dropdown-toggle {
+    width: 200px;
+  }
+
+  > .dropdown-menu {
+    margin-top: 0;
+    min-width: 0;
+    text-align: center;
+    box-shadow: none;
+    right: 0px;
+    border: 0;
+    padding: 0;
+
+    > li button {
+      padding: 5px 0;
+      color: #fff;
+    }
+  }
+}
+

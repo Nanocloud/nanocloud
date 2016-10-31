@@ -23,15 +23,18 @@
  */
 
 import Ember from 'ember';
+import searchModelTable from 'nanocloud/mixins/search-model-table';
 
-export default Ember.Controller.extend({
+export default Ember.Controller.extend(
+  
+  searchModelTable, {
 
   store: Ember.inject.service('store'),
   session: Ember.inject.service('session'),
   download: Ember.inject.service('download'),
   items: null,
 
-  modelIsEmpty: Ember.computed.empty('items', 'items'),
+  modelIsEmpty: Ember.computed.empty('items'),
 
   sortableTableConfig: {
 
@@ -53,7 +56,7 @@ export default Ember.Controller.extend({
     }
   },
 
-  data : Ember.computed('items', 'items', function() {
+  data : Ember.computed('items', function() {
 
     var ret = Ember.A([]);
     this.get('items').forEach(function(item) {
@@ -109,6 +112,7 @@ export default Ember.Controller.extend({
     },
 
     downloadFile: function(filename) {
+      console.log('download');
       this.get('download').downloadFile(this.get('session.access_token'), filename);
     },
   }

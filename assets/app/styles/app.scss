@@ -1,51 +1,21 @@
-$blue-default:             #006CB6 !default;
-$accent: "blue";
+@import 'variable';
+@import 'ember-modal-dialog/ember-modal-structure';
+@import 'ember-modal-dialog/ember-modal-appearance';
+@import 'bower_components/bootstrap/scss/bootstrap';
+@import 'font-awesome';
+@import 'pod-styles';
 
-@import "variables";
+@import 'override/tooltipster';
+@import 'override/bootstrap';
+@import 'override/ember-modal-dialog';
+@import 'override/ember-model-table';
+@import 'override/ember-paper';
+
+@import 'modules/icons';
+@import 'modules/text';
+@import 'modules/alias';
+@import 'modules/color';
+
+@import 'layout';
+@import 'pages/dashboard/styles';
 @import "ember-paper";
-
-@import "ember-modal-dialog/ember-modal-structure";
-@import "ember-modal-dialog/ember-modal-appearance";
-
-@import "bower_components/bootstrap/scss/bootstrap";
-@import "font-awesome";
-
-@import "user-table";
-@import "icons";
-@import "sidebar";
-@import "login";
-@import "drag_n_drop";
-@import "machines";
-@import "menu-top";
-@import "global";
-@import "dim-background";
-@import "floating-sidebar-component";
-@import "file-explorer";
-@import "edit-text";
-@import "vdi-drag-n-drop";
-@import "window-component";
-@import "clipboard";
-@import "vdi-progress-item";
-@import "dashboard";
-@import "loading";
-@import "sortable-table";
-@import "icon-component";
-@import "configuration";
-@import "nano-switch";
-@import "histories";
-@import "light-bulb";
-@import "user-new";
-@import "confirm-input";
-@import "popup-component";
-@import "draggable-zone";
-@import "specific/teams-index";
-@import "container-blocks";
-
-@import "vdi";
-@import "window-component";
-
-@include bg-variant('.bg-light', $gray-lighter);
-
-.ember-modal-overlay.translucent {
-  background-color: rgba(63,63,68,.8);
-}

@@ -1,0 +1,53 @@
+.globalSearch {
+//  display: none !important;
+}
+
+.sortableTable {
+
+  .btn {
+    z-index: 0 !important;
+  }
+
+  .short {
+    width: 40px;
+    text-align: center;
+  }
+
+  .inner-table-wrapper {
+    margin-top: 20px;
+  }
+
+  .table-bordered thead th {
+    @extend .clickable;
+    border: 1px solid $blue-lighter;
+  }
+
+  .table-header-no-filtering {
+    display: none;
+  }
+
+  td {
+    border: 1px solid $blue-lighter;
+    vertical-align: middle;
+    max-width: 200px;
+  }
+
+  tr {
+    background-color: #fff !important;
+  }
+
+  .table-footer button {
+
+    border: 1px solid #ECECEC;
+    background-color: #fff;
+    outline: 0;
+
+    &:active {
+      outline: 0;
+    }
+  }
+
+  .pagination-number {
+    display: none;
+  }
+}

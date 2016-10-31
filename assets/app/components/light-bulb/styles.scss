@@ -31,13 +31,12 @@
     }
 
     &.reboot {
-      @extend .booting;
+      //@extend .booting;
     }
 
     &.booting, &.rebooting, &.starting {
       background-color: #F4B835;
       box-shadow: 0px 0px 1px #F4B835;
-      @extend .transition-enabled;
       animation-name: nanoloading;
       animation-duration: 2s;
       animation-iteration-count: infinite;
@@ -46,7 +45,6 @@
     &.stopping {
       background-color: red;
       box-shadow: 0px 0px 1px red;
-      @extend .transition-enabled;
       animation-name: nanoloading;
       animation-duration: 2s;
       animation-iteration-count: infinite;

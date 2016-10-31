@@ -1,0 +1,12 @@
+.nano-switch {
+  text-align: center;
+  width: 90px;
+  height: 25px;
+  padding-top: 1px;
+  background: #f3f3f3;
+
+  &.disabled {
+    border: 1px solid #fff;
+  }
+}
+

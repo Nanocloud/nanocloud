@@ -16,35 +16,27 @@
     display: flex;
   }
   .done {
-    color: $blue-lighten;
     &:hover,
     &:focus {
-      color: $blue-default;
       transition-duration: .3s;
     }
   }
   .clear {
-    color: $red;
     &:hover,
     &:focus {
-      color: darken($red, 20%);
       transition-duration: .3s;
     }
   }
   .done {
-    color: $blue-lighten;
 
     &:hover,
     &:target {
-      color: $blue-default;
       transition-duration: .3s;
     }
   }
   .clear {
-    color: lighten($red, 30%);
     &:hover,
     &:target {
-      color: $red;
       transition-duration: .3s;
     }
   }
