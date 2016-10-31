@@ -22,11 +22,17 @@ h1 {
   top: 0;
   width: calc(100% - 265px);
   z-index: 1;
+  transition: all 0.3s ease;
 }
 
 @media (max-width: 991px) {
   .main-navbar {
     width: 100%;
+    right: 0;
+
+    &.show-sidebar {
+      width: calc(100% - 250px);
+    }
   }
 }
 
