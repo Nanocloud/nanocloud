@@ -53,11 +53,11 @@ module.exports = {
       values.hostname,
       values.port, {
         command: ['useradd',
-                  values.username,
-                  '--create-home',
-                  '--groups',
-                  'users'
-                 ],
+          values.username,
+          '--create-home',
+          '--groups',
+          'users'
+        ],
         wait: true
       })
       .then(() => {
@@ -65,9 +65,9 @@ module.exports = {
           values.hostname,
           values.port, {
             command: ['smbpasswd',
-                      '-a',
-                      values.username
-                     ],
+              '-a',
+              values.username
+            ],
             stdin: values.password + '\n' + values.password,
             wait: true
           });
