@@ -1,0 +1,55 @@
+version: '2'
+
+services:
+  frontend:
+    build:
+      context: ./assets
+      dockerfile: Dockerfile-dev.mac
+    image: nanocloud/frontend:dev.mac
+    volumes:
+      - ./assets:/front
+      - static:/opt/dist
+    ports:
+      - 4200:4200
+      - 49152:49152
+    container_name: "frontend"
+
+  proxy:
+    image: nanocloud/proxy
+    volumes:
+      - ./proxy/nginx.dev.mac.conf:/etc/nginx/conf.d/default.conf:ro
+      - ./proxy/certificates:/etc/nginx/ssl/:ro
+    depends_on:
+      - backend
+    ports:
+      - 80:80
+      - 443:443
+    container_name: "proxy"
+    restart: always
+
+  backend:
+    build:
+      context: ./
+      dockerfile: Dockerfile
+    image: nanocloud/backend
+    volumes:
+      - static:/opt/back/assets/dist
+    env_file:
+      - config.env
+    ports:
+      - 1337:1337
+    depends_on:
+      - postgres
+
+  postgres:
+    image: postgres:9.5.3
+    environment:
+      - PGDATA=/var/lib/postgresql/data/pgdata
+      - POSTGRES_USER=nanocloud
+    ports:
+      - 5432:5432
+    container_name: "postgres"
+
+volumes:
+  static:
+    driver: local
