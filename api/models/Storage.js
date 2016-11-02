@@ -53,28 +53,28 @@ module.exports = {
       values.hostname,
       values.port, {
         command: ['useradd',
-                  values.username,
-                  '--create-home',
-                  '--groups',
-                  'users'
-                 ],
+          values.username,
+          '--create-home',
+          '--groups',
+          'users'
+        ],
         wait: true
       })
-      .then(() => {
-        return PlazaService.exec(
-          values.hostname,
-          values.port, {
-            command: ['smbpasswd',
-                      '-a',
-                      values.username
-                     ],
-            stdin: values.password + '\n' + values.password,
-            wait: true
-          });
-      })
-      .then(() => {
-        return next();
-      })
-      .catch(next);
+        .then(() => {
+          return PlazaService.exec(
+            values.hostname,
+            values.port, {
+              command: ['smbpasswd',
+                '-a',
+                values.username
+              ],
+              stdin: values.password + '\n' + values.password,
+              wait: true
+            });
+        })
+        .then(() => {
+          return next();
+        })
+        .catch(next);
   }
 };

@@ -84,29 +84,29 @@ module.exports = {
           config.teamStorageAddress,
           config.teamStoragePort, {
             command: ['useradd',
-                      values.username,
-                      '--create-home',
-                      '--groups',
-                      'users'
-                     ],
+              values.username,
+              '--create-home',
+              '--groups',
+              'users'
+            ],
             wait: true
           })
-          .then(() => {
-            return PlazaService.exec(
-              config.teamStorageAddress,
-              config.teamStoragePort, {
-                command: ['smbpasswd',
-                          '-a',
-                          values.username
-                         ],
-                stdin: values.password + '\n' + values.password,
-                wait: true
-              });
-          })
-          .then(() => {
-            return next();
-          })
-          .catch(next);
+            .then(() => {
+              return PlazaService.exec(
+                config.teamStorageAddress,
+                config.teamStoragePort, {
+                  command: ['smbpasswd',
+                    '-a',
+                    values.username
+                  ],
+                  stdin: values.password + '\n' + values.password,
+                  wait: true
+                });
+            })
+            .then(() => {
+              return next();
+            })
+            .catch(next);
       });
   }
 };
