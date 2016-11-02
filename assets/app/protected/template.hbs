@@ -129,7 +129,7 @@
   </div>
 
   <div class="main-content {{if showSidebar "show-sidebar"}}">
-    <nav class="main-navbar navbar navbar-light bg-faded">
+    <nav class="main-navbar navbar navbar-light bg-faded {{if showSidebar "show-sidebar"}}">
       <button {{action "toggleSidebar"}} class="navbar-toggler hidden-lg-up" type="button">
         &#9776;
       </button>
@@ -144,19 +144,21 @@
           </a>
         </ul>
       {{/if}}
-      <ul class="nav navbar-nav pull-xs-right">
-        <li class="nav-item">
-          <div class="dropdown logout-dropdown">
-            <button class="btn btn-secondary dropdown-toggle truncate" type="button" data-toggle="dropdown">
-              {{session.user.fullName}}
-              <span class="caret"></span>
-            </button>
-            <ul class="dropdown-menu">
-              <li><button class="dropdown-item btn-color-default" type="button" {{ action "logout" }}>Logout</button></li>
-            </ul>
-          </div>
-        </li>
-      </ul>
+      {{#unless showSidebar}}
+        <ul class="nav navbar-nav pull-xs-right">
+          <li class="nav-item">
+            <div class="dropdown logout-dropdown">
+              <button class="btn btn-secondary dropdown-toggle truncate" type="button" data-toggle="dropdown">
+                {{session.user.fullName}}
+                <span class="caret"></span>
+              </button>
+              <ul class="dropdown-menu">
+                <li><button class="dropdown-item btn-color-default" type="button" {{ action "logout" }}>Logout</button></li>
+              </ul>
+            </div>
+          </li>
+        </ul>
+      {{/unless}}
     </nav>
     {{outlet}}
   </div>
