@@ -51,6 +51,14 @@ module.exports.connections = {
     database: 'nanocloud'
   },
 
+  postgresDevelopmentMac: {
+    adapter: 'sails-postgresql',
+    host: 'postgres',
+    user: 'nanocloud',
+    password: 'nanocloud',
+    database: 'nanocloud'
+  },
+
   postgresProduction: {
     adapter: 'sails-postgresql',
     host: 'postgres',

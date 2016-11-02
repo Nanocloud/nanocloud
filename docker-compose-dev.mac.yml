@@ -30,16 +30,22 @@ services:
   backend:
     build:
       context: ./
-      dockerfile: Dockerfile
-    image: nanocloud/backend
+      dockerfile: Dockerfile-dev.mac
+    image: nanocloud/backend-dev.mac
     volumes:
-      - static:/opt/back/assets/dist
+      - static:/opt/assets/dist
+      - ./:/back
     env_file:
       - config.env
+    environment:
+      - DEV_MAC=true
     ports:
+      - 5858:5858
+      - 8081:8081
       - 1337:1337
     depends_on:
       - postgres
+    container_name: "backend"
 
   postgres:
     image: postgres:9.5.3
