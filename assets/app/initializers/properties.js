@@ -46,6 +46,7 @@ export function initialize(app) {
     let s = Ember.$('<style></style>');
     s.html(res.style);
     head.append(s);
+
     app.advanceReadiness();
   });
 }
