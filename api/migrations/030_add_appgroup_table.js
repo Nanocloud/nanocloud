@@ -22,16 +22,38 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-function up(knex) {
-  return knex.schema.createTable('appgroup', (table) => {
-    table.increments();
+function up(knex, Promise) {
+  return Promise.all([
+    knex.schema.createTable('appgroup', (table) => {
+      table.increments();
 
-    table.string('group');
-    table.string('app');
+      table.string('group');
+      table.string('app');
 
-    table.dateTime('createdAt');
-    table.dateTime('updatedAt');
-  });
+      table.dateTime('createdAt');
+      table.dateTime('updatedAt');
+    }),
+
+    knex('imagegroup').distinct('image').select()
+      .then((images) => {
+        return Promise.map(images, (image) => {
+          return Promise.props({
+            apps: knex('app').select().where({ image: image.image }),
+            groups: knex('imagegroup').distinct('group').select().where({ image: image.image })
+          })
+            .then(({apps, groups}) => {
+              return Promise.map(apps, (app) => {
+                return Promise.map(groups, (group) => {
+                  return knex.insert({
+                    app: app.id,
+                    group: group.group
+                  }).into('appgroup');
+                });
+              });
+          });
+      });
+     }),
+  ]);
 }
 
 function down(knex) {
