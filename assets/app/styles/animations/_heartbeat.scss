@@ -1,0 +1,20 @@
+@keyframes heartbeat {
+  0% {
+    opacity: 0;
+  }
+  80% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+.heartbeat {  
+  @extend .animated;
+  animation-name: heartbeat;
+  animation-duration: 2s;
+  animation-iteration-count: infinite;
+  margin: 0px 5px 0px 5px;
+}
+

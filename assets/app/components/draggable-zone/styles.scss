@@ -1,13 +1,11 @@
 & {
   .dragging {
-
     .draggableDropzone {
       border-left: 2px solid #f1faff;
     }
   }
 
   .draggableDropzone {
-
     &.deactivated .container {
       background-color: none;
     }
@@ -18,9 +16,7 @@
     }
 
     .draggableItem {
-
-      padding: 5px 5px 5px 5px;
-
+      padding: 5px;
       &:active {
         opacity: 0.4;
       }

@@ -30,14 +30,10 @@
       box-shadow: 0px 0px 1px #525252;
     }
 
-    &.reboot {
-      //@extend .booting;
-    }
-
     &.booting, &.rebooting, &.starting {
       background-color: #F4B835;
       box-shadow: 0px 0px 1px #F4B835;
-      animation-name: nanoloading;
+      animation-name: heartbeat;
       animation-duration: 2s;
       animation-iteration-count: infinite;
     }
@@ -45,7 +41,7 @@
     &.stopping {
       background-color: red;
       box-shadow: 0px 0px 1px red;
-      animation-name: nanoloading;
+      animation-name: heartbeat;
       animation-duration: 2s;
       animation-iteration-count: infinite;
     }
