@@ -50,9 +50,9 @@ function up(knex, Promise) {
                   }).into('appgroup');
                 });
               });
-          });
-      });
-     }),
+            });
+        });
+      }),
   ]);
 }
 

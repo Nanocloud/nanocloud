@@ -164,6 +164,9 @@ module.exports = {
                 req.user.isAdmin
               ]
             }, (err, groupApps) => {
+              if (err) {
+                return res.negotiate(err);
+              }
               groupApps = groupApps.rows;
               _.map(images, (image) => {
                 _.remove(image.apps, (app) => {
