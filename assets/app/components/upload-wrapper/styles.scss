@@ -3,7 +3,8 @@
 
   .drag-n-drop-area {
     @extend .fullscreen;
-    z-index: 4;
+    @extend .animated;
+    z-index: 6;
     background-color: rgb(0, 144, 255);
     opacity:0.8;
     pointer-events: none;
