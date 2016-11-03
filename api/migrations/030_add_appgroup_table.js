@@ -16,36 +16,26 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- *
- * GroupController
- *
- * @description :: Server-side logic for managing groups
- * @help        :: See http://sailsjs.org/#!/documentation/concepts/Controllers
+ * You should have received a copy of the GNU Affero General
+ * Public License
+ * along with this program.  If not, see
+ * <http://www.gnu.org/licenses/>.
  */
 
-/* global Group */
+function up(knex) {
+  return knex.schema.createTable('appgroup', (table) => {
+    table.increments();
 
-module.exports = {
+    table.string('group');
+    table.string('app');
 
-  findOne: function(req, res) {
+    table.dateTime('createdAt');
+    table.dateTime('updatedAt');
+  });
+}
 
-    Group.findOne(req.allParams().id)
-      .populate('members')
-      .populate('images')
-      .populate('apps')
-      .then(res.ok)
-      .catch(res.negotiate);
-  },
+function down(knex) {
+  return knex.schema.dropTable('appgroup');
+}
 
-  find: function(req, res) {
-
-    Group.find()
-      .populate('members')
-      .populate('images')
-      .populate('apps')
-      .then(res.ok)
-      .catch(res.negotiate);
-  }
-};
+module.exports = { up, down };

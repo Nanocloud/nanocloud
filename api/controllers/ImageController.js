@@ -22,7 +22,8 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-/* globals Machine, MachineService, JsonApiService, Image */
+/* globals Machine, MachineService, JsonApiService, Image, App */
+/* globals AppGroup, ImageGroup */
 
 const Promise = require('bluebird');
 const _ = require('lodash');
@@ -131,13 +132,40 @@ module.exports = {
           .populate('apps')
           .populate('groups')
           .then((images) => {
-            return res.ok(images);
+            return App.query({
+              text: `SELECT DISTINCT
+                 "app".id,
+                 "app".alias,
+                 "app"."displayName",
+                 "app"."filePath",
+                 "app"."image"
+                 FROM "app"
+                 LEFT JOIN "appgroup" on appgroup.app = app.id
+                 LEFT JOIN "group" on appgroup.group = "group".id
+                 LEFT JOIN "usergroup" on usergroup.group = "group".id
+                 LEFT JOIN "image" on image.id = "app".image
+                 WHERE (usergroup.user = $1::varchar OR $2::boolean = true)
+                 AND image.deleted = false`,
+              values: [
+                req.user.id,
+                req.user.isAdmin
+              ]
+            }, (err, apps) => {
+              apps = apps.rows;
+              _.map(images, (image) => {
+                _.remove(image.apps, (app) => {
+                  return (_.find(apps, { id: app.id })) ? false : true;
+                });
+              });
+              return res.ok(images);
+            });
           });
       })
       .catch(res.negociate);
   },
 
   destroy: function(req, res) {
+    var imageId = req.allParams().id;
     return Image.findOne({ id: req.allParams().id })
       .then((image) => {
         return MachineService.deleteImage(image);
@@ -155,6 +183,24 @@ module.exports = {
             res.status(202);
             return res.send(JsonApiService.serialize('images', image[0]));
           });
+      })
+      .then(() => {
+        return ImageGroup.destroy({
+          image: imageId
+        });
+      })
+      .then(() => {
+        return App.find({
+          image: imageId
+        });
+      })
+      .then((apps) => {
+        apps.forEach((app) => {
+          return AppGroup.destroy({ app: app.id })
+            .then(() => {
+              return App.destroy({ id: app.id });
+            });
+        });
       })
       .catch(res.negociate);
   }

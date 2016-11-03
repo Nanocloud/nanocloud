@@ -53,6 +53,11 @@ module.exports = {
       collection: 'image',
       via: 'groups',
       through: 'imagegroup'
+    },
+    apps: {
+      collection: 'app',
+      via: 'groups',
+      through: 'appgroup'
     }
   },
 

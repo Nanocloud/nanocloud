@@ -4,8 +4,12 @@
     <table class="table m-t-2">
       <thead>
         <tr>
-          <th>Name</th>
+          <th>Image</th>
           <th></th>
+          {{#if selectedImageLength}}
+            <th>App</th>
+            <th></th>
+          {{/if}}
         </tr>
       </thead>
       <tbody>
@@ -21,6 +25,24 @@
             <td>
               {{toggle-item-from-list list=group.images item=image property='id' addAction="addImage" removeAction="removeImage"}}
             </td>
+            {{#if (filterArrayByProperty group.images image 'id')}}
+              <td>
+              {{#each image.apps as |app|}}
+                <tr>
+                <td scope="row">
+                  <span class="link in-bl">
+                    {{#link-to 'protected.images.app' app}}
+                      {{app.displayName}}
+                    {{/link-to}}
+                  </span>
+                </td>
+                <td>
+                  {{toggle-item-from-list list=group.apps item=app property='id' addAction="addApp" removeAction="removeApp"}}
+                </td>
+                </tr>
+              {{/each}}
+              </td>
+            {{/if}}
           </tr>
         {{/each}}
 
