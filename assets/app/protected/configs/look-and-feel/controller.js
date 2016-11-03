@@ -30,7 +30,6 @@ export default Ember.Controller.extend({
   actions: {
     liveChangeColor(color) {
       this.get('themeService').setupColor(color);
-
     },
   }
 });

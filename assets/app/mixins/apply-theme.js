@@ -29,7 +29,6 @@ export default Ember.Mixin.create({
   configService: Ember.inject.service('configuration'),
   applyTheme: function () {
     this._super();
-
     this.get('configService.deferred')
       .then(() => {
         let color = this.get('configService.primaryColor');
@@ -37,6 +36,5 @@ export default Ember.Mixin.create({
           this.get('themeService').setupColor(color);
         });
       });
-
   },
 });

@@ -24,7 +24,7 @@
 
 export default function colorAdjust(col, amt) {
 
-  function LimitCheck(color) {
+  function limitCheck(color) {
     if (color > 255) {
       color = 255;
     } else if  (color < 0) {
@@ -33,7 +33,7 @@ export default function colorAdjust(col, amt) {
     return color;
   }
 
-  function SingleColorToHexString(color) {
+  function singleColorToHexString(color) {
     color = color.toString(16); // Convert to a string in base 16
     return (color.length === 1) ? '0' + color : color;
   }
@@ -50,13 +50,13 @@ export default function colorAdjust(col, amt) {
   var blue = ((num >> 8) & 0x00FF) + amt;
   var green = (num & 0x0000FF) + amt;
 
-  green = new LimitCheck(green);
-  blue = new LimitCheck(blue);
-  red = new LimitCheck(red);
+  green = limitCheck(green);
+  blue = limitCheck(blue);
+  red = limitCheck(red);
 
-  green = new SingleColorToHexString(green);
-  blue = new SingleColorToHexString(blue);
-  red = new SingleColorToHexString(red);
+  green = singleColorToHexString(green);
+  blue = singleColorToHexString(blue);
+  red = singleColorToHexString(red);
 
   return (usePound ? '#' : '') + red + blue + green;
 }
