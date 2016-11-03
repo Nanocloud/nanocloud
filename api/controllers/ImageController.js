@@ -132,6 +132,19 @@ module.exports = {
           .populate('apps')
           .populate('groups')
           .then((images) => {
+
+            /**
+             * The images we find are populated with ALL their apps, but for regular
+             * users, we should delete on this app table all apps the user should not
+             * have access.
+             *
+             * To do this, we take all apps associated to the user's group, who their
+             * image has not been deleted.
+             * Then, for all images, we check the difference between image's apps,
+             * and apps user should have access, and we delete fields on image's apps,
+             * who are not corresponding to user's apps.
+             */
+
             return App.query({
               text: `SELECT DISTINCT
                  "app".id,
@@ -150,11 +163,16 @@ module.exports = {
                 req.user.id,
                 req.user.isAdmin
               ]
-            }, (err, apps) => {
-              apps = apps.rows;
+            }, (err, groupApps) => {
+              groupApps = groupApps.rows;
               _.map(images, (image) => {
                 _.remove(image.apps, (app) => {
-                  return (_.find(apps, { id: app.id })) ? false : true;
+                  /**
+                   * If apps of an image is find on apps included on the user's group,
+                   * it seems we should not delete it from the table, cause the user
+                   * should have access to it, so we return false.
+                   */
+                  return (_.find(groupApps, { id: app.id })) ? false : true;
                 });
               });
               return res.ok(images);
