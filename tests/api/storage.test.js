@@ -33,12 +33,12 @@ module.exports = function() {
 
     before((done) => {
       ConfigService.set('storageAddress', 'localhost')
-      .then(() => {
-        return ConfigService.set('storagePort', 9090);
-      })
-      .then(() => {
-        return done();
-      });
+        .then(() => {
+          return ConfigService.set('storagePort', 9090);
+        })
+        .then(() => {
+          return done();
+        });
     });
 
     const fileSchema = {
@@ -59,25 +59,25 @@ module.exports = function() {
     describe('Upload a file', function() {
       it('Should upload a file', function(done) {
         nano.request(sails.hooks.http.app)
-        .post('/api/upload?filename=' + filename)
-        .attach(filename, './tests/api/storage.test.js', filename)
-        .set(nano.adminLogin())
-        .expect(200)
-        .end(done);
+          .post('/api/upload?filename=' + filename)
+          .attach(filename, './tests/api/storage.test.js', filename)
+          .set(nano.adminLogin())
+          .expect(200)
+          .end(done);
       });
     });
 
     describe('Get user\'s files', function() {
       it('Should return a list of files', function(done) {
         nano.request(sails.hooks.http.app)
-        .get('/api/files')
-        .set(nano.adminLogin())
-        .expect(200)
-        .expect(nano.jsonApiSchema(fileSchema))
-        .expect((res) => {
-          fileSize = res.body.data[0].attributes.size;
-        })
-        .end(done);
+          .get('/api/files')
+          .set(nano.adminLogin())
+          .expect(200)
+          .expect(nano.jsonApiSchema(fileSchema))
+          .expect((res) => {
+            fileSize = res.body.data[0].attributes.size;
+          })
+          .end(done);
       });
     });
 
@@ -87,90 +87,133 @@ module.exports = function() {
       describe('Get a download token', function() {
         it('Should return a download token', function(done) {
           nano.request(sails.hooks.http.app)
-          .get('/api/files/token?filename=' + filename)
-          .set(nano.adminLogin())
-          .expect(200)
-          .expect((res) => {
-            downloadToken = res.body.token;
-          })
-          .end(done);
+            .get('/api/files/token?filename=' + filename)
+            .set(nano.adminLogin())
+            .expect(200)
+            .expect((res) => {
+              downloadToken = res.body.token;
+            })
+            .end(done);
         });
       });
 
       describe('Download file', function() {
         it('Should return file content', function(done) {
           nano.request(sails.hooks.http.app)
-          .get('/api/files/download?filename=' + filename + '&token=' + downloadToken)
-          .expect(200)
-          .expect('Content-Type', 'application/javascript')
-          .expect('Content-disposition', `attachment; filename="${filename}"`)
-          .expect((res) => {
-            expect(res.text.length).to.equal(fileSize);
-          })
-          .end(done);
+            .get('/api/files/download?filename=' + filename + '&token=' + downloadToken)
+            .expect(200)
+            .expect('Content-Type', 'application/javascript')
+            .expect('Content-disposition', `attachment; filename="${filename}"`)
+            .expect((res) => {
+              expect(res.text.length).to.equal(fileSize);
+            })
+            .end(done);
         });
       });
-    });
 
-    describe('Get user\'s team\'s files', function() {
-      it('Should return an empty list (no team)', function(done) {
-        nano.request(sails.hooks.http.app)
-          .get('/api/files?teams=true')
-          .set(nano.adminLogin())
-          .expect(200)
-          .expect(nano.jsonApiSchema(fileSchema))
-          .expect((res) => {
-            expect(res.body.data.length).to.equal(0);
-          })
-        .end(done);
+      describe('Get user\'s team\'s files', function() {
+        it('Should return an empty list (no team)', function(done) {
+          nano.request(sails.hooks.http.app)
+            .get('/api/files?teams=true')
+            .set(nano.adminLogin())
+            .expect(200)
+            .expect(nano.jsonApiSchema(fileSchema))
+            .expect((res) => {
+              expect(res.body.data.length).to.equal(0);
+            })
+            .end(done);
+        });
       });
-    });
 
-    describe('Create directory', function() {
-      it('Should create a directory', function(done) {
-        nano.request(sails.hooks.http.app)
-          .post('/api/files?filename=./test')
-          .set(nano.adminLogin())
-          .expect(200)
-          .expect(nano.jsonApiSchema(fileSchema))
-          .expect((res) => {
-            expect(res.body.data.length).to.equal(2);
-            expect(res.body.data[1].attributes.type).to.equal('directory');
-            expect(res.body.data[1].attributes.name).to.equal('test');
-          })
-          .end(done);
+      describe('Remove file', function() {
+        it('Should move previously uploaded file', function(done) {
+          nano.request(sails.hooks.http.app)
+            .delete('/api/files?filename=./' + filename)
+            .set(nano.adminLogin())
+            .expect(200)
+            .expect(nano.jsonApiSchema(fileSchema))
+            .expect((res) => {
+              expect(res.body.data.length).to.equal(0);
+            })
+            .end(done);
+        });
       });
-    });
 
-    describe('Move directory', function() {
-      it('Should move previously created directory', function(done) {
-        nano.request(sails.hooks.http.app)
-          .patch('/api/files?filename=./test&newfilename=./new')
-          .set(nano.adminLogin())
-          .expect(200)
-          .expect(nano.jsonApiSchema(fileSchema))
-          .expect((res) => {
-            expect(res.body.data.length).to.equal(2);
-            expect(res.body.data[0].attributes.type).to.equal('directory');
-            expect(res.body.data[0].attributes.name).to.equal('new');
-          })
-          .end(done);
+      describe('Create directory', function() {
+        it('Should create a directory', function(done) {
+          nano.request(sails.hooks.http.app)
+            .post('/api/files?filename=./test')
+            .set(nano.adminLogin())
+            .expect(200)
+            .expect(nano.jsonApiSchema(fileSchema))
+            .expect((res) => {
+              expect(res.body.data.length).to.equal(2);
+              expect(res.body.data[1].attributes.type).to.equal('directory');
+              expect(res.body.data[1].attributes.name).to.equal('test');
+            })
+            .end(done);
+        });
       });
-    });
 
-    describe('Remove directory', function() {
-      it('Should move previously created directory', function(done) {
-        nano.request(sails.hooks.http.app)
-          .delete('/api/files?filename=./new')
-          .set(nano.adminLogin())
-          .expect(200)
-          .expect(nano.jsonApiSchema(fileSchema))
-          .expect((res) => {
-            expect(res.body.data.length).to.equal(1);
-            expect(res.body.data[0].attributes.type).to.equal('regular file');
-            expect(res.body.data[0].attributes.name).to.equal('storage.test.js');
-          })
-          .end(done);
+      describe('Get user\'s team\'s files', function() {
+        it('Should return an empty list (no team)', function(done) {
+          nano.request(sails.hooks.http.app)
+            .get('/api/files?teams=true')
+            .set(nano.adminLogin())
+            .expect(200)
+            .expect(nano.jsonApiSchema(fileSchema))
+            .expect((res) => {
+              expect(res.body.data.length).to.equal(0);
+            })
+            .end(done);
+        });
+      });
+
+      describe('Create directory', function() {
+        it('Should create a directory', function(done) {
+          nano.request(sails.hooks.http.app)
+            .post('/api/files?filename=./test')
+            .set(nano.adminLogin())
+            .expect(200)
+            .expect(nano.jsonApiSchema(fileSchema))
+            .expect((res) => {
+              console.log(JSON.stringify(res.body.data));
+              expect(res.body.data.length).to.equal(1);
+              expect(res.body.data[0].attributes.type).to.equal('directory');
+              expect(res.body.data[0].attributes.name).to.equal('test');
+            })
+            .end(done);
+        });
+      });
+
+      describe('Move directory', function() {
+        it('Should move previously created directory', function(done) {
+          nano.request(sails.hooks.http.app)
+            .patch('/api/files?filename=./test&newfilename=./new')
+            .set(nano.adminLogin())
+            .expect(200)
+            .expect(nano.jsonApiSchema(fileSchema))
+            .expect((res) => {
+              expect(res.body.data.length).to.equal(1);
+              expect(res.body.data[0].attributes.type).to.equal('directory');
+              expect(res.body.data[0].attributes.name).to.equal('new');
+            })
+            .end(done);
+        });
+      });
+
+      describe('Remove directory', function() {
+        it('Should move previously created directory', function(done) {
+          nano.request(sails.hooks.http.app)
+            .delete('/api/files?filename=./new')
+            .set(nano.adminLogin())
+            .expect(200)
+            .expect(nano.jsonApiSchema(fileSchema))
+            .expect((res) => {
+              expect(res.body.data.length).to.equal(0);
+            })
+            .end(done);
+        });
       });
     });
   });
