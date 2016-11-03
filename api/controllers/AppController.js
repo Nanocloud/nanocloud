@@ -92,6 +92,7 @@ module.exports = {
         id: req.allParams().id
       })
         .populate('image')
+        .populate('groups')
         .then(res.ok);
     } else {
       this._getApps(req.user)
@@ -114,6 +115,7 @@ module.exports = {
 
         App.find(appIds)
           .populate('image')
+          .populate('groups')
           .then((apps) => {
             return res.ok(apps);
           });
