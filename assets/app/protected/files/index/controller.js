@@ -109,7 +109,6 @@ export default Ember.Controller.extend({
     },
 
     downloadFile: function(filename) {
-      console.log('download');
       this.get('download').downloadFile(this.get('session.access_token'), filename);
     },
   }

@@ -57,7 +57,7 @@ export default Ember.Route.extend({
     return this.store.queryRecord('user', { me: true });
   },
   actions: {
-    didTransition(transition) {
+    didTransition() {
       let controller = this.controllerFor('protected');
       controller.applyTheme();
     }

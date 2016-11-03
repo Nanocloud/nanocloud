@@ -40,7 +40,7 @@ export default Ember.Route.extend({
   },
 
   actions: {
-    didTransition(transition) {
+    didTransition() {
       let controller = this.controllerFor('login');
       controller.applyTheme();
     }

@@ -30,7 +30,7 @@ export default TooltipsterComponent.extend({
   didInsertElement() {
     Ember.$(this.get('element')).css({
       'font-size': this.get('size'),
-      'color': this.get('color')
+      color: this.get('color')
     });
   }
 });

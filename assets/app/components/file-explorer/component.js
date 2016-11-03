@@ -262,13 +262,13 @@ export default Ember.Component.extend({
         confirmButtonText: 'Create',
         cancelButtonText: 'Cancel',
         closeOnConfirm: true,
-        animation: true 
+        animation: true
       }, (name) => {
         if (name) {
           this.validateNewFolder(name);
         }
       });
-    }, 
+    },
 
     renameItem(item) {
       let oldName = this.get('pathToString') + item;

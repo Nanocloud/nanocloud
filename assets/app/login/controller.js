@@ -26,8 +26,7 @@ import Ember from 'ember';
 import config from 'nanocloud/config/environment';
 import applyTheme from 'nanocloud/mixins/apply-theme';
 
-export default Ember.Controller.extend(
-  applyTheme, {
+export default Ember.Controller.extend(applyTheme, {
   identification: '',
   password: '',
   configuration: Ember.inject.service('configuration'),

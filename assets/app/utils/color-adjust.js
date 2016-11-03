@@ -1,3 +1,27 @@
+/**
+ * Nanocloud turns any traditional software into a cloud solution, without
+ * changing or redeveloping existing source code.
+ *
+ * Copyright (C) 2016 Nanocloud Software
+ *
+ * This file is part of Nanocloud.
+ *
+ * Nanocloud is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ *
+ * Nanocloud is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General
+ * Public License
+ * along with this program.  If not, see
+ * <http://www.gnu.org/licenses/>.
+ */
+
 export default function colorAdjust(col, amt) {
 
   function LimitCheck(color) {
@@ -26,13 +50,13 @@ export default function colorAdjust(col, amt) {
   var blue = ((num >> 8) & 0x00FF) + amt;
   var green = (num & 0x0000FF) + amt;
 
-  green = LimitCheck(green);
-  blue = LimitCheck(blue);
-  red = LimitCheck(red);
+  green = new LimitCheck(green);
+  blue = new LimitCheck(blue);
+  red = new LimitCheck(red);
 
-  green = SingleColorToHexString(green);
-  blue = SingleColorToHexString(blue);
-  red = SingleColorToHexString(red);
+  green = new SingleColorToHexString(green);
+  blue = new SingleColorToHexString(blue);
+  red = new SingleColorToHexString(red);
 
   return (usePound ? '#' : '') + red + blue + green;
 }
