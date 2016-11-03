@@ -36,11 +36,11 @@ export default Ember.Component.extend({
   session: Ember.inject.service('session'),
 
   getWidth: function() {
-    return Ember.$(this.element).parent().width();
+    return window.innerWidth;
   },
 
   getHeight: function() {
-    return Ember.$(this.element).parent().height() - 25; // minus topbar height
+    return window.innerHeight - 25;
   },
 
   initialize: function() {

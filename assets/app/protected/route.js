@@ -55,5 +55,11 @@ export default Ember.Route.extend({
   model() {
     this.set('session.access_token', this.get('session.data.authenticated.access_token'));
     return this.store.queryRecord('user', { me: true });
+  },
+  actions: {
+    didTransition(transition) {
+      let controller = this.controllerFor('protected');
+      controller.applyTheme();
+    }
   }
 });

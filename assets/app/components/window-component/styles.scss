@@ -1,4 +1,4 @@
-.window-component {
+& {
   width: 500px;
   min-height: 200px;
   position: absolute;
@@ -12,10 +12,10 @@
     display: flex;
     justify-content: space-between;
   }
-}
 
-@media (max-width: 500px) {
-  .window-component {
-    width: 100%;
+  @media (max-width: 500px) {
+    .window-component {
+      width: 100%;
+    }
   }
 }

@@ -23,11 +23,8 @@
  */
 
 import Ember from 'ember';
-import searchModelTable from 'nanocloud/mixins/search-model-table';
 
-export default Ember.Controller.extend(
-  
-  searchModelTable, {
+export default Ember.Controller.extend({
 
   store: Ember.inject.service('store'),
   session: Ember.inject.service('session'),

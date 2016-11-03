@@ -1,6 +1,5 @@
-.floating-sidebar-component {
+& {
   position: fixed;
-  width: 40%;
   height: 100%;
   top: 0;
   right: 0;
@@ -8,20 +7,22 @@
   background-color: #fff;
 }
 
-@media (max-width: 600px) {
-  .floating-sidebar-component {
+@media (max-width: 576px) {
+  & {
     width: 100%;
   }
 }
 
-@media (max-width:1200px) and (min-width:600px) {
-  .floating-sidebar-component {
+@media (max-width: 720px) and (min-width: 576px) {
+  & {
     width: 70%;
   }
 }
 
-@media (max-width:1200px) and (min-width:990px) {
-  .floating-sidebar-component {
-    width: 50%;
+@media (min-width: 720px) {
+  & {
+    width: 40%;
+    min-width: 400px;
+    max-width: 500px;
   }
 }

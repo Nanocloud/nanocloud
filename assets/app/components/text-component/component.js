@@ -28,10 +28,9 @@ import TooltipsterComponent from 'ember-cli-tooltipster/components/tool-tipster'
 export default TooltipsterComponent.extend({
 
   didInsertElement() {
-    if (this.get('size')) {
-      Ember.$(this.get('element')).css({
-        'font-size': this.get('size')
-      });
-    }
+    Ember.$(this.get('element')).css({
+      'font-size': this.get('size'),
+      'color': this.get('color')
+    });
   }
 });

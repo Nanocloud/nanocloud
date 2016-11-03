@@ -10,36 +10,35 @@
       <p>Machine list is outdated. Please refresh</p>
     </div>
   {{/if}}
-
-  <div class='content-wrapper'>
-
-  {{#unless loadState}}
-    {{#if modelIsEmpty}}
-      <div class="alert alert-info" role="alert">
-        <strong>No machine is currently available! Just wait a couple of minutes and available machines will appear!</strong>
-      </div>
-    {{else}}
-      {{models-table
-        class="sortableTable default-color"
-        data=data
-        columns=columns
-        showColumnsDropdown=false
-        filteringIgnoreCase=sortableTableConfig.filteringIgnoreCase
-        customMessages=sortableTableConfig.messageConfig
-        customIcons=sortableTableConfig.customIcons
-        customClasses=sortableTableConfig.customClasses
-        useNumericPagination=true
-        multipleColumnsSorting=false
-      }}
-    {{/if}}
-  {{/unless}}
+  <div class='content-wrapper m-t-1'>
+    {{#unless loadState}}
+      {{#if modelIsEmpty}}
+        <div class="alert alert-info" role="alert">
+          <strong>No machine is currently available! Just wait a couple of minutes and available machines will appear!</strong>
+        </div>
+      {{else}}
+        {{icon-component class='fleft' iconClass='va-tt' size=26 materialIcon="search"}}
+        {{models-table
+          class="sortableTable default-color"
+          data=data
+          columns=columns
+          showColumnsDropdown=false
+          filteringIgnoreCase=sortableTableConfig.filteringIgnoreCase
+          customMessages=sortableTableConfig.messageConfig
+          customIcons=sortableTableConfig.customIcons
+          customClasses=sortableTableConfig.customClasses
+          useNumericPagination=true
+          multipleColumnsSorting=false
+        }}
+      {{/if}}
+    {{/unless}}
   </div>
 </div>
 {{#if loadState}}
-  <div class="centered refresh-loading">
+  <div class="centered">
     <div>
       <p class='ta-center'>
-      {{loading-component}}
+        {{loading-component}}
       </p>
     </div>
   </div>

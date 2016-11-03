@@ -25,8 +25,9 @@
   {{partial 'window/clipboard'}}
 {{/window-component}}
 
+<div class='row'>
 {{#floating-sidebar-component
-  class='vdi-onboard-app-browser'
+  class='vdi-onboard-app-browser col-xs-12 col-sm-6 col-md-4 col-lg-3'
   isVisible=windowCollector.onboardApp
 }}
   {{#application-publisher
@@ -39,3 +40,4 @@
   }}
   {{/application-publisher}}
 {{/floating-sidebar-component}}
+</div>

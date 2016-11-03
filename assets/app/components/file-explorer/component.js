@@ -31,8 +31,19 @@ export default Ember.Component.extend({
   store: Ember.inject.service('store'),
   session: Ember.inject.service('session'),
   loadState: false,
+  lastObjectIsRegularFile: Ember.computed('lastObjectHovered', function() {
+    if (this.get('lastObjectHovered.type')) {
+      if (this.get('lastObjectHovered.type') === 'regular file') {
+        return true;
+      }
+    }
+    return false;
+  }),
   displayBlueBorder: Ember.computed('lastObjectHovered', function() {
-    if (this.get('lastObjectHovered') === 'current-folder') {
+    if (typeof this.get('lastObjectHovered') === 'string' || this.get('lastObjectHovered') === null) {
+      return true;
+    }
+    if (this.get('lastObjectHovered') === 'current-folder' || this.get('lastObjectIsRegularFile')) {
       return true;
     }
     return false;
@@ -147,6 +158,22 @@ export default Ember.Component.extend({
       });
   },
 
+  validateNewFolder(name) {
+    let path = this.get('pathToString') + name;
+    Ember.$.ajax({
+      type: 'POST',
+      headers: { Authorization : 'Bearer ' + this.get('session.access_token')},
+      url: '/api/files?filename=' + path,
+      data: this.get('requestParams')
+    })
+      .then(() => {
+        this.toast.success('File has been created successfully');
+        this.loadDirectory();
+      }, () => {
+        this.toast.error('File could not be created');
+      });
+  },
+
   actions: {
 
     moveOffset(offset) {
@@ -226,26 +253,22 @@ export default Ember.Component.extend({
     },
 
     newFolder() {
-      this.set('newFolderPopup', true);
-    },
-
-    validateNewFolder() {
-      this.set('newFolderPopup', false);
-      let path = this.get('pathToString') + this.get('createFolderInput');
-      Ember.$.ajax({
-        type: 'POST',
-        headers: { Authorization : 'Bearer ' + this.get('session.access_token')},
-        url: '/api/files?filename=' + path,
-        data: this.get('requestParams')
-      })
-        .then(() => {
-          this.toast.success('File has been created successfully');
-          this.loadDirectory();
-          this.set('createFolderInput', '');
-        }, () => {
-          this.toast.error('File could not be created');
-        });
-    },
+      window.swal({
+        title: 'New folder',
+        text: 'Please enter a name for your folder',
+        type: 'input',
+        inputType: 'text',
+        showCancelButton: true,
+        confirmButtonText: 'Create',
+        cancelButtonText: 'Cancel',
+        closeOnConfirm: true,
+        animation: true 
+      }, (name) => {
+        if (name) {
+          this.validateNewFolder(name);
+        }
+      });
+    }, 
 
     renameItem(item) {
       let oldName = this.get('pathToString') + item;

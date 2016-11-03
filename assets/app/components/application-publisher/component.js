@@ -29,6 +29,7 @@ import focusInputsHandlerMixin from 'nanocloud/mixins/focus-inputs-handler';
 export default fileExplorer.extend(focusInputsHandlerMixin, {
 
   publishError: false,
+  classNames: ['file-explorer'],
 
   loadDirectory() {
     this.set('selectedFile', null);

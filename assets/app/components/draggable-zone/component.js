@@ -25,10 +25,11 @@
 import Ember from 'ember';
 
 export default Ember.Component.extend({
-  classNames        : [ 'draggableDropzone' ],
-  classNameBindings : [ 'dragClass' ],
-  dragClass         : 'deactivated',
-  lastTarget        : null,
+  classNames: [ 'draggableDropzone' ],
+  classNameBindings: [ 'dragClass' ],
+  dragClass: 'deactivated',
+  lastTarget: null,
+  lastEnter: null,
 
   abortChangeDir() {
     if (this.get('runLater')) {
@@ -38,6 +39,7 @@ export default Ember.Component.extend({
   },
 
   dragLeave() {
+    this.set('lastObjectHovered', false);
     this.abortChangeDir();
     if (this.get('enabled') === true) {
       this.set('dragClass', 'deactivated');
@@ -45,7 +47,13 @@ export default Ember.Component.extend({
   },
 
   dragOver(event) {
-
+    if (this.get('lastEnter') === true) {
+      return;
+    }
+    this.set('lastEnter', true);
+    Ember.run.later(() => {
+      this.set('lastEnter', null);
+    }, 10);
     if (this.get('setLastObjectHovered')) {
       this.sendAction('setLastObjectHovered');
     }
@@ -61,7 +69,6 @@ export default Ember.Component.extend({
       var runLater = Ember.run.later(this, function() {
         this.abortChangeDir();
         event.stopPropagation();
-        this.sendAction('dragAction');
       }, 1200);
 
       this.set('runLater', runLater);
@@ -93,7 +100,7 @@ export default Ember.Component.extend({
       }
     }
 
-    this.set('lastObjectHovered', null);
+    this.set('lastObjectHovered', false);
     return false;
   },
 });

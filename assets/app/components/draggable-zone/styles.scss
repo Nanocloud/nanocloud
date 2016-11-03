@@ -1,38 +1,33 @@
-.dragging {
+& {
+  .dragging {
+
+    .draggableDropzone {
+      border-left: 2px solid #f1faff;
+    }
+  }
 
   .draggableDropzone {
-    border-left: 2px solid #f1faff;
-  }
-}
 
-.target-current-folder {
-  margin-top: 10px;
-  border: 2px solid #fff !important;
-  padding: 10px 0px 30px 0px;
-}
-
-.draggableDropzone {
-  border-left: 2px solid #fff;
-
-  &.deactivated .container {
-    background-color: none;
-  }
-
-  &.activated {
-    background-color: #f1faff;
-    font-weight: bold;
-  }
-
-  .draggableItem {
-
-    padding: 5px 5px 5px 5px;
-    
-    &:active {
-      opacity: 0.4;
+    &.deactivated .container {
+      background-color: none;
     }
 
-    &:hover {
+    &.activated {
       background-color: #f1faff;
+      font-weight: bold;
+    }
+
+    .draggableItem {
+
+      padding: 5px 5px 5px 5px;
+
+      &:active {
+        opacity: 0.4;
+      }
+
+      &:hover {
+        background-color: #f7f7f7;
+      }
     }
   }
 }

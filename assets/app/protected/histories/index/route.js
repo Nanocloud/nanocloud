@@ -31,7 +31,6 @@ export default Ember.Route.extend({
   },
 
   model() {
-
     var promise = this.store.query('history', {});
     this.controllerFor('protected.histories.index').setData();
 

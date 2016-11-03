@@ -6,8 +6,8 @@
     </div>
     Create a new user
   </h1>
-  <div class="user-new content-wrapper form m-t-1">
-    <form {{action 'add' on='submit'}}>
+  <div class="content-wrapper form m-t-1 row">
+    <form class='col-lg-4 col-md-5 col-sm-6 col-xs-12' {{action 'add' on='submit'}}>
         {{nano-input hideError=userHasSubmitted placeholder='Firstname' model=model valuePath="firstName" autofocus=true }}
         {{nano-input hideError=userHasSubmitted placeholder='Lastname' model=model valuePath="lastName"}}
         {{nano-input hideError=userHasSubmitted placeholder='Email address' model=model valuePath="email"}}

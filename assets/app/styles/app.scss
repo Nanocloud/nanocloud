@@ -4,18 +4,22 @@
 @import 'bower_components/bootstrap/scss/bootstrap';
 @import 'font-awesome';
 @import 'pod-styles';
+@import "ember-paper";
 
 @import 'override/tooltipster';
 @import 'override/bootstrap';
 @import 'override/ember-modal-dialog';
 @import 'override/ember-model-table';
 @import 'override/ember-paper';
+@import 'override/theme';
 
 @import 'modules/icons';
 @import 'modules/text';
 @import 'modules/alias';
 @import 'modules/color';
+@import 'modules/animation';
 
 @import 'layout';
 @import 'pages/dashboard/styles';
-@import "ember-paper";
+@import 'pages/vdi/styles';
+@import 'pages/login/styles';

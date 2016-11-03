@@ -1,9 +1,14 @@
+.ember-application > .ember-view {
+  @extend .max;
+}
+
 .global-container {
   @extend .max;
   position: absolute;
   top: 0;
   font-size: $global_font_size;
   -webkit-font-smoothing: antialiased;
+  color: $text-color-1;
 }
 
 .main-content {
@@ -18,17 +23,26 @@
 }
 
 .section {
+  width: 100%;
   position: relative;
   padding: 30px;
-  height: inherit;
 }
 
 @media (max-width: 991px) {
+  .main-navbar,
   .main-content {
     width: 100%;
-
+    right: 0;
     &.show-sidebar {
-      transform: translate3d(250px, 0px, 0px);
+      width: calc(100% - 250px);
+    }
+  }
+  .main-navbar {
+    width: 100% !important;
+    left: auto !important;
+    &.show-sidebar {
+      right: 15px;
+      width: calc(100% - 250px - 15px) !important;
     }
   }
 }
@@ -93,12 +107,13 @@
 }
 
 .main-navbar {
+  @extend .animated;
   background-color: #fff;
   position: fixed;
   top: 0;
   left: $sidebar_width;
   width: calc(100% - #{$sidebar_width} - 15px);
-  z-index: 1;
+  z-index: 5;
 }
 
 .logout-btn {
