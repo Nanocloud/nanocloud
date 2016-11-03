@@ -9,7 +9,7 @@ EXPOSE 8081
 RUN apt-get update && apt-get install -y lsyncd
 RUN mkdir -p /opt/dist
 
-COPY lsyncd_source /lsyncd_source
-COPY start-dev-mac.sh /start-dev-mac.sh
+COPY config/lsyncd_source /lsyncd_source
+COPY config/start-dev-mac.sh /start-dev-mac.sh
 
 CMD bash /start-dev-mac.sh
