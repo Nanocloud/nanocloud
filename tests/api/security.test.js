@@ -2762,11 +2762,11 @@ module.exports = function() {
             .end(done);
         });
 
-        it('Regular users should be unauthorized', function(done) {
+        it('Regular users should be authorized', function(done) {
           nano.request(sails.hooks.http.app)
             .get('/api/sessions')
             .set('Authorization', 'Bearer ' + token)
-            .expect(403)
+            .expect(200)
             .end(done);
         });
 
