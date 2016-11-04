@@ -13,4 +13,4 @@ echo "Syncing"
 lsyncd /lsyncd_source
 
 echo "serving"
-cd /opt && (node-inspector --hidden assets/ --web-port=8081 &) && nodemon --debug app.js
+cd /opt && (node-inspector --hidden assets/ --web-port=8081 &) && nodemon -V --exec "node --debug app.js"
