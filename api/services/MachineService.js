@@ -868,6 +868,13 @@ function createImage(image) {
 function deleteImage(image) {
   return _driver.deleteImage(image)
     .catch((err) => {
+      /**
+       * If the method is not implemented on the driver, it's not an
+       * error du to the driver, so we ignore this error silently
+       */
+      if (err.message === 'Driver\'s method "deleteImage" not implemented') {
+        return Promise.resolve(image);
+      }
       return Promise.reject(err);
     });
 }
