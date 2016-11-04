@@ -1,11 +1,11 @@
 # Let's copy the source code in a directory outside a docker mount point to maximize compilation performance
 echo "Copying"
-cd /back/ && cp -r app.js api config /opt/
+cd /back/ && cp -r app.js package.json nodemon.json api config /opt/
 echo "copied"
 
 # Let's download dependencies
 echo "Installing deps"
-cd /opt && npm install &&
+cd /opt && npm install
 echo "Deps installed"
 
 # Let's sync source code between docker mount point and the folder inside the container

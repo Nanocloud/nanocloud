@@ -9,6 +9,7 @@ services:
     volumes:
       - ./assets:/front
       - static:/opt/dist
+      - ./proxy/certificates:/opt/ssl/:ro
     ports:
       - 4200:4200
       - 49152:49152
