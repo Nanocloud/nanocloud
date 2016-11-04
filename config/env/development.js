@@ -34,13 +34,13 @@
 
 let models = null;
 
-if (process.env.DEV_MAC === "true") {
+if (process.env.DEV_MAC === 'true') {
   models = {
-    connection: "postgresDevelopmentMac"
+    connection: 'postgresDevelopmentMac'
   };
 } else {
   models = {
-    connection: "postgresDevelopment"
+    connection: 'postgresDevelopment'
   };
 }
 
