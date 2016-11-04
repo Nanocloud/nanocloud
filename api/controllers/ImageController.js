@@ -138,11 +138,17 @@ module.exports = {
   },
 
   destroy: function(req, res) {
-    return Image.update({
-      id: req.allParams().id
-    }, {
-      deleted: true
-    })
+    return Image.findOne({ id: req.allParams().id })
+      .then((image) => {
+        return MachineService.deleteImage(image);
+      })
+      .then((imageDeleted) => {
+        return Image.update({
+          id: imageDeleted.id
+        }, {
+          deleted: true
+        });
+      })
       .then((image) => {
         return MachineService.updateMachinesPool()
           .then(() => {

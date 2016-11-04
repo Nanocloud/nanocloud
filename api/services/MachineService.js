@@ -859,6 +859,20 @@ function createImage(image) {
 }
 
 /*
+ * Delete an image
+ *
+ * @method deleteImage
+ * @param {Object} Image object
+ * @return {Promise[Image]} resolves to the deleted image
+ */
+function deleteImage(image) {
+  return _driver.deleteImage(image)
+    .catch((err) => {
+      return Promise.reject(err);
+    });
+}
+
+/*
  * Create a new broker log
  *
  * @method _createBrokerLog
@@ -965,5 +979,5 @@ function rebootMachine(machine) {
 module.exports = {
   initialize, getMachineForUser, driverName, sessionOpen, sessionEnded,
   machines, createImage, refresh, getPassword, rebootMachine, startMachine,
-  stopMachine, updateMachinesPool
+  stopMachine, updateMachinesPool, deleteImage
 };
