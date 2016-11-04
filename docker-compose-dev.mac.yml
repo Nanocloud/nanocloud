@@ -90,6 +90,21 @@ services:
     volumes:
       - plaza:/go/src/github.com/Nanocloud/nanocloud/plaza/
 
+  guacamole-client:
+    image: nanocloud/guacamole-client
+    volumes:
+      - ./guacamole-client/guac_home/guacamole.dev.mac.properties:/etc/guacamole/guacamole.properties
+    ports:
+      - 8080:8080
+    container_name: "guacamole-client"
+    restart: always
+
+  guacd:
+    image: nanocloud/guacd
+    ports:
+      - 4822:4822
+    container_name: "guacd"
+
 volumes:
   static:
     driver: local
