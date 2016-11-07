@@ -64,6 +64,23 @@ let App = Ember.Object.extend({
   }
 });
 
+function sortApps(apps) {
+  /**
+   * We need to sort apps by alphabetic order, but let desktop in first,
+   * so we force the result of comparing with desktop, and let javascript
+   * do the others comparason
+   */
+  apps.sort(function(app1, app2) {
+    if (app1.get('name') === 'Desktop') {
+      return -1;
+    } else if (app2.get('name') === 'Desktop') {
+      return 1;
+    } else {
+      return app1.get('name').localeCompare(app2.get('name'));
+    }
+  });
+}
+
 export default Ember.Controller.extend({
   showSingleTab: false,
   connectionName: null,
@@ -91,6 +108,7 @@ export default Ember.Controller.extend({
         }));
       });
 
+      sortApps(appRet);
       ret.push({
         apps: appRet,
         name: image.get('name'),
