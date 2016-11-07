@@ -30,8 +30,15 @@ const _ = require('lodash');
 module.exports = {
 
   find: function(req, res) {
+    let promise = null;
 
-    Machine.find()
+    if (req.user.isAdmin) {
+      promise = Machine.find();
+    } else {
+      promise = Machine.find({ user: req.user.id });
+    }
+
+    promise
       .then((machines) => {
 
         let sessionsRequest = [];

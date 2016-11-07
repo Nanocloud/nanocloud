@@ -61,10 +61,6 @@ module.exports.policies = {
     create: 'isAdmin'
   },
 
-  SessionController: {
-    find: 'isAdmin'
-  },
-
   GroupController: {
     create: 'isAdmin',
     find: 'isAdmin',
