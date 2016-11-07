@@ -62,7 +62,26 @@ func Patch(w http.ResponseWriter, r *http.Request) {
 
 	path = fmt.Sprintf("/home/%s/%s", username, filename)
 	newPath = fmt.Sprintf("/home/%s/%s", username, newfilename)
-	err := os.Rename(path, newPath);
+
+	_, err := os.Stat(newPath)
+	// if a file with exactly the same name already exists
+	if err == nil {
+		// we rename it like 'file (2).txt'
+		for i := 1; i > 0; i++ {
+			extension := filepath.Ext(newPath)
+			new_file := newPath[0:len(newPath)-len(extension)] + " (" + strconv.Itoa(i) + ")" + extension
+			_, err = os.Stat(new_file)
+			if err != nil {
+				err = os.Rename(path, new_file)
+				if err != nil {
+					log.Error(err)
+				}
+				break
+			}
+		}
+	} else {
+		err = os.Rename(path, newPath)
+	}
 
 	if err != nil {
 		log.Error(err)
@@ -70,23 +89,22 @@ func Patch(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	user, err := user.Lookup(username);
+	user, err := user.Lookup(username)
 	if err != nil {
 		log.Error(err)
 		http.Error(w, "Unable to retrieve user's permission", http.StatusInternalServerError)
 		return
 	}
 
-	uid, err := strconv.Atoi(user.Uid);
-	gid, err := strconv.Atoi(user.Gid);
-	err = os.Chown(newPath, uid, gid);
+	uid, err := strconv.Atoi(user.Uid)
+	gid, err := strconv.Atoi(user.Gid)
+	err = os.Chown(newPath, uid, gid)
 	if err != nil {
 		log.Error(err)
 		http.Error(w, "Unable to update file permission", http.StatusInternalServerError)
 		return
 	}
 }
-
 
 func CreateDirectory(w http.ResponseWriter, r *http.Request) {
 
@@ -95,18 +113,18 @@ func CreateDirectory(w http.ResponseWriter, r *http.Request) {
 	var path string
 
 	path = fmt.Sprintf("/home/%s/%s", username, filename)
-	err := os.Mkdir(path, 0777);
+	err := os.Mkdir(path, 0777)
 
-	user, err := user.Lookup(username);
+	user, err := user.Lookup(username)
 	if err != nil {
 		log.Error(err)
 		http.Error(w, "Unable to retrieve user's permission", http.StatusInternalServerError)
 		return
 	}
 
-	uid, err := strconv.Atoi(user.Uid);
-	gid, err := strconv.Atoi(user.Gid);
-	err = os.Chown(path, uid, gid);
+	uid, err := strconv.Atoi(user.Uid)
+	gid, err := strconv.Atoi(user.Gid)
+	err = os.Chown(path, uid, gid)
 	if err != nil {
 		log.Error(err)
 		http.Error(w, "Unable to update file permission", http.StatusInternalServerError)
@@ -121,7 +139,7 @@ func Delete(w http.ResponseWriter, r *http.Request) {
 	var path string
 
 	path = fmt.Sprintf("/home/%s/%s", username, filename)
-	err := os.RemoveAll(path);
+	err := os.RemoveAll(path)
 
 	if err != nil {
 		log.Error(err)
@@ -184,18 +202,18 @@ func Post(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Unable to write destination file", http.StatusInternalServerError)
 		return
 	}
-	dst.Sync();
+	dst.Sync()
 
-	user, err := user.Lookup(username);
+	user, err := user.Lookup(username)
 	if err != nil {
 		log.Error(err)
 		http.Error(w, "Unable to retrieve user's permission", http.StatusInternalServerError)
 		return
 	}
 
-	uid, err := strconv.Atoi(user.Uid);
-	gid, err := strconv.Atoi(user.Gid);
-	err = os.Chown(path, uid, gid);
+	uid, err := strconv.Atoi(user.Uid)
+	gid, err := strconv.Atoi(user.Gid)
+	err = os.Chown(path, uid, gid)
 	if err != nil {
 		log.Error(err)
 		http.Error(w, "Unable to update file permission", http.StatusInternalServerError)
