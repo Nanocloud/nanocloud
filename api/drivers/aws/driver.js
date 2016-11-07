@@ -481,6 +481,32 @@ class AWSDriver extends Driver {
   }
 
   /**
+   * Delete the specified image
+   *
+   * @method deleteImage
+   * @param {image} image Image to delete
+   * @return {Promise[Image]} resolves to the deleted image
+   */
+  deleteImage(imageToDelete) {
+    return new Promise((resolve, reject) => {
+      return ConfigService.get('awsImage')
+        .then((config) => {
+          if (config.awsImage === imageToDelete.iaasId) {
+            return reject('Default image can\'t be delete');
+          }
+          this._client.ec2.deregisterImage({
+            ImageId: imageToDelete.iaasId
+          }, (err) => {
+            if (err) {
+              return reject(err);
+            }
+            return resolve(imageToDelete);
+          });
+        });
+    });
+  }
+
+  /**
    * Calculate credit used by a user
    *
    * @method getUserCredit

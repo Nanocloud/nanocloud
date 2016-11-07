@@ -110,6 +110,17 @@ class Driver {
     return Promise.reject(new Error('Driver\'s method "createImage" not implemented'));
   }
 
+  /*
+   * Delete an image
+   *
+   * @method deleteImage
+   * @param {Object} Image object
+   * @return {Promise[Image]} resolves to the deleted image
+   */
+  deleteImage(/* image */) {
+    return Promise.reject(new Error('Driver\'s method "deleteImage" not implemented'));
+  }
+
   /**
    * Calculate credit used by a user
    *

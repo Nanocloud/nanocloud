@@ -859,6 +859,27 @@ function createImage(image) {
 }
 
 /*
+ * Delete an image
+ *
+ * @method deleteImage
+ * @param {Object} Image object
+ * @return {Promise[Image]} resolves to the deleted image
+ */
+function deleteImage(image) {
+  return _driver.deleteImage(image)
+    .catch((err) => {
+      /**
+       * If the method is not implemented on the driver, it's not an
+       * error du to the driver, so we ignore this error silently
+       */
+      if (err.message === 'Driver\'s method "deleteImage" not implemented') {
+        return Promise.resolve(image);
+      }
+      return Promise.reject(err);
+    });
+}
+
+/*
  * Create a new broker log
  *
  * @method _createBrokerLog
@@ -965,5 +986,5 @@ function rebootMachine(machine) {
 module.exports = {
   initialize, getMachineForUser, driverName, sessionOpen, sessionEnded,
   machines, createImage, refresh, getPassword, rebootMachine, startMachine,
-  stopMachine, updateMachinesPool
+  stopMachine, updateMachinesPool, deleteImage
 };

@@ -290,6 +290,14 @@ app.post('/images', upload.array(), function (req, res) {
     });
 });
 
+app.delete('/images', function(req, res) {
+  var imageToDelete = req.body.iaasId;
+  var cmd = `rm -f ${drivePath}${imageToDelete}`;
+
+  exec(cmd, () => {});
+  res.status = 200;
+  return res.send({iaasId: imageToDelete});
+});
 
 app.get('/', function (req, res) {
   return res.send('Qemu manager');

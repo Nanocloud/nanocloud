@@ -240,6 +240,38 @@ class QemuDriver extends Driver {
   }
 
   /**
+   * Delete the specified image
+   *
+   * @method deleteImage
+   * @param {image} image Image to delete
+   * @return {Promise[Image]} resolves to the deleted image
+   */
+  deleteImage(imageToDelete) {
+    return new Promise((resolve, reject) => {
+      if (imageToDelete.iaasId === 'image.qcow2') {
+        return reject('Default image can\'t be delete');
+      }
+      return ConfigService.get('qemuServiceURL', 'qemuServicePort')
+        .then((config) => {
+          return request({
+            url: 'http://' + config.qemuServiceURL + ':' + config.qemuServicePort + '/images',
+            json: true,
+            method: 'DELETE',
+            body: {
+              iaasId: imageToDelete.iaasId
+            }
+          });
+        })
+        .then(() => {
+          return resolve(imageToDelete);
+        })
+        .catch((err) => {
+          return reject(err);
+        });
+    });
+  }
+
+  /**
    * Retrieve the machine's data
    *
    * @method refresh
