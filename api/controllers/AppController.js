@@ -25,7 +25,7 @@ const Promise = require('bluebird');
 const _ = require('lodash');
 
 /* globals App, UserGroup, Image, ImageGroup, Machine, MachineService */
-/* globals JsonApiService, PlazaService, ConfigService, AppGroup */
+/* globals JsonApiService, PlazaService, ConfigService, AppGroup, User */
 
 /**
  * Controller of apps resource.
@@ -220,11 +220,28 @@ module.exports = {
     return getImagesPromise
       .then((images) => {
         return Promise.map(images, function(image) {
-          return Machine.findOne({
-            user: req.user.id,
-            image: image.id
+
+          return Promise.props({
+            machine: Machine.findOne({
+              user: req.user.id,
+              image: image.id
+            }),
+            user: User.findOne({
+              id: req.user.id
+            })
           })
-            .then((machine) => {
+            .then(({machine, user}) => {
+              let username = null;
+              let password = null;
+
+              if (user.ldapUser) {
+                // AD username is the same as the email
+                username = user.email;
+                password = user.ldapPassword;
+              } else {
+                username = machine.username;
+                password = machine.password;
+              }
               if (machine) {
                 image.apps.forEach((app) => {
                   connections.push({
@@ -234,8 +251,8 @@ module.exports = {
                     machineType: machine.flavor,
                     machineDriver: machine.type,
                     port: machine.rdpPort,
-                    username: machine.username,
-                    password: machine.password,
+                    username: username,
+                    password: password,
                     'remote-app': '',
                     protocol: 'rdp',
                     'app-name': app.id
