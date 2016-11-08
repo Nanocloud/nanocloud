@@ -187,7 +187,7 @@ module.exports = {
 
   destroy: function(req, res) {
     var imageId = req.allParams().id;
-    return Image.findOne({ id: req.allParams().id })
+    return Image.findOne({ id: imageId })
       .then((image) => {
         return MachineService.deleteImage(image);
       })

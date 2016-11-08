@@ -263,9 +263,7 @@ module.exports = {
       .then(() => {
         return App.destroy({ id: appId });
       })
-      .then(() => {
-        return res.ok();
-      })
+      .then(res.ok)
       .catch(res.negotiate);
   }
 };
