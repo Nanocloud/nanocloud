@@ -31,16 +31,8 @@ export default Ember.Component.extend({
   lastTarget: null,
   lastEnter: null,
 
-  abortChangeDir() {
-    if (this.get('runLater')) {
-      Ember.run.cancel(this.get('runLater'));
-      this.set('runLater', null);
-    }
-  },
-
   dragLeave() {
     this.set('lastObjectHovered', false);
-    this.abortChangeDir();
     if (this.get('enabled') === true) {
       this.set('dragClass', 'deactivated');
     }
@@ -65,15 +57,6 @@ export default Ember.Component.extend({
       return false;
     }
 
-    if (!this.get('runLater')) {
-      var runLater = Ember.run.later(this, function() {
-        this.abortChangeDir();
-        event.stopPropagation();
-      }, 1200);
-
-      this.set('runLater', runLater);
-    }
-
     if (this.get('enabled') === true) {
 
       if (this.get('lastTarget') !== this.get('draggedTarget')) {
@@ -88,7 +71,6 @@ export default Ember.Component.extend({
 
   drop(event) {
     event.preventDefault();
-    this.abortChangeDir();
 
     let uploadData = event.dataTransfer.files;
     if (uploadData.length > 0) {
