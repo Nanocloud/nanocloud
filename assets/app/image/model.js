@@ -58,6 +58,7 @@ export default DS.Model.extend(Validations, {
     }
   }),
   deleted: DS.attr('boolean'),
+  instancesSize: DS.attr('string'),
   password: DS.attr('string'),
   createdAt: DS.attr('date'),
   updatedAt: DS.attr('date'),

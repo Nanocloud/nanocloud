@@ -71,6 +71,16 @@
           {{/edit-text}}
         </td>
       </tr>
+      <tr>
+        <th scope="row">Instances size</th>
+        <td>
+          <div>
+            {{#paper-checkbox class="bl" value=(is-equal model.instancesSize 'small') onChange=(action 'changeImageSize' 'small')}}Small{{/paper-checkbox}}
+            {{#paper-checkbox class="bl" value=(is-equal model.instancesSize 'medium') onChange=(action 'changeImageSize' 'medium')}}Medium{{/paper-checkbox}}
+            {{#paper-checkbox class="bl" value=(is-equal model.instancesSize 'large') onChange=(action 'changeImageSize' 'large')}}Large{{/paper-checkbox}}
+          </div>
+        </td>
+      </tr>
 {{#if isRemoveable}}
       <tr>
         <th class='p-t-2' scope="row">Delete image</th>

@@ -497,12 +497,14 @@ function updateMachinesPool() {
           text: 'SELECT image, COUNT(image) FROM machine WHERE "machine"."user" IS NULL GROUP BY "machine"."image"',
           values: []
         }),
+        machines: Machine.find(),
         images: Image.find()
       })
-        .then(({config, machinesCount, images}) => {
+        .then(({config, machinesCount, machines, images}) => {
           images.forEach((image) => {
             let machineCreated = _.find(machinesCount.rows, (m) => m.image === image.id) || {count: 0};
             let machineToCreate = 0;
+            let machineToRecreate = 0;
             let machineToDestroy = 0;
             let machinePoolSize = image.poolSize;
             if (image.poolSize === null) {
@@ -512,6 +514,7 @@ function updateMachinesPool() {
               machineToCreate = 0;
               machineToDestroy = machineCreated.count;
             } else {
+              machineToRecreate = _.takeWhile(machines, (m) => {return m.image === image.id && m.flavor !== _driver.instancesSize(image.instancesSize);}).length;
               machineToCreate = machinePoolSize - machineCreated.count;
               machineToDestroy = machineCreated.count - machinePoolSize;
             }
@@ -532,6 +535,24 @@ function updateMachinesPool() {
               _createBrokerLog({
                 type: _driver.name()
               }, `Update machine pool for image ${image.name} from ${machineCreated.count} to ${+machineCreated.count + machineToCreate} (+${machineToCreate})`);
+            } else if (machineToRecreate > 0) {
+              return Machine.find({
+                image: image.id,
+                user: null,
+                flavor: {
+                  '!': image.instancesSize
+                }
+              })
+                .then((machines) => {
+                  _.times(machineToRecreate, (index) => {
+                    _terminateMachine(machines[index]);
+                    _createMachine(image);
+                  });
+                  _createBrokerLog({
+                    type: _driver.name(),
+                    flavor: image.instancesSize
+                  }, `Update machine pool for image ${image.name} recreate ${+machineToRecreate}`);
+                });
             }
           });
 
@@ -541,7 +562,7 @@ function updateMachinesPool() {
             type: _driver.name()
           }, 'Machine pool updated');
         })
-        .catch(() => {
+        .catch((err) => {
           _createBrokerLog({
             type: _driver.name()
           }, 'Error while updating the pool');

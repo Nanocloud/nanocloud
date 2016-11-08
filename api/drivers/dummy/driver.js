@@ -296,6 +296,10 @@ class DummyDriver extends BaseDriver {
       return resolve(machine.password);
     });
   }
+
+  instancesSize(size) {
+    return size;
+  }
 }
 
 module.exports = DummyDriver;

@@ -62,6 +62,10 @@ class ManualDriver extends Driver {
       status: 'running'
     });
   }
+
+  instancesSize(size) {
+    return size;
+  }
 }
 
 module.exports = ManualDriver;

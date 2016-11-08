@@ -66,6 +66,13 @@ export default Ember.Controller.extend({
       }
     },
 
+    changeImageSize(size) {
+      let image = this.get('model');
+
+      image.set('instancesSize', size);
+      image.save();
+    },
+
     saveImageName: function(defer) {
       this.get('model').validate({ on: ['name'] })
         .then(({ validations }) => {

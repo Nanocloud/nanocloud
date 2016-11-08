@@ -335,6 +335,10 @@ class QemuDriver extends Driver {
             });
         });
   }
+
+  instancesSize(size) {
+    return size;
+  }
 }
 
 module.exports = QemuDriver;
