@@ -25,4 +25,35 @@
 import Ember from 'ember';
 export default Ember.Controller.extend({
   configController: Ember.inject.controller('protected.configs'),
+
+  images: Ember.computed('model.images', function() {
+    return this.get('model.images');
+  }),
+
+  activator() {
+    this.get('store').query('image', {})
+      .then((response) => {
+        this.set('model.images', response);
+      });
+  },
+
+  actions: {
+    saveImagePoolSize(image, e) {
+      image.set('poolSize', e.target.value);
+      image.validate({ on: ['poolSize'] })
+        .then(({ validations }) => {
+
+          if (validations.get('isInvalid') === true) {
+            this.toast.error(image.get('validations.attrs.poolSize.messages'));
+          } else {
+            image.save()
+              .then(() => {
+                this.toast.success('Image\'s pool size has been updated successfully');
+              }, () => {
+                this.toast.error('Image\'s pool size has not been updated');
+              });
+          }
+        });
+    },
+  }
 });

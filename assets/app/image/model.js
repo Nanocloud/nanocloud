@@ -22,6 +22,7 @@
  * <http://www.gnu.org/licenses/>.
  */
 
+import Ember from 'ember';
 import DS from 'ember-data';
 import {validator, buildValidations} from 'ember-cp-validations';
 
@@ -32,14 +33,30 @@ const Validations = buildValidations({
       min: 2,
       max: 255
     })
+  ],
+  poolSize: [
+    validator('number', {
+      allowBlank: true,
+      integer: true,
+      allowString: true,
+      gte: 0,
+    })
   ]
 });
 
 export default DS.Model.extend(Validations, {
+  configuration: Ember.inject.service('configuration'),
   iaasId: DS.attr('string'),
   name: DS.attr('string'),
   buildFrom: DS.attr('string'),
   poolSize: DS.attr('number'),
+  computedPoolSize: Ember.computed('poolSize', function() {
+    if (this.get('poolSize') === null) {
+      return this.get('configuration.machinePoolSize');
+    } else {
+      return this.get('poolSize');
+    }
+  }),
   deleted: DS.attr('boolean'),
   password: DS.attr('string'),
   createdAt: DS.attr('date'),

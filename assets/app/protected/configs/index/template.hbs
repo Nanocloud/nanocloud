@@ -6,10 +6,31 @@
     </div>
     <div class="col-sm-3">{{input-confirm class="in-bl va-bottom" placeholder=configController.sessionDuration value=configController.sessionDuration type="number"}}</div>
   </div>
+{{/container-block}}
+
+{{#container-block}}
+  <h4 class='color-default m-b-1'>Machine pool size</h4>
+
   <div class="form-group row">
     <div class="col-sm-3">
-      <p  class="confirm-input-item color-primary in-bl fl va-sub">Machine pool size</p>
+      <p  class="confirm-input-item color-primary in-bl fl va-sub">Default pool size</p>
     </div>
     <div class="col-sm-3">{{input-confirm class="in-bl va-bottom" placeholder=configController.machinePoolSize value=configController.machinePoolSize type="number"}}</div>
   </div>
+
+  {{#each images as |image index|}}
+    <div class="form-group row">
+      <div class="col-sm-3">
+        <p  class="confirm-input-item color-primary in-bl fl va-sub">Image <strong>{{ image.name }}</strong></p>
+      </div>
+      <div class="col-sm-3">
+        {{input-confirm
+          class="in-bl va-bottom"
+          change=(action "saveImagePoolSize" image)
+          placeholder=image.computedPoolSize
+          value=image.computedPoolSize
+          type="number"}}
+      </div>
+    </div>
+  {{/each}}
 {{/container-block}}

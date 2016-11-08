@@ -25,6 +25,7 @@
 import Ember from 'ember';
 
 export default Ember.Controller.extend({
+  configuration: Ember.inject.service('configuration'),
 
   publicationDate: Ember.computed(function() {
     return window.moment(new Date(this.get('model.publicationDate'))).format('MMMM Do YYYY, h:mm:ss A');
@@ -38,8 +39,8 @@ export default Ember.Controller.extend({
     return this.get('model.buildFrom') !== null;
   }),
 
-  poolSize: Ember.computed('model.poolSize', function() {
-    return this.get('model.poolSize') || -1;
+  poolSize: Ember.computed('model.poolSize', 'configuration.machinePoolSize', function() {
+    return this.get('model.poolSize') || this.get('configuration.machinePoolSize');
   }),
 
   actions: {
