@@ -9,6 +9,7 @@
           {{#if selectedImageLength}}
             <th>App</th>
             <th></th>
+            <th></th>
           {{/if}}
         </tr>
       </thead>
@@ -42,6 +43,14 @@
                 </tr>
               {{/each}}
               </td>
+                <td>
+                  <tr>
+                    <i class="material-icons color-wait">warning</i>
+                  </tr>
+                  <tr>
+                    Deselecting applications does not forbid users to access them through Windows.
+                  </tr>
+                </td>
             {{/if}}
           </tr>
         {{/each}}

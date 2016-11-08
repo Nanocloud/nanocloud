@@ -35,7 +35,11 @@ export default Ember.Controller.extend({
   actions: {
     addImage(image) {
       let group = this.get('group');
+      let imageApps = image.get('apps').toArray();
 
+      imageApps.forEach((imageApp) => {
+        group.get('apps').pushObject(imageApp);
+      });
       group.get('images').pushObject(image);
       group.save();
     },
@@ -43,7 +47,11 @@ export default Ember.Controller.extend({
     removeImage(image) {
       let group = this.get('group');
       let images = group.get('images');
+      let imageApps = image.get('apps').toArray();
 
+      imageApps.forEach((imageApp) => {
+        group.get('apps').removeObject(imageApp);
+      });
       images.removeObject(image);
       group.save();
     },
