@@ -57,6 +57,11 @@ module.exports = {
     },
     image: {
       model: 'image',
+    },
+    groups: {
+      collection: 'group',
+      via: 'apps',
+      through: 'appgroup'
     }
   }
 };

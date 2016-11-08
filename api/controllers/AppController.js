@@ -24,7 +24,8 @@
 const Promise = require('bluebird');
 const _ = require('lodash');
 
-/* globals App, UserGroup, Image, ImageGroup, Machine, MachineService, JsonApiService, PlazaService, ConfigService */
+/* globals App, UserGroup, Image, ImageGroup, Machine, MachineService */
+/* globals JsonApiService, PlazaService, ConfigService, AppGroup */
 
 /**
  * Controller of apps resource.
@@ -91,6 +92,7 @@ module.exports = {
         id: req.allParams().id
       })
         .populate('image')
+        .populate('groups')
         .then(res.ok);
     } else {
       this._getApps(req.user)
@@ -113,6 +115,7 @@ module.exports = {
 
         App.find(appIds)
           .populate('image')
+          .populate('groups')
           .then((apps) => {
             return res.ok(apps);
           });
@@ -252,5 +255,15 @@ module.exports = {
           return res.negotiate(err);
         }
       });
+  },
+  destroy(req, res) {
+    var appId = req.allParams().id;
+
+    return AppGroup.destroy({ app: appId })
+      .then(() => {
+        return App.destroy({ id: appId });
+      })
+      .then(res.ok)
+      .catch(res.negotiate);
   }
 };

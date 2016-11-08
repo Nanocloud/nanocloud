@@ -34,6 +34,7 @@ module.exports = {
     Group.findOne(req.allParams().id)
       .populate('members')
       .populate('images')
+      .populate('apps')
       .then(res.ok)
       .catch(res.negotiate);
   },
@@ -43,6 +44,7 @@ module.exports = {
     Group.find()
       .populate('members')
       .populate('images')
+      .populate('apps')
       .then(res.ok)
       .catch(res.negotiate);
   }

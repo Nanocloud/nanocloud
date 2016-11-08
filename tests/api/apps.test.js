@@ -196,7 +196,7 @@ module.exports = function() {
        * - 3 users (admin, someguy and someotherguy)
        * - 2 apps (app1 and app2 which is the desktop)
        * image has app1 and desktop has apps
-       * group1 has admin and someotherguy as users and image as image
+       * group1 has admin and someotherguy as users and image as image and app1 as app
        * group2 has someguy and someotherguy as users and no link to any image
        */
       before('Add proper groups, users and app for testing', function(done) {
@@ -305,6 +305,12 @@ module.exports = function() {
                       }, {
                         'type': 'users',
                         'id': nano.adminId()
+                      }]
+                    },
+                    'apps': {
+                      'data': [{
+                        'type': 'apps',
+                        'id': app1
                       }]
                     }
                   },
@@ -415,7 +421,7 @@ module.exports = function() {
                   }
                 });
 
-                expect(res.body.data).to.include({
+                expect(res.body.data).to.not.include({
                   'type': 'apps',
                   'id': app2,
                   'attributes': {
@@ -432,6 +438,12 @@ module.exports = function() {
                         'type': 'images',
                         'id': image
                       }
+                    },
+                    'groups': {
+                      'data': [{
+                        'type': 'groups',
+                        'id': group1
+                      }]
                     }
                   }
                 });
@@ -452,6 +464,12 @@ module.exports = function() {
                         'type': 'images',
                         'id': image
                       }
+                    },
+                    'groups': {
+                      'data': [{
+                        'type': 'groups',
+                        'id': group1
+                      }]
                     }
                   }
                 });

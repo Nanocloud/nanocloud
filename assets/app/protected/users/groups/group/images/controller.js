@@ -28,11 +28,18 @@ import ArrayDiff from 'nanocloud/lib/array-diff';
 export default Ember.Controller.extend({
   groupController: Ember.inject.controller('protected.users.groups.group'),
   groupBinding: 'groupController.model',
+  selectedImageLength: Ember.computed('group.images', function() {
+    return this.get('group.images').toArray().length;
+  }),
 
   actions: {
     addImage(image) {
       let group = this.get('group');
+      let imageApps = image.get('apps').toArray();
 
+      imageApps.forEach((imageApp) => {
+        group.get('apps').pushObject(imageApp);
+      });
       group.get('images').pushObject(image);
       group.save();
     },
@@ -40,8 +47,27 @@ export default Ember.Controller.extend({
     removeImage(image) {
       let group = this.get('group');
       let images = group.get('images');
+      let imageApps = image.get('apps').toArray();
 
+      imageApps.forEach((imageApp) => {
+        group.get('apps').removeObject(imageApp);
+      });
       images.removeObject(image);
+      group.save();
+    },
+
+    addApp(app) {
+      let group = this.get('group');
+
+      group.get('apps').pushObject(app);
+      group.save();
+    },
+
+    removeApp(app) {
+      let group = this.get('group');
+      let apps = group.get('apps');
+
+      apps.removeObject(app);
       group.save();
     }
   },

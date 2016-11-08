@@ -23,7 +23,7 @@
  */
 
 // jshint mocha:true
-/* globals sails, Group, Image */
+/* globals sails, Group, Image, App */
 
 var nano = require('./lib/nanotest');
 var chai = require('chai');
@@ -590,6 +590,164 @@ module.exports = function() {
               .expect(nano.jsonApiSchema(expectedSchema))
               .expect(nano.jsonApiRelationship({
                 'images': []
+              }));
+          })
+          .then(() => {
+            return done();
+          });
+      });
+    });
+
+    describe('Add app to a group', function() {
+
+      it('Should return group with apps relationship', function(done) {
+
+        var groupID = null;
+
+        nano.request(sails.hooks.http.app)
+          .post('/api/groups')
+          .send({
+            'data': {
+              'attributes': {
+                'name': 'Group to add app to'
+              },
+              'type': 'groups'
+            }
+          })
+          .set(nano.adminLogin())
+          .expect(201)
+          .expect(nano.jsonApiSchema(expectedSchema))
+          .then((res) => {
+
+            groupID = res.body.data.id;
+            return App.findOne({
+              displayName: 'Desktop'
+            })
+              .then((app) => {
+                return nano.request(sails.hooks.http.app)
+                  .patch('/api/groups/' + groupID)
+                  .send({
+                    'data': {
+                      'id': groupID,
+                      'attributes': {
+                        'name': 'Group to add app to'
+                      },
+                      'relationships': {
+                        'apps': {
+                          'data': [{
+                            'type': 'apps',
+                            'id': app.id
+                          }]
+                        }
+                      },
+                      'type': 'groups'
+                    }
+                  })
+                  .set(nano.adminLogin())
+                  .expect(200)
+                  .expect((res) => {
+                    expect(res.body.data).to.be.an('object');
+                  })
+                  .expect(nano.jsonApiSchema(expectedSchema))
+                  .expect(nano.jsonApiRelationship({
+                    'apps': [{
+                      type: 'apps',
+                      id: app.id
+                    }]
+                  }));
+              });
+          })
+          .then(() => {
+            return done();
+          });
+      });
+    });
+
+    describe('Remove app from a group', function() {
+
+      it('Should return group without any apps relationship', function(done) {
+
+        var groupID = null;
+
+        nano.request(sails.hooks.http.app)
+          .post('/api/groups')
+          .send({
+            'data': {
+              'attributes': {
+                'name': 'Group to remove app access from'
+              },
+              'type': 'groups'
+            }
+          })
+          .set(nano.adminLogin())
+          .expect(201)
+          .expect(nano.jsonApiSchema(expectedSchema))
+          .then((res) => {
+
+            groupID = res.body.data.id;
+
+            return App.findOne({
+              displayName: 'Desktop'
+            })
+              .then((app) => {
+                nano.request(sails.hooks.http.app)
+                  .patch('/api/groups/' + groupID)
+                  .send({
+                    'data': {
+                      'id': groupID,
+                      'attributes': {
+                        'name': 'Group to remove app access from'
+                      },
+                      'relationships': {
+                        'apps': {
+                          'data': [{
+                            'type': 'apps',
+                            'id': app.id
+                          }]
+                        }
+                      },
+                      'type': 'groups'
+                    }
+                  })
+                  .set(nano.adminLogin())
+                  .expect(200)
+                  .expect((res) => {
+                    expect(res.body.data).to.be.an('object');
+                  })
+                  .expect(nano.jsonApiSchema(expectedSchema))
+                  .expect(nano.jsonApiRelationship({
+                    'apps': [{
+                      type: 'apps',
+                      id: nano.desktopId()
+                    }]
+                  }));
+              });
+          })
+          .then(() => {
+            return nano.request(sails.hooks.http.app)
+              .patch('/api/groups/' + groupID)
+              .send({
+                'data': {
+                  'id': groupID,
+                  'attributes': {
+                    'name': 'Group to remove app from'
+                  },
+                  'relationships': {
+                    'apps': {
+                      'data': []
+                    }
+                  },
+                  'type': 'groups'
+                }
+              })
+              .set(nano.adminLogin())
+              .expect(200)
+              .expect((res) => {
+                expect(res.body.data).to.be.an('object');
+              })
+              .expect(nano.jsonApiSchema(expectedSchema))
+              .expect(nano.jsonApiRelationship({
+                'apps': []
               }));
           })
           .then(() => {

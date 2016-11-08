@@ -22,7 +22,8 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-/* globals Machine, MachineService, JsonApiService, Image */
+/* globals Machine, MachineService, JsonApiService, Image, App */
+/* globals AppGroup, ImageGroup */
 
 const Promise = require('bluebird');
 const _ = require('lodash');
@@ -131,14 +132,62 @@ module.exports = {
           .populate('apps')
           .populate('groups')
           .then((images) => {
-            return res.ok(images);
+
+            /**
+             * The images we find are populated with ALL their apps, but for regular
+             * users, we should delete on this app table all apps the user should not
+             * have access.
+             *
+             * To do this, we take all apps associated to the user's group, who their
+             * image has not been deleted.
+             * Then, for all images, we check the difference between image's apps,
+             * and apps user should have access, and we delete fields on image's apps,
+             * who are not corresponding to user's apps.
+             */
+
+            return App.query({
+              text: `SELECT DISTINCT
+                 "app".id,
+                 "app".alias,
+                 "app"."displayName",
+                 "app"."filePath",
+                 "app"."image"
+                 FROM "app"
+                 LEFT JOIN "appgroup" on appgroup.app = app.id
+                 LEFT JOIN "group" on appgroup.group = "group".id
+                 LEFT JOIN "usergroup" on usergroup.group = "group".id
+                 LEFT JOIN "image" on image.id = "app".image
+                 WHERE (usergroup.user = $1::varchar OR $2::boolean = true)
+                 AND image.deleted = false`,
+              values: [
+                req.user.id,
+                req.user.isAdmin
+              ]
+            }, (err, groupApps) => {
+              if (err) {
+                return res.negotiate(err);
+              }
+              groupApps = groupApps.rows;
+              _.map(images, (image) => {
+                _.remove(image.apps, (app) => {
+                  /**
+                   * If apps of an image is find on apps included on the user's group,
+                   * it seems we should not delete it from the table, cause the user
+                   * should have access to it, so we return false.
+                   */
+                  return (_.find(groupApps, { id: app.id })) ? false : true;
+                });
+              });
+              return res.ok(images);
+            });
           });
       })
       .catch(res.negociate);
   },
 
   destroy: function(req, res) {
-    return Image.findOne({ id: req.allParams().id })
+    var imageId = req.allParams().id;
+    return Image.findOne({ id: imageId })
       .then((image) => {
         return MachineService.deleteImage(image);
       })
@@ -155,6 +204,24 @@ module.exports = {
             res.status(202);
             return res.send(JsonApiService.serialize('images', image[0]));
           });
+      })
+      .then(() => {
+        return ImageGroup.destroy({
+          image: imageId
+        });
+      })
+      .then(() => {
+        return App.find({
+          image: imageId
+        });
+      })
+      .then((apps) => {
+        apps.forEach((app) => {
+          return AppGroup.destroy({ app: app.id })
+            .then(() => {
+              return App.destroy({ id: app.id });
+            });
+        });
       })
       .catch(res.negociate);
   }

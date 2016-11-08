@@ -61,6 +61,7 @@ export default Ember.Controller.extend({
         name: item.get('name'),
         members: item.get('members.length'),
         images: item.get('images.length'),
+        apps: item.get('apps.length'),
       }));
     });
     this.set('data', ret);
@@ -84,6 +85,12 @@ export default Ember.Controller.extend({
     {
       propertyName: 'images',
       title: 'Number of images',
+      disableFiltering: true,
+      filterWithSelect: false
+    },
+    {
+      propertyName: 'apps',
+      title: 'Number of applications',
       disableFiltering: true,
       filterWithSelect: false
     },
