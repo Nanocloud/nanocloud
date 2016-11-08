@@ -71,6 +71,7 @@ module.exports = {
 
     iaas: 'manual',
     machinePoolSize: 1,
+    instancesSize: 'medium',
 
     photon: false,
     neverTerminateMachine: false,

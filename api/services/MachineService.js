@@ -101,7 +101,7 @@ function initialize() {
         return _initializing;
       }
 
-      _initializing = ConfigService.get('iaas')
+      _initializing = ConfigService.get('iaas', 'instancesSize')
         .then((config) => {
           return Image.findOrCreate({
             buildFrom: null
@@ -109,7 +109,8 @@ function initialize() {
             iaasId: null,
             name: 'Default',
             buildFrom: null,
-            deleted: false
+            deleted: false,
+            instancesSize: config.instancesSize,
           })
             .then(() => {
               _driver = new (drivers[config.iaas])();

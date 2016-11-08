@@ -56,6 +56,10 @@ module.exports = {
       type: 'string',
       defaultsTo: null
     },
+    instancesSize: {
+      type: 'string',
+      defaultsTo: null
+    },
     groups: {
       collection: 'group',
       via: 'images',
@@ -64,7 +68,7 @@ module.exports = {
     apps: {
       collection: 'app',
       via: 'image',
-    }
+    },
   },
 
   afterCreate: function(values, next){
