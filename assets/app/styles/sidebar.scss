@@ -88,10 +88,11 @@
 
 .sidebar-logo {
   background-image: url('/assets/images/logo.png');
-  height: 60px;
+  height: 75px;
   background-repeat: no-repeat;
-  background-position: 70px 25px;
-  background-size: 34%;
+  background-position: center;
+  background-size: auto 60%;
+  margin-top: 10px;
 }
 
 .version-number {
