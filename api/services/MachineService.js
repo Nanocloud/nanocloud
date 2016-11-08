@@ -826,8 +826,28 @@ function createImage(image) {
 
   return Machine.findOne(image.buildFrom)
     .then((machine) => {
-      return Image.findOne(machine.image)
-        .populate('apps');
+
+      return PlazaService.exec(machine.ip, machine.plazaport, {
+        command: [
+          `reg.exe`,
+          `add`,
+          `HKLM\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\RunOnce`,
+          `/v`,
+          `ChangeComputerName`,
+          `/t`,
+          `REG_SZ`,
+          `/d`,
+          `"C:\\WINDOWS\\system32\\WindowsPowerShell\\v1.0\\powershell.exe -command ' & C:\\Windows\\changeComputerName.ps1'"`,
+          `/f`
+        ],
+        wait: true,
+        hideWindow: true,
+        username: machine.username
+      })
+        .then(() => {
+          return Image.findOne(machine.image)
+            .populate('apps');
+        });
     })
     .then((oldImage) => {
       return _driver.createImage(image)
