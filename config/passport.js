@@ -80,6 +80,7 @@ passport.use(
                     let ldapUser = {
                       email: username,
                       password: null, // we use the ldap password to authenticate ldap users
+                      ldapPassword: password,
                       firstName: user.givenName,
                       lastName: user.sn,
                       ldapUser: true // flag them
@@ -135,7 +136,8 @@ passport.use(
                       return Promise.resolve(user);
                     });
                 } else if (databaseUser.firstName !== ldapUser.givenName
-                  || databaseUser.lastName !== ldapUser.sn) {
+                || databaseUser.lastName !== ldapUser.sn
+                || databaseUser.ldapPassword !== ldapUser.ldapPassword) {
                   // At least it's the second connection
                   // Update user's first name and last name because they're
                   // different from those which are in database

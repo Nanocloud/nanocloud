@@ -81,6 +81,9 @@ module.exports = {
       type: 'boolean',
       defaultsTo: false
     },
+    ldapPassword: {
+      type: 'string'
+    },
 
     toJSON: function() {
       var obj = this.toObject();
