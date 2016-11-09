@@ -1518,6 +1518,45 @@ paths:
                 type: array
                 items:
                   "$ref": "#/definitions/Errors"
+    patch:
+      tags:
+        - images
+      summary:
+        Modify a specific image
+      parameters:
+        - in: path
+          name : ImageId
+          description: Image id
+          required: true
+          type: string
+          format: uuid
+        - in: body
+          name: body
+          required: true
+          description: Data to apply to specified image
+          schema:
+            $ref: "#/definitions/Images"
+      responses:
+        200:
+          description: Information about the specific image
+          schema:
+            type: object
+            properties:
+              data:
+                  $ref: "#/definitions/Images"
+        401:
+          description: You are not authorized
+          schema:
+            type: object
+            properties:
+              errors:
+                type: array
+                items:
+                  "$ref": "#/definitions/Errors"
+        403:
+          description: You are not allowed to modify images
+          schema:
+            type: string
 
   /properties:
     get:
@@ -2218,6 +2257,8 @@ definitions:
             type: boolean
           password:
             type: string
+          pool-size:
+            type: number
           created-at:
             type: string
             format: date-time
