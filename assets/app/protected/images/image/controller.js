@@ -73,7 +73,12 @@ export default Ember.Controller.extend({
       let image = this.get('model');
 
       image.set('instancesSize', size);
-      image.save();
+      image.save()
+        .then(() => {
+          this.toast.success('Image\'s instances size has been updated successfully');
+        }, () => {
+          this.toast.error('Image\'s instances size has not been updated');
+        });
     },
 
     saveImageName: function(defer) {
