@@ -22,29 +22,16 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-import DS from 'ember-data';
-import {validator, buildValidations} from 'ember-cp-validations';
+function up(knex) {
+  return knex.schema.table('image', function(t) {
+    t.integer('poolSize');
+  });
+}
 
-const Validations = buildValidations({
-  name: [
-    validator('presence', true),
-    validator('length', {
-      min: 2,
-      max: 255
-    })
-  ]
-});
+function down(knex) {
+  return knex.schema.table('image', function(t) {
+    t.dropColumn('poolSize');
+  });
+}
 
-export default DS.Model.extend(Validations, {
-  iaasId: DS.attr('string'),
-  name: DS.attr('string'),
-  buildFrom: DS.attr('string'),
-  poolSize: DS.attr('number'),
-  deleted: DS.attr('boolean'),
-  password: DS.attr('string'),
-  createdAt: DS.attr('date'),
-  updatedAt: DS.attr('date'),
-
-  apps: DS.hasMany('app'),
-  groups: DS.hasMany('group'),
-});
+module.exports = { up, down };

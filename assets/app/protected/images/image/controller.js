@@ -38,6 +38,10 @@ export default Ember.Controller.extend({
     return this.get('model.buildFrom') !== null;
   }),
 
+  poolSize: Ember.computed('model.poolSize', function() {
+    return this.get('model.poolSize') || -1;
+  }),
+
   actions: {
 
     toggleModal() {
@@ -80,6 +84,28 @@ export default Ember.Controller.extend({
               defer.reject();
               this.toast.error('Image name has not been updated');
               this.get('model').rollbackAttributes();
+            });
+        });
+    },
+
+    changeImagePoolSize: function(defer) {
+      this.get('model')
+        .validate({ on: ['poolSize'] })
+        .then(({ validations }) => {
+
+          if (validations.get('isInvalid') === true) {
+            this.toast.error(this.get('model.validations.attrs.poolSize.messages'));
+            return defer.reject(this.get('model.validations.attrs.poolSize.messages'));
+          }
+
+          this.model.save()
+            .then(() => {
+              defer.resolve();
+              this.send('refreshModel');
+              this.toast.success('Image\'s pool size has been updated successfully');
+            }, () => {
+              defer.reject();
+              this.toast.error('Image\'s pool size has not been updated');
             });
         });
     },

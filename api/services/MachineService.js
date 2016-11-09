@@ -480,8 +480,6 @@ function _terminateMachine(machine) {
 
 /**
  * Create new machines if needed in the pool. It uses the `ConfigService`
- * variable:
- *  - machinePoolSize: the number of available machine to keep in the pool
  *
  * @method updateMachinesPool
  * @public
@@ -505,12 +503,16 @@ function updateMachinesPool() {
             let machineCreated = _.find(machinesCount.rows, (m) => m.image === image.id) || {count: 0};
             let machineToCreate = 0;
             let machineToDestroy = 0;
+            let machinePoolSize = image.poolSize;
+            if (image.poolSize === null) {
+              machinePoolSize = config.machinePoolSize;
+            }
             if (image.deleted === true) {
               machineToCreate = 0;
               machineToDestroy = machineCreated.count;
             } else {
-              machineToCreate = config.machinePoolSize - machineCreated.count;
-              machineToDestroy = machineCreated.count - config.machinePoolSize;
+              machineToCreate = machinePoolSize - machineCreated.count;
+              machineToDestroy = machineCreated.count - machinePoolSize;
             }
 
             if (machineToDestroy > 0) {
