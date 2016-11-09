@@ -541,9 +541,13 @@ function updateMachinesPool() {
               return Machine.find({
                 image: image.id,
                 user: null,
-                flavor: {
-                  '!': image.instancesSize
-                }
+                or: [{
+                  flavor: null
+                }, {
+                  flavor: {
+                    '!': _driver.instancesSize(image.instancesSize)
+                  }
+                }]
               })
                 .then((machinesWithWrongSize) => {
                   _.times(machineToRecreate, (index) => {
