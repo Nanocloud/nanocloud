@@ -73,8 +73,6 @@ class QemuDriver extends Driver {
 
   /**
    * Create a new virtual machine. It uses the `ConfigService` variables:
-   *  - qemuMemory: Memory in MB
-   *  - qemuCPU: Number of vCPU
    *  - qemuDrive: Hard drive file (qcow2)
    *  - qemuMachineUsername: Windows account username
    *  - qemuMachinePassword: Windows account password

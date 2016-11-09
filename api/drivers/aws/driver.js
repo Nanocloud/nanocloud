@@ -245,7 +245,6 @@ class AWSDriver extends Driver {
 
   /**
    * Create a new EC2 instance. It uses the `ConfigService` variables:
-   *  - awsFlavor: AWS EC2 instance type
    *  - plazaURI: The URL from where the instance will download plaza.exe
    *  - awsKeyName: The name of the KeyPair to use for the instance admin
    *  - plazaPort: Port to contact plaza
