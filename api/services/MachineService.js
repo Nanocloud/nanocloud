@@ -514,7 +514,9 @@ function updateMachinesPool() {
               machineToCreate = 0;
               machineToDestroy = machineCreated.count;
             } else {
-              machineToRecreate = _.takeWhile(machines, (m) => {return m.image === image.id && m.flavor !== _driver.instancesSize(image.instancesSize);}).length;
+              machineToRecreate = _.takeWhile(machines, (m) => {
+                return m.image === image.id && m.flavor !== _driver.instancesSize(image.instancesSize) && !m.user;
+              }).length;
               machineToCreate = machinePoolSize - machineCreated.count;
               machineToDestroy = machineCreated.count - machinePoolSize;
             }
@@ -562,7 +564,7 @@ function updateMachinesPool() {
             type: _driver.name()
           }, 'Machine pool updated');
         })
-        .catch((err) => {
+        .catch(() => {
           _createBrokerLog({
             type: _driver.name()
           }, 'Error while updating the pool');

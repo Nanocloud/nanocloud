@@ -683,7 +683,7 @@ class AWSDriver extends Driver {
   }
 
   instancesSize(size) {
-    return 't2\.' + size;
+    return ((size === 'veryLarge') ? 'm4.xlarge' : 't2\.' + size);
   }
 }
 

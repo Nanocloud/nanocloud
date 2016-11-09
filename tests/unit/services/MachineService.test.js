@@ -120,7 +120,7 @@ describe('Machine Service', () => {
               assert.isNotNull(logs[0].machineId);
               assert.equal(logs[0].state, 'Assigned');
               assert.equal(logs[0].machineDriver, 'dummy');
-              assert.equal(logs[0].machineFlavor, 'dummy');
+              assert.equal(logs[0].machineFlavor, 'medium');
               return new Promise((resolve) => {
                 return setTimeout(function() {
                   return BrokerLog.find({
@@ -142,7 +142,7 @@ describe('Machine Service', () => {
               assert.isNotNull(machineLogs[0].machineId);
               assert.equal(machineLogs[0].state, 'Created');
               assert.equal(machineLogs[0].machineDriver, 'dummy');
-              assert.equal(machineLogs[0].machineFlavor, 'dummy');
+              assert.equal(machineLogs[0].machineFlavor, 'medium');
               return new Promise((resolve) => {
                 return setTimeout(function() {
                   return BrokerLog.find({
@@ -252,7 +252,7 @@ describe('Machine Service', () => {
                   assert.isNotNull(logs[0].machineId);
                   assert.equal(logs[0].state, 'Opened');
                   assert.equal(logs[0].machineDriver, 'dummy');
-                  assert.equal(logs[0].machineFlavor, 'dummy');
+                  assert.equal(logs[0].machineFlavor, 'medium');
                   return done();
                 });
             });
@@ -399,7 +399,7 @@ describe('Machine Service', () => {
                   assert.isNotNull(logs[0].machineId);
                   assert.equal(logs[0].state, 'Closed');
                   assert.equal(logs[0].machineDriver, 'dummy');
-                  assert.equal(logs[0].machineFlavor, 'dummy');
+                  assert.equal(logs[0].machineFlavor, 'medium');
                   setTimeout(() => {
                     return Machine.findOne({
                       id: machine.id
@@ -426,7 +426,7 @@ describe('Machine Service', () => {
                         assert.isNotNull(logs[0].machineId);
                         assert.equal(logs[0].state, 'Deleted');
                         assert.equal(logs[0].machineDriver, 'dummy');
-                        assert.equal(logs[0].machineFlavor, 'dummy');
+                        assert.equal(logs[0].machineFlavor, 'medium');
                         return done();
                       });
                   }, 100); // Give broker time to cleanup instances
@@ -583,7 +583,7 @@ describe('Machine Service', () => {
               assert.isNotNull(logs[0].machineId);
               assert.equal(logs[0].state, 'Assigned');
               assert.equal(logs[0].machineDriver, 'dummy');
-              assert.equal(logs[0].machineFlavor, 'dummy');
+              assert.equal(logs[0].machineFlavor, 'medium');
               return new Promise((resolve) => {
                 return setTimeout(function() {
                   return BrokerLog.find({
@@ -603,7 +603,7 @@ describe('Machine Service', () => {
               assert.isNotNull(machineLogs[0].machineId);
               assert.equal(machineLogs[0].state, 'Created');
               assert.equal(machineLogs[0].machineDriver, 'dummy');
-              assert.equal(machineLogs[0].machineFlavor, 'dummy');
+              assert.equal(machineLogs[0].machineFlavor, 'medium');
               return new Promise((resolve) => {
                 return setTimeout(function() {
                   return BrokerLog.find({
@@ -757,7 +757,7 @@ describe('Machine Service', () => {
                   assert.isNotNull(logs[0].machineId);
                   assert.equal(logs[0].state, 'Opened');
                   assert.equal(logs[0].machineDriver, 'dummy');
-                  assert.equal(logs[0].machineFlavor, 'dummy');
+                  assert.equal(logs[0].machineFlavor, 'medium');
                   return done();
                 });
             });
@@ -840,7 +840,7 @@ describe('Machine Service', () => {
               assert.isNotNull(logs[0].machineId);
               assert.equal(logs[0].state, 'Closed');
               assert.equal(logs[0].machineDriver, 'dummy');
-              assert.equal(logs[0].machineFlavor, 'dummy');
+              assert.equal(logs[0].machineFlavor, 'medium');
               setTimeout(() => {
                 return Machine.findOne({
                   id: machine.id
@@ -874,7 +874,7 @@ describe('Machine Service', () => {
                     assert.isNotNull(logs[0].machineId);
                     assert.equal(logs[0].state, 'Stopped');
                     assert.equal(logs[0].machineDriver, 'dummy');
-                    assert.equal(logs[0].machineFlavor, 'dummy');
+                    assert.equal(logs[0].machineFlavor, 'medium');
                     return done();
                   });
               }, 100); // Give broker time to cleanup instances

@@ -27,6 +27,9 @@ import Ember from 'ember';
 export default Ember.Controller.extend({
   configuration: Ember.inject.service('configuration'),
 
+  isInstancesSizeSupported: Ember.computed('configuration.iaas', function() {
+    return this.get('configuration.iaas') !== 'manual';
+  }),
   publicationDate: Ember.computed(function() {
     return window.moment(new Date(this.get('model.publicationDate'))).format('MMMM Do YYYY, h:mm:ss A');
   }),

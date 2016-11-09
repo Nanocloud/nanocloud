@@ -58,6 +58,7 @@
           {{copy-clipboard class='in-bl va-top' value=model.id title='UUID'}}
         </td>
       </tr>
+      {{#if isInstancesSizeSupported}}
       <tr>
         <th class='p-t-2' scope="row">Pool size</th>
         <td class='p-t-2'>
@@ -78,9 +79,11 @@
             {{#paper-checkbox class="bl" value=(is-equal model.instancesSize 'small') onChange=(action 'changeImageSize' 'small')}}Small{{/paper-checkbox}}
             {{#paper-checkbox class="bl" value=(is-equal model.instancesSize 'medium') onChange=(action 'changeImageSize' 'medium')}}Medium{{/paper-checkbox}}
             {{#paper-checkbox class="bl" value=(is-equal model.instancesSize 'large') onChange=(action 'changeImageSize' 'large')}}Large{{/paper-checkbox}}
+            {{#paper-checkbox class="bl" value=(is-equal model.instancesSize 'veryLarge') onChange=(action 'changeImageSize' 'veryLarge')}}Very large{{/paper-checkbox}}
           </div>
         </td>
       </tr>
+      {{/if}}
 {{#if isRemoveable}}
       <tr>
         <th class='p-t-2' scope="row">Delete image</th>
