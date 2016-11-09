@@ -68,7 +68,7 @@ module.exports = {
     apps: {
       collection: 'app',
       via: 'image',
-    },
+    }
   },
 
   afterCreate: function(values, next){

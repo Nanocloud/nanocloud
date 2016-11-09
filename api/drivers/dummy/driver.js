@@ -204,7 +204,8 @@ class DummyDriver extends BaseDriver {
           iaasId: uuid.v4(),
           name: imageToCreate.name,
           buildFrom: imageToCreate.buildFrom,
-          password: machine.password
+          password: machine.password,
+          instancesSize: 'medium'
         });
 
         return Promise.resolve(image);

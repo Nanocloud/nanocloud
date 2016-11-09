@@ -545,9 +545,9 @@ function updateMachinesPool() {
                   '!': image.instancesSize
                 }
               })
-                .then((machines) => {
+                .then((machinesWithWrongSize) => {
                   _.times(machineToRecreate, (index) => {
-                    _terminateMachine(machines[index]);
+                    _terminateMachine(machinesWithWrongSize[index]);
                     _createMachine(image);
                   });
                   _createBrokerLog({
