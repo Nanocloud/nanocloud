@@ -66,7 +66,9 @@ class DummySetSessionDescriptionObserver
 Conductor::Conductor(const std::string & offer,
   boost::shared_ptr<photon::http::server::response> res)
     : offer_(offer),
-      response_(res) {}
+      response_(res) {
+	this->channel = nullptr;
+}
 
 Conductor::~Conductor() {
   ASSERT(peer_connection_.get() == NULL);
@@ -168,6 +170,20 @@ void Conductor::OnMessage(const webrtc::DataBuffer& buffer) {
     case 'U':
       input_manager_.KeyUp(buff[1]);
       break;
+      // Set Clipboard
+    case 'S': {
+      std::wstring wmess(mess.length(), 0); // Make room for characters
+      std::copy(mess.begin() + 1, mess.end(), wmess.begin());
+      input_manager_.SetClipboard(const_cast<std::wstring&>(wmess));
+      break;
+   }
+      // Send Clipboard
+    case 'G': {
+      std::wstring wide = input_manager_.GetClipboard();
+      std::string str(wide.begin(), wide.end());
+      this->channel->Send(webrtc::DataBuffer(str));
+      break;
+    }
   }
 #endif
 }
@@ -187,10 +203,10 @@ void Conductor::OnRemoveStream(
   LOG(INFO) << __FUNCTION__ << " " << stream->label();
 }
 
-void Conductor::OnDataChannel(
-    rtc::scoped_refptr<webrtc::DataChannelInterface> channel) {
+void Conductor::OnDataChannel(webrtc::DataChannelInterface *channel) {
   LOG(INFO) << __FUNCTION__;
 
+  this->channel = channel;
   channel->RegisterObserver(this);
 }
 

@@ -106,4 +106,43 @@ void InputManager::MouseWheelEvent(int x) {
   );
 }
 
+void InputManager::SetClipboard(const std::wstring & data) {
+  if (OpenClipboard(0))
+  {
+    HGLOBAL hgClipBuffer = nullptr;
+    std::size_t sizeInWords = data.size() + 1;
+    std::size_t sizeInBytes = sizeInWords * sizeof(wchar_t);
+    hgClipBuffer = GlobalAlloc(GHND | GMEM_SHARE, sizeInBytes);
+    if (!hgClipBuffer)
+    {
+      CloseClipboard();
+      return ;
+    }
+    wchar_t *wgClipBoardBuffer = static_cast<wchar_t*>(GlobalLock(hgClipBuffer));
+    wcscpy_s(wgClipBoardBuffer, sizeInWords, data.c_str());
+    GlobalUnlock(hgClipBuffer);
+    EmptyClipboard();
+    SetClipboardData(CF_UNICODETEXT, hgClipBuffer);
+    CloseClipboard();
+  }
+}
+
+const std::wstring InputManager::GetClipboard() {
+  wchar_t      *buffer;
+  HANDLE       hData;
+
+  if (!OpenClipboard(NULL))
+    return nullptr; // OpenClipboard fails
+
+  if (!(hData = GetClipboardData(CF_UNICODETEXT)))
+    return nullptr; // GetClipboardData returned null
+
+  if ((buffer = (wchar_t *)GlobalLock(hData)) == NULL)
+    return nullptr; // Returned buffer is null
+
+  GlobalUnlock(hData);
+  CloseClipboard();
+  return std::wstring(buffer);
+}
+
 }  // namespace photon
