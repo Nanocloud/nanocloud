@@ -258,7 +258,7 @@ class AWSDriver extends Driver {
    */
   createMachine(machine, image) {
     return ConfigService.get('awsFlavor', 'plazaURI', 'awsKeyName', 'plazaPort',
-      'awsMachineSubnet', 'awsDiskSize', 'awsMachineUsername')
+      'awsMachineSubnet', 'awsDiskSize', 'awsMachineUsername', 'rdpPort')
       .then((config) => {
 
         let userData = new Buffer(`<powershell>
@@ -334,7 +334,7 @@ class AWSDriver extends Driver {
               password  : null,
               domain    : '',
               plazaport : config.plazaPort,
-              rdpPort   : 3389
+              rdpPort   : config.rdpPort
             });
             return resolve(machineModel);
           });

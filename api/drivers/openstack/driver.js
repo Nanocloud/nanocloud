@@ -101,7 +101,7 @@ class OpenstackDriver extends Driver {
    */
   createMachine(options) {
     return ConfigService.get(
-      'openstackImage', 'openstackFlavor', 'openstackSecurityGroups',
+      'openstackImage', 'openstackFlavor', 'openstackSecurityGroups', 'rdpPort',
       'openstackMachineUsername', 'openstackMachinePassword', 'plazaURI', 'plazaPort'
     )
       .then((config) => {
@@ -180,7 +180,7 @@ class OpenstackDriver extends Driver {
                     password  : password,
                     domain    : '',
                     plazaport : config.plazaPort,
-                    rdpPort   : 3389
+                    rdpPort   : config.rdpPort
                   });
 
                   return resolve(machine);
