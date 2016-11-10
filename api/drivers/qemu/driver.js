@@ -226,7 +226,7 @@ class QemuDriver extends Driver {
    */
   createImage(imageToCreate) {
     return new Promise((resolve, reject) => {
-      return ConfigService.get('qemuServiceURL', 'qemuServicePort')
+      return ConfigService.get('qemuServiceURL', 'qemuServicePort', 'instancesSize')
         .then((config) => {
           return request({
             url: 'http://' + config.qemuServiceURL + ':' + config.qemuServicePort + '/images',
@@ -236,18 +236,19 @@ class QemuDriver extends Driver {
               buildFrom: imageToCreate.buildFrom,
               iaasId: imageToCreate.name
             }
-          });
-        })
-        .then((res) => {
+          })
+            .then((res) => {
 
-          let imageModel = new Machine._model({
-            iaasId: res.iaasId,
-            name: imageToCreate.name,
-            password: null,
-            buildFrom: imageToCreate.buildFrom
-          });
+              let imageModel = new Machine._model({
+                iaasId: res.iaasId,
+                name: imageToCreate.name,
+                password: null,
+                buildFrom: imageToCreate.buildFrom,
+                instancesSize: config.instancesSize
+              });
 
-          return resolve(imageModel);
+              return resolve(imageModel);
+            });
         })
         .catch((err) => {
           return reject(err);

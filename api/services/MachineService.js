@@ -514,7 +514,7 @@ function updateMachinesPool() {
               machineToCreate = 0;
               machineToDestroy = machineCreated.count;
             } else {
-              machineToRecreate = _.takeWhile(machines, (m) => {
+              machineToRecreate = _.filter(machines, (m) => {
                 return m.image === image.id && m.flavor !== _driver.instancesSize(image.instancesSize) && !m.user;
               }).length;
               machineToCreate = machinePoolSize - machineCreated.count;
