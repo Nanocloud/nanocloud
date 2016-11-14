@@ -32,7 +32,7 @@ var http = require('http');
 const Promise = require('bluebird');
 
 module.exports = function() {
-  describe('Plaza app launch', function() {
+  describe('Applications', function() {
 
     let fakePlaza = null;
     let appId = '9282fd13-5df0-4cf6-a101-ae507f75ab47';
@@ -89,7 +89,7 @@ module.exports = function() {
         })
         .then((app) => {
           return MachineService.getMachineForUser({
-            user: nano.adminId()
+            id: nano.adminId()
           }, {
             id: app.image
           });

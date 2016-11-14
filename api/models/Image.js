@@ -41,6 +41,9 @@ module.exports = {
     name: {
       type: 'string'
     },
+    poolSize: {
+      type: 'integer'
+    },
     buildFrom: {
       type: 'string',
       defaultsTo: null

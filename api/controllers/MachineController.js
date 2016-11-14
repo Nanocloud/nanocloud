@@ -115,8 +115,8 @@ module.exports = {
     MachineService.getMachineForUser(req.user, {
       id: image
     })
-      .then((machines) => {
-        return res.ok([machines]);
+      .then((machine) => {
+        return res.ok([machine]);
       })
       .catch((err) =>  {
         if (err === 'Exceeded credit') {

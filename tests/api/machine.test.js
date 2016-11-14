@@ -31,7 +31,7 @@ var nano = require('./lib/nanotest');
 
 module.exports = function() {
 
-  describe('machine', function() {
+  describe('Machine', function() {
 
     let user = null;
     let token = null;
@@ -67,6 +67,7 @@ module.exports = function() {
             name: 'essai1',
             type: 'manual',
             ip: '1.1.1.1',
+            status: 'running',
             image: imageId,
             username: 'Administrator',
             password: 'admin'

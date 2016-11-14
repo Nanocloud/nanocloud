@@ -58,6 +58,19 @@
           {{copy-clipboard class='in-bl va-top' value=model.id title='UUID'}}
         </td>
       </tr>
+      <tr>
+        <th class='p-t-2' scope="row">Pool size</th>
+        <td class='p-t-2'>
+          {{#edit-text
+            type="number"
+            confirmation=false
+            textInput=model.poolSize
+            textInputPlaceholder="Pool size"
+            onClose="changeImagePoolSize"}}
+            {{poolSize}}
+          {{/edit-text}}
+        </td>
+      </tr>
 {{#if isRemoveable}}
       <tr>
         <th class='p-t-2' scope="row">Delete image</th>

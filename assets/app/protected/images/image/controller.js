@@ -25,6 +25,7 @@
 import Ember from 'ember';
 
 export default Ember.Controller.extend({
+  configuration: Ember.inject.service('configuration'),
 
   publicationDate: Ember.computed(function() {
     return window.moment(new Date(this.get('model.publicationDate'))).format('MMMM Do YYYY, h:mm:ss A');
@@ -36,6 +37,10 @@ export default Ember.Controller.extend({
 
   isRemoveable: Ember.computed('model.id', function() {
     return this.get('model.buildFrom') !== null;
+  }),
+
+  poolSize: Ember.computed('model.poolSize', 'configuration.machinePoolSize', function() {
+    return this.get('model.poolSize') || this.get('configuration.machinePoolSize');
   }),
 
   actions: {
@@ -80,6 +85,28 @@ export default Ember.Controller.extend({
               defer.reject();
               this.toast.error('Image name has not been updated');
               this.get('model').rollbackAttributes();
+            });
+        });
+    },
+
+    changeImagePoolSize: function(defer) {
+      this.get('model')
+        .validate({ on: ['poolSize'] })
+        .then(({ validations }) => {
+
+          if (validations.get('isInvalid') === true) {
+            this.toast.error(this.get('model.validations.attrs.poolSize.messages'));
+            return defer.reject(this.get('model.validations.attrs.poolSize.messages'));
+          }
+
+          this.model.save()
+            .then(() => {
+              defer.resolve();
+              this.send('refreshModel');
+              this.toast.success('Image\'s pool size has been updated successfully');
+            }, () => {
+              defer.reject();
+              this.toast.error('Image\'s pool size has not been updated');
             });
         });
     },

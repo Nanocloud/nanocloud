@@ -185,6 +185,30 @@ module.exports = {
       .catch(res.negociate);
   },
 
+  update: function(req, res) {
+    return Image.findOne(req.allParams().id)
+      .then((image) => {
+        let poolSize = _.get(req, 'body.data.attributes.pool-size');
+        if (image.poolSize === poolSize) {
+          return JsonApiService.updateOneRecord(req, res);
+        } else {
+          return Image.update({
+            id: image.id
+          }, {
+            poolSize: poolSize
+          })
+            .then(() => {
+              return MachineService.updateMachinesPool();
+            })
+            .then(() => {
+              image.poolSize = poolSize;
+              return res.ok(image);
+            })
+            .catch(res.negociate);
+        }
+      });
+  },
+
   destroy: function(req, res) {
     var imageId = req.allParams().id;
     return Image.findOne({ id: imageId })
