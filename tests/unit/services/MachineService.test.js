@@ -433,8 +433,8 @@ describe('Machine Service', () => {
                 });
             });
         });
-      });
     });
+  });
 
   describe('Images', function() {
 
@@ -653,6 +653,51 @@ describe('Machine Service', () => {
             .then(() => {
               return done();
             });
+        });
+    });
+
+    it('Should adapt machines pool size', (done) => {
+      Image.update({
+        id: imageId
+      }, {
+        poolSize: 2,
+      })
+        .then(() => {
+          return MachineService.updateMachinesPool();
+        })
+        .then(() => {
+          return Machine.find({
+            user: null,
+            image: imageId,
+          });
+        })
+        .then((machines) => {
+          expect(machines).to.have.length(2);
+          return Machine.find({
+            user: null,
+          });
+        })
+        .then((machines) => {
+          // Default pool size 1, and we set *imageId* pool size to 2. So it must be 3 running machines in pool
+          expect(machines).to.have.length(3);
+
+          return Image.update({
+            id: imageId
+          }, {
+            poolSize: null,
+          });
+        })
+        .then(() => {
+          return MachineService.updateMachinesPool();
+        })
+        .then(() => {
+          return Machine.find({
+            user: null
+          });
+        })
+        .then((machines) => {
+          expect(machines).to.have.length(2);
+          return done();
         });
     });
 
