@@ -1104,4 +1104,48 @@ describe('Machine Service', () => {
         });
     });
   });
+
+  describe('Recreate machines with the wrong size', () => {
+
+    it('Should recreate machines with the wrong size', (done) => {
+      return Image.update({
+        id: imageId
+      }, {
+        instancesSize: 'small'
+      })
+        .then(() => {
+          return MachineService.updateMachinesPool();
+        })
+        .then(() => {
+          return Machine.find({
+            image: imageId,
+            user: null
+          });
+        })
+        .then((machines) => {
+          if (_.filter(machines, (m) => m.flavor !== 'small').length > 0) {
+            throw new Error('Machines should have been recreated');
+          } else {
+            return Image.find({
+              id: {
+                '!': imageId
+              }
+            });
+          }
+        })
+        .then((images) => {
+          return Machine.find({
+            image: images[0].id,
+            user: null
+          });
+        })
+        .then((machines) => {
+          if (_.filter(machines, (m) => m.flavor === 'small').length > 0) {
+            throw new Error('Others machines should not have been recreated');
+          } else {
+            return done();
+          }
+        });
+    });
+  });
 });
