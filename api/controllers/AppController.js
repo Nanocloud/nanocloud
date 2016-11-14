@@ -228,9 +228,49 @@ module.exports = {
             }),
             user: User.findOne({
               id: req.user.id
-            })
+            }),
+            config: ConfigService.get(
+              'rdpDomain',
+              'rdpSecurity',
+              'rdpIgnoreCert',
+              'rdpDisableAuth',
+              'rdpClientName',
+              'rdpConsole',
+              'rdpInitialProgram',
+              'rdpServerLayout',
+              'rdpColorDepth',
+              'rdpWidth',
+              'rdpHeight',
+              'rdpDpi',
+              'rdpDisableAudio',
+              'rdpEnablePrinting',
+              'rdpEnableDrive',
+              'rdpDrivePath',
+              'rdpCreateDrivePath',
+              'rdpConsoleAudio',
+              'rdpStaticChannels',
+              'rdpPreconnectionId',
+              'rdpPreconnectionBlob',
+              'rdpEnableSftp',
+              'rdpSftpHostname',
+              'rdpSftpPort',
+              'rdpSftpUsername',
+              'rdpSftpPassword',
+              'rdpSftpPrivateKey',
+              'rdpSftpPassphrase',
+              'rdpSftpDirectory',
+              'rdpEnableWallpaper',
+              'rdpEnableTheming',
+              'rdpEnableFontSmoothing',
+              'rdpEnableFullWindowDrag',
+              'rdpEnableDesktopComposition',
+              'rdpEnableMenuAnimations',
+              'rdpRemoteApp',
+              'rdpRemoteAppDir',
+              'rdpRemoteAppArgs'
+            )
           })
-            .then(({machine, user}) => {
+            .then(({machine, user, config}) => {
               let username = null;
               let password = null;
 
@@ -245,17 +285,56 @@ module.exports = {
               if (machine) {
                 image.apps.forEach((app) => {
                   connections.push({
+                    protocol: 'rdp',
                     id: app.id,
-                    hostname: machine.ip,
                     machineId: machine.id,
                     machineType: machine.flavor,
                     machineDriver: machine.type,
-                    port: machine.rdpPort,
-                    username: username,
-                    password: password,
-                    'remote-app': '',
-                    protocol: 'rdp',
-                    'app-name': app.id
+                    'app-name': app.id,
+                    'rdp-options': {
+                      hostname: machine.ip,
+                      port: machine.rdpPort,
+                      username: username,
+                      password: password,
+                      domain: config.rdpDomain,
+                      security: config.rdpSecurity,
+                      'ignore-cert': config.rdpIgnoreCert,
+                      'disable-auth': config.rdpDisableAuth,
+                      'client-name': config.rdpClientName,
+                      console: config.rdpConsole,
+                      'initial-program': config.rdpInitialProgram,
+                      'server-layout': config.rdpServerLayout,
+                      'color-depth': config.rdpColorDepth,
+                      width: config.rdpWidth,
+                      height: config.rdpHeight,
+                      dpi: config.rdpDpi,
+                      'disable-audio': config.rdpDisableAudio,
+                      'enable-printing': config.rdpEnablePrinting,
+                      'enable-drive': config.rdpEnableDrive,
+                      'drive-path': config.rdpDrivePath,
+                      'create-drive-path': config.rdpDrivePath,
+                      'console-audio': config.rdpConsoleAudio,
+                      'static-channels': config.rdpStaticChannels,
+                      'preconnection-id': config.rdpPreconnectionId,
+                      'preconnection-blob': config.rdpPreconnectionBlob,
+                      'enable-sftp': config.rdpEnableSftp,
+                      'sftp-hostname': config.rdpSftpHostname,
+                      'sftp-port': config.rdpSftpPort,
+                      'sftp-username': config.rdpSftpUsername,
+                      'sftp-password': config.rdpSftpPassword,
+                      'sftp-private-key': config.rdpSftpPrivateKey,
+                      'sftp-passphrase': config.rdpSftpPassphrase,
+                      'sftp-directory': config.rdpSftpDirectory,
+                      'enable-wallpaper': config.rdpEnableWallpaper,
+                      'enable-theming': config.rdpEnableTheming,
+                      'enable-font-smoothing': config.rdpEnableFontSmoothing,
+                      'enable-full-window-drag': config.rdpEnableFullWindowDrag,
+                      'enable-desktop-composition': config.rdpEnableDesktopComposition,
+                      'enable-menu-animations': config.rdpEnableMenuAnimations,
+                      'remote-app': config.rdpRemoteApp,
+                      'remote-app-dir': config.rdpRemoteAppDir,
+                      'remote-app-args': config.rdpRemoteAppArgs
+                    }
                   });
                 });
               }

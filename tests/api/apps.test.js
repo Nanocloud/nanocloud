@@ -498,32 +498,126 @@ module.exports = function() {
                   'type': 'apps',
                   'id': app2,
                   'attributes': {
-                    'hostname': '127.0.0.1',
-                    'port': 3389,
-                    'username': 'Administrator',
-                    'password': null,
-                    'remote-app': '',
                     'protocol': 'rdp',
-                    'app-name': app2,
                     'machine-id': machine.id,
                     'machine-type': 'dummy',
-                    'machine-driver': 'dummy'
+                    'machine-driver': 'dummy',
+                    'app-name': app2,
+                    'rdp-options': {
+                      'hostname': '127.0.0.1',
+                      'port': 3389,
+                      'username': 'Administrator',
+                      'password': null,
+                      'domain': '',
+                      'security': 'nla',
+                      'ignore-cert': true,
+                      'disable-auth': false,
+                      'client-name': '',
+                      'console': false,
+                      'initial-program': '',
+                      'server-layout': 'en-us-qwerty',
+                      'color-depth': '',
+                      'width': 0,
+                      'height': 0,
+                      'dpi': 0,
+                      'disable-audio': false,
+                      'enable-printing': true,
+                      'enable-drive': false,
+                      'drive-path': '',
+                      'create-drive-path': '',
+                      'console-audio': false,
+                      'static-channels': '',
+                      'preconnection-id': 0,
+                      'preconnection-blob': '',
+                      'enable-sftp': false,
+                      'sftp-hostname': '',
+                      'sftp-port': 0,
+                      'sftp-username': '',
+                      'sftp-password': '',
+                      'sftp-private-key': '',
+                      'sftp-passphrase': '',
+                      'sftp-directory': '',
+                      'enable-wallpaper': true,
+                      'enable-theming': true,
+                      'enable-font-smoothing': true,
+                      'enable-full-window-drag': false,
+                      'enable-desktop-composition': false,
+                      'enable-menu-animations': false,
+                      'remote-app': '',
+                      'remote-app-dir': '',
+                      'remote-app-args': ''
+                    }
+                  },
+                  relationships: {
+                    image: {
+                      data: null
+                    },
+                    groups: {
+                      data: null
+                    }
                   }
                 });
                 expect(res.body.data).to.include({
                   'type': 'apps',
                   'id': app1,
                   'attributes': {
-                    'hostname': '127.0.0.1',
-                    'port': 3389,
-                    'username': 'Administrator',
-                    'password': null,
-                    'remote-app': '',
                     'protocol': 'rdp',
-                    'app-name': app1,
                     'machine-id': machine.id,
                     'machine-type': 'dummy',
-                    'machine-driver': 'dummy'
+                    'machine-driver': 'dummy',
+                    'app-name': app1,
+                    'rdp-options': {
+                      'hostname': '127.0.0.1',
+                      'port': 3389,
+                      'username': 'Administrator',
+                      'password': null,
+                      'domain': '',
+                      'security': 'nla',
+                      'ignore-cert': true,
+                      'disable-auth': false,
+                      'client-name': '',
+                      'console': false,
+                      'initial-program': '',
+                      'server-layout': 'en-us-qwerty',
+                      'color-depth': '',
+                      'width': 0,
+                      'height': 0,
+                      'dpi': 0,
+                      'disable-audio': false,
+                      'enable-printing': true,
+                      'enable-drive': false,
+                      'drive-path': '',
+                      'create-drive-path': '',
+                      'console-audio': false,
+                      'static-channels': '',
+                      'preconnection-id': 0,
+                      'preconnection-blob': '',
+                      'enable-sftp': false,
+                      'sftp-hostname': '',
+                      'sftp-port': 0,
+                      'sftp-username': '',
+                      'sftp-password': '',
+                      'sftp-private-key': '',
+                      'sftp-passphrase': '',
+                      'sftp-directory': '',
+                      'enable-wallpaper': true,
+                      'enable-theming': true,
+                      'enable-font-smoothing': true,
+                      'enable-full-window-drag': false,
+                      'enable-desktop-composition': false,
+                      'enable-menu-animations': false,
+                      'remote-app': '',
+                      'remote-app-dir': '',
+                      'remote-app-args': ''
+                    }
+                  },
+                  relationships: {
+                    image: {
+                      data: null
+                    },
+                    groups: {
+                      data: null
+                    }
                   }
                 });
               })

@@ -185,20 +185,20 @@ public class UserContext implements org.glyptodon.guacamole.net.auth.UserContext
 			GuacamoleConfiguration config = new GuacamoleConfiguration();
 
 			config.setProtocol(connection.getJSONObject("attributes").getString("protocol"));
-			config.setParameter("hostname", connection.getJSONObject("attributes").getString("hostname"));
-			config.setParameter("port", connection.getJSONObject("attributes").getString("port"));
-			config.setParameter("username", connection.getJSONObject("attributes").getString("username"));
-			config.setParameter("password", connection.getJSONObject("attributes").getString("password"));
-			config.setParameter("security", "nla");
-			config.setParameter("ignore-cert", "true");
-			config.setParameter("enable-printing", "true");
-			config.setParameter("enable-font-smoothing", "true");
-			config.setParameter("enable-wallpaper", "true");
-			if (connection.getJSONObject("attributes").has("remote-app")) {
-				config.setParameter("remote-app", connection.getJSONObject("attributes").getString("remote-app"));
-			}
-
 			configs.put(connection.getJSONObject("attributes").getString("app-name"), config);
+
+			Iterator keys = connection.getJSONObject("attributes").getJSONObject("rdp-options").keys();
+      String key;
+      while (keys.hasNext()) {
+        key = (String)keys.next();
+        if (key.equals("width") || key.equals("height") || key.equals("dpi") || key.equals("preconnection-id")) {
+          if (!connection.getJSONObject("attributes").getJSONObject("rdp-options").getString(key).equals("0")) {
+            config.setParameter(key, connection.getJSONObject("attributes").getJSONObject("rdp-options").getString(key));
+          }
+        } else {
+          config.setParameter(key, connection.getJSONObject("attributes").getJSONObject("rdp-options").getString(key));
+        }
+      }
 		}
 
 		return configs;

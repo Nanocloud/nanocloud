@@ -131,6 +131,22 @@ Once loaded, Nanocloud will be accessible on **localhost**.
 - ldapBaseDn (defaults to empty string)
 - ldapDefaultGroup (defaults to empty string (no default group)) id of the group users should be attached to automatically
 
+## RDP/Guacamole Options
+
+You can use RDP options detailed on [Guacamole documentation](http://guacamole.incubator.apache.org/doc/gug/configuring-guacamole.html#rdp). Use config variables with 'rdp' prefix and option name in camel case.
+
+All options are Guacamole defaults except the following:
+
+- rdpSecurity (Nanocloud defaults to nla)
+- rdpIgnoreCert (Nanocloud defaults to true)
+- rdpWidth (Nanocloud defaults to 0 (automatic))
+- rdpHeight (Nanocloud defaults to 0 (automatic))
+- rdpDpi (Nanocloud defaults to 0 (automatic))
+- rdpEnablePrinting (Nanocloud defaults to true)
+- rdpPreconnectionID (Nanocloud defaults to 0 (desactivated))
+- rdpEnableWallpaper (Nanocloud defaults to true)
+- rdpEnableFontSmooting (Nanocloud defaults to true)
+
 # Run in developer mode
 
 Nanocloud also relies on Docker to run its development stack:
