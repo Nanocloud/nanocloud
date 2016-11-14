@@ -1,3 +1,5 @@
+# This script was originally found here: http://stackoverflow.com/questions/21679369/runonce-to-rename-a-computername-with-a-random-name-on-reboot & https://gist.github.com/timnew/2373475
+
 # Set allowed ASCII character codes to Uppercase letters (65..90),
 $charcodes = 65..90
 
@@ -5,6 +7,7 @@ $charcodes = 65..90
 $allowedChars = $charcodes | ForEach-Object { [char][byte]$_ }
 
 $LengthOfName = 10
+
 # Generate computer name
 $pw = ($allowedChars | Get-Random -Count $LengthOfName) -join ""
 $prefix = "CDW12"
@@ -23,4 +26,3 @@ Set-ItemProperty -path "HKLM:\SYSTEM\CurrentControlSet\Services\Tcpip\Parameters
 Set-ItemProperty -path "HKLM:\SYSTEM\CurrentControlSet\Services\Tcpip\Parameters" -name "NV Hostname" -value $ComputerName
 Set-ItemProperty -path "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon" -name "AltDefaultDomainName" -value $ComputerName
 Set-ItemProperty -path "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon" -name "DefaultDomainName" -value $ComputerName
-#Set-ItemProperty -path "HKU:.Default\Software\Microsoft\Windows Media\WMSDK\General" -name "Computername" -value $ComputerName
