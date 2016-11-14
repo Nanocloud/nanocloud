@@ -133,9 +133,9 @@ Once loaded, Nanocloud will be accessible on **localhost**.
 
 ## RDP/Guacamole Options
 
-You can use RDP options detailled on [Guacamole documentation](http://guacamole.incubator.apache.org/doc/gug/configuring-guacamole.html#rdp). Use config variables with 'rdp' prefix and option name in camel case.
+You can use RDP options detailed on [Guacamole documentation](http://guacamole.incubator.apache.org/doc/gug/configuring-guacamole.html#rdp). Use config variables with 'rdp' prefix and option name in camel case.
 
-All options are Guacamole defaults except follows:
+All options are Guacamole defaults except the following:
 
 - rdpSecurity (Nanocloud defaults to nla)
 - rdpIgnoreCert (Nanocloud defaults to true)
