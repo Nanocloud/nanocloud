@@ -503,25 +503,15 @@ function updateMachinesPool() {
         images: Image.find()
       })
         .then(({config, machinesCount, machines, images}) => {
+          let imagesDeleted = _.remove(images, (image) => image.deleted === true);
           images.forEach((image) => {
             let machineCreated = _.find(machinesCount.rows, (m) => m.image === image.id) || {count: 0};
-            let machineToCreate = 0;
-            let machineToRecreate = 0;
-            let machineToDestroy = 0;
-            let machinePoolSize = image.poolSize;
-            if (image.poolSize === null) {
-              machinePoolSize = config.machinePoolSize;
-            }
-            if (image.deleted === true) {
-              machineToCreate = 0;
-              machineToDestroy = machineCreated.count;
-            } else {
-              machineToRecreate = _.filter(machines, (m) => {
-                return m.image === image.id && m.flavor !== _driver.instancesSize(image.instancesSize);
-              }).length;
-              machineToCreate = machinePoolSize - machineCreated.count;
-              machineToDestroy = machineCreated.count - machinePoolSize;
-            }
+            let machinePoolSize = (image.poolSize !== null) ? image.poolSize : config.machinePoolSize;
+            let machineToRecreate = _.filter(machines, (m) => {
+              return m.image === image.id && m.flavor !== _driver.instancesSize(image.instancesSize);
+            }).length;
+            let machineToCreate = machinePoolSize - machineCreated.count;
+            let machineToDestroy = machineCreated.count - machinePoolSize;
 
             if (machineToDestroy > 0) {
               return Machine.find({
@@ -560,6 +550,22 @@ function updateMachinesPool() {
                     type: _driver.name(),
                     flavor: image.instancesSize
                   }, `Update machine pool for image ${image.name} recreate ${+machineToRecreate}`);
+                });
+            }
+          });
+          imagesDeleted.forEach((image) => {
+            let machineCreated = _.find(machinesCount.rows, (m) => m.image === image.id) || {count: 0};
+            let machineToDestroy = machineCreated.count;
+            if (machineToDestroy > 0) {
+              return Machine.find({
+                image: image.id,
+                user: null
+              })
+                .then((machines) => {
+                  _.times(machineToDestroy, (index) => _terminateMachine(machines[index]));
+                  _createBrokerLog({
+                    type: _driver.name()
+                  }, `Update machine pool for image ${image.name} from ${machineCreated.count} to ${+machineCreated.count - machineToDestroy} (-${machineToDestroy})`);
                 });
             }
           });

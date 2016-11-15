@@ -88,7 +88,7 @@ describe('Machine Service', () => {
 
                       return resolve();
                     });
-                }, 100);
+                }, 150);
               });
             })
             .then(() => {
@@ -109,7 +109,7 @@ describe('Machine Service', () => {
                     .then((log) => {
                       return resolve(log);
                     });
-                }, 100);
+                }, 150);
               });
             })
             .then((logs) => {
@@ -132,7 +132,7 @@ describe('Machine Service', () => {
                     .then((log) => {
                       return resolve(log);
                     });
-                }, 100);
+                }, 150);
               });
             })
             .then((machineLogs) => {
@@ -154,7 +154,7 @@ describe('Machine Service', () => {
                     .then((log) => {
                       return resolve(log);
                     });
-                }, 100);
+                }, 150);
               });
             })
             .then((logs) => {
@@ -241,7 +241,7 @@ describe('Machine Service', () => {
                         .then((log) => {
                           return resolve(log);
                         });
-                    }, 100);
+                    }, 150);
                   });
                 })
                 .then((logs) => {
@@ -311,7 +311,7 @@ describe('Machine Service', () => {
                     .then((log) => {
                       return resolve(log);
                     });
-                }, 100); // give broker time to log the machine state
+                }, 150); // give broker time to log the machine state
               });
             })
             .then((log) => {
@@ -348,7 +348,7 @@ describe('Machine Service', () => {
                     .then((log) => {
                       return resolve(log);
                     });
-                }, 100);
+                }, 150);
               });
             })
             .then((log) => {
@@ -429,7 +429,7 @@ describe('Machine Service', () => {
                         assert.equal(logs[0].machineFlavor, 'medium');
                         return done();
                       });
-                  }, 100); // Give broker time to cleanup instances
+                  }, 150); // Give broker time to cleanup instances
                 });
             });
         });
@@ -550,7 +550,7 @@ describe('Machine Service', () => {
 
                       return resolve();
                     });
-                }, 100);
+                }, 150);
               });
             })
             .then(() => {
@@ -572,7 +572,7 @@ describe('Machine Service', () => {
                     .then((log) => {
                       return resolve(log);
                     });
-                }, 100);
+                }, 150);
               });
             })
             .then((logs) => {
@@ -593,7 +593,7 @@ describe('Machine Service', () => {
                     .then((log) => {
                       return resolve(log);
                     });
-                }, 100);
+                }, 150);
               });
             })
             .then((machineLogs) => {
@@ -615,7 +615,7 @@ describe('Machine Service', () => {
                     .then((log) => {
                       return resolve(log);
                     });
-                }, 100);
+                }, 150);
               });
             })
             .then((logs) => {
@@ -746,7 +746,7 @@ describe('Machine Service', () => {
                         .then((log) => {
                           return resolve(log);
                         });
-                    }, 100);
+                    }, 150);
                   });
                 })
                 .then((logs) => {
@@ -829,7 +829,7 @@ describe('Machine Service', () => {
                     .then((log) => {
                       return resolve(log);
                     });
-                }, 100);
+                }, 150);
               });
             })
             .then((logs) => {
@@ -864,7 +864,7 @@ describe('Machine Service', () => {
                           .then((log) => {
                             return resolve(log);
                           });
-                      }, 100);
+                      }, 150);
                     });
                   })
                   .then((logs) => {
@@ -877,7 +877,7 @@ describe('Machine Service', () => {
                     assert.equal(logs[0].machineFlavor, 'medium');
                     return done();
                   });
-              }, 100); // Give broker time to cleanup instances
+              }, 150); // Give broker time to cleanup instances
             });
         });
     });
@@ -927,7 +927,7 @@ describe('Machine Service', () => {
                       .then((props) => {
                         return resolve(props);
                       });
-                  }, 100);
+                  }, 150);
                 });
               })
               .then((props) => {
@@ -936,7 +936,7 @@ describe('Machine Service', () => {
                 assert.equal(props.machine.status, 'stopped');
                 return done();
               });
-          }, 100);
+          }, 150);
         });
     });
   });
@@ -997,7 +997,7 @@ describe('Machine Service', () => {
                 user: null,
                 status: 'running'
               }));
-            }, 100);
+            }, 150);
           });
         })
         .then((machines) => {
