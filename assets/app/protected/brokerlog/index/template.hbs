@@ -1,13 +1,10 @@
 <div class="histories section">
-  <h1 class='color-primary'>
+  <h1 class='in-bl color-primary'>
     Broker log
   </h1>
-  <p class="color-primary indication">
-    Broker log gives you information about the broker.
-    <p class="m-t-1 m-b-0">
-      <button {{ action "refreshModel" }} class="btn btn-info btn-color-default">Reload</button>
-    </p>
-  </p>
+  <span class="icon_link clickable noselect color-default" {{ action "refreshModel" }}>
+    {{icon-component class='va-sub' size=26 materialIcon="autorenew" spin=loadState content="Refresh logs"}}
+  </span>
   <div class='content-wrapper m-t-2'>
     {{#if modelIsEmpty}}
       No entries
