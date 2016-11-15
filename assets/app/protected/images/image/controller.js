@@ -27,6 +27,9 @@ import Ember from 'ember';
 export default Ember.Controller.extend({
   configuration: Ember.inject.service('configuration'),
 
+  isInstancesSizeSupported: Ember.computed('configuration.iaas', function() {
+    return this.get('configuration.iaas') !== 'manual';
+  }),
   publicationDate: Ember.computed(function() {
     return window.moment(new Date(this.get('model.publicationDate'))).format('MMMM Do YYYY, h:mm:ss A');
   }),
@@ -64,6 +67,18 @@ export default Ember.Controller.extend({
             _this2.toast.error(reason.errors[0].title);
           });
       }
+    },
+
+    changeImageSize(size) {
+      let image = this.get('model');
+
+      image.set('instancesSize', size);
+      image.save()
+        .then(() => {
+          this.toast.success('Image\'s instances size has been updated successfully');
+        }, () => {
+          this.toast.error('Image\'s instances size has not been updated');
+        });
     },
 
     saveImageName: function(defer) {

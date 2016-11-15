@@ -31,6 +31,7 @@ export default DS.Model.extend({
   adminPassword: DS.attr('string'),
   progress: DS.attr('number'),
   type: DS.attr('string'),
+  flavor: DS.attr('string'),
   isUp: Ember.computed('status', function() {
     return this.get('status') === 'running';
   }),

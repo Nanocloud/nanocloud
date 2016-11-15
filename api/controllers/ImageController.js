@@ -186,23 +186,26 @@ module.exports = {
   },
 
   update: function(req, res) {
+    req.body = JsonApiService.deserialize(req.body);
     return Image.findOne(req.allParams().id)
       .then((image) => {
-        let poolSize = _.get(req, 'body.data.attributes.pool-size');
-        if (image.poolSize === poolSize) {
+        let poolSize = _.get(req, 'body.data.attributes.poolSize');
+        let instancesSize = _.get(req, 'body.data.attributes.instancesSize');
+        if (image.poolSize === poolSize && image.instancesSize === instancesSize) {
           return JsonApiService.updateOneRecord(req, res);
         } else {
           return Image.update({
             id: image.id
-          }, {
+          }, (image.poolSize !== poolSize) ? {
             poolSize: poolSize
+          } : {
+            instancesSize: instancesSize
           })
-            .then(() => {
-              return MachineService.updateMachinesPool();
-            })
-            .then(() => {
-              image.poolSize = poolSize;
-              return res.ok(image);
+            .then((imageUpdated) => {
+              return MachineService.updateMachinesPool()
+                .then(() => {
+                  return res.ok(imageUpdated[0]);
+                });
             })
             .catch(res.negociate);
         }

@@ -88,7 +88,7 @@ describe('Machine Service', () => {
 
                       return resolve();
                     });
-                }, 100);
+                }, 150);
               });
             })
             .then(() => {
@@ -109,7 +109,7 @@ describe('Machine Service', () => {
                     .then((log) => {
                       return resolve(log);
                     });
-                }, 100);
+                }, 150);
               });
             })
             .then((logs) => {
@@ -120,7 +120,7 @@ describe('Machine Service', () => {
               assert.isNotNull(logs[0].machineId);
               assert.equal(logs[0].state, 'Assigned');
               assert.equal(logs[0].machineDriver, 'dummy');
-              assert.equal(logs[0].machineFlavor, 'dummy');
+              assert.equal(logs[0].machineFlavor, 'medium');
               return new Promise((resolve) => {
                 return setTimeout(function() {
                   return BrokerLog.find({
@@ -132,7 +132,7 @@ describe('Machine Service', () => {
                     .then((log) => {
                       return resolve(log);
                     });
-                }, 100);
+                }, 150);
               });
             })
             .then((machineLogs) => {
@@ -142,7 +142,7 @@ describe('Machine Service', () => {
               assert.isNotNull(machineLogs[0].machineId);
               assert.equal(machineLogs[0].state, 'Created');
               assert.equal(machineLogs[0].machineDriver, 'dummy');
-              assert.equal(machineLogs[0].machineFlavor, 'dummy');
+              assert.equal(machineLogs[0].machineFlavor, 'medium');
               return new Promise((resolve) => {
                 return setTimeout(function() {
                   return BrokerLog.find({
@@ -154,7 +154,7 @@ describe('Machine Service', () => {
                     .then((log) => {
                       return resolve(log);
                     });
-                }, 100);
+                }, 150);
               });
             })
             .then((logs) => {
@@ -241,7 +241,7 @@ describe('Machine Service', () => {
                         .then((log) => {
                           return resolve(log);
                         });
-                    }, 100);
+                    }, 150);
                   });
                 })
                 .then((logs) => {
@@ -252,7 +252,7 @@ describe('Machine Service', () => {
                   assert.isNotNull(logs[0].machineId);
                   assert.equal(logs[0].state, 'Opened');
                   assert.equal(logs[0].machineDriver, 'dummy');
-                  assert.equal(logs[0].machineFlavor, 'dummy');
+                  assert.equal(logs[0].machineFlavor, 'medium');
                   return done();
                 });
             });
@@ -311,7 +311,7 @@ describe('Machine Service', () => {
                     .then((log) => {
                       return resolve(log);
                     });
-                }, 100); // give broker time to log the machine state
+                }, 150); // give broker time to log the machine state
               });
             })
             .then((log) => {
@@ -348,7 +348,7 @@ describe('Machine Service', () => {
                     .then((log) => {
                       return resolve(log);
                     });
-                }, 100);
+                }, 150);
               });
             })
             .then((log) => {
@@ -399,7 +399,7 @@ describe('Machine Service', () => {
                   assert.isNotNull(logs[0].machineId);
                   assert.equal(logs[0].state, 'Closed');
                   assert.equal(logs[0].machineDriver, 'dummy');
-                  assert.equal(logs[0].machineFlavor, 'dummy');
+                  assert.equal(logs[0].machineFlavor, 'medium');
                   setTimeout(() => {
                     return Machine.findOne({
                       id: machine.id
@@ -426,10 +426,10 @@ describe('Machine Service', () => {
                         assert.isNotNull(logs[0].machineId);
                         assert.equal(logs[0].state, 'Deleted');
                         assert.equal(logs[0].machineDriver, 'dummy');
-                        assert.equal(logs[0].machineFlavor, 'dummy');
+                        assert.equal(logs[0].machineFlavor, 'medium');
                         return done();
                       });
-                  }, 100); // Give broker time to cleanup instances
+                  }, 150); // Give broker time to cleanup instances
                 });
             });
         });
@@ -550,7 +550,7 @@ describe('Machine Service', () => {
 
                       return resolve();
                     });
-                }, 100);
+                }, 150);
               });
             })
             .then(() => {
@@ -572,7 +572,7 @@ describe('Machine Service', () => {
                     .then((log) => {
                       return resolve(log);
                     });
-                }, 100);
+                }, 150);
               });
             })
             .then((logs) => {
@@ -583,7 +583,7 @@ describe('Machine Service', () => {
               assert.isNotNull(logs[0].machineId);
               assert.equal(logs[0].state, 'Assigned');
               assert.equal(logs[0].machineDriver, 'dummy');
-              assert.equal(logs[0].machineFlavor, 'dummy');
+              assert.equal(logs[0].machineFlavor, 'medium');
               return new Promise((resolve) => {
                 return setTimeout(function() {
                   return BrokerLog.find({
@@ -593,7 +593,7 @@ describe('Machine Service', () => {
                     .then((log) => {
                       return resolve(log);
                     });
-                }, 100);
+                }, 150);
               });
             })
             .then((machineLogs) => {
@@ -603,7 +603,7 @@ describe('Machine Service', () => {
               assert.isNotNull(machineLogs[0].machineId);
               assert.equal(machineLogs[0].state, 'Created');
               assert.equal(machineLogs[0].machineDriver, 'dummy');
-              assert.equal(machineLogs[0].machineFlavor, 'dummy');
+              assert.equal(machineLogs[0].machineFlavor, 'medium');
               return new Promise((resolve) => {
                 return setTimeout(function() {
                   return BrokerLog.find({
@@ -615,7 +615,7 @@ describe('Machine Service', () => {
                     .then((log) => {
                       return resolve(log);
                     });
-                }, 100);
+                }, 150);
               });
             })
             .then((logs) => {
@@ -746,7 +746,7 @@ describe('Machine Service', () => {
                         .then((log) => {
                           return resolve(log);
                         });
-                    }, 100);
+                    }, 150);
                   });
                 })
                 .then((logs) => {
@@ -757,7 +757,7 @@ describe('Machine Service', () => {
                   assert.isNotNull(logs[0].machineId);
                   assert.equal(logs[0].state, 'Opened');
                   assert.equal(logs[0].machineDriver, 'dummy');
-                  assert.equal(logs[0].machineFlavor, 'dummy');
+                  assert.equal(logs[0].machineFlavor, 'medium');
                   return done();
                 });
             });
@@ -829,7 +829,7 @@ describe('Machine Service', () => {
                     .then((log) => {
                       return resolve(log);
                     });
-                }, 100);
+                }, 150);
               });
             })
             .then((logs) => {
@@ -840,7 +840,7 @@ describe('Machine Service', () => {
               assert.isNotNull(logs[0].machineId);
               assert.equal(logs[0].state, 'Closed');
               assert.equal(logs[0].machineDriver, 'dummy');
-              assert.equal(logs[0].machineFlavor, 'dummy');
+              assert.equal(logs[0].machineFlavor, 'medium');
               setTimeout(() => {
                 return Machine.findOne({
                   id: machine.id
@@ -864,7 +864,7 @@ describe('Machine Service', () => {
                           .then((log) => {
                             return resolve(log);
                           });
-                      }, 100);
+                      }, 150);
                     });
                   })
                   .then((logs) => {
@@ -874,10 +874,10 @@ describe('Machine Service', () => {
                     assert.isNotNull(logs[0].machineId);
                     assert.equal(logs[0].state, 'Stopped');
                     assert.equal(logs[0].machineDriver, 'dummy');
-                    assert.equal(logs[0].machineFlavor, 'dummy');
+                    assert.equal(logs[0].machineFlavor, 'medium');
                     return done();
                   });
-              }, 100); // Give broker time to cleanup instances
+              }, 150); // Give broker time to cleanup instances
             });
         });
     });
@@ -927,7 +927,7 @@ describe('Machine Service', () => {
                       .then((props) => {
                         return resolve(props);
                       });
-                  }, 100);
+                  }, 150);
                 });
               })
               .then((props) => {
@@ -936,7 +936,7 @@ describe('Machine Service', () => {
                 assert.equal(props.machine.status, 'stopped');
                 return done();
               });
-          }, 100);
+          }, 150);
         });
     });
   });
@@ -997,7 +997,7 @@ describe('Machine Service', () => {
                 user: null,
                 status: 'running'
               }));
-            }, 100);
+            }, 150);
           });
         })
         .then((machines) => {
@@ -1098,6 +1098,50 @@ describe('Machine Service', () => {
             throw new Error('Assigned machine should have been a booting machine');
           } else if (machine.enDate === null) {
             throw new Error('endDate should have been set when booting machine have been assigned');
+          } else {
+            return done();
+          }
+        });
+    });
+  });
+
+  describe('Recreate machines with the wrong size', () => {
+
+    it('Should recreate machines with the wrong size', (done) => {
+      return Image.update({
+        id: imageId
+      }, {
+        instancesSize: 'small'
+      })
+        .then(() => {
+          return MachineService.updateMachinesPool();
+        })
+        .then(() => {
+          return Machine.find({
+            image: imageId,
+            user: null
+          });
+        })
+        .then((machines) => {
+          if (_.filter(machines, (m) => m.flavor !== 'small').length > 0) {
+            throw new Error('Machines should have been recreated');
+          } else {
+            return Image.find({
+              id: {
+                '!': imageId
+              }
+            });
+          }
+        })
+        .then((images) => {
+          return Machine.find({
+            image: images[0].id,
+            user: null
+          });
+        })
+        .then((machines) => {
+          if (_.filter(machines, (m) => m.flavor === 'small').length > 0) {
+            throw new Error('Others machines should not have been recreated');
           } else {
             return done();
           }

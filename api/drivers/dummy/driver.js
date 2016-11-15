@@ -105,14 +105,21 @@ class DummyDriver extends BaseDriver {
       return res.end();
     }).listen(0);
 
-    if (!FakePlaza) {
-      throw new Error('Fake plazaport failed to create');
-    } else {
-      _plazaPort = FakePlaza.address().port;
-      _plazaAddress = '127.0.0.1';
+    return Image.update({
+      name: 'Default'
+    }, {
+      instancesSize: 'medium'
+    })
+      .then(() => {
+        if (!FakePlaza) {
+          throw new Error('Fake plazaport failed to create');
+        } else {
+          _plazaPort = FakePlaza.address().port;
+          _plazaAddress = '127.0.0.1';
 
-      return Promise.resolve();
-    }
+          return Promise.resolve();
+        }
+      });
   }
 
   /**
@@ -138,7 +145,7 @@ class DummyDriver extends BaseDriver {
       id        : id,
       name      : machine.name,
       type      : 'dummy',
-      flavor    : 'dummy',
+      flavor    : image.instancesSize,
       ip        : _plazaAddress,
       username  : 'Administrator',
       plazaport : _plazaPort,
@@ -197,7 +204,8 @@ class DummyDriver extends BaseDriver {
           iaasId: uuid.v4(),
           name: imageToCreate.name,
           buildFrom: imageToCreate.buildFrom,
-          password: machine.password
+          password: machine.password,
+          instancesSize: 'medium'
         });
 
         return Promise.resolve(image);
@@ -295,6 +303,10 @@ class DummyDriver extends BaseDriver {
       }
       return resolve(machine.password);
     });
+  }
+
+  instancesSize(size) {
+    return size;
   }
 }
 

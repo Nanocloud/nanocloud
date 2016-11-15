@@ -64,6 +64,7 @@ export default Ember.Controller.extend({
           ret.push(Ember.Object.create({
             name: item.get('machineName'),
             image: item.get('image'),
+            size: item.get('flavor'),
             id: item.get('id'),
             ip: item.get('ip'),
             expiration: secondsLeft,
@@ -93,6 +94,12 @@ export default Ember.Controller.extend({
       disableFiltering: true,
       filterWithSelect: false,
       template: 'protected/machines/index/table/machine-list/image',
+    },
+    {
+      propertyName: 'size',
+      title: 'Size',
+      disableFiltering: true,
+      filterWithSelect: false,
     },
     {
       propertyName: 'ip',

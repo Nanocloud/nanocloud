@@ -71,6 +71,7 @@ module.exports = {
 
     iaas: 'manual',
     machinePoolSize: 1,
+    instancesSize: 'medium',
 
     photon: false,
     neverTerminateMachine: false,
@@ -99,7 +100,6 @@ module.exports = {
     awsKeyName: '',
     awsPrivateKey: '/opt/back/id_rsa',
     awsImage: '',
-    awsFlavor: 't2.medium',
     awsMachineUsername: 'Administrator',
     awsMachinePassword: '',
     awsMachineSubnet: '',
@@ -117,8 +117,6 @@ module.exports = {
 
     qemuServiceURL: 'localhost',
     qemuServicePort: 3000,
-    qemuMemory: '2048',
-    qemuCPU: '2',
     qemuMachineUsername: 'Administrator',
     qemuMachinePassword: '',
 

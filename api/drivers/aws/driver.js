@@ -245,7 +245,6 @@ class AWSDriver extends Driver {
 
   /**
    * Create a new EC2 instance. It uses the `ConfigService` variables:
-   *  - awsFlavor: AWS EC2 instance type
    *  - plazaURI: The URL from where the instance will download plaza.exe
    *  - awsKeyName: The name of the KeyPair to use for the instance admin
    *  - plazaPort: Port to contact plaza
@@ -257,7 +256,7 @@ class AWSDriver extends Driver {
    * @return {Promise[Machine]} The created machine
    */
   createMachine(machine, image) {
-    return ConfigService.get('awsFlavor', 'plazaURI', 'awsKeyName', 'plazaPort',
+    return ConfigService.get('instancesSize', 'plazaURI', 'awsKeyName', 'plazaPort',
       'awsMachineSubnet', 'awsDiskSize', 'awsMachineUsername', 'rdpPort')
       .then((config) => {
 
@@ -295,7 +294,7 @@ class AWSDriver extends Driver {
             MinCount            : 1,
             MaxCount            : 1,
             ImageId             : image.iaasId,
-            InstanceType        : config.awsFlavor,
+            InstanceType        : this.instancesSize(image.instancesSize),
             KeyName             : config.awsKeyName,
             UserData            : userData,
             SubnetId            : config.awsMachineSubnet,
@@ -317,7 +316,7 @@ class AWSDriver extends Driver {
               }]
             }, function (err) {
               if (err) {
-                reject(err);
+                return reject(err);
               }
             });
 
@@ -328,7 +327,7 @@ class AWSDriver extends Driver {
               id        : server.InstanceId,
               name      : machine.name,
               type      : type,
-              flavor    : config.awsFlavor,
+              flavor    : this.instancesSize(image.instancesSize),
               ip        : ip,
               username  : config.awsMachineUsername,
               password  : null,
@@ -447,8 +446,11 @@ class AWSDriver extends Driver {
           return reject(err.code);
         }
 
-        Machine.findOne(imageToCreate.buildFrom)
-          .then((machine) => {
+        Promise.props({
+          machine: Machine.findOne(imageToCreate.buildFrom),
+          config: ConfigService.get('instancesSize')
+        })
+          .then(({machine, config}) => {
             this._client.ec2.waitFor('imageAvailable', {
               ImageIds: [image.ImageId]
             }, (err) => {
@@ -460,7 +462,8 @@ class AWSDriver extends Driver {
                 iaasId: image.ImageId,
                 name: imageToCreate.name,
                 buildFrom: imageToCreate.buildFrom,
-                password: machine.password
+                password: machine.password,
+                instancesSize: config.instancesSize
               });
 
               return this._client.ec2
@@ -676,6 +679,10 @@ class AWSDriver extends Driver {
           });
         });
       });
+  }
+
+  instancesSize(size) {
+    return ((size === 'veryLarge') ? 'm4.xlarge' : 't2\.' + size);
   }
 }
 

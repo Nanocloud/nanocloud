@@ -27,6 +27,8 @@ to avoid commiting those changes
 - autoLogoff (Defaults to false) VDI sessions are signed off automatically
 - defaultGroup (Defaults to empty string (no default group)) id of the group users should be attached to automatically
 - machinePoolSize (Defaults to 1) the number of machine to provision in advance ready to accept users
+- instancesSize (Defaults to 'medium') currently only "small", "medium",
+  "large", "veryLarge" are implemented
 - machinesName (Defaults to 'Nanocloud Exec Server') default name for machines
 - plazaURI (Defaults to https://s3-eu-west-1.amazonaws.com/nanocloud/plaza/1.0.0/windows/amd64/plaza.exe) URL to download plaza from
 - plazaPort (Defaults to 9090) port to communicate with plaza
@@ -86,7 +88,6 @@ MACHINES=[{"name": "My Machine", "type": "manual", "ip": "1.2.3.4", "username": 
 - awsKeyName private key name
 - awsPrivateKey (Defaults to /opt/back/id_rsa) path to where the key will be stored
 - awsImage Nanocloud's execution servers default image
-- awsFlavor (Defaults to t2.medium) size of virtual machines
 - awsMachineUsername (Defaults to Administrator) administrator account on the machine
 - awsMachinePassword (Defaults to empty string, will be generated if possible) administrator password on the machine
 - awsMachineSubnet (Defaults to empty string, automatic subnet) subnet to assign to the machine
@@ -109,8 +110,6 @@ MACHINES=[{"name": "My Machine", "type": "manual", "ip": "1.2.3.4", "username": 
 
 - qemuServiceURL (Default to localhost) url of qemu manager service
 - qemuServicePort (Default to 3000) port of qemu manager service
-- qemuMemory (Default to 2048) memory to allocate to your VMs in MB
-- qemuCPU (Default to 2) number of vCPU to allocate to your VMs
 - qemuMachineUsername (Defaults to Administrator) windows account username
 - qemuMachinePassword (Defaults empty) windows account password
 

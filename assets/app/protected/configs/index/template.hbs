@@ -21,7 +21,7 @@
   {{#each images as |image index|}}
     <div class="form-group row">
       <div class="col-sm-3">
-        <p  class="confirm-input-item color-primary in-bl fl va-sub">Image <strong>{{ image.name }}</strong></p>
+        <p  class="confirm-input-item color-primary in-bl fl va-sub">Pool size for "<strong>{{ image.name }}</strong>"</p>
       </div>
       <div class="col-sm-3">
         {{input-confirm
@@ -33,4 +33,20 @@
       </div>
     </div>
   {{/each}}
+{{/container-block}}
+
+{{#container-block}}
+  <h4 class='color-default m-b-1'>Machine size</h4>
+
+  <div class="form-group row">
+    <div class="col-sm-3">
+      <p  class="confirm-input-item color-primary in-bl fl va-sub">Default machine size</p>
+    </div>
+    <div class="col-sm-3">
+      {{#paper-checkbox class="bl" value=(is-equal configController.instancesSize 'small') onChange=(action (mut configController.instancesSize) 'small')}}Small{{/paper-checkbox}}
+      {{#paper-checkbox class="bl" value=(is-equal configController.instancesSize 'medium') onChange=(action (mut configController.instancesSize) 'medium')}}Medium{{/paper-checkbox}}
+      {{#paper-checkbox class="bl" value=(is-equal configController.instancesSize 'large') onChange=(action (mut configController.instancesSize) 'large')}}Large{{/paper-checkbox}}
+      {{#paper-checkbox class="bl" value=(is-equal configController.instancesSize 'veryLarge') onChange=(action (mut configController.instancesSize) 'veryLarge')}}Very large{{/paper-checkbox}}
+    </div>
+  </div>
 {{/container-block}}

@@ -48,6 +48,7 @@ module.exports = function() {
         .then((res) => {
           let imageData = res.body.data.pop();
 
+          expect(imageData.attributes['instances-size']).to.be.equal('medium');
           expect(imageData.attributes.name).to.be.equal('Default');
           expect(imageData.attributes['build-from']).to.be.equal(null);
 

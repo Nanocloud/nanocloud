@@ -37,9 +37,16 @@ class ManualDriver extends Driver {
   initialize() {
     return ConfigService.set('machinePoolSize', 0)
       .then(() => {
+        return ConfigService.unset('instancesSize');
+      })
+      .then(() => {
         return Promise.props({
           config: ConfigService.get('machines'),
-          image: Image.findOne({ name: 'Default' })
+          image: Image.update({
+            name: 'Default'
+          },{
+            instancesSize: null
+          })
         });
       })
       .then(({config, image}) => {
@@ -61,6 +68,10 @@ class ManualDriver extends Driver {
     return Promise.resolve({
       status: 'running'
     });
+  }
+
+  instancesSize(size) {
+    return size;
   }
 }
 

@@ -73,8 +73,6 @@ class QemuDriver extends Driver {
 
   /**
    * Create a new virtual machine. It uses the `ConfigService` variables:
-   *  - qemuMemory: Memory in MB
-   *  - qemuCPU: Number of vCPU
    *  - qemuDrive: Hard drive file (qcow2)
    *  - qemuMachineUsername: Windows account username
    *  - qemuMachinePassword: Windows account password
@@ -85,8 +83,25 @@ class QemuDriver extends Driver {
    * @return {Promise[Machine]} The created machine
    */
   createMachine(machine, image) {
-    return ConfigService.get('qemuServiceURL', 'qemuServicePort',
-        'qemuMemory', 'qemuCPU', 'plazaPort',
+    var allSize = {
+      small: {
+        memory: 1024,
+        cpu: 1
+      },
+      medium: {
+        memory: 2048,
+        cpu: 2
+      },
+      large: {
+        memory: 4096,
+        cpu: 2
+      },
+      veryLarge: {
+        memory: 8192,
+        cpu: 4
+      }
+    };
+    return ConfigService.get('qemuServiceURL', 'qemuServicePort', 'plazaPort',
         'qemuMachineUsername', 'qemuMachinePassword')
       .then((config) => {
 
@@ -95,8 +110,8 @@ class QemuDriver extends Driver {
           json: true,
           body: {
             name: machine.name,
-            cpu: config.qemuCPU,
-            memory: config.qemuMemory,
+            cpu: allSize[image.instancesSize].cpu,
+            memory: allSize[image.instancesSize].memory,
             drive: image.iaasId
           },
           method: 'POST'
@@ -114,7 +129,8 @@ class QemuDriver extends Driver {
               domain    : '',
               plazaport : res.plazaPort,
               rdpPort   : res.rdpPort,
-              status    : res.status
+              status    : res.status,
+              flavor    : image.instancesSize
             });
           });
       });
@@ -210,7 +226,7 @@ class QemuDriver extends Driver {
    */
   createImage(imageToCreate) {
     return new Promise((resolve, reject) => {
-      return ConfigService.get('qemuServiceURL', 'qemuServicePort')
+      return ConfigService.get('qemuServiceURL', 'qemuServicePort', 'instancesSize')
         .then((config) => {
           return request({
             url: 'http://' + config.qemuServiceURL + ':' + config.qemuServicePort + '/images',
@@ -220,18 +236,19 @@ class QemuDriver extends Driver {
               buildFrom: imageToCreate.buildFrom,
               iaasId: imageToCreate.name
             }
-          });
-        })
-        .then((res) => {
+          })
+            .then((res) => {
 
-          let imageModel = new Machine._model({
-            iaasId: res.iaasId,
-            name: imageToCreate.name,
-            password: null,
-            buildFrom: imageToCreate.buildFrom
-          });
+              let imageModel = new Machine._model({
+                iaasId: res.iaasId,
+                name: imageToCreate.name,
+                password: null,
+                buildFrom: imageToCreate.buildFrom,
+                instancesSize: config.instancesSize
+              });
 
-          return resolve(imageModel);
+              return resolve(imageModel);
+            });
         })
         .catch((err) => {
           return reject(err);
@@ -334,6 +351,10 @@ class QemuDriver extends Driver {
               return machine;
             });
         });
+  }
+
+  instancesSize(size) {
+    return size;
   }
 }
 
