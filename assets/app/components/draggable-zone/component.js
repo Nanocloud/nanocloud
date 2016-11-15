@@ -38,14 +38,20 @@ export default Ember.Component.extend({
     }
   },
 
-  dragOver(event) {
+  _handle_dragover_event_spamming() {
     if (this.get('lastEnter') === true) {
-      return;
+      return true;
     }
     this.set('lastEnter', true);
     Ember.run.later(() => {
       this.set('lastEnter', null);
     }, 10);
+  },
+
+  dragOver(event) {
+    if (this._handle_dragover_event_spamming() === true) {
+      return;
+    }
     if (this.get('setLastObjectHovered')) {
       this.sendAction('setLastObjectHovered');
     }
