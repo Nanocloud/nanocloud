@@ -1,0 +1,26 @@
+& {
+  position: relative;
+
+  .content {
+    padding: 20px 20px 10px 20px;
+    border: 1px solid whitesmoke;
+    border-radius: 3px;
+    background-color: #fff;
+    z-index: 1;
+    position: relative;
+    font-family: sans-serif;
+  }
+
+  .shadow {
+    width: calc(100% - 50px);
+    height: 35px;
+    position: absolute;
+    border-radius: 25px;
+    bottom: 5px;
+    left: 0;
+    right: 0;
+    margin: auto;
+    z-index: 0;
+    box-shadow: 0px 0px 15px #d8d8d8;
+  }
+}

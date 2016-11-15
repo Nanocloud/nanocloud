@@ -31,7 +31,7 @@ export default Ember.Controller.extend({
   download: Ember.inject.service('download'),
   items: null,
 
-  modelIsEmpty: Ember.computed.empty('items', 'items'),
+  modelIsEmpty: Ember.computed.empty('items'),
 
   sortableTableConfig: {
 
@@ -53,7 +53,7 @@ export default Ember.Controller.extend({
     }
   },
 
-  data : Ember.computed('items', 'items', function() {
+  data : Ember.computed('items', function() {
 
     var ret = Ember.A([]);
     this.get('items').forEach(function(item) {

@@ -1,14 +1,15 @@
 <div class="machine-detail section">
-  <h4 class="in-bl">
+  <h1 class="in-bl">
 		{{#if session.user.isAdmin}}
 			{{#link-to 'protected.machines' }}Machines{{/link-to}}
 		{{else}}
 			{{#link-to 'protected.machines.user' }}Machines{{/link-to}}
 		{{/if}}
-  </h4>
-  <h4 class="in-bl">
-  > {{machineName}}
-  </h4>
+    <div class='in-bl'>
+      {{icon-component class="va-sub" materialIcon="navigate_next" size=30}}
+    </div>
+    {{model.name}}
+  </h1>
   <div class='content-wrapper m-t-2'>
     <table class="table">
       <tbody>

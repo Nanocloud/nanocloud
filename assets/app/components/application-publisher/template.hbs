@@ -1,41 +1,40 @@
-<div class='file-explorer'>
-  <div class='content-wrapper'>
-    <h4 class='color-primary m-b-1'>
-      <p class='in-bl'>File explorer </p>
-      {{#nano-tooltip class='in-bl' content="Select the application you want to publish" position="right"}}
-        {{icon-component class="va-sub" materialIcon="help"}}
-      {{/nano-tooltip}}
-    </h4>
-      <ol class="breadcrumb truncate">
-        {{#each historyData as |item index|}}
-          <li class='clickable'><a {{ action "moveOffset" index}}>{{ item }}</a></li>
-        {{/each}}
-        <li><a>{{ selectedFile.name }}</a></li>
-      </ol>
-      <div class='navigation m-t-1'>
-        <span {{ action "clickPrevBtn" }}>{{icon-component class='clickable icon_link va-bl-mid' materialIcon="navigate_before" size=20}}</span>
-        <span {{ action "clickNextBtn" }}>{{icon-component class='clickable icon_link va-bl-mid' materialIcon="navigate_next" size=20}}</span>
-      </div>
-      <div class='file-list-wrapper m-t-1'>
-      {{#if loadState}}
-        {{loading-component}}
-      {{else}}
-        {{#each items as |item|}}
-          <div {{ action "clickItem" item }} class="item {{ if (is-equal selectedFile item) 'selected' }}">
-            <span>{{icon-component class='color-primary va-mid' materialIcon=item.icon size=15}}</span>
-            <div class='filename mx-l-1 in-bl'>{{item.name}}</div>
-          </div>
-        {{else}}
-          No files.
-        {{/each}}
-      {{/if}}
+<div class='wrapper p-a-1'>
+  <h4 class='color-primary m-b-1'>
+    <p class='in-bl'>File explorer </p>
+    {{#nano-tooltip class='in-bl' content="Select the application you want to publish" position="right"}}
+      {{icon-component class="va-sub" materialIcon="help"}}
+    {{/nano-tooltip}}
+  </h4>
+    <ol class="breadcrumb truncate">
+      {{#each historyData as |item index|}}
+        <li class='clickable'><a {{ action "moveOffset" index}}>{{ item }}</a></li>
+      {{/each}}
+      <li><a>{{ selectedFile.name }}</a></li>
+    </ol>
+    <div class='navigation m-t-1'>
+      <span {{ action "clickPrevBtn" }}>{{icon-component class='clickable icon_link va-bl-mid' materialIcon="navigate_before" size=20}}</span>
+      <span {{ action "clickNextBtn" }}>{{icon-component class='clickable icon_link va-bl-mid' materialIcon="navigate_next" size=20}}</span>
     </div>
-    <div class='file-explorer-footer'>
-      {{#if isPublishing}}
-        <button type="button" class="publish-btn btn btn-info btn-color-default">In progress {{ fa-icon "spinner" spin=true}}</button>
+    <div class='file-list-wrapper m-t-1'>
+    {{#if loadState}}
+      {{loading-component}}
+    {{else}}
+      {{#each items as |item|}}
+        <div {{ action "clickItem" item }} class="item clickable {{ if (is-equal selectedFile item) 'selected' }}">
+          {{#icon-component class='color-primary va-mid' materialIcon=item.icon size=20 iconClass='va-bottom'}}
+            <div class='in-bl'>{{item.name}}</div>
+          {{/icon-component}}
+        </div>
       {{else}}
-        <button {{ action "clickPublish" }} type="button" class="publish-btn btn {{ if selectedFile 'btn-primary' 'btn-secondary-outline disabled' }} btn-color-default">Publish it!</button>
-      {{/if}}
-    </div>
+        No files.
+      {{/each}}
+    {{/if}}
+  </div>
+  <div class='file-explorer-footer'>
+    {{#if isPublishing}}
+      <button type="button" class="publish-btn btn btn-info btn-color-default">In progress {{ fa-icon "spinner" spin=true}}</button>
+    {{else}}
+      <button {{ action "clickPublish" }} type="button" class="publish-btn btn {{ if selectedFile 'btn-primary' 'btn-secondary-outline disabled' }} btn-color-default">Publish it!</button>
+    {{/if}}
   </div>
 </div>

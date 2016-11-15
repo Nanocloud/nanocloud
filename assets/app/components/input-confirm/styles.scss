@@ -1,0 +1,55 @@
+& {
+
+  form {
+    display: flex;
+  }
+  button {
+    display: flex;
+    border: none;
+    background: none;
+    cursor: pointer;
+    padding: 0;
+    border: 0;
+  }
+  .controls-wrapper {
+    margin-right: 7px;
+    display: flex;
+  }
+  .done {
+    &:hover,
+    &:focus {
+      transition-duration: .3s;
+    }
+  }
+  .clear {
+    &:hover,
+    &:focus {
+      transition-duration: .3s;
+    }
+  }
+  .done {
+
+    &:hover,
+    &:target {
+      transition-duration: .3s;
+    }
+  }
+  .clear {
+    &:hover,
+    &:target {
+      transition-duration: .3s;
+    }
+  }
+
+  input {
+    border: 1px solid #f3f3f3;
+    border-radius: 3px;
+    background: none;
+    padding: 5px 10px;
+    outline: 0;
+  }
+
+  .edit {
+    font-size: 17px;
+  }
+}

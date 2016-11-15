@@ -26,6 +26,7 @@ import Ember from 'ember';
 
 export default Ember.Route.extend({
 
+  configuration: Ember.inject.service('configuration'),
   queryParams: {
     app: {
       refreshModel: true
@@ -37,5 +38,11 @@ export default Ember.Route.extend({
     this.get('configuration').loadData();
     this._super(...arguments);
   },
-  configuration: Ember.inject.service('configuration')
+
+  actions: {
+    didTransition() {
+      let controller = this.controllerFor('login');
+      controller.applyTheme();
+    }
+  }
 });

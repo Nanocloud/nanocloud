@@ -23,8 +23,9 @@
  */
 
 import Ember from 'ember';
+import applyTheme from 'nanocloud/mixins/apply-theme';
 
-export default Ember.Controller.extend({
+export default Ember.Controller.extend(applyTheme, {
   session: Ember.inject.service('session'),
   applicationController: Ember.inject.controller('application'),
   configuration: Ember.inject.service('configuration'),

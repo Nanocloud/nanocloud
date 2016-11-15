@@ -1,0 +1,63 @@
+@import './clipboard.scss';
+
+.vdi {
+  width: 100%;
+  height: 100%;
+  background-color: #000;
+
+  .remote-session { 
+    width: 100%;
+    height: 100%;
+  }
+
+  .vdi-topbar {
+    display: flex;
+    z-index: 2;
+    position: relative;
+    height: $vdi_topbar-height;
+    padding: 0px 5px 0px 5px;
+    overflow: hidden;
+    justify-content: space-between;
+    background-color: #19233a;
+    top: -$vdi_topbar-height;
+    background-color: #0c1935;
+    color: #0779a9;
+
+    .item {
+      height: $vdi_topbar-height;
+      margin: 0px 3px 0px 3px;
+      padding: 4px 5px 0px 5px;
+
+      &:hover {
+        color: #52a3ce;
+
+        i {
+          color: #52a3ce !important;
+        }
+      }
+    }
+
+    .selected,
+    .selected i {
+      color: #52a3ce !important;
+    }
+  }
+
+  .vdi-onboard-app-browser {
+    padding-top: $vdi_topbar-height;
+  }
+
+  .vdi-load-background {
+    top: 0;
+    background: #000;
+    z-index: 5;
+
+    .text {
+      @extend .animated;
+      color: #fafafa;
+      animation-name: nanoloading;
+      animation-duration: 5s;
+      animation-iteration-count: infinite;
+    }
+  }
+}

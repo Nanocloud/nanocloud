@@ -33,14 +33,13 @@
 {{/if}}
 <div class='m-t-2'>
   {{#if protectedController.hasTeam}}
-    <h4 class='pull-xs-right'>
+    <h4 class='pull-xs-right rel z-2'>
       {{#link-to 'protected.users.teams.new'}}
-        <button class='btn btn-primary'>
+        <button class='btn btn-primary btn-color-default'>
           Create a new user
         </button>
       {{/link-to}}
     </h4>
-    <div class="clearfix"></div>
     {{#file-explorer
       requestParams=(hash teams=true)
       isPublishing=isPublishing
@@ -57,6 +56,7 @@
           {{icon-component class="va-sub" materialIcon="navigate_next" size=36}} {{team.name}}
         </div>
       </h1>
+      {{icon-component class='fleft' iconClass='va-tt' size=26 materialIcon="search"}}
       {{models-table
         class="sortableTable"
         data=team.allMembers

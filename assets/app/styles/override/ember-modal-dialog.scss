@@ -1,0 +1,11 @@
+.ember-modal-dialog {
+  padding: 0 !important;
+}
+
+@media (max-width: 991px) {
+  .ember-modal-dialog {
+    width: 95%;
+    left: auto !important;
+    margin-left: auto !important;
+  }
+}

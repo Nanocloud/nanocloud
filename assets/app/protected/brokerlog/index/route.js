@@ -31,9 +31,18 @@ export default Ember.Route.extend({
   },
 
   model() {
-    var model = this.store.query('brokerlog', {});
     this.controllerFor('protected.brokerlog.index').setData();
-    return model;
+    let brokerlogIndexController = this.controllerFor('protected.brokerlog.index');
+    brokerlogIndexController.set('loadState', true);
+    var promise = this.store.query('brokerlog', {});
+    promise
+      .catch(() => {
+        this.toast.error('Broker log could not be retrieved');
+      })
+      .finally(() => {
+        brokerlogIndexController.set('loadState', false);
+      });
+    return promise;
   },
 
   actions: {

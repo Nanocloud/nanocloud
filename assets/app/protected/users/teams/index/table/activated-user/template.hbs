@@ -9,8 +9,13 @@
     Waiting for activation
   </div>
 {{/if}}
-<div class='rel in-bl fright'{{ action toggleUserSetting record }}>
-  {{icon-component class='color-primary clickable fright' hover-darker=true materialIcon='settings' size=16}}
+<div class='rel in-bl fright' {{ action toggleUserSetting record }}>
+  {{icon-component
+    class='va-sub color-primary clickable color-default'
+    hover-darker=true
+    materialIcon='settings'
+    size=16
+    iconClass='va-tt'}}
   {{#if record.teamOptionIsOpen}}
     {{#popup-component isOpen=record.teamOptionIsOpen close=closePopup position="left"}}
       <div class="list-group">

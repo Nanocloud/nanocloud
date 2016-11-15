@@ -25,27 +25,33 @@
 import Ember from 'ember';
 
 export default Ember.Component.extend({
-  classNames        : [ 'draggableDropzone' ],
-  classNameBindings : [ 'dragClass' ],
-  dragClass         : 'deactivated',
-  lastTarget        : null,
-
-  abortChangeDir() {
-    if (this.get('runLater')) {
-      Ember.run.cancel(this.get('runLater'));
-      this.set('runLater', null);
-    }
-  },
+  classNames: [ 'draggableDropzone' ],
+  classNameBindings: [ 'dragClass' ],
+  dragClass: 'deactivated',
+  lastTarget: null,
+  lastEnter: null,
 
   dragLeave() {
-    this.abortChangeDir();
+    this.set('lastObjectHovered', false);
     if (this.get('enabled') === true) {
       this.set('dragClass', 'deactivated');
     }
   },
 
-  dragOver(event) {
+  _handle_dragover_event_spamming() {
+    if (this.get('lastEnter') === true) {
+      return true;
+    }
+    this.set('lastEnter', true);
+    Ember.run.later(() => {
+      this.set('lastEnter', null);
+    }, 10);
+  },
 
+  dragOver(event) {
+    if (this._handle_dragover_event_spamming() === true) {
+      return;
+    }
     if (this.get('setLastObjectHovered')) {
       this.sendAction('setLastObjectHovered');
     }
@@ -55,16 +61,6 @@ export default Ember.Component.extend({
 
     if (this.get('lastObjectHovered') === this.get('elementBeingDragged')) {
       return false;
-    }
-
-    if (!this.get('runLater')) {
-      var runLater = Ember.run.later(this, function() {
-        this.abortChangeDir();
-        event.stopPropagation();
-        this.sendAction('dragAction');
-      }, 1200);
-
-      this.set('runLater', runLater);
     }
 
     if (this.get('enabled') === true) {
@@ -81,7 +77,6 @@ export default Ember.Component.extend({
 
   drop(event) {
     event.preventDefault();
-    this.abortChangeDir();
 
     let uploadData = event.dataTransfer.files;
     if (uploadData.length > 0) {
@@ -93,7 +88,7 @@ export default Ember.Component.extend({
       }
     }
 
-    this.set('lastObjectHovered', null);
+    this.set('lastObjectHovered', false);
     return false;
   },
 });

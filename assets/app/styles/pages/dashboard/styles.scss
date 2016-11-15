@@ -1,0 +1,32 @@
+
+.dashboard {
+
+  width: 100%;
+
+  .card-wrapper {
+      
+    width: 100%;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-around;
+
+    .card-component {
+      width: 30%;
+      text-align: center;
+
+      .card {
+
+        border: 0;
+        
+        footer {
+          margin-top: 15px;
+        }
+      }
+
+      h1 {
+        font-size: 50px;
+        display: inline;
+      }
+    }
+  }
+}

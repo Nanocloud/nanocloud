@@ -1,0 +1,22 @@
+& {
+  height: 100%;
+  padding-bottom: 50px;
+
+  .wrapper {
+    height: inherit;
+  }
+
+  .item {
+    margin-bottom: 5px;
+  }
+
+  .file-explorer-footer {
+    position: absolute;
+    bottom: 10px;
+  }
+
+  .file-list-wrapper {
+    height: calc(100% - 130px);
+    overflow: auto;
+  }
+}

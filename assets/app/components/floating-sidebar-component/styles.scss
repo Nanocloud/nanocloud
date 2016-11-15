@@ -1,0 +1,28 @@
+& {
+  position: fixed;
+  height: 100%;
+  top: 0;
+  right: 0;
+  z-index: 1;
+  background-color: #fff;
+}
+
+@media (max-width: 576px) {
+  & {
+    width: 100%;
+  }
+}
+
+@media (max-width: 720px) and (min-width: 576px) {
+  & {
+    width: 70%;
+  }
+}
+
+@media (min-width: 720px) {
+  & {
+    width: 40%;
+    min-width: 400px;
+    max-width: 500px;
+  }
+}

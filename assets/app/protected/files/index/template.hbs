@@ -1,5 +1,5 @@
 <div id="file-page">
-{{#vdi-drag-n-drop
+{{#upload-wrapper
   id="drag-n-drop"
   assignBrowse="browse"
   complete="refreshModel"
@@ -7,15 +7,19 @@
   as |uploadData|}}
 
   {{#ember-wormhole to="file-page"}}
-    <div class="section p-a-2">
-      <h1 class='color-primary'>Files</h1>
+    <div class="section">
+      <h1 class='in-bl color-primary'>
+        Files
+      </h1>
       <p class="color-primary indication hover clickable">
         <span class="browse link">
-          {{#if modelIsEmpty}}
-            Looks like you haven’t uploaded any file yet! Drag and drop any file here to upload it.
-          {{else}}
-            Click here or drag and drop any file right here to upload it
-          {{/if}}
+          {{#icon-component materialIcon='touch_app' iconClass='va-sub'}}
+            {{#if modelIsEmpty}}
+              Looks like you haven’t uploaded any file yet! Drag and drop any file here to upload it.
+            {{else}}
+              Click here or drag and drop any file right here to upload it
+            {{/if}}
+          {{/icon-component}}
         </span>
         {{#if uploadData.queue}}
           <span class="state">
@@ -31,13 +35,14 @@
         <div class='drag-drop-wrapper'>
         </div>
         {{#unless modelIsEmpty}}
+          {{icon-component class='fleft' iconClass='va-tt' size=26 materialIcon="search"}}
           {{models-table
             class="sortableTable color-default"
             data=data
             filteringIgnoreCase=sortableTableConfig.filteringIgnoreCase
             columns=columns
             showColumnsDropdown=false
-            delete='downloadFile'
+            download='downloadFile'
             customMessages=sortableTableConfig.messageConfig
             customIcons=sortableTableConfig.customIcons
             customClasses=sortableTableConfig.customClasses
@@ -49,5 +54,5 @@
       </div>
     </div>
   {{/ember-wormhole}}
-{{/vdi-drag-n-drop}}
+{{/upload-wrapper}}
 </div>

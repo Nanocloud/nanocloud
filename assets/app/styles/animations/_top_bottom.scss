@@ -1,0 +1,21 @@
+@keyframes top-bottom {
+  0% {
+    top: 0%;
+  }
+  50.001% {
+    top: 100%;
+  }
+  50.002% {
+    top: -100%;
+  }
+  100% {
+    top: 0%;
+  }
+}
+
+.top-bottom {  
+  color: $blue-default;
+  animation-name: top-bottom;
+  animation-duration: 1.3s;
+  animation-iteration-count: infinite;
+}

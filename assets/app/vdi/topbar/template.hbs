@@ -1,5 +1,5 @@
 <div class="vdi-topbar">
-  <div class="fl color-default">
+  <div class="fl">
     {{#if uploadData.progress}}
       {{#icon-component
         class="item"
@@ -32,7 +32,6 @@
         clickable=true
         click=(action "toggleWindow" 'upload')
         content="File Upload"
-        color="#424242"
         size=16
       }}
         <span class='va-tb hidden-sm-down'>
@@ -49,7 +48,6 @@
       clickable=true
       hover-lighter=true
       content="Download"
-      color="#424242"
       click=(action "toggleWindow" 'download')
       size=16
     }}
@@ -67,7 +65,6 @@
       click=(action "toggleWindow" 'clipboard')
       content="Copy / paste"
       size=16
-      color="#424242"
     }}
       <span class='va-tb hidden-sm-down'>
         Clipboard
@@ -83,7 +80,6 @@
         click=(action "askSaveImage" 'saveImage')
         content="Save an image"
         size=16
-        color="#424242"
       }}
         <span class='va-tb hidden-sm-down'>
           Save an image
@@ -99,7 +95,6 @@
         click=(action "askSaveImageFirst" 'onboardApp')
         content="Onboard an app"
         size=16
-        color="#424242"
       }}
         <span class='va-tb hidden-sm-down'>
           Onboard an application

@@ -1,0 +1,91 @@
+.file-explorer-wrapper {
+  height: 100%;
+}
+
+& {
+  width: 100%;
+  height: inherit;
+  position: relative;
+  margin: auto;
+  z-index: 1;
+
+  .target-current-folder {
+    min-height: 250px;
+    border: 1px solid #fff;
+    padding-bottom: 20px;
+      
+    &.active {
+      border: 1px solid blue;
+    }
+  }
+
+  .breadcrumb {
+    background: none;
+    font-size: 16px;
+
+    > li {
+      float: none;
+      display: inline !important;
+    }
+
+    .histories {
+      width: calc(100% - 150px);
+      border-bottom: 2px solid #e9f1ff;
+    }
+  }
+
+  .section {
+    height: 100%;
+    margin-top: 0;
+  }
+
+  .filePath {
+    display: inline-block;
+
+    a {
+      cursor: pointer;
+    }
+  }
+
+  .file-explorer-footer {
+    width: 100%;
+    padding: 10px 0px 10px 0px;
+
+    .info {
+      position: relative;
+      top: 2px;
+      left: 10px;
+    }
+  }
+
+  .bar-items-wrapper {
+    background-color: #f7f7f7;
+  }
+
+  .file-list-wrapper {
+    overflow: auto;
+    cursor: pointer;
+    height: calc(100% - 180px);
+    min-height: 300px;
+    border: 1px solid #f7f7f7;
+
+    > .item {
+      padding: 4px 10px 4px 5px;
+
+      &:hover {
+        background-color: $gray-lighter;
+
+        .filename {
+          text-decoration: underline;
+        }
+      }
+
+      &.selected {
+        color: #fff;
+        .icon-component {
+          color :#fff;
+        }
+      }
+    }
+  }
+}

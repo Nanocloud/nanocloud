@@ -1,0 +1,29 @@
+& {
+  .dragging {
+    .draggableDropzone {
+      border-left: 2px solid #f1faff;
+    }
+  }
+
+  .draggableDropzone {
+    &.deactivated .container {
+      background-color: none;
+    }
+
+    &.activated {
+      background-color: #f1faff;
+      font-weight: bold;
+    }
+
+    .draggableItem {
+      padding: 5px;
+      &:active {
+        opacity: 0.4;
+      }
+
+      &:hover {
+        background-color: #f7f7f7;
+      }
+    }
+  }
+}
