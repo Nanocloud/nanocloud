@@ -27,7 +27,8 @@ to avoid commiting those changes
 - autoLogoff (Defaults to false) VDI sessions are signed off automatically
 - defaultGroup (Defaults to empty string (no default group)) id of the group users should be attached to automatically
 - machinePoolSize (Defaults to 1) the number of machine to provision in advance ready to accept users
-- instancesSize (Defaults to 'medium') images default instances size
+- instancesSize (Defaults to 'medium') currently only "small", "medium",
+  "large", "veryLarge" are implemented
 - machinesName (Defaults to 'Nanocloud Exec Server') default name for machines
 - plazaURI (Defaults to https://s3-eu-west-1.amazonaws.com/nanocloud/plaza/1.0.0/windows/amd64/plaza.exe) URL to download plaza from
 - plazaPort (Defaults to 9090) port to communicate with plaza

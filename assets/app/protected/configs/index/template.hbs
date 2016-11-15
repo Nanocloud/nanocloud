@@ -21,7 +21,7 @@
   {{#each images as |image index|}}
     <div class="form-group row">
       <div class="col-sm-3">
-        <p  class="confirm-input-item color-primary in-bl fl va-sub">Image <strong>{{ image.name }}</strong></p>
+        <p  class="confirm-input-item color-primary in-bl fl va-sub">Pool size for "<strong>{{ image.name }}</strong>"</p>
       </div>
       <div class="col-sm-3">
         {{input-confirm
@@ -40,7 +40,7 @@
 
   <div class="form-group row">
     <div class="col-sm-3">
-      <p  class="confirm-input-item color-primary in-bl fl va-sub">Default images instances size</p>
+      <p  class="confirm-input-item color-primary in-bl fl va-sub">Default machine size</p>
     </div>
     <div class="col-sm-3">
       {{#paper-checkbox class="bl" value=(is-equal configController.instancesSize 'small') onChange=(action (mut configController.instancesSize) 'small')}}Small{{/paper-checkbox}}
