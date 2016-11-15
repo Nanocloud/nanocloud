@@ -497,7 +497,9 @@ function updateMachinesPool() {
           text: 'SELECT image, COUNT(image) FROM machine WHERE "machine"."user" IS NULL GROUP BY "machine"."image"',
           values: []
         }),
-        machines: Machine.find(),
+        machines: Machine.find({
+          user: null
+        }),
         images: Image.find()
       })
         .then(({config, machinesCount, machines, images}) => {
@@ -515,7 +517,7 @@ function updateMachinesPool() {
               machineToDestroy = machineCreated.count;
             } else {
               machineToRecreate = _.filter(machines, (m) => {
-                return m.image === image.id && m.flavor !== _driver.instancesSize(image.instancesSize) && !m.user;
+                return m.image === image.id && m.flavor !== _driver.instancesSize(image.instancesSize);
               }).length;
               machineToCreate = machinePoolSize - machineCreated.count;
               machineToDestroy = machineCreated.count - machinePoolSize;

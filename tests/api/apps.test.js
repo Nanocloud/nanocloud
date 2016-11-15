@@ -500,7 +500,7 @@ module.exports = function() {
                   'attributes': {
                     'protocol': 'rdp',
                     'machine-id': machine.id,
-                    'machine-type': 'dummy',
+                    'machine-type': 'medium',
                     'machine-driver': 'dummy',
                     'app-name': app2,
                     'rdp-options': {
@@ -563,7 +563,7 @@ module.exports = function() {
                   'attributes': {
                     'protocol': 'rdp',
                     'machine-id': machine.id,
-                    'machine-type': 'dummy',
+                    'machine-type': 'medium',
                     'machine-driver': 'dummy',
                     'app-name': app1,
                     'rdp-options': {
