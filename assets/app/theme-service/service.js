@@ -24,9 +24,11 @@
 
 import Ember from 'ember';
 import colorAdjust from 'nanocloud/utils/color-adjust';
+import config from 'nanocloud/config/environment';
 
 export default Ember.Service.extend({
   setupColor(color) {
+    config.APP.primaryColor = color;
     var lightenColor = colorAdjust(color, 20);
     var darkenColor = colorAdjust(color, -15);
     let collection = [
