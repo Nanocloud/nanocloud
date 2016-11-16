@@ -52,4 +52,4 @@ class InputManager {
 
 }  // namespace photon
 
-#endif  // PHOTON_INPUT_MANAG ER_H_
+#endif  // PHOTON_INPUT_MANAGER_H_

@@ -23,6 +23,8 @@
  */
 
 #include <iostream>
+#include <locale>
+#include <codecvt>
 
 #include <memory>
 #include <utility>
@@ -67,7 +69,7 @@ Conductor::Conductor(const std::string & offer,
   boost::shared_ptr<photon::http::server::response> res)
     : offer_(offer),
       response_(res) {
-	this->channel = nullptr;
+        this->channel = nullptr;
 }
 
 Conductor::~Conductor() {
@@ -172,15 +174,17 @@ void Conductor::OnMessage(const webrtc::DataBuffer& buffer) {
       break;
       // Set Clipboard
     case 'S': {
-      std::wstring wmess(mess.length(), 0); // Make room for characters
-      std::copy(mess.begin() + 1, mess.end(), wmess.begin());
-      input_manager_.SetClipboard(const_cast<std::wstring&>(wmess));
+      mess.erase(0, 1);
+      std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> converter;
+      std::wstring wide = converter.from_bytes(mess);
+      input_manager_.SetClipboard(const_cast<std::wstring&>(wide));
       break;
    }
       // Send Clipboard
     case 'G': {
       std::wstring wide = input_manager_.GetClipboard();
-      std::string str(wide.begin(), wide.end());
+      std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> converter;
+      std::string str = converter.to_bytes(wide);
       this->channel->Send(webrtc::DataBuffer(str));
       break;
     }

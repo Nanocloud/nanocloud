@@ -132,13 +132,13 @@ const std::wstring InputManager::GetClipboard() {
   HANDLE       hData;
 
   if (!OpenClipboard(NULL))
-    return nullptr; // OpenClipboard fails
+    return std::wstring(); // OpenClipboard fails
 
   if (!(hData = GetClipboardData(CF_UNICODETEXT)))
-    return nullptr; // GetClipboardData returned null
+    return std::wstring(); // GetClipboardData returned null
 
   if ((buffer = (wchar_t *)GlobalLock(hData)) == NULL)
-    return nullptr; // Returned buffer is null
+    return std::wstring(); // Returned buffer is null
 
   GlobalUnlock(hData);
   CloseClipboard();
