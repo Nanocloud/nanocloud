@@ -42,17 +42,17 @@ class ManualDriver extends Driver {
       .then(() => {
         return Promise.props({
           config: ConfigService.get('machines'),
-          image: Image.update({
+          images: Image.update({
             name: 'Default'
           },{
             instancesSize: null
           })
         });
       })
-      .then(({config, image}) => {
+      .then(({config, images}) => {
 
         let machines = config.machines.map((machine) => {
-          machine.image = image.id;
+          machine.image = images[0].id;
           return Machine.findOrCreate(machine);
         });
 
