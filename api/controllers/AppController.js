@@ -274,15 +274,15 @@ module.exports = {
               let username = null;
               let password = null;
 
-              if (user.ldapUser) {
-                // AD username is the same as the email
-                username = user.email;
-                password = user.ldapPassword;
-              } else {
-                username = machine.username;
-                password = machine.password;
-              }
               if (machine) {
+                if (user.ldapUser) {
+                  // AD username is the same as the email
+                  username = user.email;
+                  password = user.ldapPassword;
+                } else {
+                  username = machine.username;
+                  password = machine.password;
+                }
                 image.apps.forEach((app) => {
                   connections.push({
                     protocol: 'rdp',
