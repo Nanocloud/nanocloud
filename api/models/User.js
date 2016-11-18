@@ -87,6 +87,11 @@ module.exports = {
     ldapUsername: {
       type: 'string'
     },
+    machines: {
+      collection: 'machine',
+      via: 'users',
+      through: 'usermachine'
+    },
 
     toJSON: function() {
       var obj = this.toObject();

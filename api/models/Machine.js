@@ -70,15 +70,17 @@ module.exports = {
     flavor: {
       type: 'string'
     },
-    user: {
-      model: 'user'
-    },
     image: {
       model: 'image',
       unique: true
     },
     status: {
       type: 'string'
+    },
+    users: {
+      collection: 'user',
+      via: 'machines',
+      through: 'usermachine'
     },
 
     toJSON: function() {
@@ -104,13 +106,13 @@ module.exports = {
      * @method getSessions
      * @return {Promise[Array]} a promise resolving to an array of session
      */
-    getSessions() {
+    getSessions(user) {
 
       let plazaAddr = url.format({
         protocol: 'http',
         hostname: this.ip,
         port: this.plazaport,
-        pathname: '/sessions/' + this.username
+        pathname: '/sessions/' + user.email
       });
 
       return request.getAsync(plazaAddr)
@@ -131,7 +133,7 @@ module.exports = {
               machineId: this.id,
               username: session[1],
               state: session[3],
-              userId: this.user
+              userId: user.id
             });
           });
 

@@ -21,7 +21,7 @@
  *
  */
 
-/* global App, ConfigService, BrokerLog, Machine, Image, User, ConfigService, Machine, PlazaService, StorageService, Team */
+/* global App, ConfigService, BrokerLog, Machine, Image, User, ConfigService, Machine, PlazaService, StorageService, Team, UserMachine */
 
 const _ = require('lodash');
 const Promise = require('bluebird');
@@ -147,70 +147,73 @@ function getMachineForUser(user, image) {
       }
     })
     .then(() => {
-      return Machine.findOne({
-        where: {
-          user: user.id,
-          image: image.id
-        }
+      return Promise.promisify(Machine.query)({
+        text: `SELECT * FROM machine WHERE
+                  "image" = $2::varchar AND
+                  (SELECT COUNT(usermachine.user) FROM usermachine
+                      WHERE "user" = $1::varchar AND
+                      machine = machine.id) >= 1 LIMIT 1`,
+        values: [user.id, image.id]
       })
-        .then((machine) => {
-          if (!machine) {
+        .then((machines) => {
+          if (!machines.rows.length) {
             return new Promise((resolve, reject) => {
               Machine.query({
-                text: `UPDATE machine m
-            SET "user" = $1::varchar
-            FROM (
-              SELECT machine.id
-              FROM machine
-              WHERE "user" IS NULL AND ( "status" = 'running' OR "status" = 'booting' ) AND "image" = $2::varchar
-              LIMIT 1
-              FOR UPDATE SKIP LOCKED
-            ) sub
-            WHERE m.id = sub.id
-            RETURNING *`,
-                values: [user.id, image.id]
+                text: `SELECT * FROM machine WHERE "image" = $1::varchar AND
+                          (SELECT COUNT(usermachine.user) FROM usermachine WHERE "machine"=machine.id) < 5 LIMIT 1`,
+
+                values: [image.id]
               }, (err, res) => {
                 if (err) {
                   return reject(err);
                 }
 
                 if (res.rows.length) {
-                  if (_.findIndex(res.rows, {status: 'running'}) !== -1) {
-                    let row = _.findIndex(res.rows, {status: 'running'});
-                    _createBrokerLog(res.rows[row], 'Assigned')
-                      .then(() => {
-                        updateMachinesPool();
-                        return resolve(Machine.findOne({
-                          id: res.rows[row].id
-                        }));
-                      });
-                  } else if (_.findIndex(res.rows, {status: 'booting'}) !== -1) {
-                    let row = _.findIndex(res.rows, {status: 'booting'});
-                    _createBrokerLog(res.rows[row], 'Assigned')
-                      .then(() => {
-                        return Machine.findOne({
-                          id: res.rows[row].id
-                        })
-                          .then((assignedMachine) => {
-                            return increaseMachineEndDate(assignedMachine);
-                          })
+                  return UserMachine.create({
+                    user: user.id,
+                    machine: res.rows[0].id
+                  })
+                    .then(() => {
+                      if (_.findIndex(res.rows, {status: 'running'}) !== -1) {
+                        let row = _.findIndex(res.rows, {status: 'running'});
+                        _createBrokerLog(res.rows[row], 'Assigned')
                           .then(() => {
                             updateMachinesPool();
-                            return reject(`A machine have been assigned to you, it will be available shortly.`);
+                            return resolve(Machine.findOne({
+                              id: res.rows[row].id
+                            }));
                           });
-                      });
-                  }
+                      } else if (_.findIndex(res.rows, {status: 'booting'}) !== -1) {
+                        let row = _.findIndex(res.rows, {status: 'booting'});
+                        _createBrokerLog(res.rows[row], 'Assigned')
+                          .then(() => {
+                            return Machine.findOne({
+                              id: res.rows[row].id
+                            })
+                              .then((assignedMachine) => {
+                                return increaseMachineEndDate(assignedMachine);
+                              })
+                              .then(() => {
+                                updateMachinesPool();
+                                return reject(`A machine have been assigned to you, it will be available shortly.`);
+                              });
+                          });
+                      }
+                    });
                 } else {
                   return Promise.reject('A machine is booting for you. Please retry in one minute.');
                 }
               });
             });
           } else {
-            return ConfigService.get('neverTerminateMachine')
-              .then((config) => {
+            return Promise.props({
+              config: ConfigService.get('neverTerminateMachine'),
+              machine: Machine.findOne(machines.rows[0]).populate('users')
+            })
+              .then(({config, machine}) => {
                 if (config.neverTerminateMachine) {
                   if (machine.status === 'stopped') {
-                    startMachine(machine);
+                    startMachine(machine.rows[0]);
                     return Promise.reject('Your machine is starting. Please retry in one minute.');
                   } else if (machine.status === 'running') {
                     return Promise.resolve(machine);
@@ -334,7 +337,7 @@ function _createMachine(image) {
           machine.password = password;
           // If machine have been assigned when booting we have to keep endDate and user
           delete machine.endDate;
-          delete machine.user;
+//          delete machine.user;
           if (config.ldapActivated === true) {
             machine.status = 'booting';
           } else {
@@ -464,12 +467,17 @@ function startMachine(machine) {
       })
       .then((machineStarted) => {
         _createBrokerLog(machineStarted, 'Started');
-        return Machine.update({
-          id: machine.id
-        }, machineStarted);
+        return Promise.props({
+          machines: Machine.update({
+            id: machine.id
+          }, machineStarted),
+          machineUsers: UserMachine.find({
+            machine: machine.id
+          })
+        });
       })
-      .then((machines) => {
-        if (machines[0].user) {
+      .then(({machines, machineUsers}) => {
+        if (machineUsers.length) {
           increaseMachineEndDate(machines[0]);
         }
         return (machines[0]);
@@ -525,12 +533,17 @@ function stopMachine(machine) {
       })
       .then((machineStopped) => {
         _createBrokerLog(machineStopped, 'Stopped');
-        return Machine.update({
-          id: machine.id
-        }, machineStopped);
+        return Promise.props({
+          machines: Machine.update({
+            id: machine.id
+          }, machineStopped),
+          machineUsers: UserMachine({
+            machine: machine.id
+          })
+        });
       })
-      .then((machines) => {
-        if (!machines[0].user) {
+      .then(({machines, machineUsers}) => {
+        if (!machineUsers.length) {
           updateMachinesPool();
         }
         return (machines[0]);
@@ -572,15 +585,17 @@ function updateMachinesPool() {
       return Promise.props({
         config: ConfigService.get('machinePoolSize'),
         machinesCount: Promise.promisify(Machine.query)({
-          text: 'SELECT image, COUNT(image) FROM machine WHERE "machine"."user" IS NULL GROUP BY "machine"."image"',
+          text: 'SELECT image, COUNT(image) FROM machine WHERE (SELECT COUNT(usermachine.user) FROM usermachine WHERE "machine" = machine.id) = 0 GROUP BY "machine"."image"',
           values: []
         }),
-        machines: Machine.find({
-          user: null
+        machines: Promise.promisify(Machine.query)({
+          text: `SELECT * FROM machine WHERE (SELECT COUNT(usermachine.user) FROM usermachine WHERE "machine" = machine.id) = 0`,
+          values: []
         }),
         images: Image.find()
       })
         .then(({config, machinesCount, machines, images}) => {
+          machines = machines.rows;
           let imagesDeleted = _.remove(images, (image) => image.deleted === true);
           images.forEach((image) => {
             let machineCreated = _.find(machinesCount.rows, (m) => m.image === image.id) || {count: 0};
@@ -594,9 +609,10 @@ function updateMachinesPool() {
             if (machineToDestroy > 0) {
               return Machine.find({
                 image: image.id,
-                user: null
               })
+                .populate('users')
                 .then((machines) => {
+                  _.remove(machines, (machine) => machine.users.length);
                   _.times(machineToDestroy, (index) => _terminateMachine(machines[index]));
                   _createBrokerLog({
                     type: _driver.name()
@@ -610,7 +626,6 @@ function updateMachinesPool() {
             } else if (machineToRecreate > 0) {
               return Machine.find({
                 image: image.id,
-                user: null,
                 or: [{
                   flavor: null
                 }, {
@@ -619,7 +634,9 @@ function updateMachinesPool() {
                   }
                 }]
               })
+                .populate('users')
                 .then((machinesWithWrongSize) => {
+                  _.remove(machinesWithWrongSize, (machine) => machine.users.length);
                   _.times(machineToRecreate, (index) => {
                     _terminateMachine(machinesWithWrongSize[index]);
                     _createMachine(image);
@@ -637,9 +654,10 @@ function updateMachinesPool() {
             if (machineToDestroy > 0) {
               return Machine.find({
                 image: image.id,
-                user: null
               })
+                .populate('users')
                 .then((machines) => {
+                  _.remove(machines, (machine) => machine.users.length);
                   _.times(machineToDestroy, (index) => _terminateMachine(machines[index]));
                   _createBrokerLog({
                     type: _driver.name()
@@ -686,9 +704,11 @@ function _shouldTerminateMachine(machine) {
 
             stopMachine(machineToTerminate);
           } else {
-            machineToTerminate.user = null;
 
-            Machine.update(machineToTerminate.id, machineToTerminate)
+            //            Machine.update(machineToTerminate.id, machineToTerminate)
+            UserMachine.destroy({
+              machine: machineToTerminate.id
+            })
               .then(() => {
                 _terminateMachine(machineToTerminate);
               });
@@ -1009,7 +1029,7 @@ function _createBrokerLog(machine, state) {
   })
     .then((nbrMachines) => {
       return BrokerLog.create({
-        userId: machine.user,
+        userId: null,
         machineId: machine.id,
         machineDriver: machine.type,
         machineFlavor: machine.flavor,

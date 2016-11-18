@@ -153,7 +153,7 @@ module.exports = {
                 command: [
                   app.filePath
                 ],
-                username: username
+                username: req.user.email
               })
                 .then(() => {
                   return ConfigService.get('photon');
@@ -226,9 +226,9 @@ module.exports = {
         return Promise.map(images, function(image) {
 
           return Promise.props({
-            machine: Machine.findOne({
-              user: req.user.id,
-              image: image.id
+            machine: Promise.promisify(Machine.query)({
+              text: `SELECT * FROM machine WHERE "image"=$2::varchar AND (SELECT COUNT(usermachine.user) FROM usermachine WHERE "user"=$1::varchar AND "machine"=machine.id) >= 1`,
+              values: [req.user.id, image.id]
             }),
             user: User.findOne({
               id: req.user.id
@@ -277,6 +277,7 @@ module.exports = {
             .then(({machine, user, config}) => {
               let username = null;
               let password = null;
+              machine = machine.rows[0];
 
               if (machine) {
                 if (user.ldapUser) {
