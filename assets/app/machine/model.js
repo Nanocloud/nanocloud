@@ -53,5 +53,5 @@ export default DS.Model.extend({
     return this.get('name') || 'No name';
   }),
   image: DS.belongsTo('image'),
-  user: DS.belongsTo('user'),
+  users: DS.hasMany('user'),
 });

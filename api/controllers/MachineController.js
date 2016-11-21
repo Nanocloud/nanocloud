@@ -44,15 +44,14 @@ module.exports = {
         })
         .catch((err) => res.negotiate(err));
     } else {
-      Machine.query({
-        text: `SELECT * FROM machine WHERE (SELECT COUNT(usermachine.user) FROM usermachine WHERE "user"=$1::varchar AND "machine"=machine.id) >= 1`,
-        values: [req.user.id]
-      }, (err, machines) => {
-        if (err) {
+      Machine.find().populate('users', { id: req.user.id }).populate('image')
+        .then((machines) => {
+          _.remove(machines, (machine) => machine.users.length === 0);
+          return res.ok(machines);
+        })
+        .catch((err) => {
           return res.negotiate(err);
-        }
-        return res.ok(machines.rows);
-      });
+        });
     }
   },
 

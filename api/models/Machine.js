@@ -20,7 +20,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* global Machine, MachineService */
+/* global Machine, MachineService, UserMachine */
 
 const url = require('url');
 const Promise = require('bluebird');
@@ -106,13 +106,13 @@ module.exports = {
      * @method getSessions
      * @return {Promise[Array]} a promise resolving to an array of session
      */
-    getSessions(user) {
+    getSessions() {
 
       let plazaAddr = url.format({
         protocol: 'http',
         hostname: this.ip,
         port: this.plazaport,
-        pathname: '/sessions/' + user.email
+        pathname: '/sessions/' + this.username
       });
 
       return request.getAsync(plazaAddr)
@@ -127,17 +127,21 @@ module.exports = {
           }
 
           let sessions = [];
-          body.data.forEach((session) => {
-            sessions.push({
-              id: uuid.v4(), // id does not matter for session but is required for JSON API
-              machineId: this.id,
-              username: session[1],
-              state: session[3],
-              userId: user.id
-            });
-          });
+          return UserMachine.find({ machine: this.id })
+            .then((usersMachines) => {
+              body.data.forEach((session) => {
 
-          return sessions;
+                sessions.push({
+                  id: uuid.v4(), // id does not matter for session but is required for JSON API
+                  machineId: this.id,
+                  username: session[1],
+                  state: session[3],
+                  userId: usersMachines[0].user
+                });
+              });
+
+              return sessions;
+            });
         })
         // If timeout is exceeded, machine is probably booting or being shut-down
         // Let's ignore the error silently and return an empty array.

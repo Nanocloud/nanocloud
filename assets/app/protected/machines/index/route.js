@@ -33,7 +33,7 @@ export default Ember.Route.extend({
   model() {
     let machineIndexController = this.controllerFor('protected.machines.index');
     machineIndexController.set('loadState', true);
-    var promise = this.get('store').query('machine', {});
+    var promise = this.get('store').query('machine', { reload: true });
     promise
       .catch(() => {
         this.toast.error('Machine list could not be retrieved');

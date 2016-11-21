@@ -35,11 +35,14 @@ module.exports = {
     if (req.user.isAdmin) {
       promise = Machine.find();
     } else {
-      promise = Machine.find({ user: req.user.id });
+      promise = Machine.find().populate('users', { id: req.user.id });
     }
 
     promise
       .then((machines) => {
+        if (!req.user.isAdmin) {
+          _.remove(machines, (machine) => machine.users.length !== 0);
+        }
 
         let sessionsRequest = [];
         machines.forEach((machine) => {

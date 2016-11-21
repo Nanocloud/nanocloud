@@ -153,7 +153,7 @@ module.exports = {
                 command: [
                   app.filePath
                 ],
-                username: req.user.email
+                username: machine.username
               })
                 .then(() => {
                   return ConfigService.get('photon');
@@ -226,10 +226,7 @@ module.exports = {
         return Promise.map(images, function(image) {
 
           return Promise.props({
-            machine: Promise.promisify(Machine.query)({
-              text: `SELECT * FROM machine WHERE "image"=$2::varchar AND (SELECT COUNT(usermachine.user) FROM usermachine WHERE "user"=$1::varchar AND "machine"=machine.id) >= 1`,
-              values: [req.user.id, image.id]
-            }),
+            machines: Machine.find({ image: image.id }).populate('users', { id: req.user.id }),
             user: User.findOne({
               id: req.user.id
             }),
@@ -274,10 +271,11 @@ module.exports = {
               'rdpRemoteAppArgs'
             )
           })
-            .then(({machine, user, config}) => {
+            .then(({machines, user, config}) => {
               let username = null;
               let password = null;
-              machine = machine.rows[0];
+              _.remove(machines, (machine) => machine.users.length === 0);
+              let machine = machines[0];
 
               if (machine) {
                 if (user.ldapUser) {
