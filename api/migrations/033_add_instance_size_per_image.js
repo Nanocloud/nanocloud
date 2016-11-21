@@ -22,10 +22,16 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-function up(knex) {
-  return knex.schema.table('image', function(t) {
-    t.string('instancesSize');
-  });
+function up(knex, Promise) {
+  return Promise.all([
+    knex.schema.table('image', function(t) {
+      t.string('instancesSize');
+    }),
+
+    knex('image').update({
+      instancesSize: 'medium'
+    })
+  ]);
 }
 
 function down(knex) {
