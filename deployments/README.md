@@ -33,9 +33,12 @@ multiple instances of Nanocloud:
 
 ```
 [nanocloud]
-api-instance1 ansible_host=10.0.0.2 ansible_user=user1
-api-customerX ansible_host=10.0.0.3 ansible_user=user2
+api-instance1 ansible_host=10.0.0.2 ansible_user=username1
+api-customerX ansible_host=10.0.0.3 ansible_user=username2
 ```
+
+In order to deploy a specific pull request or another branch, modify
+*deployments/group_vars/all* to customize your deployment.
 
 Use the file *deployments/roles/nanocloud/files/nanocloud/config.env* to
 override configuration variable like you should normally do with the *config.env*
