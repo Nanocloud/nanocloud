@@ -20,7 +20,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* global Machine, MachineService, UserMachine */
+/* global Machine, MachineService, UserMachine, ConfigService, User */
 
 const url = require('url');
 const Promise = require('bluebird');
@@ -112,7 +112,7 @@ module.exports = {
         protocol: 'http',
         hostname: this.ip,
         port: this.plazaport,
-        pathname: '/sessions/' + this.username
+        pathname: '/sessions/' + this.username,
       });
 
       return request.getAsync(plazaAddr)
@@ -127,19 +127,30 @@ module.exports = {
           }
 
           let sessions = [];
-          return UserMachine.find({ machine: this.id })
-            .then((usersMachines) => {
-              body.data.forEach((session) => {
+          return ConfigService.get('ldapActivated')
+            .then((config) => {
+              return Promise.map(body.data, (session) => {
 
-                sessions.push({
-                  id: uuid.v4(), // id does not matter for session but is required for JSON API
-                  machineId: this.id,
-                  username: session[1],
-                  state: session[3],
-                  userId: usersMachines[0].user
+                let promise = null;
+                if (config.ldapActivated) {
+                  promise = User.findOne({ ldapAccountName: session[1] });
+                } else {
+                  promise = UserMachine.find({ machine: this.id });
+                }
+                return promise.then((res) => {
+                  sessions.push({
+                    id: uuid.v4(), // id does not matter for session but is required for JSON API
+                    machineId: this.id,
+                    username: session[1],
+                    state: session[3],
+                    userId: (config.ldapActivated) ? res.id : res[0].user,
+                  });
+                  return Promise.resolve();
                 });
               });
 
+            })
+            .then(() => {
               return sessions;
             });
         })

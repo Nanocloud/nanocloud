@@ -46,7 +46,8 @@ let App = Ember.Object.extend({
           .then(() => {
             app.set('state', 'running');
             app.save()
-              .catch(() => {
+              .catch((err) => {
+                console.log(err);
                 this.toast.error('Cannot start application');
               })
               .finally(() => {

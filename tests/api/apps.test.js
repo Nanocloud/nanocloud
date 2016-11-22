@@ -30,6 +30,7 @@ var chai = require('chai');
 var expect = chai.expect;
 var http = require('http');
 const Promise = require('bluebird');
+const _ = require('lodash');
 
 module.exports = function() {
   describe('Applications', function() {
@@ -112,11 +113,11 @@ module.exports = function() {
 
       App.destroy(appId)
         .then(() => {
-          return Machine.findOne({
-            user: nano.adminId()
-          });
+          return Machine.find().populate('users', { id: nano.adminId() });
         })
-        .then((machine) => {
+        .then((machines) => {
+          _.remove(machines, (machine) => machine.users.length === 0);
+          let machine = machines[0];
 
           return Machine.update({
             id: machine.id
@@ -482,10 +483,12 @@ module.exports = function() {
 
       it('Admins should be able to get connection out of every app', function(done) {
 
-        Machine.findOne({
+        Machine.find().populate('users', {
           user: nano.adminId()
         })
-          .then((machine) => {
+          .then((machines) => {
+            _.remove(machines, (machine) => machine.user.length === 0);
+            let machine = machines[0];
             nano.request(sails.hooks.http.app)
               .get('/api/apps/connections')
               .set(nano.adminLogin())

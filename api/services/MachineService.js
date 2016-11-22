@@ -172,6 +172,7 @@ function getMachineForUser(user, image) {
                     })
                     .then(() => {
                       updateMachinesPool();
+                      delete machines[row].users;
                       return resolve(machines[row]);
                     });
                 } else if (_.findIndex(machines, {status: 'booting'}) !== -1) {
@@ -204,6 +205,7 @@ function getMachineForUser(user, image) {
                 startMachine(userMachines[0]);
                 return Promise.reject('Your machine is starting. Please retry in one minute.');
               } else if (userMachines[0].status === 'running') {
+                delete userMachines[0].users;
                 return Promise.resolve(userMachines[0]);
               } else {
                 return Promise.reject(`Your machine is ${userMachines[0].status}. Please retry in one minute.`);
@@ -211,6 +213,7 @@ function getMachineForUser(user, image) {
             } else if (userMachines[0].status === 'booting') {
               return Promise.reject(`A machine have been assigned to you, it will be available shortly.`);
             } else {
+              delete userMachines[0].users;
               return Promise.resolve(userMachines[0]);
             }
           });
