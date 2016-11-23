@@ -23,6 +23,8 @@
  */
 
 #include <iostream>
+#include <locale>
+#include <codecvt>
 
 #include <memory>
 #include <utility>
@@ -66,7 +68,9 @@ class DummySetSessionDescriptionObserver
 Conductor::Conductor(const std::string & offer,
   boost::shared_ptr<photon::http::server::response> res)
     : offer_(offer),
-      response_(res) {}
+      response_(res) {
+        this->channel = nullptr;
+}
 
 Conductor::~Conductor() {
   ASSERT(peer_connection_.get() == NULL);
@@ -168,6 +172,22 @@ void Conductor::OnMessage(const webrtc::DataBuffer& buffer) {
     case 'U':
       input_manager_.KeyUp(buff[1]);
       break;
+      // Set Clipboard
+    case 'S': {
+      mess.erase(0, 1);
+      std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> converter;
+      std::wstring wide = converter.from_bytes(mess);
+      input_manager_.SetClipboard(const_cast<std::wstring&>(wide));
+      break;
+   }
+      // Send Clipboard
+    case 'G': {
+      std::wstring wide = input_manager_.GetClipboard();
+      std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> converter;
+      std::string str = converter.to_bytes(wide);
+      this->channel->Send(webrtc::DataBuffer(str));
+      break;
+    }
   }
 #endif
 }
@@ -187,10 +207,10 @@ void Conductor::OnRemoveStream(
   LOG(INFO) << __FUNCTION__ << " " << stream->label();
 }
 
-void Conductor::OnDataChannel(
-    rtc::scoped_refptr<webrtc::DataChannelInterface> channel) {
+void Conductor::OnDataChannel(webrtc::DataChannelInterface *channel) {
   LOG(INFO) << __FUNCTION__;
 
+  this->channel = channel;
   channel->RegisterObserver(this);
 }
 

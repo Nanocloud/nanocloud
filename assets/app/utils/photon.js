@@ -24,6 +24,24 @@
 
 /* globals RTCPeerConnection, RTCSessionDescription */
 
+let ClipboardManager  = function(get, set, rtcChannel) {
+  let element = document.getElementById('VDIClipboard');
+  this._element = get;
+  this._rtcChannel = rtcChannel;
+
+  var getevent = function(event) {
+    event.preventDefault();
+    rtcChannel.send('G');
+  };
+  var setevent = function(event) {
+    event.preventDefault();
+    rtcChannel.send('S' + element.value);
+  };
+
+  get.addEventListener('click', getevent);
+  set.addEventListener('change', setevent);
+};
+
 let KeyboardManager  = function(element, rtcChannel) {
   this._element = element;
   this._rtcChannel = rtcChannel;
@@ -109,6 +127,10 @@ var PeerConnectionManager = function(videoElement, serverAddress, access_token) 
   this._dataChannel = dataChannel;
 
   dataChannel.onopen = this._OnDataChannelOpen.bind(this);
+  dataChannel.onmessage = function(message) {
+    let element = document.getElementById('VDIClipboard');
+    element.value = message.data;
+  };
 
   peerConnection.createOffer(function(offer) {
     peerConnection.setLocalDescription(offer);
@@ -123,9 +145,10 @@ var PeerConnectionManager = function(videoElement, serverAddress, access_token) 
 PeerConnectionManager.prototype._OnDataChannelOpen = function() {
   var mouseManager = new MouseManager(this._videoElement, this._dataChannel);
   //var keyboardManager = new KeyboardManager(document.body, this._dataChannel);
-
+  var clipboardManager = new ClipboardManager(document.getElementById('getCloudClipboard'), document.getElementById('VDIClipboard'), this._dataChannel);
   return [
     mouseManager,
+    clipboardManager,
 //    keyboardManager
   ];
 };
@@ -166,5 +189,6 @@ PeerConnectionManager.prototype._OnAddStream = function(event) {
 export default {
   KeyboardManager,
   MouseManager,
+  ClipboardManager,
   PeerConnectionManager
 };

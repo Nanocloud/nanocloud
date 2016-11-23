@@ -26,6 +26,7 @@
 #define PHOTON_INPUT_MANAGER_H_
 
 #include <Windows.h>
+#include <string>
 
 #define KEY_SHIFT 0x10
 
@@ -40,6 +41,8 @@ class InputManager {
   void MouseMove(int x, int y);
   void MouseButtonEvent(char button, char state);
   void MouseWheelEvent(int x);
+  void SetClipboard(const std::wstring & data);
+  const std::wstring GetClipboard();
 
  private:
   void KeyEvent(char key, unsigned long flags);

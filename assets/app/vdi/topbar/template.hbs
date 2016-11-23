@@ -38,7 +38,7 @@
           Upload
         </span>
       {{/icon-component}}
-      
+
     {{/if}}
 
     {{#icon-component
@@ -65,8 +65,9 @@
       click=(action "toggleWindow" 'clipboard')
       content="Copy / paste"
       size=16
+      id="setCloudClipboard"
     }}
-      <span class='va-tb hidden-sm-down'>
+      <span class='va-tb hidden-sm-down' id='getCloudClipboard'>
         Clipboard
       </span>
     {{/icon-component}}

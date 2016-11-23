@@ -100,8 +100,7 @@ protected:
       rtc::scoped_refptr<webrtc::MediaStreamInterface> stream) override;
   void OnRemoveStream(
       rtc::scoped_refptr<webrtc::MediaStreamInterface> stream) override;
-  void OnDataChannel(
-      rtc::scoped_refptr<webrtc::DataChannelInterface> channel) override;
+  void OnDataChannel(webrtc::DataChannelInterface *channel) override;
   void OnRenegotiationNeeded() override {}
   void OnIceConnectionChange(
       webrtc::PeerConnectionInterface::IceConnectionState new_state) override{};
@@ -123,6 +122,7 @@ protected:
     peer_connection_factory_;
   std::map<std::string, rtc::scoped_refptr<webrtc::MediaStreamInterface> >
     active_streams_;
+  rtc::scoped_refptr<webrtc::DataChannelInterface> channel;
 
 #if defined(WEBRTC_WIN)
   photon::InputManager input_manager_;
