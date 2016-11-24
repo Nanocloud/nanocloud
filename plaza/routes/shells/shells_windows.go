@@ -28,6 +28,7 @@ import (
 	"encoding/json"
 	"io/ioutil"
 
+	"github.com/Sirupsen/logrus"
 	"github.com/Nanocloud/nanocloud/plaza/processmanager"
 	"github.com/labstack/echo"
 )
@@ -41,16 +42,21 @@ func Post(c *echo.Context) error {
 
 	b, err := ioutil.ReadAll(c.Request().Body)
 	if err != nil {
+		logrus.Error(err)
 		return err
 	}
 
 	body := bodyRequest{}
 	err = json.Unmarshal(b, &body)
 	if err != nil {
+		logrus.Error(err)
 		return err
 	}
+
+	logrus.Infof("Shell processing as %s and PID %d", body.Username, body.Pid)
 	err = processmanager.SetSessionPid(body.Pid, body.Username)
 	if err != nil {
+		logrus.Error(err)
 		return err
 	}
 	return nil

@@ -32,7 +32,7 @@ import (
 	"time"
 
 	"github.com/Nanocloud/nanocloud/plaza/utils"
-	log "github.com/Sirupsen/logrus"
+	"github.com/Sirupsen/logrus"
 	"github.com/labstack/echo"
 )
 
@@ -84,6 +84,7 @@ func retok(c *echo.Context) error {
 }
 
 func checkIfPublishSucceeded(c *echo.Context, displayname string) error {
+	logrus.Info("Checking if application " + displayname + " has been published")
 	for i := 0; i < 5; i++ {
 		cmd := exec.Command("powershell.exe", "Import-Module RemoteDesktop; Get-RDRemoteApp -DisplayName "+displayname)
 		resp, _ := cmd.CombinedOutput()
@@ -96,6 +97,7 @@ func checkIfPublishSucceeded(c *echo.Context, displayname string) error {
 }
 
 func checkIfUnpublishSucceeded(c *echo.Context, alias string) error {
+	logrus.Info("Checking if application " + alias + " hasn't published")
 	for i := 0; i < 5; i++ {
 		cmd := exec.Command("powershell.exe", "Import-Module RemoteDesktop; Get-RDRemoteApp -Alias "+alias)
 		resp, _ := cmd.CombinedOutput()
@@ -110,7 +112,7 @@ func checkIfUnpublishSucceeded(c *echo.Context, alias string) error {
 func PublishApp(c *echo.Context) error {
 	body, err := ioutil.ReadAll(c.Request().Body)
 	if err != nil {
-		log.Error(err)
+		logrus.Error(err)
 		return reterr(err, "", c)
 	}
 	var all struct {
@@ -127,11 +129,12 @@ func PublishApp(c *echo.Context) error {
 	}
 	err = json.Unmarshal(body, &all)
 	if err != nil {
-		log.Error(err)
+		logrus.Error(err)
 		return reterr(err, "", c)
 	}
 
 	username, pwd, _ := c.Request().BasicAuth()
+	logrus.Info("Publishing application " + all.Data.Attributes.DisplayName)
 	utils.ExecuteCommandAsAdmin("C:\\Windows\\System32\\WindowsPowershell\\v1.0\\powershell.exe Import-module RemoteDesktop; New-RDRemoteApp -CollectionName "+all.Data.Attributes.CollectionName+" -DisplayName "+all.Data.Attributes.DisplayName+" -FilePath '"+all.Data.Attributes.Path+"'", username, pwd, domain)
 	return checkIfPublishSucceeded(c, all.Data.Attributes.DisplayName)
 }

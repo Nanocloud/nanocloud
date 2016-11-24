@@ -28,7 +28,7 @@ import (
 	"os/exec"
 	"strings"
 
-	log "github.com/Sirupsen/logrus"
+	"github.com/Sirupsen/logrus"
 	"github.com/labstack/echo"
 )
 
@@ -48,12 +48,13 @@ func formatResponse(tab []string, id string) [][]string {
 }
 
 func Get(c *echo.Context) error {
+	logrus.Info("Getting session informations")
 	cmd := exec.Command("powershell.exe", "query session | ConvertTo-Json -Compress")
 	resp, err := cmd.CombinedOutput()
 	var tab []string
 	err = json.Unmarshal(resp, &tab)
 	if err != nil {
-		log.Error("Error while unmarshaling query response: ", err)
+		logrus.Error("Error while unmarshaling query response: ", err)
 	}
 	response := formatResponse(tab, c.Param("id"))
 	if len(response) == 0 {
@@ -73,14 +74,15 @@ func Logoff(c *echo.Context) error {
 	var tab []string
 	err = json.Unmarshal(resp, &tab)
 	if err != nil {
-		log.Error("Error while unmarshaling query response: ", err)
+		logrus.Error("Error while unmarshaling query response: ", err)
 	}
 	response := formatResponse(tab, c.Param("id"))
 	if len(response) == 1 {
+		logrus.Info("Logging off " + response[0][2])
 		cmd := exec.Command("powershell.exe", "logoff "+response[0][2])
 		resp, err = cmd.CombinedOutput()
 		if err != nil {
-			log.Error("Error while loging off user: ", err, string(resp))
+			logrus.Error("Error while loging off user: ", err, string(resp))
 		}
 	}
 	return c.JSON(

@@ -29,9 +29,10 @@ import (
 	"encoding/json"
 	"io/ioutil"
 	"net/http"
+	"strings"
 
 	"github.com/Nanocloud/nanocloud/plaza/processmanager"
-	log "github.com/Sirupsen/logrus"
+	"github.com/Sirupsen/logrus"
 	"github.com/labstack/echo"
 )
 
@@ -62,12 +63,14 @@ type bodyRequest struct {
 func Route(c *echo.Context) error {
 	b, err := ioutil.ReadAll(c.Request().Body)
 	if err != nil {
+		logrus.Error(err)
 		return err
 	}
 
 	body := bodyRequest{}
 	err = json.Unmarshal(b, &body)
 	if err != nil {
+		logrus.Error(err)
 		return err
 	}
 
@@ -81,11 +84,12 @@ func Route(c *echo.Context) error {
 		app.Stdin = bytes.NewReader([]byte(body.Stdin))
 	}
 
+	logrus.Info("Executing, as " + app.Username + ", command : " + strings.Join(app.Command, " "))
 	res := make(map[string]interface{})
 	if body.Wait {
 		err = app.Run()
 		if err != nil {
-			log.Error(err)
+			logrus.Error(err)
 			return err
 		}
 
@@ -94,7 +98,7 @@ func Route(c *echo.Context) error {
 	} else {
 		err = app.Start()
 		if err != nil {
-			log.Error(err)
+			logrus.Error(err)
 			return err
 		}
 		res["pid"] = app.Pid

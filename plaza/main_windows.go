@@ -43,22 +43,6 @@ import (
 	"github.com/Sirupsen/logrus"
 )
 
-/*
-// setLogOutput adds a redis hook for the logs.
-// If you work on Usefull to gather plaza instances logs
-func setLogOutput() {
-	// Add:
-	// import "github.com/rogierlommers/logrus-redis-hook"
-
-	hook, err := logredis.NewHook("192.168.1.52", 6379, "", "", "plaza", "")
-	if err == nil {
-		logrus.AddHook(hook)
-	} else {
-		logrus.Error(err)
-	}
-}
-*/
-
 // initPlatform should be called when plaza is running as an agent.
 func initPlatform() {
 	err := windows.SetWinlogonShell("plaza.exe")
@@ -126,8 +110,15 @@ func sendShellInfo() {
 // and exit. This; in order to hide the console windows created by Windows for
 // the shell application.
 func main() {
+
 	if len(os.Args) > 1 {
-		var err error
+		// Set Log output to a file
+		filename := fmt.Sprintf("C:\\plaza-%s.txt", os.Args[1])
+		logFile, err := os.OpenFile(filename, os.O_WRONLY | os.O_CREATE, 0755)
+		if err != nil {
+			logrus.Info("Can't set log file")
+		}
+		logrus.SetOutput(logFile)
 
 		switch os.Args[1] {
 
@@ -138,10 +129,12 @@ func main() {
 
 		case "service":
 			initPlatform()
+			logrus.Info("Run service")
 			err = service.Run()
 
 		case "server":
 			initPlatform()
+			logrus.Info("Start server")
 			router.Start()
 
 		case "shell":
