@@ -144,7 +144,7 @@ All options are Guacamole defaults except the following:
 - rdpEnablePrinting (Nanocloud defaults to true)
 - rdpPreconnectionID (Nanocloud defaults to 0 (desactivated))
 - rdpEnableWallpaper (Nanocloud defaults to true)
-- rdpEnableFontSmooting (Nanocloud defaults to true)
+- rdpEnableFontSmoothing (Nanocloud defaults to true)
 
 # Run in developer mode
 
