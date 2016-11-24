@@ -77,7 +77,7 @@ module.exports = {
     neverTerminateMachine: false,
     sessionDuration: 600, // 10 minutes
     machinesName: 'Nanocloud Exec Server',
-    plazaURI: 'https://s3-eu-west-1.amazonaws.com/nanocloud/plaza/1.0.0/windows/amd64/plaza.exe',
+    plazaURI: 'https://s3-eu-west-1.amazonaws.com/nanocloud/plaza/1.0.1/windows/amd64/plaza.exe',
     /*
      * Machine format
      *
