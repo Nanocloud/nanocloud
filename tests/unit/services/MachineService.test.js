@@ -36,23 +36,31 @@ describe('Machine Service', () => {
 
   var imageId;
 
+  before('Disable ldap', (done) => {
+    ConfigService.set('ldapActivated', false)
+      .then(() => {
+        return done();
+      });
+  });
+
   describe('Broker', () => {
 
     before('Force machine to terminate if no one is connected', function(done) {
 
       ConfigService.set('sessionDuration', 0)
         .then(() => {
+          return Machine.destroy();
+        })
+        .then(() => {
+          return MachineService.updateMachinesPool();
+        })
+        .then(() => {
           return BrokerLog.destroy();
         })
         .then(() => {
-          return Machine.destroy({
-            user: {
-              '!': null
-            }
-          });
-        })
-        .then(() => {
-          return done();
+          setTimeout(() => {
+            return done();
+          }, 200);
         });
     });
 
@@ -62,11 +70,10 @@ describe('Machine Service', () => {
         images: Image.find({
           deleted: false
         }),
-        machines: Machine.find({
-          user: null
-        })
+        machines: Machine.find().populate('users')
       })
         .then(({conf, images, machines}) => {
+          _.remove(machines, (machine) => machine.users.length >= 1);
           if (machines.length !== conf.machinePoolSize * images.length) {
             throw new Error('Available machines should be equal to machine pool size');
           }
@@ -92,11 +99,12 @@ describe('Machine Service', () => {
               });
             })
             .then(() => {
-              return Machine.count({
-                user: null
-              });
+              return Machine.find().populate('users');
             })
-            .then((machineNbr) => {
+            .then((machines) => {
+              let machineNbr = 0;
+              _.remove(machines, (machine) => machine.users.length >= 1);
+              machineNbr = machines.length;
               if (machineNbr !== conf.machinePoolSize * images.length) {
                 throw new Error('One machine should belongs to the admin');
               }
@@ -132,7 +140,7 @@ describe('Machine Service', () => {
                     .then((log) => {
                       return resolve(log);
                     });
-                }, 150);
+                }, 200);
               });
             })
             .then((machineLogs) => {
@@ -172,13 +180,13 @@ describe('Machine Service', () => {
     });
 
     it('Should return the same machine for a user', (done) => {
-      Machine.findOne({
-        user: adminId,
-      })
-        .then((res) => {
+      Machine.find().populate('users', { id: adminId })
+        .then((machines) => {
+          _.remove(machines, (machine) => machine.users.length === 0);
 
-          const userMachine = res.id;
-          const machineImage = res.image;
+          const userMachine = machines[0].id;
+          const machineImage = machines[0].image;
+
 
           MachineService.getMachineForUser({
             id: adminId,
@@ -196,11 +204,12 @@ describe('Machine Service', () => {
     });
 
     it('Should return an inactive session', (done) => {
-      Machine.findOne({
-        user: adminId
+      Machine.find().populate('users', {
+        id: adminId
       })
-        .then((machine) => {
-          return machine.getSessions();
+        .then((machines) => {
+          _.remove(machines, (machine) => machine.users.length === 0);
+          return machines[0].getSessions();
         })
         .then((sessions) => {
           assert.equal(sessions.length, 1);
@@ -211,21 +220,26 @@ describe('Machine Service', () => {
 
     it('Opening a session should considere it as active', (done) => {
       Promise.props({
-        machine: Machine.findOne({
-        user: adminId
+        machines: Machine.find().populate('users', {
+          id: adminId
         }),
         user: User.findOne({id: adminId})
       })
-        .then(({machine, user}) => {
+        .then(({machines, user}) => {
+          _.remove(machines, (machine) => machine.users.length === 0);
           return MachineService.sessionOpen(user, {
-            id: machine.image
+            id: machines[0].image
           });
         })
         .then(() => {
-          return Machine.findOne({
-            user: adminId
+          return Machine.find().populate('users', {
+            id: adminId
           })
-            .then((machine) => {
+            .then((machines) => {
+              let machine = null;
+              _.remove(machines, (machine) => machine.users.length === 0);
+              machine = machines[0];
+
               return request('http://' + machine.ip + ':' + machine.plazaport + '/sessionOpen')
                 .then(() => {
                   return machine.isSessionActive();
@@ -260,11 +274,12 @@ describe('Machine Service', () => {
     });
 
     it('Should return an active session', (done) => {
-      Machine.findOne({
-        user: adminId
+      Machine.find().populate('users', {
+        id: adminId
       })
-        .then((machine) => {
-          return machine.getSessions();
+        .then((machines) => {
+          _.remove(machines, (machine) => machine.users.length === 0);
+          return machines[0].getSessions();
         })
         .then((sessions) => {
           assert.equal(sessions.length, 1);
@@ -274,10 +289,11 @@ describe('Machine Service', () => {
     });
 
     it('Should end the active session', (done) => {
-      Machine.findOne({
-        user: adminId
+      Machine.find().populate('users', {
+        id: adminId
       })
-        .then((machine) => {
+        .then((machines) => {
+          let machine = _.find(machines, (machine) => machine.users.length >= 1);
           return machine.killSession()
             .then(() => {
               return machine.isSessionActive();
@@ -290,14 +306,15 @@ describe('Machine Service', () => {
     });
 
     it('Should stop machine', (done) => {
-      return Machine.findOne({
-        user: adminId
+      return Machine.find().populate('users', {
+        id: adminId
       })
-        .then((machine) => {
-          return MachineService.stopMachine(machine)
+        .then((machines) => {
+          let machine = _.find(machines, (machine) => machine.users.length >= 1);
+          return MachineService.stopMachine({ id: machine.id })
             .then((machineStopped) => {
               assert.equal(machineStopped.id, machine.id);
-              assert.equal(machineStopped.user, machine.user);
+              assert.equal(machineStopped.users[0].id, machine.users[0].id);
               assert.equal(machineStopped.status, 'stopped');
               return;
             })
@@ -317,7 +334,6 @@ describe('Machine Service', () => {
             .then((log) => {
               assert.equal(log.state, 'Stopped');
               assert.equal(log.machineId, machine.id);
-              assert.equal(log.userId, adminId);
               return;
             })
             .then(() => {
@@ -327,14 +343,15 @@ describe('Machine Service', () => {
     });
 
     it('Should start machine', (done) => {
-      return Machine.findOne({
-        user: adminId
+      return Machine.find().populate('users', {
+        id: adminId
       })
-        .then((machine) => {
-          return MachineService.startMachine(machine)
+        .then((machines) => {
+          let machine = _.find(machines, (machine) => machine.users.length >= 1);
+          return MachineService.startMachine({ id: machine.id })
             .then((machineStarted) => {
               assert.equal(machineStarted.id, machine.id);
-              assert.equal(machineStarted.user, machine.user);
+              assert.equal(machineStarted.users[0].id, machine.users[0].id);
               assert.equal(machineStarted.status, 'running');
               return;
             })
@@ -354,7 +371,6 @@ describe('Machine Service', () => {
             .then((log) => {
               assert.equal(log.state, 'Started');
               assert.equal(log.machineId, machine.id);
-              assert.equal(log.userId, adminId);
               return;
             })
             .then(() => {
@@ -379,12 +395,14 @@ describe('Machine Service', () => {
                   }, image);
                 })
                 .then(() => {
-                  return Machine.findOne({
-                    user: adminId,
+                  return Machine.find({
                     image: image.id
-                  });
+                  }).populate('users', { id: adminId });
                 })
-                .then((userMachine) => {
+                .then((userMachines) => {
+                  let userMachine = null;
+                  _.remove(userMachines, (machine) => machine.users.length === 0);
+                  userMachine = userMachines[0];
                   assert.isNotNull(userMachine.endDate);
                   return BrokerLog.find({
                     userId: adminId,
@@ -408,13 +426,12 @@ describe('Machine Service', () => {
                         assert.isUndefined(res);
                       })
                       .then(() => {
-                        return Machine.find({
-                          user: null
-                        });
+                        return Machine.find().populate('users');
                       })
                       .then((machines) => {
+                        _.remove(machines, (machine) => machine.users.length >= 1);
                         assert.equal(machines.length, 1);
-                        assert.isNull(machines[0].user);
+                        assert.equal(machines[0].users.length, 0);
                         return BrokerLog.find({
                           state: 'Deleted'
                         });
@@ -482,11 +499,14 @@ describe('Machine Service', () => {
     it('Should exist as much VM in the pool as there are images', function(done) {
       MachineService.updateMachinesPool()
         .then(() => {
-          return Machine.find({
-            user: null
+          return new Promise((resolve) => {
+            setTimeout(() => {
+              return resolve(Machine.find().populate('users'));
+            }, 100);
           });
         })
         .then((machines) => {
+          _.remove(machines, (machine) => machine.users.length >= 1);
           expect(machines).to.have.length(2);
         })
         .then(() => {
@@ -520,12 +540,11 @@ describe('Machine Service', () => {
             images: Image.find({
               deleted: false
             }),
-            machines: Machine.find({
-              user: null
-            })
+            machines: Machine.find().populate('users')
           });
         })
         .then(({conf, images, machines}) => {
+          _.remove(machines, (machine) => machine.users.length >= 1);
           var machineId = null;
           imageId = _.find(images, { deleted: false, name: 'Default'}).id;
           if (machines.length !== conf.machinePoolSize * images.length) {
@@ -554,12 +573,11 @@ describe('Machine Service', () => {
               });
             })
             .then(() => {
-              return Machine.count({
-                user: null
-              });
+              return Machine.find().populate('users');
             })
-            .then((machineNbr) => {
-              if (machineNbr !== conf.machinePoolSize * images.length) {
+            .then((machines) => {
+              _.remove(machines, (machine) => machine.users.length >= 1);
+              if (machines.length !== conf.machinePoolSize * images.length) {
                 throw new Error('One machine should belongs to the admin');
               }
               return new Promise((resolve) => {
@@ -667,17 +685,16 @@ describe('Machine Service', () => {
         })
         .then(() => {
           return Machine.find({
-            user: null,
             image: imageId,
-          });
+          }).populate('users');
         })
         .then((machines) => {
+          _.remove(machines, (machine) => machine.users.length >= 1);
           expect(machines).to.have.length(2);
-          return Machine.find({
-            user: null,
-          });
+          return Machine.find().populate('users');
         })
         .then((machines) => {
+          _.remove(machines, (machine) => machine.users.length >= 1);
           // Default pool size 1, and we set *imageId* pool size to 2. So it must be 3 running machines in pool
           expect(machines).to.have.length(3);
 
@@ -691,11 +708,14 @@ describe('Machine Service', () => {
           return MachineService.updateMachinesPool();
         })
         .then(() => {
-          return Machine.find({
-            user: null
+          return new Promise((resolve) => {
+            setTimeout(() => {
+              return resolve(Machine.find().populate('users'));
+            }, 100);
           });
         })
         .then((machines) => {
+          _.remove(machines, (machine) => machine.users.length >= 1);
           expect(machines).to.have.length(2);
           return done();
         });
@@ -814,11 +834,14 @@ describe('Machine Service', () => {
               });
             })
             .then(() => {
-              return Machine.findOne({
-                user: adminId
+              return Machine.find().populate('users', {
+                id: adminId
               });
             })
-            .then((userMachine) => {
+            .then((userMachines) => {
+              let userMachine = null;
+              _.remove(userMachines, (machine) => machine.users.length === 0);
+              userMachine = userMachines[0];
               assert.isNotNull(userMachine.endDate);
               return new Promise((resolve) => {
                 return setTimeout(function() {
@@ -849,13 +872,12 @@ describe('Machine Service', () => {
                     assert.isDefined(res);
                   })
                   .then(() => {
-                    return Machine.find({
-                      user: null
-                    });
+                    return Machine.find().populate('users');
                   })
                   .then((machines) => {
+                    _.remove(machines, (machine) => machine.users.length >= 1);
                     assert.equal(machines.length, 2);
-                    assert.isNull(machines[0].user);
+                    assert.equal(machines[0].users.length, 0);
                     return new Promise((resolve) => {
                       return setTimeout(function() {
                         return BrokerLog.find({
@@ -884,12 +906,14 @@ describe('Machine Service', () => {
 
     it('Should start the machine', (done) => {
       var machineId = null;
-      return Machine.findOne({
-        status: 'stopped',
-        user: adminId
+      return Machine.find({
+        status: 'stopped'
+      }).populate('users', {
+        id: adminId
       })
-        .then((machine) => {
-          machineId = machine.id;
+        .then((machines) => {
+          _.remove(machines, (machine) => machine.users.length === 0);
+          machineId = machines[0].id;
           return MachineService.getMachineForUser({
             id: adminId,
           }, {
@@ -908,23 +932,26 @@ describe('Machine Service', () => {
            * machine started again, so the machine is stopped
            */
           setTimeout(() => {
-            Machine.findOne({
-              user: adminId
+            Machine.find().populate('users', {
+              id: adminId
             })
-              .then((machine) => {
+              .then((machines) => {
+                let machine = _.find(machines, (machine) => machine.users.length >= 1);
                 assert.equal(machine.id, machineId);
-                assert.equal(machine.user, adminId);
+                assert.equal(machine.users[0].id, adminId);
                 assert.equal(machine.status, 'stopped');
                 return new Promise((resolve) => {
                   setTimeout(() => {
                     return Promise.props({
-                      machine: Machine.findOne({ user: adminId }),
+                      machines: Machine.find().populate('users', { id: adminId }),
                       log: BrokerLog.findOne({
                         state: 'Stopped',
                         machineId: machineId
                       })
                     })
                       .then((props) => {
+                        _.remove(props.machines, (machine) => machine.users.length === 0);
+                        props.machine = props.machines[0];
                         return resolve(props);
                       });
                   }, 150);
@@ -977,11 +1004,10 @@ describe('Machine Service', () => {
         })
         .then((images) => {
           imageCount = images.length;
-          return Machine.find({
-            user: null
-          });
+          return Machine.find().populate('users');
         })
         .then((machines) => {
+          _.remove(machines, (machine) => machine.users.length >= 1);
           if (machines.length !== 2 * imageCount) {
             throw new Error('Should have 2 running machines per images');
           }
@@ -994,13 +1020,13 @@ describe('Machine Service', () => {
           return new Promise((resolve) => {
             setTimeout(() => {
               resolve(Machine.find({
-                user: null,
                 status: 'running'
-              }));
+              }).populate('users'));
             }, 150);
           });
         })
         .then((machines) => {
+          _.remove(machines, (machine) => machine.users.length >= 1);
           if (machines.length !== 4 * imageCount) {
             throw new Error('Should have 4 running machines per images');
           }
@@ -1014,16 +1040,19 @@ describe('Machine Service', () => {
           return MachineService.updateMachinesPool();
         })
         .then(() => {
-          return Promise.props({
-            machines: Machine.find({
-                user: null
-              }),
-            images: Image.find({
-              deleted: false
-            })
+          return new Promise((resolve) => {
+            setTimeout(() => {
+              return resolve(Promise.props({
+                machines: Machine.find().populate('users'),
+                images: Image.find({
+                  deleted: false
+                })
+              }));
+            }, 100);
           });
         })
         .then(({machines, images}) => {
+          _.remove(machines, (machine) => machine.users.length >= 1);
           if (machines.length !== 2 * images.length) {
             throw new Error('Should still have 2 running machines per images');
           }
@@ -1044,11 +1073,12 @@ describe('Machine Service', () => {
           return MachineService.updateMachinesPool();
         })
         .then(() => {
-          return Machine.find({
-            user: adminId
+          return Machine.find().populate('users', {
+            id: adminId
           });
         })
         .then((machines) => {
+          _.remove(machines, (machine) => machine.users.length === 0);
           if (machines.length !== 1) {
             throw new Error('Should have 1 assigned running machine even the machinePoolSize equal 0');
           }
@@ -1091,9 +1121,10 @@ describe('Machine Service', () => {
           }
         })
         .then(() => {
-          return Machine.findOne({user: adminId});
+          return Machine.find().populate('users', { id: adminId });
         })
-        .then((machine) => {
+        .then((machines) => {
+          let machine = _.find(machines, (machine) => machine.users.length === 1);
           if (machine.status !== 'booting') {
             throw new Error('Assigned machine should have been a booting machine');
           } else if (machine.enDate === null) {
@@ -1118,11 +1149,11 @@ describe('Machine Service', () => {
         })
         .then(() => {
           return Machine.find({
-            image: imageId,
-            user: null
-          });
+            image: imageId
+          }).populate('users');
         })
         .then((machines) => {
+          _.remove(machines, (machine) => machine.users.length === 0);
           if (_.filter(machines, (m) => m.flavor !== 'small').length > 0) {
             throw new Error('Machines should have been recreated');
           } else {
@@ -1136,12 +1167,105 @@ describe('Machine Service', () => {
         .then((images) => {
           return Machine.find({
             image: images[0].id,
-            user: null
-          });
+          }).populate('users');
         })
         .then((machines) => {
+          _.remove(machines, (machine) => machine.users.length === 0);
           if (_.filter(machines, (m) => m.flavor === 'small').length > 0) {
             throw new Error('Others machines should not have been recreated');
+          } else {
+            return done();
+          }
+        });
+    });
+  });
+
+  describe('Assign multiple ldap users on one machine', () => {
+    let user1 = null;
+    let user2 = null;
+    let user3 = null;
+    let image = null;
+    let machineAssignedId = null;
+
+    before('Enable ldap, and set the maximum users per machines to 2', (done) => {
+      return ConfigService.set('ldapActivated', true)
+        .then(() => {
+          return ConfigService.set('UserPerMachines', 2);
+        })
+        .then(() => {
+          return ConfigService.set('dummyBootingState', false);
+        })
+        .then(() => {
+          return Machine.destroy();
+        })
+        .then(() => {
+          return Image.destroy({ name: { '!': 'Default' } });
+        })
+        .then(() => {
+          return Image.findOne({ name: 'Default', deleted: false });
+        })
+        .then((defaultImage) => {
+          image = defaultImage;
+          return MachineService.updateMachinesPool();
+        })
+        .then(() => {
+          return User.create([{
+            firstName: 'ldapUser1',
+            password: 'ldapUserTest',
+            email: 'user1@mail.ldap',
+            isAdmin: true,
+            ldapUser: true,
+            ldapAccountName: 'User1',
+            ldapPassword: 'ldapUserTest',
+          }, {
+            firstName: 'ldapUser2',
+            password: 'ldapUserTest',
+            email: 'user2@mail.ldap',
+            isAdmin: true,
+            ldapUser: true,
+            ldapAccountName: 'User2',
+            ldapPassword: 'ldapUserTest',
+          }, {
+            firstName: 'ldapUser3',
+            password: 'ldapUserTest',
+            email: 'user3@mail.ldap',
+            isAdmin: true,
+            ldapUser: true,
+            ldapAccountName: 'User3',
+            ldapPassword: 'ldapUserTest',
+          }]);
+        })
+        .then((users) => {
+          user1 = users[0];
+          user2 = users[1];
+          user3 = users[2];
+          return done();
+        });
+    });
+
+    after('disable ldap', (done) => {
+      return ConfigService.set('ldapActivated', false)
+        .then(() => {
+          return done();
+        });
+    });
+
+    it('Should assign maximum 2 users to one machine', (done) => {
+      return MachineService.getMachineForUser(user1, image)
+        .then((machine) => {
+          machineAssignedId = machine.id;
+          return MachineService.getMachineForUser(user2, image);
+        })
+        .then((machine) => {
+          if (machine.id !== machineAssignedId) {
+            throw new Error('Ldap users should be assigned in priority to machine already assigned');
+          } else {
+            return MachineService.getMachineForUser(user3, image);
+          }
+        })
+        .then((machine) => {
+          if (!machine || machine.id === machineAssignedId) {
+            throw new Error('When maximum users is reached, it should assign the user to another machine');
           } else {
             return done();
           }

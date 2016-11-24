@@ -24,6 +24,7 @@
 
 // jshint mocha:true
 /* globals sails, App, AccessToken, User, Group, MachineService, Machine, Image */
+/* globals ConfigService */
 
 var nano = require('./lib/nanotest');
 var chai = require('chai');
@@ -484,10 +485,10 @@ module.exports = function() {
       it('Admins should be able to get connection out of every app', function(done) {
 
         Machine.find().populate('users', {
-          user: nano.adminId()
+          id: nano.adminId()
         })
           .then((machines) => {
-            _.remove(machines, (machine) => machine.user.length === 0);
+            _.remove(machines, (machine) => machine.users.length === 0);
             let machine = machines[0];
             nano.request(sails.hooks.http.app)
               .get('/api/apps/connections')
@@ -497,6 +498,7 @@ module.exports = function() {
                 expect(res.body.data).to.have.length(3);
               })
               .expect((res) => {
+                console.log(res.body.data[0].attributes['rdp-options']);
                 expect(res.body.data).to.include({
                   'type': 'apps',
                   'id': app2,
@@ -642,8 +644,8 @@ module.exports = function() {
 
         it('Admins should be able to get connection out of every app', function(done) {
 
-          Machine.findOne({
-            user: nano.adminId()
+          Machine.find().populate('users', {
+            id: nano.adminId()
           })
             .then((machine) => {
               nano.request(sails.hooks.http.app)

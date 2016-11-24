@@ -22,7 +22,7 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-/* globals Machine, sails */
+/* globals Machine, sails, ConfigService */
 
 const nano = require('./lib/nanotest');
 const expect = require('chai').expect;
@@ -30,6 +30,13 @@ const expect = require('chai').expect;
 module.exports = function() {
 
   describe('Session', function() {
+
+    before('disable ldap', (done) => {
+      return ConfigService.set('ldapActivated', false)
+        .then(() => {
+          return done();
+        });
+    });
 
     const expectedSchema = {
       type: 'object',

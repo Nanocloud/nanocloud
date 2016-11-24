@@ -63,7 +63,7 @@ module.exports = function() {
         .then(({newUser, newImage}) => {
           user = newUser;
           return Machine.create({
-            user: user.id,
+            users: [user],
             name: 'essai1',
             type: 'manual',
             ip: '1.1.1.1',
