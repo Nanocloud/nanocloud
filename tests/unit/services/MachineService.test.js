@@ -1190,7 +1190,7 @@ describe('Machine Service', () => {
     before('Enable ldap, and set the maximum users per machines to 2', (done) => {
       return ConfigService.set('ldapActivated', true)
         .then(() => {
-          return ConfigService.set('UserPerMachines', 2);
+          return ConfigService.set('userPerMachines', 2);
         })
         .then(() => {
           return ConfigService.set('dummyBootingState', false);
@@ -1266,6 +1266,56 @@ describe('Machine Service', () => {
         .then((machine) => {
           if (!machine || machine.id === machineAssignedId) {
             throw new Error('When maximum users is reached, it should assign the user to another machine');
+          } else {
+            return done();
+          }
+        });
+    });
+
+    it('Should list session with the correct user', (done) => {
+      let usersMachine = null;
+      return MachineService.sessionOpen(user1, image)
+        .then(() => {
+          return MachineService.getMachineForUser(user1, image);
+        })
+        .then((machine) => {
+          usersMachine = machine;
+          return request({
+            url: 'http://' + machine.ip + ':' + machine.plazaport + '/sessionOpen',
+            json: true,
+            body: {
+              username: user1.ldapAccountName
+            },
+            method: 'POST'
+          });
+        })
+        .then(() => {
+          return usersMachine.getSessions();
+        })
+        .then((sessions) => {
+          if (sessions.length !== 1) {
+            throw new Error('A session should be launched');
+          } else if (sessions[0].userId !== user1.id) {
+            throw new Error('The session should be launched with the correct user');
+          } else {
+            return request({
+              url: 'http://' + usersMachine.ip + ':' + usersMachine.plazaport + '/sessionOpen',
+              json: true,
+              body: {
+                username: user2.ldapAccountName
+              },
+              method: 'POST'
+            });
+          }
+        })
+        .then(() => {
+          return usersMachine.getSessions();
+        })
+        .then((sessions) => {
+          if (sessions.length !== 2) {
+            throw new Error('A second session should be launched');
+          } else if (sessions[1].userId !== user2.id) {
+            throw new Error('The session should be launched with the correct user');
           } else {
             return done();
           }

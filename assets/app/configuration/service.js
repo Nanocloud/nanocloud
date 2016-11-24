@@ -56,6 +56,7 @@ export default Ember.Service.extend({
     'ldapDomain',
     'ldapGroup',
     'defaultGroupLdap',
+    'userPerMachines',
     'photon',
     'instancesSize'
   ],

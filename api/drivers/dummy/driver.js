@@ -27,11 +27,15 @@ const uuid = require('node-uuid');
 const http = require('http');
 
 const BaseDriver = require('../driver');
+const _ = require('lodash');
 
 let _plazaPort;
 let _plazaAddress;
 
-let _sessionOpen = false; // Used by fake plaza to hold session status
+let _sessionOpen = [{
+  user: 'username',
+  status: false
+}]; // Used by fake plaza to hold session status
 
 class DummyDriver extends BaseDriver {
 
@@ -81,25 +85,67 @@ class DummyDriver extends BaseDriver {
 
       if (req.url === '/sessions/Administrator' && req.method === 'GET') {
 
-        let status = (_sessionOpen === true) ? 'Active' : 'Inactive';
-        let data = {
-          data: [
-            [
-              null, // Unknown parameter
-              'username', // Unused for now
-              null, // unknown paramater
-              status
-            ]
-          ]
-        };
-
-        return res.end(JSON.stringify(data));
+        let data = { data: [] };
+        return Promise.map(_sessionOpen, (session) => {
+          data.data.push([
+            null,
+            session.user,
+            null,
+            (session.status) ? 'Active' : 'Inactive'
+          ]);
+          return Promise.resolve();
+        })
+          .then(() => {
+            return res.end(JSON.stringify(data));
+          });
       } else if (req.url === '/sessions/Administrator' && req.method === 'DELETE') {
-        _sessionOpen = false;
+        let actualSession = _.find(_sessionOpen, (session) => session.user === 'username');
+        actualSession.status = false;
+        req.on('data', (data) => {
+          let user = JSON.parse(data.toString()).username;
+          actualSession.status = true;
+          actualSession = _.find(_sessionOpen, (session) => session.user === user);
+          if (actualSession) {
+            actualSession.status = false;
+          } else {
+            _sessionOpen.push({
+              user: user,
+              status: false
+            });
+          }
+        });
       } else if (req.url === '/sessionOpen') {
-        _sessionOpen = true;
+        let actualSession = _.find(_sessionOpen, (session) => session.user === 'username');
+        actualSession.status = true;
+        req.on('data', (data) => {
+          let user = JSON.parse(data.toString()).username;
+          actualSession.status = false;
+          actualSession = _.find(_sessionOpen, (session) => session.user === user);
+          if (actualSession) {
+            actualSession.status = true;
+          } else {
+            _sessionOpen.push({
+              user: user,
+              status: true
+            });
+          }
+        });
       } else if (req.url === '/sessionClose') {
-        _sessionOpen = false;
+        let actualSession = _.find(_sessionOpen, (session) => session.user === 'username');
+        actualSession.status = false;
+        req.on('data', (data) => {
+          let user = JSON.parse(data.toString()).username;
+          actualSession.status = true;
+          actualSession = _.find(_sessionOpen, (session) => session.user === user);
+          if (actualSession) {
+            actualSession.status = false;
+          } else {
+            _sessionOpen.push({
+              user: user,
+              status: false
+            });
+          }
+        });
       }
 
       return res.end();

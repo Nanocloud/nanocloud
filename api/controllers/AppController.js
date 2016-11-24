@@ -153,7 +153,7 @@ module.exports = {
                 command: [
                   app.filePath
                 ],
-                username: machine.username
+                username: (req.user.ldapUser) ? req.user.ldapAccountName : machine.username
               })
                 .then(() => {
                   return ConfigService.get('photon');
@@ -164,7 +164,7 @@ module.exports = {
                       command: [
                         `C:\\Windows\\photon\\photon.bat`
                       ],
-                      username: machine.username
+                      username: (req.user.ldapUser) ? req.user.ldapAccountName : machine.username
                     });
                   } else {
                     return Promise.resolve();

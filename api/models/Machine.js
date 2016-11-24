@@ -138,13 +138,15 @@ module.exports = {
                   promise = UserMachine.find({ machine: this.id });
                 }
                 return promise.then((res) => {
-                  sessions.push({
-                    id: uuid.v4(), // id does not matter for session but is required for JSON API
-                    machineId: this.id,
-                    username: session[1],
-                    state: session[3],
-                    userId: (config.ldapActivated) ? res.id : res[0].user,
-                  });
+                  if (res) {
+                    sessions.push({
+                      id: uuid.v4(), // id does not matter for session but is required for JSON API
+                      machineId: this.id,
+                      username: session[1],
+                      state: session[3],
+                      userId: (config.ldapActivated) ? res.id : res[0].user,
+                    });
+                  }
                   return Promise.resolve();
                 });
               });
@@ -188,12 +190,13 @@ module.exports = {
      * @method killSession
      * @return {String} Message to tell user whether the session has been revoked or not
      */
-    killSession() {
+    killSession(user) {
       let plazaAddr = url.format({
         protocol: 'http',
         hostname: this.ip,
         port: this.plazaport,
-        pathname: '/sessions/' + this.username
+        pathname: '/sessions/' + ((user && user.ldapUser) ?
+          user.ldapAccountName : this.username)
       });
 
       return request.deleteAsync(plazaAddr)

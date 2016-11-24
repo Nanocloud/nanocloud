@@ -155,11 +155,11 @@ function getMachineForUser(user, image) {
         return new Promise((resolve, reject) => {
           Promise.props({
             machines: Machine.find({ image: image.id }).populate('users'),
-            config: ConfigService.get('UserPerMachines', 'ldapActivated')
+            config: ConfigService.get('userPerMachines', 'ldapActivated')
           })
             .then(({machines, config}) => {
               _.remove(machines, (machine) =>
-                machine.users.length >= ((config.ldapActivated) ? config.UserPerMachines : 1));
+                machine.users.length >= ((config.ldapActivated) ? config.userPerMachines : 1));
 
               // Order machines by number of users to assign the user to a machine already assigned.
               machines = _.sortBy(machines, (machine) => { return machine.users.length; });
@@ -876,6 +876,7 @@ function sessionOpen(user, image) {
             });
         })
         .finally(() => {
+          delete machine.user;
           return Machine.update(machine.id, machine);
         });
     });
