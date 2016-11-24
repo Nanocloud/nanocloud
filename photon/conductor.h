@@ -63,6 +63,7 @@ public:
     NEW_STREAM_ADDED,
     STREAM_REMOVED,
   };
+  static rtc::scoped_refptr<webrtc::DataChannelInterface> channel;
 
   Conductor(const std::string & offer, boost::shared_ptr<photon::http::server::response> res);
   void ConnectToPeer();
@@ -122,7 +123,6 @@ protected:
     peer_connection_factory_;
   std::map<std::string, rtc::scoped_refptr<webrtc::MediaStreamInterface> >
     active_streams_;
-  rtc::scoped_refptr<webrtc::DataChannelInterface> channel;
 
 #if defined(WEBRTC_WIN)
   photon::InputManager input_manager_;

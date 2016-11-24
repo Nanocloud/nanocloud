@@ -78,6 +78,7 @@ set(PHOTON_SOURCE_FILES
         http/server/request_parser.cc
         http/server/response.cc
         http/server/server.cc
+        print.cc
 )
 
 set(PHOTON_HEADER_FILES
@@ -94,6 +95,7 @@ set(PHOTON_HEADER_FILES
         http/server/request_parser.h
         http/server/response.h
         http/server/server.h
+        print.h
 )
 
 include_directories(${CMAKE_SOURCE_DIR}/src)

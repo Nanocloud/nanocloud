@@ -31,6 +31,7 @@
 
 #include "conductor.h"
 #include "http/server/server.h"
+#include "print.h"
 
 namespace boost {
   void throw_exception(std::exception const & e) {
@@ -77,6 +78,9 @@ public:
     if (!req.method.compare("POST") && !req.uri.compare("/webrtc")) {
 
       conductor_thr_.ConnectToPeer(req.body, res);
+    } else if (!req.method.compare("POST") && !req.uri.compare("/print")) {
+      SendPDF(req.body);
+      res->status(202);
     } else {
       res->status(404);
       res->text("Not Found");
