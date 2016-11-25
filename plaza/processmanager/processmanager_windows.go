@@ -31,7 +31,7 @@ import (
 	"sync"
 
 	"github.com/Nanocloud/nanocloud/plaza/windows"
-	log "github.com/Sirupsen/logrus"
+	"github.com/Sirupsen/logrus"
 )
 
 // session represents a Windows sessions.
@@ -143,7 +143,7 @@ func (a *Application) Start() error {
 	// This is the one and only process start.
 	err := a.cmd.Start()
 	if err != nil {
-		log.Error(err)
+		logrus.Error(err)
 		return err
 	}
 
@@ -241,7 +241,7 @@ func (s *session) launchApps() {
 // (usually exeplorer.exe). In our case, it's just a process that we use to
 // detect the session state.
 func SetSessionPid(pid int, username string) error {
-	log.Infof("SetSessionPid %d %s", pid, username)
+	logrus.Infof("SetSessionPid %d %s", pid, username)
 	s := getSession(username)
 	return s.setPid(pid)
 }

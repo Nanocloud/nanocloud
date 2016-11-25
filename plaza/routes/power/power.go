@@ -27,6 +27,7 @@ import (
 	"os/exec"
 
 	"github.com/labstack/echo"
+	"github.com/Sirupsen/logrus"
 )
 
 type hash map[string]interface{}
@@ -57,15 +58,18 @@ func retok(c *echo.Context) error {
 }
 
 func ShutDown(c *echo.Context) error {
+	logrus.Info("Shutting down")
 	cmd := exec.Command("powershell.exe", "Stop-Computer -Force")
 	resp, err := cmd.CombinedOutput()
 	if err != nil {
+		logrus.Error(err)
 		return reterr(err, string(resp), c)
 	}
 	return retok(c)
 }
 
 func Restart(c *echo.Context) error {
+	logrus.Info("Restart computer")
 	cmd := exec.Command("powershell.exe", "Restart-Computer -Force")
 	resp, err := cmd.CombinedOutput()
 	if err != nil {
@@ -76,6 +80,8 @@ func Restart(c *echo.Context) error {
 				"response": resp,
 			},
 		)
+	} else {
+		logrus.Error(err)
 	}
 	return c.JSON(
 		http.StatusOK,
@@ -96,6 +102,8 @@ func CheckRDS(c *echo.Context) error {
 				"response": resp,
 			},
 		)
+	} else {
+		logrus.Error(err)
 	}
 	return c.JSON(
 		http.StatusOK,
