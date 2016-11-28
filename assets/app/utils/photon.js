@@ -24,6 +24,9 @@
 
 /* globals RTCPeerConnection, RTCSessionDescription */
 
+// In order to know if data is received because of a 'getClipboard' action
+var fetchClipboard = false;
+
 let ClipboardManager  = function(get, set, rtcChannel) {
   let element = document.getElementById('VDIClipboard');
   this._element = get;
@@ -32,6 +35,7 @@ let ClipboardManager  = function(get, set, rtcChannel) {
   var getevent = function(event) {
     event.preventDefault();
     rtcChannel.send('G');
+    fetchClipboard = true;
   };
   var setevent = function(event) {
     event.preventDefault();
@@ -127,9 +131,34 @@ var PeerConnectionManager = function(videoElement, serverAddress, access_token) 
   this._dataChannel = dataChannel;
 
   dataChannel.onopen = this._OnDataChannelOpen.bind(this);
+
+  var countLoop = 0;
+  var fileContent = [];
   dataChannel.onmessage = function(message) {
-    let element = document.getElementById('VDIClipboard');
-    element.value = message.data;
+    // If user has clicked on 'clipboard' button just before
+    if (fetchClipboard === true) {
+      fetchClipboard = false;
+      let element = document.getElementById('VDIClipboard');
+      element.value = message.data;
+    } else { // PDF printing
+      fileContent.push(message.data);
+      setTimeout(() => {
+        if (countLoop++ > 0) {return;}
+        let filename = 'document.pdf';
+        let blob = new Blob([...fileContent], {type: 'application/pdf'});
+
+        if (window.navigator.msSaveOrOpenBlob) {
+          window.navigator.msSaveBlob(blob, filename);
+        } else {
+          var elem = window.document.createElement('a');
+          elem.href = window.URL.createObjectURL(blob);
+          elem.download = filename;
+          document.body.appendChild(elem);
+          elem.click();
+          document.body.removeChild(elem);
+        }
+      }, 1500);
+    }
   };
 
   peerConnection.createOffer(function(offer) {
