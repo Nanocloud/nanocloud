@@ -128,6 +128,7 @@ Once loaded, Nanocloud will be accessible on **localhost**.
 - ldapActivated (defaults to false) if true activates LDAP features
 - ldapUrl (defaults to 'ldap://localhost:389')
 - ldapBaseDn (defaults to empty string)
+- ldapDomain (defaults to empty string)
 - ldapDefaultGroup (defaults to empty string (no default group)) id of the group users should be attached to automatically
 
 ## RDP/Guacamole Options

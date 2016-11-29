@@ -123,6 +123,7 @@ module.exports = {
     ldapActivated: false,
     ldapUrl: 'ldap://localhost:389',
     ldapBaseDn: 'dc=nanocloud,dc=com',
+    ldapDomain: '',
     defaultGroupLdap: '',
 
     rdpPort: 3389,

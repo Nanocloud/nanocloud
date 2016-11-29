@@ -54,6 +54,13 @@ passport.use(
 
     function (username, password, done) {
 
+      // Check if username have @domain. If not we add @damain because `activedirectory` want username with the domain.
+      if (username.indexOf('@') < 0) {
+        ConfigService.get('ldapDomain')
+        .then((config) => {
+          username = username + '@' + config.ldapDomain;
+        });
+      }
       process.nextTick(
 
         function () {
@@ -79,6 +86,7 @@ passport.use(
 
                     let ldapUser = {
                       email: username,
+                      ldapUsername : user.sAMAccountName,
                       password: null, // we use the ldap password to authenticate ldap users
                       ldapPassword: password,
                       firstName: user.givenName,
