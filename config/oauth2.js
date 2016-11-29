@@ -41,27 +41,57 @@ server.exchange(oauth2orize.exchange.password(function(user, username, password,
     if (err) {
       done(err);
     }
+    // If user was not find, it's probably a ldap user
+    else if (!user) {
+      User.findOne({
+        ldapUsername: username,
+      }, function(err, user) {
+        if (err) {
+          done(err);
+        }
+        // delete reset password tokens
+        global['Reset-password'].destroy({
+          email: user.email
+        });
+        RefreshToken.create({
+          userId: user.id
+        }, function(err, refreshToken){
 
-    // delete reset password tokens
-    global['Reset-password'].destroy({
-      email: user.email
-    });
-    RefreshToken.create({
-      userId: user.id
-    }, function(err, refreshToken){
-
-      if (err) {
-        return done(err);
-      } else {
-        return AccessToken.create({ userId: user.id }, function(err, accessToken){
-          if(err) {
+          if (err) {
             return done(err);
           } else {
-            return done(null, accessToken.token, refreshToken.token, { expires_in: sails.config.oauth.tokenLife });
+            return AccessToken.create({ userId: user.id }, function(err, accessToken){
+              if(err) {
+                return done(err);
+              } else {
+                return done(null, accessToken.token, refreshToken.token, { expires_in: sails.config.oauth.tokenLife });
+              }
+            });
           }
         });
-      }
-    });
+      });
+    } else {
+      // delete reset password tokens
+      global['Reset-password'].destroy({
+        email: user.email
+      });
+      RefreshToken.create({
+        userId: user.id
+      }, function(err, refreshToken){
+
+        if (err) {
+          return done(err);
+        } else {
+          return AccessToken.create({ userId: user.id }, function(err, accessToken){
+            if(err) {
+              return done(err);
+            } else {
+              return done(null, accessToken.token, refreshToken.token, { expires_in: sails.config.oauth.tokenLife });
+            }
+          });
+        }
+      });
+    }
   });
 }));
 
