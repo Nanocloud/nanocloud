@@ -145,11 +145,15 @@ module.exports = {
                 throw new Error('A machine is booting for you');
               }
 
+              let username = machine.username;
+              if (req.user.ldapUser === true) {
+                username = req.user.ldapUsername;
+              }
               return PlazaService.exec(machine.ip, machine.plazaport, {
                 command: [
                   app.filePath
                 ],
-                username: machine.username
+                username: username
               })
                 .then(() => {
                   return ConfigService.get('photon');

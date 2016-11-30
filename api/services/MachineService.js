@@ -277,6 +277,7 @@ function increaseMachineEndDate(machine) {
  * Ask the underlying driver to create a new machine. It uses the
  * `ConfigService` variable:
  *  - machinesName: the name of the machine to be created
+ * If ldap is activated the machine join the domain and change his name with a reboot
  *
  * @method _createMachine
  * @param image {Object[Image]} image to build the machine from
@@ -325,16 +326,93 @@ function _createMachine(image) {
         });
     })
     .then((machine) => {
-      return machine.getPassword()
-        .then((password) => {
+      return Promise.props({
+        password: machine.getPassword(),
+        config: ConfigService.get('ldapActivated')
+      })
+        .then(({password, config}) => {
           machine.password = password;
           // If machine have been assigned when booting we have to keep endDate and user
           delete machine.endDate;
           delete machine.user;
+          if (config.ldapActivated === true) {
+            machine.status = 'booting';
+          } else {
+            _createBrokerLog(machine, 'Available');
+            machine.killSession();
+          }
           return Machine.update({id: machine.id}, machine);
-        })
-        .then(() => {
-          _createBrokerLog(machine, 'Available');
+        });
+    })
+    .then((machines) => {
+      return ConfigService.get(
+        'ldapActivated',
+        'ldapConnectLogin',
+        'ldapConnectPassword',
+        'ldapDomain',
+        'ldapDns',
+        'ldapGroup'
+      )
+        .then((config) => {
+          if (config.ldapActivated === true) {
+            let newName = 'NANO' + Math.random().toString(36).slice(3, 14);
+
+            return promisePoller({
+              taskFn: () => {
+                return PlazaService.exec(machines[0].ip, machines[0].plazaport, {
+                  command: [
+                    `C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe`,
+                    `-Command`,
+                    `netsh interface ipv4 add dnsserver "Ethernet" address=${config.ldapDns} index=1;
+                    $ComputerName = hostname;
+                    $Password = ConvertTo-SecureString -String "${config.ldapConnectPassword}" -AsPlainText -Force;
+                    $Creds = New-Object -TypeName "System.Management.Automation.PSCredential" -ArgumentList "${config.ldapConnectLogin}", $Password;
+                    Add-Computer -DomainName "${config.ldapDomain}" -ComputerName $ComputerName -Credential $Creds -newname "${newName}"`
+                  ],
+                  wait: true,
+                  hideWindow: true,
+                  username: machines[0].username
+                })
+                  .catch((err) => {
+                    // Ignore the 'exit status 1' error, the script was successfully executed.
+                    return Promise.resolve(err);
+                  });
+              },
+              interval: 3000,
+              timeout: 3000,
+              retries: 20
+            })
+              .then(() => {
+                return rebootMachine(machines[0]);
+              })
+              .then((rebootedMachine) => {
+                return promisePoller({
+                  taskFn: () => {
+                    return PlazaService.exec(rebootedMachine.ip, rebootedMachine.plazaport, {
+                      command: [
+                        `C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe`,
+                        `-Command`,
+                        `Net LocalGroup "Remote Desktop Users" ${config.ldapDomain}\\${config.ldapGroup} /ADD`
+                      ],
+                      wait: true,
+                      hideWindow: true,
+                      username: rebootedMachine.username
+                    })
+                      .catch(() => {
+                        // Ignore the 'exit status 1' error, the script was successfully executed.
+                        return Promise.resolve(rebootedMachine);
+                      });
+                  },
+                  interval: 3000,
+                  timeout: 3000,
+                  retries: 20
+                });
+              })
+              .then((machineWithGroup) => {
+                _createBrokerLog(machineWithGroup, 'Available');
+                return machineWithGroup.killSession();
+              });
+          }
         });
     })
     .catch((errs) => {
@@ -864,28 +942,8 @@ function createImage(image) {
 
   return Machine.findOne(image.buildFrom)
     .then((machine) => {
-
-      return PlazaService.exec(machine.ip, machine.plazaport, {
-        command: [
-          `reg.exe`,
-          `add`,
-          `HKLM\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\RunOnce`,
-          `/v`,
-          `ChangeComputerName`,
-          `/t`,
-          `REG_SZ`,
-          `/d`,
-          `"C:\\WINDOWS\\system32\\WindowsPowerShell\\v1.0\\powershell.exe -command ' & C:\\Windows\\changeComputerName.ps1'"`,
-          `/f`
-        ],
-        wait: true,
-        hideWindow: true,
-        username: machine.username
-      })
-        .then(() => {
-          return Image.findOne(machine.image)
-            .populate('apps');
-        });
+      return Image.findOne(machine.image)
+        .populate('apps');
     })
     .then((oldImage) => {
       return _driver.createImage(image)
@@ -992,11 +1050,12 @@ function getPassword(machine) {
  */
 function rebootMachine(machine) {
   return _driver.rebootMachine(machine)
-    .then((rebootedMachine) => {
-      rebootedMachine.status = 'booting';
+    .then(() => {
       return Machine.update({
         id: machine.id
-      }, rebootedMachine);
+      }, {
+        status: 'booting'
+      });
     })
     .then((machines) => {
       let updatedMachine = machines[0];
