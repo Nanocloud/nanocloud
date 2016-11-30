@@ -126,6 +126,7 @@ module.exports = {
   },
 
   update(req, res) {
+
     let applicationData = JsonApiService.deserialize(req.body.data);
     let attributes = applicationData.attributes;
 
@@ -148,14 +149,12 @@ module.exports = {
               if (req.user.ldapUser === true) {
                 username = req.user.ldapUsername;
               }
-              let options = {
+              return PlazaService.exec(machine.ip, machine.plazaport, {
                 command: [
                   app.filePath
                 ],
                 username: username,
-              };
-
-              return PlazaService.exec(machine.ip, machine.plazaport, options)
+              })
                 .then(() => {
                   return ConfigService.get('photon');
                 })

@@ -155,11 +155,13 @@ function getMachineForUser(user, image) {
         return new Promise((resolve, reject) => {
           Promise.props({
             machines: Machine.find({ image: image.id }).populate('users'),
-            config: ConfigService.get('userPerMachines', 'ldapActivated')
+            config: ConfigService.get('ldapUsersPerMachine', 'ldapActivated')
           })
             .then(({machines, config}) => {
+              // If ldap is actived, we remove machines who have reached the maximum users limit.
+              // else if ldap is not activated, the limit is 1.
               _.remove(machines, (machine) =>
-                machine.users.length >= ((config.ldapActivated) ? config.userPerMachines : 1));
+                machine.users.length >= ((config.ldapActivated) ? config.ldapUsersPerMachine : 1));
 
               // Order machines by number of users to assign the user to a machine already assigned.
               machines = _.sortBy(machines, (machine) => { return machine.users.length; });
@@ -199,10 +201,10 @@ function getMachineForUser(user, image) {
                       return reject(`A machine have been assigned to you, it will be available shortly.`);
                     });
                 }
-            } else {
-              return Promise.reject('A machine is booting for you. Please retry in one minute.');
-            }
-          });
+              } else {
+                return Promise.reject('A machine is booting for you. Please retry in one minute.');
+              }
+            });
         });
       } else {
         return ConfigService.get('neverTerminateMachine')
@@ -995,10 +997,10 @@ function createImage(image) {
 
           return Promise.all(promises);
         })
-          .then(() => {
-            updateMachinesPool();
-            return Promise.resolve(newImage);
-          });
+        .then(() => {
+          updateMachinesPool();
+          return Promise.resolve(newImage);
+        });
     });
 }
 

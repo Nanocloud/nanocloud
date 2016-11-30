@@ -133,6 +133,13 @@ module.exports = {
               return Promise.map(body.data, (session) => {
 
                 let promise = null;
+
+                /**
+                 * Here we need the user id, but plaza return only the ldap username,
+                 * and an ldap machine can have multiple users.
+                 * So for ldap users and normal users, the method to find their id is
+                 * different.
+                 */
                 if (config.ldapActivated) {
                   promise = User.findOne({ ldapUsername: session[1] });
                 } else {

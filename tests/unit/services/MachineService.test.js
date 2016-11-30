@@ -1190,7 +1190,7 @@ describe('Machine Service', () => {
     before('Enable ldap, and set the maximum users per machines to 2', (done) => {
       return ConfigService.set('ldapActivated', true)
         .then(() => {
-          return ConfigService.set('userPerMachines', 2);
+          return ConfigService.set('ldapUsersPerMachine', 2);
         })
         .then(() => {
           return ConfigService.set('dummyBootingState', false);
