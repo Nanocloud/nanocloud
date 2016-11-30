@@ -211,7 +211,13 @@ module.exports = {
     },
 
     reboot() {
-      return MachineService.rebootMachine(this);
+      return MachineService.rebootMachine(this)
+        .then(() => {
+          return this.killSession();
+        })
+        .then(() => {
+          return Promise.resolve(this);
+        });
     }
   }
 };

@@ -147,6 +147,13 @@ module.exports = function() {
           });
       });
 
+      after(function(done) {
+        ConfigService.set('ldapActivated', false)
+          .then(() => {
+            return done();
+          });
+      });
+
       const expectedSchema = {
         type: 'object',
         properties: {
@@ -187,7 +194,7 @@ module.exports = function() {
         nano.request(sails.hooks.http.app)
           .post('/oauth/token')
           .send({
-            username: 'jdoe',
+            username: 'notAUser',
             password: 'Nanocloud123+',
             grant_type: 'password'
           })

@@ -86,12 +86,12 @@ passport.use(
 
                     let ldapUser = {
                       email: username,
-                      ldapUsername : user.sAMAccountName,
                       password: null, // we use the ldap password to authenticate ldap users
                       ldapPassword: password,
                       firstName: user.givenName,
                       lastName: user.sn,
-                      ldapUser: true // flag them
+                      ldapUser: true, // flag them
+                      ldapUsername: user.sAMAccountName
                     };
                     return setLdapUser(ldapUser)
                       .then((res, err) => {
