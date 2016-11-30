@@ -71,7 +71,7 @@ module.exports = {
 
     Machine.findOne(machineId)
       .then((machine) => {
-        return machine.killSession();
+        return machine.killSession(req.user);
       })
       .then(() => {
         return res.json({

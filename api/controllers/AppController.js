@@ -126,7 +126,6 @@ module.exports = {
   },
 
   update(req, res) {
-
     let applicationData = JsonApiService.deserialize(req.body.data);
     let attributes = applicationData.attributes;
 
@@ -149,12 +148,14 @@ module.exports = {
               if (req.user.ldapUser === true) {
                 username = req.user.ldapUsername;
               }
-              return PlazaService.exec(machine.ip, machine.plazaport, {
+              let options = {
                 command: [
                   app.filePath
                 ],
-                username: (req.user.ldapUser) ? req.user.ldapAccountName : machine.username
-              })
+                username: username,
+              };
+
+              return PlazaService.exec(machine.ip, machine.plazaport, options)
                 .then(() => {
                   return ConfigService.get('photon');
                 })
@@ -164,7 +165,7 @@ module.exports = {
                       command: [
                         `C:\\Windows\\photon\\photon.bat`
                       ],
-                      username: (req.user.ldapUser) ? req.user.ldapAccountName : machine.username
+                      username: machine.username
                     });
                   } else {
                     return Promise.resolve();

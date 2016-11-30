@@ -753,7 +753,7 @@ function sessionOpen(user, image) {
                 ],
                 wait: true,
                 hideWindow: true,
-                username: machine.username
+                username: machine.username,
               })
                 .catch(() => {
                   // User storage is probably already mounted
@@ -771,7 +771,7 @@ function sessionOpen(user, image) {
                     ],
                     wait: true,
                     hideWindow: true,
-                    username: machine.username
+                    username: machine.username,
                   })
                     .then(() => {
                       return PlazaService.exec(machine.ip, machine.plazaport, {
@@ -785,7 +785,7 @@ function sessionOpen(user, image) {
                         ],
                         wait: true,
                         hideWindow: true,
-                        username: machine.username
+                        username: machine.username,
                       });
                     })
                     .then(() => {

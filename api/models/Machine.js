@@ -106,13 +106,14 @@ module.exports = {
      * @method getSessions
      * @return {Promise[Array]} a promise resolving to an array of session
      */
-    getSessions() {
+    getSessions(user) {
 
       let plazaAddr = url.format({
         protocol: 'http',
         hostname: this.ip,
         port: this.plazaport,
-        pathname: '/sessions/' + this.username,
+        pathname: '/sessions/' + ((user && user.ldapUser) ?
+          user.ldapAccountName : this.username)
       });
 
       return request.getAsync(plazaAddr)

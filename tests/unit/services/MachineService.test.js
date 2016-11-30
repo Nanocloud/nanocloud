@@ -1314,8 +1314,30 @@ describe('Machine Service', () => {
         .then((sessions) => {
           if (sessions.length !== 2) {
             throw new Error('A second session should be launched');
-          } else if (sessions[1].userId !== user2.id) {
+          } else if (_.findIndex(sessions, (session) => session.userId === user2.id) === -1) {
             throw new Error('The session should be launched with the correct user');
+          } else {
+            return usersMachine.killSession(user1);
+          }
+        })
+        .then(() => {
+          return usersMachine.getSessions();
+        })
+        .then((sessions) => {
+          if (sessions.length !== 1) {
+            throw new Error('A second session should be deleted');
+          } else if (sessions[0].userId !== user2.id) {
+            throw new Error('The session deleted should be the correct user session');
+          } else {
+            return usersMachine.killSession(user2);
+          }
+        })
+        .then(() => {
+          return usersMachine.getSessions();
+        })
+        .then((sessions) => {
+          if (sessions.length > 0) {
+            throw new Error('All sessions should have been deleted');
           } else {
             return done();
           }

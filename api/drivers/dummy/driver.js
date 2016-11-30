@@ -98,22 +98,14 @@ class DummyDriver extends BaseDriver {
           .then(() => {
             return res.end(JSON.stringify(data));
           });
-      } else if (req.url === '/sessions/Administrator' && req.method === 'DELETE') {
-        let actualSession = _.find(_sessionOpen, (session) => session.user === 'username');
-        actualSession.status = false;
-        req.on('data', (data) => {
-          let user = JSON.parse(data.toString()).username;
-          actualSession.status = true;
-          actualSession = _.find(_sessionOpen, (session) => session.user === user);
-          if (actualSession) {
-            actualSession.status = false;
-          } else {
-            _sessionOpen.push({
-              user: user,
-              status: false
-            });
-          }
-        });
+      } else if (req.url.substr(0, 10) === '/sessions/' && req.method === 'DELETE') {
+        let sessionToClose = req.url.substr(10, req.url.length - 10);
+        if (sessionToClose === 'Administrator') {
+          let actualSession = _.find(_sessionOpen, (session) => session.user === 'username');
+          actualSession.status = false;
+        } else {
+          _.remove(_sessionOpen, (session) => session.user === sessionToClose);
+        }
       } else if (req.url === '/sessionOpen') {
         let actualSession = _.find(_sessionOpen, (session) => session.user === 'username');
         actualSession.status = true;
@@ -133,19 +125,6 @@ class DummyDriver extends BaseDriver {
       } else if (req.url === '/sessionClose') {
         let actualSession = _.find(_sessionOpen, (session) => session.user === 'username');
         actualSession.status = false;
-        req.on('data', (data) => {
-          let user = JSON.parse(data.toString()).username;
-          actualSession.status = true;
-          actualSession = _.find(_sessionOpen, (session) => session.user === user);
-          if (actualSession) {
-            actualSession.status = false;
-          } else {
-            _sessionOpen.push({
-              user: user,
-              status: false
-            });
-          }
-        });
       }
 
       return res.end();
