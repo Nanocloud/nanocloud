@@ -81,9 +81,6 @@ module.exports = {
       type: 'boolean',
       defaultsTo: false
     },
-    ldapAccountName: {
-      type: 'string'
-    },
     ldapPassword: {
       type: 'string'
     },

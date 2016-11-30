@@ -113,7 +113,7 @@ module.exports = {
         hostname: this.ip,
         port: this.plazaport,
         pathname: '/sessions/' + ((user && user.ldapUser) ?
-          user.ldapAccountName : this.username)
+          user.ldapUsername : this.username)
       });
 
       return request.getAsync(plazaAddr)
@@ -134,7 +134,7 @@ module.exports = {
 
                 let promise = null;
                 if (config.ldapActivated) {
-                  promise = User.findOne({ ldapAccountName: session[1] });
+                  promise = User.findOne({ ldapUsername: session[1] });
                 } else {
                   promise = UserMachine.find({ machine: this.id });
                 }
@@ -197,7 +197,7 @@ module.exports = {
         hostname: this.ip,
         port: this.plazaport,
         pathname: '/sessions/' + ((user && user.ldapUser) ?
-          user.ldapAccountName : this.username)
+          user.ldapUsername : this.username)
       });
 
       return request.deleteAsync(plazaAddr)

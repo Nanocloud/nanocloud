@@ -146,7 +146,7 @@ passport.use(
                 } else if (databaseUser.firstName !== ldapUser.givenName
                 || databaseUser.lastName !== ldapUser.sn
                 || databaseUser.ldapPassword !== ldapUser.ldapPassword
-                || databaseUser.ldapAccountName !== ldapUser.sAMAccountName) {
+                || databaseUser.ldapUsername !== ldapUser.sAMAccountName) {
                   // At least it's the second connection
                   // Update user's first name and last name because they're
                   // different from those which are in database

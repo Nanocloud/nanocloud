@@ -1215,7 +1215,7 @@ describe('Machine Service', () => {
             email: 'user1@mail.ldap',
             isAdmin: true,
             ldapUser: true,
-            ldapAccountName: 'User1',
+            ldapUsername: 'User1',
             ldapPassword: 'ldapUserTest',
           }, {
             firstName: 'ldapUser2',
@@ -1223,7 +1223,7 @@ describe('Machine Service', () => {
             email: 'user2@mail.ldap',
             isAdmin: true,
             ldapUser: true,
-            ldapAccountName: 'User2',
+            ldapUsername: 'User2',
             ldapPassword: 'ldapUserTest',
           }, {
             firstName: 'ldapUser3',
@@ -1231,7 +1231,7 @@ describe('Machine Service', () => {
             email: 'user3@mail.ldap',
             isAdmin: true,
             ldapUser: true,
-            ldapAccountName: 'User3',
+            ldapUsername: 'User3',
             ldapPassword: 'ldapUserTest',
           }]);
         })
@@ -1284,7 +1284,7 @@ describe('Machine Service', () => {
             url: 'http://' + machine.ip + ':' + machine.plazaport + '/sessionOpen',
             json: true,
             body: {
-              username: user1.ldapAccountName
+              username: user1.ldapUsername
             },
             method: 'POST'
           });
@@ -1302,7 +1302,7 @@ describe('Machine Service', () => {
               url: 'http://' + usersMachine.ip + ':' + usersMachine.plazaport + '/sessionOpen',
               json: true,
               body: {
-                username: user2.ldapAccountName
+                username: user2.ldapUsername
               },
               method: 'POST'
             });
