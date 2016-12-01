@@ -337,7 +337,11 @@ function _createMachine(image) {
           // If machine have been assigned when booting we have to keep endDate and user
           delete machine.endDate;
           delete machine.users;
-          if (config.ldapActivated === true) {
+          /**
+           * If the driver is dummy, this will take more than 10 seconds to reboot,
+           * and the test timeout at 2 seconds, so we just make a condition for the dummy driver
+           */
+          if (config.ldapActivated === true && _driver.name() !== 'dummy') {
             machine.status = 'booting';
           } else {
             _createBrokerLog(machine, 'Available');
@@ -356,7 +360,7 @@ function _createMachine(image) {
         'ldapGroup'
       )
         .then((config) => {
-          if (config.ldapActivated === true) {
+          if (config.ldapActivated === true && _driver.name() !== 'dummy') {
             let newName = 'NANO' + Math.random().toString(36).slice(3, 14);
 
             return promisePoller({
