@@ -70,7 +70,7 @@ describe('Images', () => {
             });
         })
         .then(() => {
-          return Image.destroy({ name: 'Parent image' });
+          return Image.update({ name: 'Parent image' }, {deleted: true});
         })
         .then(() => done());
     });
