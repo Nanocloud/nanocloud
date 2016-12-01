@@ -74,7 +74,13 @@ func sendShellInfo() {
 		Pid      int    `json:"pid"`
 	}{}
 
-	mes.Username = splt[len(splt)-1]
+	// Here we should take the current user to fork, because the current user
+	// is administrator. But if ldap is activated, it is possibly not Administrator
+	// and it's a problem:
+	// if the fork is made with another session, all people wanting to connect it
+	// througth the administrator would be blocked, because the fork is hosted by
+	// another user
+	mes.Username = "Administrator" //splt[len(splt)-1]
 	mes.Pid = os.Getpid()
 
 	buf, err := json.Marshal(mes)

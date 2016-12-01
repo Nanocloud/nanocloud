@@ -20,7 +20,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* global Machine, MachineService */
+/* global Machine, MachineService, UserMachine, ConfigService, User */
 
 const url = require('url');
 const Promise = require('bluebird');
@@ -70,15 +70,17 @@ module.exports = {
     flavor: {
       type: 'string'
     },
-    user: {
-      model: 'user'
-    },
     image: {
       model: 'image',
       unique: true
     },
     status: {
       type: 'string'
+    },
+    users: {
+      collection: 'user',
+      via: 'machines',
+      through: 'usermachine'
     },
 
     toJSON: function() {
@@ -104,13 +106,14 @@ module.exports = {
      * @method getSessions
      * @return {Promise[Array]} a promise resolving to an array of session
      */
-    getSessions() {
+    getSessions(user) {
 
       let plazaAddr = url.format({
         protocol: 'http',
         hostname: this.ip,
         port: this.plazaport,
-        pathname: '/sessions/' + this.username
+        pathname: '/sessions/' + ((user && user.ldapUser) ?
+          user.ldapUsername : this.username)
       });
 
       return request.getAsync(plazaAddr)
@@ -125,17 +128,41 @@ module.exports = {
           }
 
           let sessions = [];
-          body.data.forEach((session) => {
-            sessions.push({
-              id: uuid.v4(), // id does not matter for session but is required for JSON API
-              machineId: this.id,
-              username: session[1],
-              state: session[3],
-              userId: this.user
-            });
-          });
+          return ConfigService.get('ldapActivated')
+            .then((config) => {
+              return Promise.map(body.data, (session) => {
 
-          return sessions;
+                let promise = null;
+
+                /**
+                 * Here we need the user id, but plaza return only the ldap username,
+                 * and an ldap machine can have multiple users.
+                 * So for ldap users and normal users, the method to find their id is
+                 * different.
+                 */
+                if (config.ldapActivated) {
+                  promise = User.findOne({ ldapUsername: session[1] });
+                } else {
+                  promise = UserMachine.find({ machine: this.id });
+                }
+                return promise.then((res) => {
+                  if (res) {
+                    sessions.push({
+                      id: uuid.v4(), // id does not matter for session but is required for JSON API
+                      machineId: this.id,
+                      username: session[1],
+                      state: session[3],
+                      userId: (config.ldapActivated) ? res.id : res[0].user,
+                    });
+                  }
+                  return Promise.resolve();
+                });
+              });
+
+            })
+            .then(() => {
+              return sessions;
+            });
         })
         // If timeout is exceeded, machine is probably booting or being shut-down
         // Let's ignore the error silently and return an empty array.
@@ -171,12 +198,13 @@ module.exports = {
      * @method killSession
      * @return {String} Message to tell user whether the session has been revoked or not
      */
-    killSession() {
+    killSession(user) {
       let plazaAddr = url.format({
         protocol: 'http',
         hostname: this.ip,
         port: this.plazaport,
-        pathname: '/sessions/' + this.username
+        pathname: '/sessions/' + ((user && user.ldapUser) ?
+          user.ldapUsername : this.username)
       });
 
       return request.deleteAsync(plazaAddr)

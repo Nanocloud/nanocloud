@@ -41,6 +41,14 @@
         {{input-confirm placeholder=configController.ldapDomain value=configController.ldapDomain type="text"}}
       </div>
     </div>
+    <div class="form-group row m-t-1">
+      <div class="col-sm-2">
+        <p class="confirm-input-item color-primary in-bl fl va-sub">Maximum users for one machine</p>
+      </div>
+      <div class="col-sm-3">
+        {{input-confirm placeholder=configController.ldapUsersPerMachine value=configController.ldapUsersPerMachine type="number"}}
+      </div>
+    </div>
     {{#if model.groups.length}}
       <p class='m-t-1 color-primary'>You can select a default group</p>
       {{#each model.groups as |group|}}

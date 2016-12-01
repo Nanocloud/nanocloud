@@ -69,7 +69,7 @@ export default Ember.Controller.extend({
             ip: item.get('ip'),
             expiration: secondsLeft,
             status: item.get('status'),
-            user: item.get('user'),
+            users: item.get('users').toArray(),
             endDate: item.get('endDate'),
             // Here we check if a session(s) is open on this machine.
             isInUse: ((sessions.filterBy('machineId', item.get('id')).length === 0) ? false : true),

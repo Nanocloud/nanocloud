@@ -22,6 +22,8 @@
 
 /* globals MachineService, Machine */
 
+const _ = require('lodash');
+
 /**
  * Server-side logic for managing machines
  *
@@ -35,21 +37,21 @@ module.exports = {
   find(req, res) {
     if (req.user.isAdmin) {
       Machine.find()
-        .populate('user')
+        .populate('users')
         .populate('image')
         .then((machines) => {
           return res.ok(machines);
         })
         .catch((err) => res.negotiate(err));
     } else {
-      Machine.find({
-        user: req.user.id
-      })
-        .populate('user')
+      Machine.find().populate('users', { id: req.user.id }).populate('image')
         .then((machines) => {
+          _.remove(machines, (machine) => machine.users.length === 0);
           return res.ok(machines);
         })
-        .catch((err) => res.negotiate(err));
+        .catch((err) => {
+          return res.negotiate(err);
+        });
     }
   },
 
@@ -60,10 +62,10 @@ module.exports = {
     Machine.findOne({
       id: req.params.id
     })
-      .populate('user')
+      .populate('users')
       .populate('image')
       .then((machine) => {
-        if (req.user.isAdmin || machine.user === req.user.id) {
+        if (req.user.isAdmin || _.find(machine.users, (user) => user.id === req.user.id)) {
           return res.ok(machine);
         } else {
           return res.forbidden();

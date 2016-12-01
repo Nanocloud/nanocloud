@@ -64,14 +64,13 @@ describe('Images', () => {
           });
         })
         .then((image) => {
-          return Machine.destroy({
-            image: image.id
-          });
+          return Machine.destroy()
+            .then(() => {
+              return App.destroy({image: image.id});
+            });
         })
         .then(() => {
-          return Image.destroy({
-            name: 'Parent image'
-          });
+          return Image.destroy({ name: 'Parent image' });
         })
         .then(() => done());
     });

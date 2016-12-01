@@ -74,10 +74,12 @@
         <tr>
           <th scope="row">Assigned user</th>
           <td>
-            {{#if model.user}}
-              {{#link-to 'protected.users.user' model.user.id}}
-                {{ model.user.fullName }}
-              {{/link-to}}
+            {{#if model.users}}
+              {{#each model.users as |user|}}
+                {{#link-to 'protected.users.user' user.id class="truncate"}}
+                  {{ user.fullName }}
+                {{/link-to}}
+              {{/each}}
             {{else}}
               None
             {{/if}}

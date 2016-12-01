@@ -153,7 +153,7 @@ module.exports = {
                 command: [
                   app.filePath
                 ],
-                username: username
+                username: username,
               })
                 .then(() => {
                   return ConfigService.get('photon');
@@ -226,10 +226,7 @@ module.exports = {
         return Promise.map(images, function(image) {
 
           return Promise.props({
-            machine: Machine.findOne({
-              user: req.user.id,
-              image: image.id
-            }),
+            machines: Machine.find({ image: image.id }).populate('users', { id: req.user.id }),
             user: User.findOne({
               id: req.user.id
             }),
@@ -274,9 +271,11 @@ module.exports = {
               'rdpRemoteAppArgs'
             )
           })
-            .then(({machine, user, config}) => {
+            .then(({machines, user, config}) => {
               let username = null;
               let password = null;
+              _.remove(machines, (machine) => machine.users.length === 0);
+              let machine = machines[0];
 
               if (machine) {
                 if (user.ldapUser) {

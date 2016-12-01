@@ -866,7 +866,6 @@ module.exports = function() {
                   ip: '1.1.1.1',
                   username: 'Administrator',
                   password: 'essai',
-                  user: nano.adminId()
                 },
                 type: 'machines'
               }
@@ -887,7 +886,6 @@ module.exports = function() {
                   ip: '1.1.1.1',
                   username: 'Administrator',
                   password: 'essai',
-                  user: userId
                 },
                 type: 'machines'
               }

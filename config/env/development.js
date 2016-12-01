@@ -129,6 +129,7 @@ module.exports = {
     ldapConnectPassword: '',
     ldapGroup: '',
     defaultGroupLdap: '',
+    ldapUsersPerMachine: 1,
 
     rdpPort: 3389,
     rdpDomain: '',

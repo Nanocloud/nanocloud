@@ -22,31 +22,38 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-import Ember from 'ember';
+function up(knex, Promise) {
+  return Promise.all([
+    knex.schema.createTable('usermachine', (table) => {
+      table.increments();
 
-export default Ember.Route.extend({
-  setupController(controller, model) {
-    controller.set('items', model);
-    controller.setData();
-  },
+      table.string('user');
+      table.string('machine');
 
-  model() {
-    let machineIndexController = this.controllerFor('protected.machines.index');
-    machineIndexController.set('loadState', true);
-    var promise = this.get('store').query('machine', { reload: true });
-    promise
-      .catch(() => {
-        this.toast.error('Machine list could not be retrieved');
-      })
-      .finally(() => {
-        machineIndexController.set('loadState', false);
+      table.dateTime('createdAt');
+      table.dateTime('updatedAt');
+    }),
+
+    knex('machine').select('id', 'user').whereNot({
+      user: null
+    }).then((machines) => {
+      return Promise.map(machines, (machine) => {
+        return knex.insert({
+          machine: machine.id,
+          user: machine.user
+        }).into('usergroup');
       });
-    return promise;
-  },
+    })
+    .then(() => {
+      return knex.schema.table('machine', (table) => {
+        return table.dropColumn('user');
+      });
+    })
+  ]);
+}
 
-  actions : {
-    refreshModel() {
-      this.refresh();
-    },
-  }
-});
+function down(knex) {
+  return knex.schema.dropTable('usermachine');
+}
+
+module.exports = { up, down };

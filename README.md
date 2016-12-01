@@ -134,6 +134,8 @@ Once loaded, Nanocloud will be accessible on **localhost**.
 - ldapConnectPassword (defaults to empty string) password to connect virtual machine to ldap controller
 - ldapGroup (default to empty string) ldap user group authorized to connect to machine
 - defaultGroupLdap (defaults to empty string (no default group)) id of the group users should be attached to automatically
+- ldapUsersPerMachine (defaults to 1 number) maximum number of users for
+  one machine
 
 ## RDP/Guacamole Options
 
