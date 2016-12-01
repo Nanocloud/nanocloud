@@ -416,7 +416,6 @@ function _createMachine(image) {
               })
               .then((machineWithGroup) => {
                 _createBrokerLog(machineWithGroup, 'Available');
-                return machineWithGroup.killSession();
               });
           }
         });
