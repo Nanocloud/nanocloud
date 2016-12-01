@@ -1,0 +1,9 @@
+settings {
+   delay = 0
+}
+
+sync {
+   default.rsync,
+   source = "/back/api",
+   target = "/opt/api"
+}

@@ -32,6 +32,18 @@
  *
  */
 
+let models = null;
+
+if (process.env.DEV_MAC === 'true') {
+  models = {
+    connection: 'postgresDevelopmentMac'
+  };
+} else {
+  models = {
+    connection: 'postgresDevelopment'
+  };
+}
+
 module.exports = {
 
   /***************************************************************************
@@ -39,9 +51,7 @@ module.exports = {
    * environment (see config/connections.js and config/models.js )           *
    ***************************************************************************/
 
-  models: {
-    connection: 'postgresDevelopment'
-  },
+  models: models,
 
   nanocloud: {
     title: 'Nanocloud',

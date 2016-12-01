@@ -1,0 +1,10 @@
+FROM nanocloud/frontend
+MAINTAINER OLivier Berthonneau <olivier.berthonneau@nanocloud.com>
+
+RUN apt-get update && apt-get install -y lsyncd
+RUN mkdir -p /opt/dist
+
+COPY lsyncd_source /lsyncd_source
+COPY start-dev-mac.sh /start-dev-mac.sh
+
+CMD bash /start-dev-mac.sh

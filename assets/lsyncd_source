@@ -1,0 +1,9 @@
+settings {
+   delay = 0
+}
+
+sync {
+   default.rsync,
+   source = "/front/app",
+   target = "/opt/app"
+}

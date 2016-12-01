@@ -1,0 +1,9 @@
+settings {
+   delay = 4
+}
+
+sync {
+   default.rsync,
+   source = "/opt/dist",
+   target = "/front/dist"
+}
