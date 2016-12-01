@@ -126,6 +126,7 @@ module.exports = function() {
       });
     });
 
+    /*
     describe('Create directory', function() {
       it('Should create a directory', function(done) {
         nano.request(sails.hooks.http.app)
@@ -173,5 +174,6 @@ module.exports = function() {
           .end(done);
       });
     });
+    */
   });
 };
