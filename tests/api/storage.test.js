@@ -135,8 +135,8 @@ module.exports = function() {
           .expect(nano.jsonApiSchema(fileSchema))
           .expect((res) => {
             expect(res.body.data.length).to.equal(2);
-            expect(res.body.data[1].attributes.type).to.equal('directory');
-            expect(res.body.data[1].attributes.name).to.equal('test');
+            expect(res.body.data[0].attributes.type).to.equal('directory');
+            expect(res.body.data[0].attributes.name).to.equal('test');
           })
           .end(done);
       });
