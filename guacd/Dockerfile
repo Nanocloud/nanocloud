@@ -13,9 +13,9 @@ RUN git checkout stable-1.1
 COPY ./FreeRDP /tmp/FreeRDP
 RUN patch include/freerdp/settings.h include/freerdp/settings.h.diff  && rm include/freerdp/settings.h.diff
 RUN cmake . && make && make install && ldconfig
-RUN git clone https://github.com/glyptodon/guacamole-server /tmp/guacamole-server
+RUN git clone https://github.com/apache/incubator-guacamole-server.git /tmp/guacamole-server
 WORKDIR /tmp/guacamole-server
-RUN git checkout 0.9.9
+RUN git checkout 0.9.10-incubating-RC1
 COPY ./guacamole-server /tmp/guacamole-server
 RUN patch src/protocols/rdp/rdp_disp.c src/protocols/rdp/rdp_disp.c.diff
 RUN autoreconf -fi && ./configure && make && make install && ldconfig
