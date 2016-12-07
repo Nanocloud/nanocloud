@@ -369,11 +369,10 @@ function _createMachine(image) {
                   command: [
                     `C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe`,
                     `-Command`,
-                    `netsh interface ipv4 add dnsserver "Ethernet" address=${config.ldapDns} index=1;
-                    $ComputerName = hostname;
-                    $Password = ConvertTo-SecureString -String "${config.ldapConnectPassword}" -AsPlainText -Force;
-                    $Creds = New-Object -TypeName "System.Management.Automation.PSCredential" -ArgumentList "${config.ldapConnectLogin}", $Password;
-                    Add-Computer -DomainName "${config.ldapDomain}" -ComputerName $ComputerName -Credential $Creds -newname "${newName}"`
+                    `$ComputerName = hostname;
+                     $Password = ConvertTo-SecureString -String "${machines[0].password}" -AsPlainText -Force;
+                     $Creds = New-Object -TypeName "System.Management.Automation.PSCredential" -ArgumentList "${machines[0].username}", $Password;
+                     Rename-Computer -ComputerName $ComputerName -NewName ${newName} -LocalCredential $Creds -Force`
                   ],
                   wait: true,
                   hideWindow: true,
@@ -388,6 +387,36 @@ function _createMachine(image) {
               timeout: 3000,
               retries: 20
             })
+              .then(() => {
+                return rebootMachine(machines[0]);
+              })
+              .then(() => {
+                return promisePoller({
+                  taskFn: () => {
+                    return PlazaService.exec(machines[0].ip, machines[0].plazaport, {
+                      command: [
+                        `C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe`,
+                        `-Command`,
+                        `netsh interface ipv4 add dnsserver "Ethernet" address=${config.ldapDns} index=1;
+                         $ComputerName = hostname;
+                         $Password = ConvertTo-SecureString -String "${config.ldapConnectPassword}" -AsPlainText -Force;
+                         $Creds = New-Object -TypeName "System.Management.Automation.PSCredential" -ArgumentList "${config.ldapConnectLogin}", $Password;
+                         Add-Computer -DomainName "${config.ldapDomain}" -ComputerName $ComputerName -Credential $Creds`
+                      ],
+                      wait: true,
+                      hideWindow: true,
+                      username: machines[0].username
+                    })
+                      .catch((err) => {
+                        // Ignore the 'exit status 1' error, the script was successfully executed.
+                        return Promise.resolve(err);
+                      });
+                  },
+                  interval: 3000,
+                  timeout: 3000,
+                  retries: 20
+                });
+              })
               .then(() => {
                 return rebootMachine(machines[0]);
               })
