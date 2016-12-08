@@ -126,6 +126,20 @@ module.exports = function() {
       });
     });
 
+    describe('Remove file', function() {
+      it('Should move previously created files', function(done) {
+        nano.request(sails.hooks.http.app)
+          .delete('/api/files?filename=./' + filename)
+          .set(nano.adminLogin())
+          .expect(200)
+          .expect(nano.jsonApiSchema(fileSchema))
+          .expect((res) => {
+            expect(res.body.data.length).to.equal(0);
+          })
+          .end(done);
+      });
+    });
+
     describe('Create directory', function() {
       it('Should create a directory', function(done) {
         nano.request(sails.hooks.http.app)
@@ -134,7 +148,7 @@ module.exports = function() {
           .expect(200)
           .expect(nano.jsonApiSchema(fileSchema))
           .expect((res) => {
-            expect(res.body.data.length).to.equal(2);
+            expect(res.body.data.length).to.equal(1);
             expect(res.body.data[0].attributes.type).to.equal('directory');
             expect(res.body.data[0].attributes.name).to.equal('test');
           })
@@ -150,7 +164,7 @@ module.exports = function() {
           .expect(200)
           .expect(nano.jsonApiSchema(fileSchema))
           .expect((res) => {
-            expect(res.body.data.length).to.equal(2);
+            expect(res.body.data.length).to.equal(1);
             expect(res.body.data[0].attributes.type).to.equal('directory');
             expect(res.body.data[0].attributes.name).to.equal('new');
           })
@@ -166,9 +180,7 @@ module.exports = function() {
           .expect(200)
           .expect(nano.jsonApiSchema(fileSchema))
           .expect((res) => {
-            expect(res.body.data.length).to.equal(1);
-            expect(res.body.data[0].attributes.type).to.equal('regular file');
-            expect(res.body.data[0].attributes.name).to.equal('storage.test.js');
+            expect(res.body.data.length).to.equal(0);
           })
           .end(done);
       });
