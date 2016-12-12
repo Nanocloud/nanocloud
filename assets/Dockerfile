@@ -1,4 +1,4 @@
-FROM node:6.3.0-slim
+FROM node:6.1.0-slim
 MAINTAINER Olivier Berthonneau <olivier.berthonneau@nanocloud.com>
 
 RUN apt-get update && \
