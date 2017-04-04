@@ -1,4 +1,4 @@
-FROM tomcat:8.5.4-jre8
+FROM tomcat:8.5.13-jre8
 MAINTAINER Olivier Berthonneau <olivier.berthonneau@nanocloud.com>
 
 RUN apt-get update && apt-get -y install maven \
