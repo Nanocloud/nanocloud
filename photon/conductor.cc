@@ -65,6 +65,8 @@ class DummySetSessionDescriptionObserver
   ~DummySetSessionDescriptionObserver() {}
 };
 
+rtc::scoped_refptr<webrtc::DataChannelInterface> Conductor::channel;
+
 Conductor::Conductor(const std::string & offer,
   boost::shared_ptr<photon::http::server::response> res)
     : offer_(offer),
