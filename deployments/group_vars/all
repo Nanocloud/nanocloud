@@ -1,3 +1,6 @@
 repository: Nanocloud
 branch: master
 #pull_request: XXX
+#slack_token: XX/XX/XXXXX
+#slack_channel: #technical
+#slack_username: Born2deploy

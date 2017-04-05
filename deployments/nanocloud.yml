@@ -1,14 +1,13 @@
 ---
 
 - hosts: all
-  remote_user: debian
   become: yes
   vars:
     repository: Nanocloud
-    #pull_request: XX
     branch: master
   roles:
     - common
     - franklinkim.docker
     - franklinkim.docker-compose
     - nanocloud
+    - slack
