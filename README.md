@@ -91,6 +91,9 @@ MACHINES=[{"name": "My Machine", "type": "manual", "ip": "1.2.3.4", "username": 
 - awsMachineUsername (Defaults to Administrator) administrator account on the machine
 - awsMachinePassword (Defaults to empty string, will be generated if possible) administrator password on the machine
 - awsMachineSubnet (Defaults to empty string, automatic subnet) subnet to assign to the machine
+- awsSecurityGroups (Defaults to empty array, will use 'default' security group in VPC) security group(s) to assign to the machine. For a nondefault VPC, you must use security group IDs instead.
+- awsSecurityGroupIds (Defaults to empty array, will use 'default' security group in VPC) security group(s) IDs to assign to the machine
+- awsMachineSubnet (Defaults to empty string, automatic subnet) subnet to assign to the machine
 - awsDiskSize (Defaults to 0, automatic size) root disk size in GB
 - creditLimit (Defaults empty string) set a credit limit to users (aws only)
 
