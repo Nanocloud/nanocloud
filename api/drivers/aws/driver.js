@@ -257,7 +257,7 @@ class AWSDriver extends Driver {
    */
   createMachine(machine, image) {
     return ConfigService.get('instancesSize', 'plazaURI', 'awsKeyName', 'plazaPort',
-      'awsMachineSubnet', 'awsDiskSize', 'awsMachineUsername', 'rdpPort')
+      'awsMachineSubnet', 'awsDiskSize', 'awsMachineUsername', 'rdpPort', 'awsSecurityGroups', 'awsSecurityGroupIds')
       .then((config) => {
 
         let userData = new Buffer(`<powershell>
@@ -298,6 +298,8 @@ class AWSDriver extends Driver {
             KeyName             : config.awsKeyName,
             UserData            : userData,
             SubnetId            : config.awsMachineSubnet,
+            SecurityGroups      : config.awsSecurityGroups,
+            SecurityGroupIds    : config.awsSecurityGroupIds,
             BlockDeviceMappings : diskOptions
           }, (err, server) => {
             if (err) {
